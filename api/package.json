@@ -1,11 +1,10 @@
 {
   "name": "nimbly-api",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Nimbly - focused on the domain.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "start": "ts-node index.ts",
     "prepublish": "([ -e build ] && rm -r build || [ -e . ]) && npm run build && cp src/index.d.ts build",
     "test": "jest",
     "build": "webpack"
