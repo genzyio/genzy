@@ -1,0 +1,32 @@
+{
+  "name": "nimbly-api",
+  "version": "0.1.1",
+  "description": "Nimbly - focused on the domain.",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "start": "ts-node index.ts",
+    "prepublish": "([ -e build ] && rm -r build || [ -e . ]) && npm run build && cp src/index.d.ts build",
+    "test": "jest",
+    "build": "webpack"
+  },
+  "keywords": [],
+  "author": "bjelicaluka",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/jest": "^27.0.3",
+    "esbuild-loader": "^2.16.0",
+    "jest": "^27.3.1",
+    "ts-jest": "^27.0.7",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.5.2",
+    "webpack": "^5.64.2",
+    "webpack-cli": "^4.9.1"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "nimbly-client": "^1.0.4"
+  }
+}

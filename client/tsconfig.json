@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "target": "es6",
+    "outDir": "build",
+    "module": "commonjs",
+  },
+  "include": ["src/**/*.ts"]
+}
