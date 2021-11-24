@@ -21,6 +21,7 @@ class UserService {
 }
 
 class AccountService {
+  // UserService is automatically injected
   constructor({ userService }) {
     this.userService = userService;
   }
@@ -91,9 +92,11 @@ class AccountService {
 ```js
 import { Nimble } from 'nimbly-client';
 
+const host = 'http://localhost:3000';
+
 const usersNimble = new Nimble()
-  .ofRemote(UserService)
-  .andRemote(AccountService);
+  .ofRemote(UserService, host)
+  .andRemote(AccountService, host);
 
 // The instances are available for custom usage
 const { userService, accountService } = usersNimble.services();
