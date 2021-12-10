@@ -100,7 +100,6 @@ describe('NimblyApi', () => {
 
   it('should register after interceptors for object', async () => {
     const nimble = new Nimble().of(TestService);
-    const testService = new TestService();
 
     const app = new NimblyApi()
       .interceptAfter({
@@ -119,7 +118,7 @@ describe('NimblyApi', () => {
 
     await agent(app)
       .get('/api/test-service/get-all')
-      .expect(202, await testService.getAll());
+      .expect(202, getAllResult);
     await agent(app)
       .get('/')
       .expect(404);
