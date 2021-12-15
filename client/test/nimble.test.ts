@@ -1,5 +1,10 @@
 import { Nimble } from '../src/nimble';
+import realAxios from 'axios';
 
+jest.mock('axios');
+const axios = realAxios as jest.Mocked<typeof realAxios>;
+
+const origin = 'http://localhost/';
 class TestService {
   public deps: { exampleService?: ExampleService } = {};
   
@@ -30,13 +35,26 @@ class AnotherService {
   constructor(deps = {}) {
     this.deps = deps;
   }
+
+  async getTest(): Promise<number> { return 0; }
+}
+class AnotherServiceCallInterceptor {
+  getTest({setHeader, getHeader, setBody, getBody}) {
+    setHeader('classInterceptor', 'Works!')
+  }
 }
 
-class ExampleServiceInterceptor {
-  get({setHeader, getHeader, setBody, getBody}) { }
+class AnotherServiceResultInterceptor {
+  getTest({setHeader, getHeader, setBody, getBody}) {
+    setBody(getBody() ? "not null" : "is null");
+  }
 }
 
 describe('Nimble', () => {
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
   it('should ceate a Nimble', async () => {
     const {
@@ -48,7 +66,7 @@ describe('Nimble', () => {
       exampleService: ExampleService;
       testService: TestService;
     } = new Nimble().ofLocal(ExampleService)
-      .andRemote(AnotherService, 'http://localhost')
+      .andRemote(AnotherService, origin)
       .andLocal(TestService)
       .services();
     
@@ -67,109 +85,152 @@ describe('Nimble', () => {
   it('should register an interceptor for all calls', async () => {
     const {
       anotherService,
-      exampleService,
-      testService
     }: {
       anotherService: AnotherService;
-      exampleService: ExampleService;
-      testService: TestService;
     } = new Nimble().ofLocal(ExampleService)
-      .andRemote(AnotherService, 'http://localhost')
+      .andRemote(AnotherService, origin)
       .andLocal(TestService)
-      // .interceptAllCalls(({setHeader, getHeader, setBody, getBody}) => { })
+      .interceptAllCalls(({setHeader, getHeader, setBody, getBody}) => {
+        setHeader('testHeader', 'testValue');
+      })
       .services();
+    (axios as any).mockResolvedValue({ data: 123 });
+    
+    await anotherService.getTest();
+    
+    expect(axios).toBeCalledWith({
+      method: 'get',
+      data: {args: []},
+      headers: {
+        testHeader: 'testValue'
+      },
+      url: origin + 'api/another-service/get-test'
+    });
   });
 
-  it('should register an interceptor for example service get calls', async () => {
+  it('should register an interceptor for another service get calls', async () => {
     const {
       anotherService,
-      exampleService,
-      testService
     }: {
       anotherService: AnotherService;
-      exampleService: ExampleService;
-      testService: TestService;
     } = new Nimble().ofLocal(ExampleService)
-      .andRemote(AnotherService, 'http://localhost')
+      .andRemote(AnotherService, origin)
       .andLocal(TestService)
-      // .interceptCalls({
-      //   exampleService: {
-      //     get({setHeader, getHeader, setBody, getBody}) { }
-      //   }
-      // })
+      .interceptCalls({
+        anotherService: {
+          getTest({setHeader, getHeader, setBody, getBody}) {
+            setHeader('anotherHeader', 'anotherValue');
+            setBody({ args: [1] });
+          }
+        }
+      })
       .services();
+    (axios as any).mockResolvedValue({ data: 123 });
+  
+    await anotherService.getTest();
+
+    expect(axios).toBeCalledWith({
+      method: 'get',
+      data: {args: [1]},
+      headers: {
+        anotherHeader: 'anotherValue'
+      },
+      url: origin + 'api/another-service/get-test'
+    });
   });
 
-  it('should register an interceptor for example service interceptor class calls', async () => {
+  it('should register an interceptor for another service interceptor class calls', async () => {
     const {
       anotherService,
-      exampleService,
-      testService
     }: {
       anotherService: AnotherService;
-      exampleService: ExampleService;
-      testService: TestService;
     } = new Nimble().ofLocal(ExampleService)
-      .andRemote(AnotherService, 'http://localhost')
+      .andRemote(AnotherService, origin)
       .andLocal(TestService)
-      // .interceptCalls({
-      //   exampleService: ExampleServiceInterceptor
-      // })
+      .interceptCalls({
+        anotherService: AnotherServiceCallInterceptor
+      })
       .services();
+    (axios as any).mockResolvedValue({ data: 123 });
+
+    await anotherService.getTest();
+    
+    expect(axios).toBeCalledWith({
+      method: 'get',
+      data: {args: []},
+      headers: {
+        classInterceptor: 'Works!'
+      },
+      url: origin + 'api/another-service/get-test'
+    });
   });
 
   it('should register an interceptor for all results', async () => {
     const {
       anotherService,
-      exampleService,
-      testService
     }: {
       anotherService: AnotherService;
-      exampleService: ExampleService;
-      testService: TestService;
     } = new Nimble().ofLocal(ExampleService)
-      .andRemote(AnotherService, 'http://localhost')
+      .andRemote(AnotherService, origin)
       .andLocal(TestService)
-      // .interceptAllResults(({setHeader, getHeader, setBody, getBody}) => { })
+      .interceptAllResults(({setHeader, getHeader, setBody, getBody}) => {
+        setBody(getBody() + 10);
+      })
       .services();
+    const initialResult = 123;
+    (axios as any).mockResolvedValue({ data: initialResult });
+
+    const result = await anotherService.getTest();
+
+    expect(result).toEqual(initialResult + 10)
   });
 
-  it('should register an interceptor for example service get results', async () => {
+  it('should register an interceptor for another service get results', async () => {
     const {
       anotherService,
-      exampleService,
-      testService
     }: {
       anotherService: AnotherService;
-      exampleService: ExampleService;
-      testService: TestService;
     } = new Nimble().ofLocal(ExampleService)
-      .andRemote(AnotherService, 'http://localhost')
+      .andRemote(AnotherService, origin)
       .andLocal(TestService)
-      // .interceptResults({
-      //   exampleService: {
-      //     get({setHeader, getHeader, setBody, getBody}) { }
-      //   }
-      // })
+      .interceptResults({
+        anotherService: {
+          getTest({setHeader, getHeader, setBody, getBody}) {
+            setBody({ ...getBody(), test: 'works' });
+          }
+        }
+      })
       .services();
+    const initialResult = { does: 'it work?' };
+    (axios as any).mockResolvedValue({ data: initialResult });
+
+    const result = await anotherService.getTest();
+
+    expect(result).toEqual({ ...initialResult, test: 'works' });
   });
 
-  it('should register an interceptor for example service interceptor class results', async () => {
+  it('should register an interceptor for another service interceptor class results', async () => {
     const {
       anotherService,
-      exampleService,
-      testService
     }: {
       anotherService: AnotherService;
-      exampleService: ExampleService;
-      testService: TestService;
     } = new Nimble().ofLocal(ExampleService)
-      .andRemote(AnotherService, 'http://localhost')
+      .andRemote(AnotherService, origin)
       .andLocal(TestService)
-      // .interceptResults({
-      //   exampleService: ExampleServiceInterceptor
-      // })
+      .interceptResults({
+        anotherService: AnotherServiceResultInterceptor
+      })
       .services();
-  });
+    (axios as any).mockResolvedValue({ data: null });
+    
+    const resultNull = await anotherService.getTest();
+    
+    expect(resultNull).toEqual("is null");
 
+    (axios as any).mockResolvedValue({ data: {} });
+    
+    const result = await anotherService.getTest();
+    
+    expect(result).toEqual("not null");
+  });
 });

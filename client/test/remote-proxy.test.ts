@@ -26,6 +26,7 @@ describe('RemoteProxyOf', () => {
     expect(axios).toBeCalledWith({
       method: 'get',
       data: {args: []},
+      headers: {},
       url: origin + 'api/test-service/get-all'
     });
 
@@ -43,6 +44,7 @@ describe('RemoteProxyOf', () => {
     expect(axios).toBeCalledWith({
       method: 'post',
       data: {args: [arg]},
+      headers: {},
       url: origin + 'api/test-service/add-something'
     });
 
@@ -60,6 +62,7 @@ describe('RemoteProxyOf', () => {
     expect(axios).toBeCalledWith({
       method: 'put',
       data: {args: [arg]},
+      headers: {},
       url: origin + 'api/test-service/update-something'
     });
 
@@ -78,6 +81,7 @@ describe('RemoteProxyOf', () => {
     expect(axios).toBeCalledWith({
       method: 'delete',
       data: {args: [arg1, arg2]},
+      headers: {},
       url: origin + 'api/test-service/delete-something'
     });
 
