@@ -1,3 +1,5 @@
+import * as express from 'express';
+import * as cors from "cors";
 import { NextFunction, Request, Response } from 'express';
 import { Nimble } from 'nimbly-client';
 import { NimblyApi } from '../src/nimbly-api';
@@ -249,6 +251,22 @@ describe('NimblyApi', () => {
     await agent(app)
       .get('/api/test-service/get-internal-server-error')
       .expect(500, { message: INTERNAL_SERVER_ERROR_MESSAGE });
+  });
+
+  it('should register routes on an existing app', async () => {
+    const existingApp = express();
+    existingApp.use(express.urlencoded({ extended: true }));
+    existingApp.use(express.json());
+    existingApp.use(cors({ origin: "*" }));
+    const nimble = new Nimble().of(TestService);
+    const app = new NimblyApi(existingApp)
+      .withErrors({
+        [BadLogicError.name]: 400,
+        [InternalServerError.name]: 500,
+      })
+      .from(nimble);
+    
+    expect(app).toEqual(existingApp);
   });
 
 });

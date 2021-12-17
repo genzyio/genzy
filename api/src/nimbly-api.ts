@@ -13,12 +13,16 @@ export class NimblyApi extends Interceptable<InterceptorCallback> {
   private app: Application;
   private errorRegistry: ErrorRegistry = {};
 
-  constructor() {
+  constructor(app?: Application) {
     super();
-    this.app = express();
-    this.app.use(express.urlencoded({ extended: true }));
-    this.app.use(express.json());
-    this.app.use(cors({ origin: "*" }));
+    if(!app) {
+      this.app = express();
+      this.app.use(express.urlencoded({ extended: true }));
+      this.app.use(express.json());
+      this.app.use(cors({ origin: "*" }));
+    } else {
+      this.app = app;
+    }
   }
 
   public from(...nimbles: Nimble[]): Application {
