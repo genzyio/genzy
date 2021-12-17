@@ -5,9 +5,7 @@ interface ErrorResponse {
   message: string;
 }
 
-const ErrorNameCode = {
-  Error: 500,
-}
+export type ErrorRegistry = { [key: string]: number };
 
 export class ErrorHandler {
 
@@ -18,9 +16,10 @@ export class ErrorHandler {
     return this;
   }
 
-  public static handleError(e: Error): ErrorResponse {
+  public static handleError(e: Error, errorRegistry: ErrorRegistry): ErrorResponse {
+    const statusCode = errorRegistry?.[e.name] || 500;
     const errorResponse = {
-      statusCode: ErrorNameCode[e.name] || 500,
+      statusCode,
       message: e.message
     };
 

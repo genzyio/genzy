@@ -4,6 +4,23 @@ import { NimblyApi } from '../src/nimbly-api';
 import { agent } from 'supertest'
 
 const getAllResult = [1, 2, 3];
+const BAD_LOGIC_ERROR_MESSAGE = "Bad logic error thrown.";
+const INTERNAL_SERVER_ERROR_MESSAGE = "Lost connection to the database.";
+
+class BadLogicError extends Error {
+  name = "BadLogicError";
+  constructor(message?: string) {
+    super(message);
+  }
+}
+
+class InternalServerError extends Error {
+  name = "InternalServerError";
+  constructor(message?: string) {
+    super(message);
+  }
+}
+
 class TestService {
   async getAll() {
     return getAllResult;
@@ -16,6 +33,12 @@ class TestService {
   }
   async deleteSomething(test, test2) {
     return [test, test2];
+  }
+  async getBadLogicError() {
+    throw new BadLogicError(BAD_LOGIC_ERROR_MESSAGE);
+  }
+  async getInternalServerError() {
+    throw new InternalServerError(INTERNAL_SERVER_ERROR_MESSAGE);
   }
 }
 
@@ -214,11 +237,18 @@ describe('NimblyApi', () => {
   it('should register error mappings', async () => {
     const nimble = new Nimble().of(TestService);
     const app = new NimblyApi()
-      // .withErrors({
-      //   BusinessLogicError: 400,
-      //   LostConnectionToTheDatabase: 500,
-      // })
+      .withErrors({
+        [BadLogicError.name]: 400,
+        [InternalServerError.name]: 500,
+      })
       .from(nimble);
+    
+    await agent(app)
+      .get('/api/test-service/get-bad-logic-error')
+      .expect(400, { message: BAD_LOGIC_ERROR_MESSAGE });
+    await agent(app)
+      .get('/api/test-service/get-internal-server-error')
+      .expect(500, { message: INTERNAL_SERVER_ERROR_MESSAGE });
   });
 
 });

@@ -1,13 +1,13 @@
 import { Application, NextFunction, Request, Response } from 'express';
-import { ErrorHandler } from "./error-handler";
+import { ErrorHandler, ErrorRegistry } from "./error-handler";
 import { getMethodsOfClassInstance, getHttpMethod, getResourcePath } from "../../shared/functions";
 
-export function RegisterRoutesFor(instance, app: Application, interceptors?: any): void {
+export function RegisterRoutesFor(instance, app: Application, interceptors?: any, errorRegistry?: ErrorRegistry): void {
   getMethodsOfClassInstance(instance).forEach((method: string) => {
     const className = instance.constructor.name || instance._class_name_;
     const methodName = method;
 
-    const handlers = [getServiceHandler(instance, method)];
+    const handlers = [getServiceHandler(instance, method, errorRegistry)];
     if(interceptors) {
       handlers.unshift(...interceptors.beforeInterceptors);
       handlers.push(...interceptors.afterInterceptors);
@@ -26,7 +26,7 @@ export function RegisterRoutesFor(instance, app: Application, interceptors?: any
   });
 }
 
-function getServiceHandler(instance, method: string) {
+function getServiceHandler(instance, method: string, errorRegistry: ErrorRegistry) {
   return (req: Request, res: Response, next: NextFunction) => {
     const result = instance[method](...(req.body?.args || []));
     if (result instanceof Promise) {
@@ -35,7 +35,7 @@ function getServiceHandler(instance, method: string) {
           next();
         })
         .catch((error: Error) => {
-          ErrorHandler.forResponse(res).handleError(error);
+          ErrorHandler.forResponse(res).handleError(error, errorRegistry);
         });
     } else if (result !== null && result !== undefined) {
       res.locals._nimbly_result = result;

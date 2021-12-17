@@ -5,11 +5,13 @@ import { Application } from "express";
 import { Nimble } from "nimbly-client";
 import { RegisterRoutesFor } from "./routes-handler";
 import { CustomInterceptors, Interceptable } from "../../shared/types";
+import { ErrorRegistry } from "./error-handler";
 
 type InterceptorCallback = (req: Request, res: Response, next: NextFunction) => any;
 
 export class NimblyApi extends Interceptable<InterceptorCallback> {
   private app: Application;
+  private errorRegistry: ErrorRegistry = {};
 
   constructor() {
     super();
@@ -26,7 +28,8 @@ export class NimblyApi extends Interceptable<InterceptorCallback> {
         RegisterRoutesFor(
           serviceRegistry[serviceKey],
           this.app,
-          this.interceptors
+          this.interceptors,
+          this.errorRegistry
         )
       );
     });
@@ -50,6 +53,11 @@ export class NimblyApi extends Interceptable<InterceptorCallback> {
 
   public interceptAllAfter(callback: InterceptorCallback): NimblyApi {
     this.interceptors.afterInterceptors.push(callback);
+    return this;
+  }
+
+  public withErrors(errors: ErrorRegistry): NimblyApi {
+    this.errorRegistry = {...this.errorRegistry, ...errors};
     return this;
   }
 }
