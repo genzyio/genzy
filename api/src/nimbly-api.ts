@@ -1,31 +1,18 @@
 import * as express from "express";
+import { NextFunction, Request, Response } from "express";
 import * as cors from "cors";
 import { Application } from "express";
 import { Nimble } from "nimbly-client";
-import {
-  CustomInterceptors,
-  ExpressCallback,
-  getMethodsOfClassInstance,
-  Interceptors,
-  RegisterRoutesFor,
-} from "./routes-handler";
+import { RegisterRoutesFor } from "./routes-handler";
+import { CustomInterceptors, Interceptable } from "../../shared/types";
 
-export function upperFirstLetter(s: string) {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
+type InterceptorCallback = (req: Request, res: Response, next: NextFunction) => any;
 
-type CustomInterceptorsKey = 'beforeCustomInterceptors' | 'afterCustomInterceptors';
-
-export class NimblyApi {
+export class NimblyApi extends Interceptable<InterceptorCallback> {
   private app: Application;
-  private interceptors: Interceptors = {
-    beforeInterceptors: [],
-    afterInterceptors: [],
-    beforeCustomInterceptors: {},
-    afterCustomInterceptors: {},
-  };
 
   constructor() {
+    super();
     this.app = express();
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
@@ -46,49 +33,23 @@ export class NimblyApi {
     return this.app;
   }
 
-  public intercept(customInterceptors: CustomInterceptors): NimblyApi {
+  public intercept(customInterceptors: CustomInterceptors<InterceptorCallback>): NimblyApi {
     this.interceptCustom(customInterceptors, 'beforeCustomInterceptors');
     return this;
   }
 
-  public interceptAfter(customInterceptors: CustomInterceptors): NimblyApi {
+  public interceptAfter(customInterceptors: CustomInterceptors<InterceptorCallback>): NimblyApi {
     this.interceptCustom(customInterceptors, 'afterCustomInterceptors');
     return this;
   }
 
-  public interceptAll(callback: ExpressCallback): NimblyApi {
+  public interceptAll(callback: InterceptorCallback): NimblyApi {
     this.interceptors.beforeInterceptors.push(callback);
     return this;
   }
 
-  public interceptAllAfter(callback: ExpressCallback): NimblyApi {
+  public interceptAllAfter(callback: InterceptorCallback): NimblyApi {
     this.interceptors.afterInterceptors.push(callback);
-    return this;
-  }
-
-  private interceptCustom(customInterceptors: CustomInterceptors, customInterceptorsKey: CustomInterceptorsKey): NimblyApi {
-    Object.keys(customInterceptors).forEach((classK) => {
-      const classKey = upperFirstLetter(classK);
-      if (!this.interceptors[customInterceptorsKey][classKey]) {
-        this.interceptors[customInterceptorsKey][classKey] = {};
-      }
-      const referenceObject =
-        typeof customInterceptors[classK] !== "function"
-          ? customInterceptors[classK]
-          : new (customInterceptors[classK] as any)();
-      const methodKeys: string[] =
-        typeof customInterceptors[classK] !== "function"
-          ? Object.keys(referenceObject)
-          : (getMethodsOfClassInstance(referenceObject) as any);
-      methodKeys.forEach((methodKey) => {
-        if (!this.interceptors[customInterceptorsKey][classKey][methodKey]) {
-          this.interceptors[customInterceptorsKey][classKey][methodKey] = [];
-        }
-        this.interceptors[customInterceptorsKey][classKey][methodKey].push(
-          referenceObject[methodKey]
-        );
-      });
-    });
     return this;
   }
 }

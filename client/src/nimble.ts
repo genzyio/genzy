@@ -1,21 +1,16 @@
 import { ServiceRegistry } from './service-registry';
-import { CustomInterceptorKey, CustomInterceptors, getMethodsOfClassInstance, InterceptorCallback, Interceptors, RemoteProxyOf } from './remote-proxy';
+import { RemoteProxyOf } from './remote-proxy';
 import { LocalProxyOf } from './local-proxy';
+import { CustomInterceptors, Interceptable } from '../../shared/types';
 
-export function upperFirstLetter(s: string) {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
+type InterceptorCallback = ({setHeader, getHeader, setBody, getBody}: 
+  {setHeader: (key: string, value: string) => any, getHeader: (key: string) => string, setBody: (body: any) => any, getBody: () => any}) => any;
 
-export class Nimble {
+export class Nimble extends Interceptable<InterceptorCallback> {
   private registry: ServiceRegistry;
-  private interceptors: Interceptors = {
-    callInterceptors: [],
-    resultInterceptors: [],
-    callCustomInterceptors: {},
-    resultCustomInterceptors: {}
-  }
 
   constructor() {
+    super();
     this.registry = new ServiceRegistry();
   }
 
@@ -38,46 +33,24 @@ export class Nimble {
   }
 
   public interceptAllCalls(callback: InterceptorCallback): Nimble {
-    this.interceptors.callInterceptors.push(callback);
+    this.interceptors.beforeInterceptors.push(callback);
     return this;
   }
 
   public interceptAllResults(callback: InterceptorCallback): Nimble {
-    this.interceptors.resultInterceptors.push(callback);
+    this.interceptors.afterInterceptors.push(callback);
     return this;
   }
 
-  public interceptCalls(customInterceptors: CustomInterceptors): Nimble {
-    return this.interceptCustom(customInterceptors, 'callCustomInterceptors');
-  }
-
-  public interceptResults(customInterceptors: CustomInterceptors): Nimble {
-    return this.interceptCustom(customInterceptors, 'resultCustomInterceptors');
-  }
-
-  private interceptCustom(customInterceptors: CustomInterceptors, customInterceptorsKey: CustomInterceptorKey): Nimble {
-    Object.keys(customInterceptors).forEach((classK) => {
-      const classKey = upperFirstLetter(classK);
-      if (!this.interceptors[customInterceptorsKey][classKey]) {
-        this.interceptors[customInterceptorsKey][classKey] = {};
-      }
-      const referenceObject =
-        typeof customInterceptors[classK] !== "function"
-          ? customInterceptors[classK]
-          : new (customInterceptors[classK] as any)();
-      const methodKeys: string[] =
-        typeof customInterceptors[classK] !== "function"
-          ? Object.keys(referenceObject)
-          : (getMethodsOfClassInstance(referenceObject) as any);
-      methodKeys.forEach((methodKey) => {
-        if (!this.interceptors[customInterceptorsKey][classKey][methodKey]) {
-          this.interceptors[customInterceptorsKey][classKey][methodKey] = [];
-        }
-        this.interceptors[customInterceptorsKey][classKey][methodKey].push(
-          referenceObject[methodKey]
-        );
-      });
-    });
+  public interceptCalls(customInterceptors: CustomInterceptors<InterceptorCallback>): Nimble {
+    this.interceptCustom(customInterceptors, 'beforeCustomInterceptors');
     return this;
   }
+
+  public interceptResults(customInterceptors: CustomInterceptors<InterceptorCallback>): Nimble {
+    this.interceptCustom(customInterceptors, 'afterCustomInterceptors');
+    return this;
+  }
+
+  
 }
