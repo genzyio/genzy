@@ -1,35 +1,26 @@
 export { Application, Request, Response, NextFunction } from "express";
-import { Application } from "express";
+import { Application, NextFunction } from "express";
+import { Nimble } from 'nimbly-client';
+export { Nimble } from 'nimbly-client';
 
-interface Constructor {
-  new (...args: any[]);
-}
+type InterceptorCallback = (req: Request, res: Response, next: NextFunction) => any;
+
+type CustomInterceptors<TInterceptorCallback> = {
+  [classKey: string]: {
+    [methodKey: string]: TInterceptorCallback
+  }
+};
+
+type ErrorRegistry = { [key: string]: number };
 
 export class NimblyApi {
   constructor();
+  constructor(app: Application);
 
+  public intercept(customInterceptors: CustomInterceptors<InterceptorCallback>): NimblyApi;
+  public interceptAfter(customInterceptors: CustomInterceptors<InterceptorCallback>): NimblyApi;
+  public interceptAll(callback: InterceptorCallback): NimblyApi;
+  public interceptAllAfter(callback: InterceptorCallback): NimblyApi;
+  public withErrors(errors: ErrorRegistry): NimblyApi;
   public from(...nimbles: Nimble[]): Application;
 }
-
-export class Nimble {
-  constructor();
-
-  public ofLocal(type: Constructor): Nimble;
-  public andLocal(type: Constructor): Nimble;
-  public andRemote(type: Constructor, origin: string): Nimble;
-
-  public of(type: Constructor): Nimble;
-  public ofRemote(type: Constructor, origin: string): Nimble;
-
-  public services(): any;
-}
-
-export class ServiceRegistry {
-  public register(key: string, service: any): void;
-  public register(service: any): void;
-  public getAll(): any;
-}
-
-export function LocalProxyOf<T>(type: Constructor, serviceRegistry: ServiceRegistry): T;
-export function RemoteProxyOf<T>(type: Constructor, origin: string, serviceRegistry: ServiceRegistry): T;
-export function RegisterRoutesFor(instance, app: Application): void;

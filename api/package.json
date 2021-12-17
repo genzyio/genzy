@@ -28,6 +28,6 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "nimbly-client": "^1.0.4"
+    "nimbly-client": "latest"
   }
 }
