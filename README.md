@@ -126,3 +126,169 @@ const allAccounts = await accountService.getAllAccounts();
 #   }] }
 # GET /api/account-service/get-all-accounts
 ```
+
+## Client Interceptors
+
+```js
+// Intercept all service calls
+const usersNimble = new Nimble()
+  .ofRemote(UserService, host)
+  .interceptAllCalls(({setHeader, getHeader, setBody, getBody}) => {
+    setHeader('Authorization', 'Bearer <token>');
+  });
+
+// Intercept only specific method calls
+const usersNimble = new Nimble()
+  .ofRemote(UserService, host)
+  .interceptCalls({
+    userService: {
+      getTest({setHeader, getHeader, setBody, getBody}) {
+        setBody({ ...getBody(), timestamp: new Date() });
+      }
+    }
+  });
+
+// Define interceptors with an interceptor class
+class UserServiceCallInterceptor {
+  getTest({setHeader, getHeader, setBody, getBody}) {
+    setHeader('classCallInterceptor', 'Works!')
+  }
+}
+const usersNimble = new Nimble()
+  .ofRemote(UserService, host)
+  .interceptCalls({
+    userService: UserServiceCallInterceptor
+  });
+
+// Intercept all service results
+const usersNimble = new Nimble()
+  .ofRemote(UserService, host)
+  .interceptAllResults(({setHeader, getHeader, setBody, getBody}) => {
+    validateBody(getBody());
+    setToken(getHeader('Token'));
+  });
+
+// Intercept only specific method results
+const usersNimble = new Nimble()
+  .ofRemote(UserService, host)
+  .interceptResults({
+    userService: {
+      getTest({setHeader, getHeader, setBody, getBody}) {
+        setBody({ ...getBody(), count: getBody().items.length });
+      }
+    }
+  });
+
+// Define interceptors with an interceptor class
+class UserServiceResultInterceptor {
+  getTest({setHeader, getHeader, setBody, getBody}) {
+    setHeader('classResultInterceptor', 'Works!')
+  }
+}
+const usersNimble = new Nimble()
+  .ofRemote(UserService, host)
+  .interceptResults({
+    userService: UserServiceResultInterceptor
+  });
+```
+
+## API Interceptors
+
+```js
+// Intercept all service handlers before they are called
+const usersNimble = new Nimble().ofLocal(UserService);
+const app = new NimblyApi()
+  .interceptAll((req: Request, res: Response, next: NextFunction) => {
+    if(isTokenValid(req.headers.Authorization)) next();
+    else res.sendStatus(401);
+  })
+  .from(usersNimble);
+
+// Intercept specific service handlers before they are called
+const usersNimble = new Nimble().ofLocal(UserService);
+const app = new NimblyApi()
+  .intercept({
+    userService: {
+      createUser: (req: Request, res: Response, next: NextFunction) => {
+        if(isAdminUser(req.headers.Authorization)) next();
+        else res.sendStatus(401);
+      }
+    }
+  })
+  .from(usersNimble);
+
+// Intercept specific service handlers before they are called with Interceptor class
+class UserServiceInterceptor {
+  createUser(req: Request, res: Response, next: NextFunction) {
+    if(isAdminUser(req.headers.Authorization)) next();
+    else res.sendStatus(401);
+  }
+}
+const usersNimble = new Nimble().ofLocal(UserService);
+const app = new NimblyApi()
+  .intercept({
+    userService: {
+      createUser: UserServiceInterceptor
+    }
+  })
+  .from(usersNimble);
+
+// Intercept all service handlers after they are called
+const usersNimble = new Nimble().ofLocal(UserService);
+const app = new NimblyApi()
+  .interceptAllAfter((req: Request, res: Response, next: NextFunction) => {
+    res.body({ message: "Hello from Nimbly." });
+  })
+  .from(usersNimble);
+
+// Intercept specific service handlers after they are called
+const usersNimble = new Nimble().ofLocal(UserService);
+const app = new NimblyApi()
+  .interceptAfter({
+    userService: {
+      createUser: (req: Request, res: Response, next: NextFunction) => {
+        res.status(201);
+        next();
+      }
+    }
+  })
+  .from(usersNimble);
+
+// Intercept specific service handlers after they are called with Interceptor class
+class UserServiceInterceptor {
+  createUser(req: Request, res: Response, next: NextFunction) {
+    res.status(201);
+    next();
+  }
+}
+const usersNimble = new Nimble().ofLocal(UserService);
+const app = new NimblyApi()
+  .interceptAfter({
+    userService: {
+      createUser: UserServiceInterceptor
+    }
+  })
+  .from(usersNimble);
+```
+
+## API Error Status Code Mappings
+```js
+class BadLogicError extends Error {
+  name = "BadLogicError";
+  constructor(message?: string) {
+    super(message);
+  }
+}
+class InternalServerError extends Error {
+  name = "InternalServerError";
+  constructor(message?: string) {
+    super(message);
+  }
+}
+const app = new NimblyApi()
+  .withErrors({
+    [BadLogicError.name]: 400,
+    [InternalServerError.name]: 500,
+  })
+  .from(usersNimble);
+```

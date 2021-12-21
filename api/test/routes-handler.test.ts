@@ -14,9 +14,12 @@ const app = {
 
 const invokeRequestHandler = (route: string, args: any[]) => {
   const res = {
-    json: jest.fn()
+    locals: {_nimbly_result: null},
+    json: jest.fn(),
+    status: jest.fn(),
+    send: jest.fn(),
   };
-  handlers[route]({ body: { args: args } }, res);
+  handlers[route]({ body: { args: args } }, res, () => {});
   return res;
 }
 
@@ -42,7 +45,7 @@ describe('RegisterRoutesFor', () => {
     RegisterRoutesFor(new TestService(), app);
 
     const expectedGetRoute = '/api/test-service/get-all';
-    expect(app.get).toBeCalledWith(expectedGetRoute, expect.anything());
+    expect(app.get).toBeCalledWith(expectedGetRoute, expect.anything(), expect.anything());
 
     
     const arg = { test: "asdf" };
@@ -50,42 +53,42 @@ describe('RegisterRoutesFor', () => {
 
     await new Promise((r) => setTimeout(r, 200));
     
-    expect(res.json).toBeCalledWith(await testServiceInstance.getAll());
+    expect(res.locals._nimbly_result).toStrictEqual(await testServiceInstance.getAll());
   });
 
   it('should register all POST routes of the service', async () => {
     RegisterRoutesFor(new TestService(), app);
 
     const expectedPostRoute = '/api/test-service/add-something';
-    expect(app.post).toBeCalledWith(expectedPostRoute, expect.anything());
+    expect(app.post).toBeCalledWith(expectedPostRoute, expect.anything(), expect.anything());
 
     const arg = { test: "asdf" };
     const res = invokeRequestHandler(expectedPostRoute, [arg]);
 
     await new Promise((r) => setTimeout(r, 200));
 
-    expect(res.json).toBeCalledWith(await testServiceInstance.addSomething(arg));
+    expect(res.locals._nimbly_result).toStrictEqual(await testServiceInstance.addSomething(arg));
   });
 
   it('should register all PUT routes of the service', async () => {
     RegisterRoutesFor(new TestService(), app);
 
     const expectedPutRoute = '/api/test-service/update-something';
-    expect(app.put).toBeCalledWith(expectedPutRoute, expect.anything());
+    expect(app.put).toBeCalledWith(expectedPutRoute, expect.anything(), expect.anything());
 
     const arg = { test: "asdf" };
     const res = invokeRequestHandler(expectedPutRoute, [arg]);
 
     await new Promise((r) => setTimeout(r, 200));
 
-    expect(res.json).toBeCalledWith(await testServiceInstance.updateSomething(arg));
+    expect(res.locals._nimbly_result).toStrictEqual(await testServiceInstance.updateSomething(arg));
   });
 
   it('should register all DELETE routes of the service', async () => {
     RegisterRoutesFor(new TestService(), app);
 
     const expectedDeleteRoute = '/api/test-service/delete-something';
-    expect(app.delete).toBeCalledWith(expectedDeleteRoute, expect.anything());
+    expect(app.delete).toBeCalledWith(expectedDeleteRoute, expect.anything(), expect.anything());
 
     const arg = { test: "asdf" };
     const secArg = { lala: "po" };
@@ -93,7 +96,7 @@ describe('RegisterRoutesFor', () => {
 
     await new Promise((r) => setTimeout(r, 200));
 
-    expect(res.json).toBeCalledWith(await testServiceInstance.deleteSomething(arg, secArg));
+    expect(res.locals._nimbly_result).toStrictEqual(await testServiceInstance.deleteSomething(arg, secArg));
   });
 
 });

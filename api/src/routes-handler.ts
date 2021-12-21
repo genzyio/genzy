@@ -1,75 +1,48 @@
-import { Application, Request, Response } from 'express';
-import { ErrorHandler } from "./error-handler";
+import { Application, NextFunction, Request, Response } from 'express';
+import { ErrorHandler, ErrorRegistry } from "./error-handler";
+import { getMethodsOfClassInstance, getHttpMethod, getResourcePath } from "../../shared/functions";
 
-const builtInMethods = [
-  'constructor',
-  '__defineGetter__',
-  '__defineSetter__',
-  'hasOwnProperty',
-  '__lookupGetter__',
-  '__lookupSetter__',
-  'isPrototypeOf',
-  'propertyIsEnumerable',
-  'toString',
-  'valueOf',
-  'toLocaleString'
-];
+export function RegisterRoutesFor(instance, app: Application, interceptors?: any, errorRegistry?: ErrorRegistry): void {
+  getMethodsOfClassInstance(instance).forEach((method: string) => {
+    const className = instance.constructor.name || instance._class_name_;
+    const methodName = method;
 
-const prefixToMethod = {
-  get: "get",
-  read: "get",
-  fetch: "get",
-  add: "post",
-  create: "post",
-  post: "post",
-  put: "put",
-  update: "put",
-  delete: "delete",
-  remove: "delete",
-};
+    const handlers = [getServiceHandler(instance, method, errorRegistry)];
+    if(interceptors) {
+      handlers.unshift(...interceptors.beforeInterceptors);
+      handlers.push(...interceptors.afterInterceptors);
+      if(interceptors.beforeCustomInterceptors[className])
+        handlers.unshift(...(interceptors.beforeCustomInterceptors[className][methodName] || []));
+      if(interceptors.afterCustomInterceptors[className])
+        handlers.push(...(interceptors.afterCustomInterceptors[className][methodName] || []));
+    }
 
-function camelToDashCase(key) {
-  var result = key.replace(/([A-Z])/g, " $1");
-  return result.split(" ").join("-").toLowerCase().replace(/^-/g, "");
-}
-
-function getHttpMethod(fname) {
-  const match = Object.keys(prefixToMethod).find((prefix) =>
-    fname.match(new RegExp(`^${prefix}`, "g"))
-  );
-  return prefixToMethod[match] || "post";
-}
-
-function getResourcePath(cname, fname) {
-  return `${camelToDashCase(cname)}/${camelToDashCase(fname)}`;
-}
-
-const getMethods = (obj: any) => {
-  const properties = new Set()
-  let currentObj = obj
-  do {
-    Object.getOwnPropertyNames(currentObj).map(item => properties.add(item))
-  } while ((currentObj = Object.getPrototypeOf(currentObj)))
-  return [...properties.keys()].filter((item: string) => !builtInMethods.includes(item) && typeof obj[item] === 'function');
-}
-
-export function RegisterRoutesFor(instance, app: Application): void {
-  getMethods(instance).forEach((m: string) => {
-    app[getHttpMethod(m)]('/api/' + getResourcePath(instance.constructor.name || instance._class_name_, m), (req: Request, res: Response, next: Function) => {
-      const result = instance[m](...(req.body?.args || []));
-      if (result instanceof Promise) {
-        result.then(r => {
-            res.json(r);
-          })
-          .catch((error: Error) => {
-            ErrorHandler.forResponse(res).handleError(error);
-          });
-      } else if (result !== null && result !== undefined) {
-        res.json(result);
-      } else {
-        res.status(500);
-        res.send();
-      }
+    handlers.push((req: Request, res: Response, next: NextFunction) => { 
+      console.log(res.locals._nimbly_result)
+      res.json(res.locals._nimbly_result);
     });
+
+    app[getHttpMethod(method)]('/api/' + getResourcePath(className, methodName), ...handlers);
   });
+}
+
+function getServiceHandler(instance, method: string, errorRegistry: ErrorRegistry) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const result = instance[method](...(req.body?.args || []));
+    if (result instanceof Promise) {
+      result.then(r => {
+          res.locals._nimbly_result = r;
+          next();
+        })
+        .catch((error: Error) => {
+          ErrorHandler.forResponse(res).handleError(error, errorRegistry);
+        });
+    } else if (result !== null && result !== undefined) {
+      res.locals._nimbly_result = result;
+      next();
+    } else {
+      res.status(500);
+      res.send();
+    }
+  }
 }

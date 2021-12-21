@@ -1,6 +1,4 @@
-export function lowerFirstLetter(s: string) {
-  return s.charAt(0).toLowerCase() + s.slice(1);
-}
+import { lowerFirstLetter } from "../../shared/functions";
 
 export class ServiceRegistry {
 

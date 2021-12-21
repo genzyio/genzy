@@ -1,11 +1,16 @@
 import { ServiceRegistry } from './service-registry';
 import { RemoteProxyOf } from './remote-proxy';
 import { LocalProxyOf } from './local-proxy';
+import { CustomInterceptors, Interceptable } from '../../shared/types';
 
-export class Nimble {
+type InterceptorCallback = ({setHeader, getHeader, setBody, getBody}: 
+  {setHeader: (key: string, value: string) => any, getHeader: (key: string) => string, setBody: (body: any) => any, getBody: () => any}) => any;
+
+export class Nimble extends Interceptable<InterceptorCallback> {
   private registry: ServiceRegistry;
 
   constructor() {
+    super();
     this.registry = new ServiceRegistry();
   }
 
@@ -19,11 +24,33 @@ export class Nimble {
   }
 
   public ofRemote(type, origin: string): Nimble {
-    RemoteProxyOf(type, origin, this.registry);
+    RemoteProxyOf(type, origin, this.registry, this.interceptors);
     return this;
   }
 
   public services(): any {
     return this.registry.getAll();
   }
+
+  public interceptAllCalls(callback: InterceptorCallback): Nimble {
+    this.interceptors.beforeInterceptors.push(callback);
+    return this;
+  }
+
+  public interceptAllResults(callback: InterceptorCallback): Nimble {
+    this.interceptors.afterInterceptors.push(callback);
+    return this;
+  }
+
+  public interceptCalls(customInterceptors: CustomInterceptors<InterceptorCallback>): Nimble {
+    this.interceptCustom(customInterceptors, 'beforeCustomInterceptors');
+    return this;
+  }
+
+  public interceptResults(customInterceptors: CustomInterceptors<InterceptorCallback>): Nimble {
+    this.interceptCustom(customInterceptors, 'afterCustomInterceptors');
+    return this;
+  }
+
+  
 }

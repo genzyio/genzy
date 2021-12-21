@@ -1,9 +1,23 @@
+type CustomInterceptors<TInterceptorCallback> = {
+  [classKey: string]: {
+    [methodKey: string]: TInterceptorCallback
+  }
+};
+
+type InterceptorCallback = ({setHeader, getHeader, setBody, getBody}: 
+  {setHeader: (key: string, value: string) => any, getHeader: (key: string) => string, setBody: (body: any) => any, getBody: () => any}) => any;
+
 interface Constructor {
   new (...args: any[]);
 }
 
 export class Nimble {
   constructor();
+
+  public interceptAllCalls(callback: InterceptorCallback): Nimble;
+  public interceptAllResults(callback: InterceptorCallback): Nimble;
+  public interceptCalls(customInterceptors: CustomInterceptors<InterceptorCallback>): Nimble;
+  public interceptResults(customInterceptors: CustomInterceptors<InterceptorCallback>): Nimble;
 
   public ofLocal(type: Constructor): Nimble;
   public andLocal(type: Constructor): Nimble;
@@ -14,12 +28,3 @@ export class Nimble {
 
   public services(): any;
 }
-
-export class ServiceRegistry {
-  public register(key: string, service: any): void;
-  public register(service: any): void;
-  public getAll(): any;
-}
-
-export function LocalProxyOf<T>(type: Constructor, serviceRegistry: ServiceRegistry): T;
-export function RemoteProxyOf<T>(type: Constructor, origin: string, serviceRegistry: ServiceRegistry): T;

@@ -1,4 +1,5 @@
-import { lowerFirstLetter, ServiceRegistry } from "./service-registry";
+import { lowerFirstLetter } from "../../shared/functions";
+import { ServiceRegistry } from "./service-registry";
 
 const localCallHandler = {
   get: function(target, prop, receiver) {
