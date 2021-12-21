@@ -1,6 +1,6 @@
 {
   "name": "nimbly-api",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Nimbly - focused on the domain.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -28,6 +28,6 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "nimbly-client": "latest"
+    "nimbly-client": "^1.1.0"
   }
 }

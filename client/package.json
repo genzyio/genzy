@@ -1,6 +1,6 @@
 {
   "name": "nimbly-client",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "Nimbly - focused on the domain.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
