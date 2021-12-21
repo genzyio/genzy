@@ -68,6 +68,107 @@ app.listen(3000);
 # POST /api/account-service/create-account
 ```
 
+## Interceptors
+
+```js
+// Intercept all service handlers before they are called
+const usersNimble = new Nimble().ofLocal(UserService);
+const app = new NimblyApi()
+  .interceptAll((req: Request, res: Response, next: NextFunction) => {
+    if(isTokenValid(req.headers.Authorization)) next();
+    else res.sendStatus(401);
+  })
+  .from(usersNimble);
+
+// Intercept specific service handlers before they are called
+const usersNimble = new Nimble().ofLocal(UserService);
+const app = new NimblyApi()
+  .intercept({
+    userService: {
+      createUser: (req: Request, res: Response, next: NextFunction) => {
+        if(isAdminUser(req.headers.Authorization)) next();
+        else res.sendStatus(401);
+      }
+    }
+  })
+  .from(usersNimble);
+
+// Intercept specific service handlers before they are called with Interceptor class
+class UserServiceInterceptor {
+  createUser(req: Request, res: Response, next: NextFunction) {
+    if(isAdminUser(req.headers.Authorization)) next();
+    else res.sendStatus(401);
+  }
+}
+const usersNimble = new Nimble().ofLocal(UserService);
+const app = new NimblyApi()
+  .intercept({
+    userService: {
+      createUser: UserServiceInterceptor
+    }
+  })
+  .from(usersNimble);
+
+// Intercept all service handlers after they are called
+const usersNimble = new Nimble().ofLocal(UserService);
+const app = new NimblyApi()
+  .interceptAllAfter((req: Request, res: Response, next: NextFunction) => {
+    res.body({ message: "Hello from Nimbly." });
+  })
+  .from(usersNimble);
+
+// Intercept specific service handlers after they are called
+const usersNimble = new Nimble().ofLocal(UserService);
+const app = new NimblyApi()
+  .interceptAfter({
+    userService: {
+      createUser: (req: Request, res: Response, next: NextFunction) => {
+        res.status(201);
+        next();
+      }
+    }
+  })
+  .from(usersNimble);
+
+// Intercept specific service handlers after they are called with Interceptor class
+class UserServiceInterceptor {
+  createUser(req: Request, res: Response, next: NextFunction) {
+    res.status(201);
+    next();
+  }
+}
+const usersNimble = new Nimble().ofLocal(UserService);
+const app = new NimblyApi()
+  .interceptAfter({
+    userService: {
+      createUser: UserServiceInterceptor
+    }
+  })
+  .from(usersNimble);
+```
+
+## Error Status Code Mappings
+```js
+class BadLogicError extends Error {
+  name = "BadLogicError";
+  constructor(message?: string) {
+    super(message);
+  }
+}
+class InternalServerError extends Error {
+  name = "InternalServerError";
+  constructor(message?: string) {
+    super(message);
+  }
+}
+const app = new NimblyApi()
+  .withErrors({
+    [BadLogicError.name]: 400,
+    [InternalServerError.name]: 500,
+  })
+  .from(usersNimble);
+```
+
 # Steps for publishing new version
 1. `npm run prepublish`
 2. `npm version major/minor/patch`

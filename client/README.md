@@ -56,6 +56,71 @@ const allAccounts = await accountService.getAllAccounts();
 # GET /api/account-service/get-all-accounts
 ```
 
+## Interceptors
+
+```js
+// Intercept all service calls
+const usersNimble = new Nimble()
+  .ofRemote(UserService, host)
+  .interceptAllCalls(({setHeader, getHeader, setBody, getBody}) => {
+    setHeader('Authorization', 'Bearer <token>');
+  });
+
+// Intercept only specific method calls
+const usersNimble = new Nimble()
+  .ofRemote(UserService, host)
+  .interceptCalls({
+    userService: {
+      getTest({setHeader, getHeader, setBody, getBody}) {
+        setBody({ ...getBody(), timestamp: new Date() });
+      }
+    }
+  });
+
+// Define interceptors with an interceptor class
+class UserServiceCallInterceptor {
+  getTest({setHeader, getHeader, setBody, getBody}) {
+    setHeader('classCallInterceptor', 'Works!')
+  }
+}
+const usersNimble = new Nimble()
+  .ofRemote(UserService, host)
+  .interceptCalls({
+    userService: UserServiceCallInterceptor
+  });
+
+// Intercept all service results
+const usersNimble = new Nimble()
+  .ofRemote(UserService, host)
+  .interceptAllResults(({setHeader, getHeader, setBody, getBody}) => {
+    validateBody(getBody());
+    setToken(getHeader('Token'));
+  });
+
+// Intercept only specific method results
+const usersNimble = new Nimble()
+  .ofRemote(UserService, host)
+  .interceptResults({
+    userService: {
+      getTest({setHeader, getHeader, setBody, getBody}) {
+        setBody({ ...getBody(), count: getBody().items.length });
+      }
+    }
+  });
+
+// Define interceptors with an interceptor class
+class UserServiceResultInterceptor {
+  getTest({setHeader, getHeader, setBody, getBody}) {
+    setHeader('classResultInterceptor', 'Works!')
+  }
+}
+const usersNimble = new Nimble()
+  .ofRemote(UserService, host)
+  .interceptResults({
+    userService: UserServiceResultInterceptor
+  });
+```
+
 # Steps for publishing new version
 1. `npm run prepublish`
 2. `npm version major/minor/patch`
