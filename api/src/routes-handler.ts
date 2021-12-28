@@ -18,7 +18,6 @@ export function RegisterRoutesFor(instance, app: Application, interceptors?: any
     }
 
     handlers.push((req: Request, res: Response, next: NextFunction) => { 
-      console.log(res.locals._nimbly_result)
       res.json(res.locals._nimbly_result);
     });
 
