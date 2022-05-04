@@ -292,3 +292,7 @@ const app = new NimblyApi()
   })
   .from(usersNimble);
 ```
+## Roadmap
+- Implement Open API docs generation.
+- Implement client generation CLI from meta info that is fetched from the API.
+- Support for defining custom paths and params.
