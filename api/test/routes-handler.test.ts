@@ -12,18 +12,24 @@ const app = {
 } as any as Application;
 
 
-const invokeRequestHandler = (route: string, args: any[]) => {
+const invokeRequestHandler = (route: string, body: any, params?: any) => {
   const res = {
     locals: {_nimbly_result: null},
     json: jest.fn(),
     status: jest.fn(),
     send: jest.fn(),
   };
-  handlers[route]({ body: { args: args } }, res, () => {});
+  const key = Object.keys(handlers).find(key => route.startsWith(key.replace(/:.*/g, '')))
+  handlers[key]({ body, params }, res, () => {});
   return res;
 }
 
 class TestService {
+  $nimbly = {
+    deleteSomething: {
+      path: 'delete-something/:id'
+    }
+  }
   async getAll() {
     return [1, 2, 3];
   }
@@ -49,7 +55,7 @@ describe('RegisterRoutesFor', () => {
 
     
     const arg = { test: "asdf" };
-    const res = invokeRequestHandler(expectedGetRoute, [arg]);
+    const res = invokeRequestHandler(expectedGetRoute, arg);
 
     await new Promise((r) => setTimeout(r, 200));
     
@@ -63,7 +69,7 @@ describe('RegisterRoutesFor', () => {
     expect(app.post).toBeCalledWith(expectedPostRoute, expect.anything(), expect.anything());
 
     const arg = { test: "asdf" };
-    const res = invokeRequestHandler(expectedPostRoute, [arg]);
+    const res = invokeRequestHandler(expectedPostRoute, arg);
 
     await new Promise((r) => setTimeout(r, 200));
 
@@ -77,7 +83,7 @@ describe('RegisterRoutesFor', () => {
     expect(app.put).toBeCalledWith(expectedPutRoute, expect.anything(), expect.anything());
 
     const arg = { test: "asdf" };
-    const res = invokeRequestHandler(expectedPutRoute, [arg]);
+    const res = invokeRequestHandler(expectedPutRoute, arg);
 
     await new Promise((r) => setTimeout(r, 200));
 
@@ -87,16 +93,17 @@ describe('RegisterRoutesFor', () => {
   it('should register all DELETE routes of the service', async () => {
     RegisterRoutesFor(new TestService(), app);
 
-    const expectedDeleteRoute = '/api/test-service/delete-something';
-    expect(app.delete).toBeCalledWith(expectedDeleteRoute, expect.anything(), expect.anything());
+    const id = 'asdf';
+    const expectedDeleteRegisterRoute = '/api/test-service/delete-something/:id';
+    const expectedDeleteCallRoute = '/api/test-service/delete-something/' + id;
+    expect(app.delete).toBeCalledWith(expectedDeleteRegisterRoute, expect.anything(), expect.anything());
 
-    const arg = { test: "asdf" };
     const secArg = { lala: "po" };
-    const res = invokeRequestHandler(expectedDeleteRoute, [arg, secArg]);
+    const res = invokeRequestHandler(expectedDeleteCallRoute, secArg, {id});
 
     await new Promise((r) => setTimeout(r, 200));
 
-    expect(res.locals._nimbly_result).toStrictEqual(await testServiceInstance.deleteSomething(arg, secArg));
+    expect(res.locals._nimbly_result).toStrictEqual(await testServiceInstance.deleteSomething(id, secArg));
   });
 
 });
