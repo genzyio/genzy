@@ -26,4 +26,21 @@ describe('File Content Generation', () => {
     const content = fileContentFrom(meta);
     expect(content).toContain(`async ${methodName}() {}`);
   });
+
+  it('should generate a method with params', async () => {
+    const methodName = 'testSomething';
+    const meta: ServiceMetaInfo = {
+      name: 'Test',
+      routes: [
+        {
+          httpMethod: 'GET',
+          methodName,
+          path: '/asdf',
+          pathParams: ['groupId', 'id']
+        }
+      ]
+    };
+    const content = fileContentFrom(meta);
+    expect(content).toContain(`async ${methodName}(groupId: any, id: any) {}`);
+  });
 });

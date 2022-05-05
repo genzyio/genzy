@@ -4,7 +4,7 @@ import * as tmpl from 'blueimp-tmpl';
 const serviceTemplate = `
 export class {%=o.name%} {
 {% for (var i=0; i < o.routes.length; i++) { %}
-  async {%=o.routes[i].methodName%}() {}
+  async {%=o.routes[i].methodName%}({% for (var j=0; j < o.routes[i].pathParams?.length; j++) { %}{%=o.routes[i].pathParams[j]%}: any{% if(j < o.routes[i].pathParams.length-1) { %}, {% } %}{% } %}) {}
 {% } %}
 }`;
 
