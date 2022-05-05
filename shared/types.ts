@@ -50,3 +50,15 @@ export class Interceptable<TInterceptorCallback> {
     });
   }
 }
+
+export type ServiceMetaInfo = {
+  name: string;
+  routes: RouteMetaInfo[];
+}
+
+export type RouteMetaInfo = {
+  httpMethod: string;
+  methodName: string;
+  path: string;
+  pathParams?: string[];
+}

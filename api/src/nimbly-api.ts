@@ -4,7 +4,7 @@ import * as cors from "cors";
 import { Application } from "express";
 import { Nimble } from "nimbly-client";
 import { RegisterRoutesFor } from "./routes-handler";
-import { CustomInterceptors, Interceptable } from "../../shared/types";
+import { CustomInterceptors, Interceptable, ServiceMetaInfo } from "../../shared/types";
 import { ErrorRegistry } from "./error-handler";
 
 type InterceptorCallback = (req: Request, res: Response, next: NextFunction) => any;
@@ -12,6 +12,7 @@ type InterceptorCallback = (req: Request, res: Response, next: NextFunction) => 
 export class NimblyApi extends Interceptable<InterceptorCallback> {
   private app: Application;
   private errorRegistry: ErrorRegistry = {};
+  private meta: ServiceMetaInfo[] = [];
 
   constructor(app?: Application) {
     super();
@@ -28,15 +29,21 @@ export class NimblyApi extends Interceptable<InterceptorCallback> {
   public from(...nimbles: Nimble[]): Application {
     nimbles.forEach((nimble) => {
       const serviceRegistry = nimble.services();
-      Object.keys(serviceRegistry).forEach((serviceKey) =>
-        RegisterRoutesFor(
+      Object.keys(serviceRegistry).forEach((serviceKey) => {
+        const serviceMeta = RegisterRoutesFor(
           serviceRegistry[serviceKey],
           this.app,
           this.interceptors,
           this.errorRegistry
-        )
-      );
+        );
+        this.meta.push(serviceMeta);
+      });
     });
+
+    this.app.get('/api/meta', (_, res) => {
+      res.status(200).send(this.meta);
+    });
+
     return this.app;
   }
 

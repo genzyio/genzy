@@ -1,11 +1,15 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import { ErrorHandler, ErrorRegistry } from "./error-handler";
-import { getMethodsOfClassInstance, getHttpMethod, getResourcePath, camelToDashCase } from "../../shared/functions";
+import { getMethodsOfClassInstance, getHttpMethod, camelToDashCase } from "../../shared/functions";
+import { ServiceMetaInfo } from '../../shared/types';
 
-export function RegisterRoutesFor(instance, app: Application, interceptors?: any, errorRegistry?: ErrorRegistry): void {
-  getMethodsOfClassInstance(instance).forEach((method: string) => {
+const matchPathParamsRegex = /(?<=\/:).*?(?=(\/|$))/g;
+const extractPathParamsFrom = (fullRoutePath: string) => [...fullRoutePath.matchAll(matchPathParamsRegex)].map(r => r[0]);
+
+export function RegisterRoutesFor(instance, app: Application, interceptors?: any, errorRegistry?: ErrorRegistry): ServiceMetaInfo {
+  const serviceClassName = instance.constructor.name || instance._class_name_;
+  const routes = getMethodsOfClassInstance(instance).map((method: string) => {
     const meta = instance?.$nimbly;
-    const serviceClassName = instance.constructor.name || instance._class_name_;
     const rootPath = meta?.rootPath != null ? meta?.rootPath : camelToDashCase(serviceClassName);
     const methodPath = meta?.[method]?.path != null ? meta?.[method].path : camelToDashCase(method);
     const httpMethod = meta?.[method]?.method != null ? meta?.[method].method.toLowerCase() : getHttpMethod(method);
@@ -24,8 +28,19 @@ export function RegisterRoutesFor(instance, app: Application, interceptors?: any
       res.json(res.locals._nimbly_result);
     });
 
-    app[httpMethod](`/api/${rootPath}/${methodPath}`, ...handlers);
+    const fullRoutePath = `/api/${rootPath}/${methodPath}`;
+    app[httpMethod](fullRoutePath, ...handlers);
+    return {
+      httpMethod,
+      methodName: method,
+      path: fullRoutePath,
+      pathParams: extractPathParamsFrom(fullRoutePath)
+    }
   });
+  return {
+    name: serviceClassName,
+    routes
+  }
 }
 
 function getServiceHandler(instance, method: string, errorRegistry: ErrorRegistry) {
