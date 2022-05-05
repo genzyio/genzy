@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ServiceRegistry } from "./service-registry";
-import { lowerFirstLetter, getHttpMethod, getResourcePath } from "../../shared/functions";
+import { lowerFirstLetter, getHttpMethod, getResourcePath, camelToDashCase, extractPathParamsFrom } from "../../shared/functions";
 
 function applyInterceptors(target: any, className: string, methodName: string, headers: any, body: any, type: "before" | "after") {
   const headersHolder = {...headers};
@@ -27,12 +27,24 @@ const remoteCallHandler = {
     if(typeof target[prop] === 'function') {
       return function(...args) {
         return new Promise((res, rej) => {
-          const [headers, data] = applyInterceptors(target, className, prop, {}, { data: {args} }, "before");
+          const body = args?.length ? args[args.length-1] : null;
+          const [headers, data] = applyInterceptors(target, className, prop, {}, { data: body }, "before");
+
+          const meta = target?.$nimbly;
+          const rootPath = meta?.rootPath != null ? meta?.rootPath : camelToDashCase(className);
+          const methodPath = meta?.[prop]?.path != null ? meta?.[prop].path : camelToDashCase(prop);
+          const httpMethod = meta?.[prop]?.method != null ? meta?.[prop].method.toLowerCase() : getHttpMethod(prop);
+
+          let fullPath = `/api/${rootPath}/${methodPath}`;
+          extractPathParamsFrom(fullPath).forEach((param: string, i: number) => {
+            fullPath = fullPath.replace(`:${param}`, args[i]);
+          });
+
           axios({
-            method: getHttpMethod(prop),
+            method: httpMethod,
             data,
             headers,
-            url: `${target.$nimblyOrigin.replace(/\/$/g, '')}/api/${getResourcePath(className, prop)}`
+            url: `${target.$nimblyOrigin.replace(/\/$/g, '')}${fullPath}`
           }).then(r => {
             const [_, data] = applyInterceptors(target, className, prop, r.headers, { data: r.data }, "after");
             res(data);

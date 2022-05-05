@@ -3,8 +3,9 @@ import * as tmpl from 'blueimp-tmpl';
 
 const serviceTemplate = `
 export class {%=o.name%} {
+  $nimbly = {%#o.$nimbly%}
 {% for (var i=0; i < o.routes.length; i++) { %}
-  async {%=o.routes[i].methodName%}({% for (var j=0; j < o.routes[i].pathParams?.length; j++) { %}{%=o.routes[i].pathParams[j]%}: any{% if(j < o.routes[i].pathParams.length-1) { %}, {% } %}{% } %}) {}
+  async {%=o.routes[i].methodName%}({% for (var j=0; j < o.routes[i].pathParams?.length; j++) { %}{%=o.routes[i].pathParams[j]%}: any{% if(j < o.routes[i].pathParams.length-1) { %}, {% } %}{% } %}{% if(o.routes[i].body) { %}, body: any{% } %}) {}
 {% } %}
 }`;
 
@@ -15,13 +16,9 @@ import { Nimble } from 'nimbly-client';
 const host = "{%=o.host%}";
 
 export const {
-{% for (var i=0; i < o.services.length; i++) { %}
-  {%=o.services[i].name%},
-{% } %}
+{% for (var i=0; i < o.services.length; i++) { %} {%=o.services[i].name%},{% } %}
 } : {
-{% for (var i=0; i < o.services.length; i++) { %}
-  {%=o.services[i].name%}: {%=o.services[i].name%}Local;
-{% } %}
+{% for (var i=0; i < o.services.length; i++) { %} {%=o.services[i].name%}: {%=o.services[i].name%}Local;{% } %}
 } = new Nimble()
 {% for (var i=0; i < o.services.length; i++) { %}.ofRemote({%=o.services[i].name%}Local, host)
 {% } %}
@@ -29,7 +26,7 @@ export const {
 
 
 export function fileContentFrom(service: ServiceMetaInfo): string {
-  return tmpl(serviceTemplate, service);
+  return tmpl(serviceTemplate, {...service, $nimbly: JSON.stringify(service.$nimbly, null, 2) });
 }
 
 export function indexFileContentFrom(services: ServiceMetaInfo[], host: string): string {

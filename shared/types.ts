@@ -53,6 +53,7 @@ export class Interceptable<TInterceptorCallback> {
 
 export type ServiceMetaInfo = {
   name: string;
+  $nimbly: any;
   routes: RouteMetaInfo[];
 }
 
@@ -61,4 +62,5 @@ export type RouteMetaInfo = {
   methodName: string;
   path: string;
   pathParams?: string[];
+  body?: boolean;
 }

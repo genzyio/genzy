@@ -1,15 +1,12 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import { ErrorHandler, ErrorRegistry } from "./error-handler";
-import { getMethodsOfClassInstance, getHttpMethod, camelToDashCase } from "../../shared/functions";
+import { getMethodsOfClassInstance, getHttpMethod, camelToDashCase, extractPathParamsFrom } from "../../shared/functions";
 import { ServiceMetaInfo } from '../../shared/types';
-
-const matchPathParamsRegex = /(?<=\/:).*?(?=(\/|$))/g;
-const extractPathParamsFrom = (fullRoutePath: string) => [...fullRoutePath.matchAll(matchPathParamsRegex)].map(r => r[0]);
 
 export function RegisterRoutesFor(instance, app: Application, interceptors?: any, errorRegistry?: ErrorRegistry): ServiceMetaInfo {
   const serviceClassName = instance.constructor.name || instance._class_name_;
+  const meta = instance?.$nimbly;
   const routes = getMethodsOfClassInstance(instance).map((method: string) => {
-    const meta = instance?.$nimbly;
     const rootPath = meta?.rootPath != null ? meta?.rootPath : camelToDashCase(serviceClassName);
     const methodPath = meta?.[method]?.path != null ? meta?.[method].path : camelToDashCase(method);
     const httpMethod = meta?.[method]?.method != null ? meta?.[method].method.toLowerCase() : getHttpMethod(method);
@@ -34,11 +31,13 @@ export function RegisterRoutesFor(instance, app: Application, interceptors?: any
       httpMethod,
       methodName: method,
       path: fullRoutePath,
-      pathParams: extractPathParamsFrom(fullRoutePath)
+      pathParams: extractPathParamsFrom(fullRoutePath),
+      body: !!meta?.[method]?.body
     }
   });
   return {
     name: serviceClassName,
+    $nimbly: meta || {},
     routes
   }
 }

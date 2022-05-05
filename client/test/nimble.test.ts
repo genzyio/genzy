@@ -100,7 +100,7 @@ describe('Nimble', () => {
     
     expect(axios).toBeCalledWith({
       method: 'get',
-      data: {args: []},
+      data: null,
       headers: {
         testHeader: 'testValue'
       },
@@ -157,7 +157,7 @@ describe('Nimble', () => {
     
     expect(axios).toBeCalledWith({
       method: 'get',
-      data: {args: []},
+      data: null,
       headers: {
         classInterceptor: 'Works!'
       },

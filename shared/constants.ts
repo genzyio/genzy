@@ -26,3 +26,5 @@ export const PREFIX_TO_METHOD_REG = {
   delete: 'delete',
   remove: 'delete',
 }
+
+export const MatchPathParamsRegex = /(?<=\/:).*?(?=(\/|$))/g;

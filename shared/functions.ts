@@ -1,4 +1,4 @@
-import { BUILT_IN_METHODS, PREFIX_TO_METHOD_REG } from "./constants";
+import { BUILT_IN_METHODS, MatchPathParamsRegex, PREFIX_TO_METHOD_REG } from "./constants";
 
 export function lowerFirstLetter(s: string) {
   return s.charAt(0).toLowerCase() + s.slice(1);
@@ -29,4 +29,8 @@ export function getMethodsOfClassInstance(obj: any): string[] {
 
 export function getResourcePath(cname, fname) {
   return `${camelToDashCase(cname)}/${camelToDashCase(fname)}`;
+}
+
+export function extractPathParamsFrom(fullRoutePath: string) {
+  return [...fullRoutePath.matchAll(MatchPathParamsRegex)].map(r => r[0]);
 }
