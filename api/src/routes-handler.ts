@@ -3,12 +3,12 @@ import { ErrorHandler, ErrorRegistry } from "./error-handler";
 import { getMethodsOfClassInstance, getHttpMethod, camelToDashCase, extractPathParamsFrom } from "../../shared/functions";
 import { ServiceMetaInfo } from '../../shared/types';
 
-export function RegisterRoutesFor(instance, app: Application, interceptors?: any, errorRegistry?: ErrorRegistry): ServiceMetaInfo {
+export function RegisterRoutesFor(instance, app: Application, interceptors?: any, errorRegistry?: ErrorRegistry, basePath: string = '/api'): ServiceMetaInfo {
   const serviceClassName = instance.constructor.name || instance._class_name_;
   const meta = instance?.$nimbly;
   const routes = getMethodsOfClassInstance(instance).map((method: string) => {
-    const rootPath = meta?.rootPath != null ? meta?.rootPath : camelToDashCase(serviceClassName);
-    const methodPath = meta?.[method]?.path != null ? meta?.[method].path : camelToDashCase(method);
+    const rootPath = meta?.rootPath != null ? meta?.rootPath : `/${camelToDashCase(serviceClassName)}`;
+    const methodPath = meta?.[method]?.path != null ? meta?.[method].path : `/${camelToDashCase(method)}`;
     const httpMethod = meta?.[method]?.method != null ? meta?.[method].method.toLowerCase() : getHttpMethod(method);
 
     const handlers = [getServiceHandler(instance, method, errorRegistry)];
@@ -25,7 +25,7 @@ export function RegisterRoutesFor(instance, app: Application, interceptors?: any
       res.json(res.locals._nimbly_result);
     });
 
-    const fullRoutePath = `/api/${rootPath}/${methodPath}`;
+    const fullRoutePath = `${basePath}${rootPath}${methodPath}`.replace('\/\/', '/');
     app[httpMethod](fullRoutePath, ...handlers);
     return {
       httpMethod,
