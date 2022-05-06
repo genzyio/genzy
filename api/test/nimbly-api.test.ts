@@ -259,7 +259,7 @@ describe('NimblyApi', () => {
     existingApp.use(express.json());
     existingApp.use(cors({ origin: "*" }));
     const nimble = new Nimble().of(TestService);
-    const app = new NimblyApi(existingApp)
+    const app = new NimblyApi({app: existingApp})
       .withErrors({
         [BadLogicError.name]: 400,
         [InternalServerError.name]: 500,

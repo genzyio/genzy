@@ -55,7 +55,7 @@ function getServiceHandler(instance, method: string, errorRegistry: ErrorRegistr
         .catch((error: Error) => {
           ErrorHandler.forResponse(res).handleError(error, errorRegistry);
         });
-    } else if (result !== null && result !== undefined) {
+    } else if (!!instance?.[method]) {
       res.locals._nimbly_result = result;
       next();
     } else {

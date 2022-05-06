@@ -2,26 +2,27 @@ import { Nimble } from 'nimbly-client';
 import { NimblyApi } from '../src/nimbly-api';
 import { agent } from 'supertest'
 import { NextFunction, Request, Response } from 'express';
+import { Delete, Get, Service, Patch, Post, Put } from '../src/annotations';
 
 const getAllResult = [1, 2, 3];
 
 class TestService {
   $nimbly = {
-    rootPath: 'tests',
+    rootPath: '/tests',
     getAll: {
       method: 'GET',
-      path: ''
+      path: '/'
     },
     getById: {
-      path: ':id'
+      path: '/:id'
     },
     differentAddSomething: {
       method: 'POST',
-      path: ''
+      path: '/'
     },
     randomUpdate: {
       method: 'PUT',
-      path: 'random/:entityId'
+      path: '/random/:entityId'
     }
   }
 
@@ -39,6 +40,35 @@ class TestService {
       id,
       ...test
     };
+  }
+}
+
+@Service('/annotated')
+class AnnotatedService {
+ 
+  async get() {}
+ 
+  @Get('/testing')
+  async getTest() {}
+
+  @Post('/testing')
+  async postTest(body: any) {
+    return body;
+  }
+
+  @Put('/testing/:id')
+  async putTest(id: string, body: any) {
+    return {...body, id};
+  }
+
+  @Delete('/testing/:id')
+  async delTest(id: string) {
+    return {id};
+  }
+
+  @Patch('/testing/:id')
+  async patchTest(id: string, body: any) {
+    return [{...body, id}];
   }
 }
 
@@ -97,4 +127,49 @@ describe('NimblyApi Custom Paths', () => {
       .send(obj)
       .expect(200, { id: '123', ...obj });
   });
+
+  it('should register a custom root path with annotation', async () => {
+    const nimble = new Nimble().of(AnnotatedService);
+    const app = new NimblyApi().from(nimble);
+    await agent(app)
+      .get('/api/annotated-service/get')
+      .expect(404);
+    await agent(app)
+      .get('/api/annotated/get')
+      .expect(200);
+  });
+
+  it('should register a custom method path with annotation', async () => {
+    const nimble = new Nimble().of(AnnotatedService);
+    const app = new NimblyApi().from(nimble);
+    await agent(app)
+      .get('/api/annotated/testing')
+      .expect(200);
+  });
+
+  it('should work for all annotations', async () => {
+    const nimble = new Nimble().of(AnnotatedService);
+    const app = new NimblyApi().from(nimble);
+    const id = '1234';
+    const body = { test: '123', a: 1 };
+    await agent(app)
+      .get('/api/annotated/testing')
+      .expect(200);
+    await agent(app)
+      .post('/api/annotated/testing')
+      .send(body)
+      .expect(200, body);
+    await agent(app)
+      .put(`/api/annotated/testing/${id}`)
+      .send(body)
+      .expect(200, {...body, id});
+    await agent(app)
+      .delete(`/api/annotated/testing/${id}`)
+      .expect(200, {id});
+    await agent(app)
+      .patch(`/api/annotated/testing/${id}`)
+      .send(body)
+      .expect(200, [{...body, id}]);
+  });
+
 });

@@ -27,7 +27,7 @@ const invokeRequestHandler = (route: string, body: any, params?: any) => {
 class TestService {
   $nimbly = {
     deleteSomething: {
-      path: 'delete-something/:id'
+      path: '/delete-something/:id'
     }
   }
   async getAll() {
