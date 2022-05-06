@@ -32,7 +32,8 @@ export function RegisterRoutesFor(instance, app: Application, interceptors?: any
       methodName: method,
       path: fullRoutePath,
       pathParams: extractPathParamsFrom(fullRoutePath),
-      body: !!meta?.[method]?.body
+      body: !!meta?.[method]?.body,
+      methodPath
     }
   });
   return {

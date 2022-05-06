@@ -1,7 +1,7 @@
 export { Application, Request, Response, NextFunction } from "express";
 import { Application, NextFunction } from "express";
 import { Nimble } from 'nimbly-client';
-export { Nimble } from 'nimbly-client';
+export { Nimble, Service, Get, Post, Put, Delete, Patch } from 'nimbly-client';
 
 type InterceptorCallback = (req: Request, res: Response, next: NextFunction) => any;
 

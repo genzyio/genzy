@@ -31,11 +31,11 @@ const remoteCallHandler = {
           const [headers, data] = applyInterceptors(target, className, prop, {}, { data: body }, "before");
 
           const meta = target?.$nimbly;
-          const rootPath = meta?.rootPath != null ? meta?.rootPath : camelToDashCase(className);
-          const methodPath = meta?.[prop]?.path != null ? meta?.[prop].path : camelToDashCase(prop);
+          const rootPath = meta?.rootPath != null ? meta?.rootPath : `/${camelToDashCase(className)}`;
+          const methodPath = meta?.[prop]?.path != null ? meta?.[prop].path : `/${camelToDashCase(prop)}`;
           const httpMethod = meta?.[prop]?.method != null ? meta?.[prop].method.toLowerCase() : getHttpMethod(prop);
 
-          let fullPath = `/api/${rootPath}/${methodPath}`;
+          let fullPath = `${target.$nimblyBasePath}${rootPath}${methodPath}`.replace('\/\/', '/');
           extractPathParamsFrom(fullPath).forEach((param: string, i: number) => {
             fullPath = fullPath.replace(`:${param}`, args[i]);
           });
@@ -64,11 +64,12 @@ const constructHandler = {
   },
 }
 
-export function RemoteProxyOf<T>(type, origin: string, serviceRegistry: ServiceRegistry, interceptors?: any): T {
+export function RemoteProxyOf<T>(type, origin: string, serviceRegistry: ServiceRegistry, interceptors?: any, basePath: string = '/api'): T {
   const creator = new Proxy(type, constructHandler);
   const instance = new Proxy(new creator(serviceRegistry), remoteCallHandler);
   instance.$nimblyOrigin = origin;
   instance.$nimblyInterceptors = interceptors;
+  instance.$nimblyBasePath = basePath;
   serviceRegistry.register(lowerFirstLetter(type.name || type.constructor.name), instance);
   return instance;
 }

@@ -2,7 +2,7 @@ import { Nimble } from 'nimbly-client';
 import { NimblyApi } from '../src/nimbly-api';
 import { agent } from 'supertest'
 import { NextFunction, Request, Response } from 'express';
-import { Delete, Get, Service, Patch, Post, Put } from '../src/annotations';
+import { Delete, Get, Service, Patch, Post, Put } from '../../shared/decorators';
 
 const getAllResult = [1, 2, 3];
 

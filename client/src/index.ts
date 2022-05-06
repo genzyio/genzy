@@ -1,36 +1,14 @@
-import axios from 'axios';
-import * as fs from 'fs';
-import { fileContentFrom, indexFileContentFrom } from './generator';
-export { Nimble } from './nimble';
+import { generate as generateTS } from './generation/ts-generator';
+import { generate as generateJS } from './generation/js-generator';
+import { fetchMeta } from './generation/utils';
 
-async function fetchMeta(url: string) {
-  return (await axios.get(`${url}/api/meta`)).data;
-} 
+export { Nimble } from './nimble';
+export { Delete, Get, Patch, Post, Put, Service } from '../../shared/decorators';
 
 function log(url: string) {
   fetchMeta(url)
     .then(data => {
       console.log(data);
-    })
-    .catch(err => {
-      console.log(err);
-    });
-}
-
-function generate(url: string, dirPath: string) {
-  fetchMeta(url)
-    .then(data => {
-      console.log(data);
-      if (!fs.existsSync(dirPath)){
-        fs.mkdirSync(dirPath, { recursive: true });
-      }
-      data.forEach(service => {
-        fs.writeFileSync(dirPath + `/${service.name}.ts`, fileContentFrom(service));
-      });
-
-      // const indexContent = data.map(s => `export { ${s.name} } from './${s.name}';`).join('\n');
-      const indexContent = indexFileContentFrom(data, url);
-      fs.writeFileSync(dirPath + `/index.ts`, indexContent);
     })
     .catch(err => {
       console.log(err);
@@ -45,6 +23,8 @@ if(process.argv.length > 2) {
   if(cmd === 'log') {
     log(url);
   } else if(cmd === 'generate') {
-    generate(url, dirPath);
+    generateTS(url, dirPath);
+  } else if(cmd === 'generate-js') {
+    generateJS(url, dirPath);
   }
 }

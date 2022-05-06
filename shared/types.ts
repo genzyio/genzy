@@ -60,6 +60,7 @@ export type ServiceMetaInfo = {
 export type RouteMetaInfo = {
   httpMethod: string;
   methodName: string;
+  methodPath: string;
   path: string;
   pathParams?: string[];
   body?: boolean;

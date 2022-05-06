@@ -21,10 +21,17 @@ export class Nimble {
 
   public ofLocal(type: Constructor): Nimble;
   public andLocal(type: Constructor): Nimble;
-  public andRemote(type: Constructor, origin: string): Nimble;
+  public andRemote(type: Constructor, origin: string, basePath?: string): Nimble;
 
   public of(type: Constructor): Nimble;
-  public ofRemote(type: Constructor, origin: string): Nimble;
+  public ofRemote(type: Constructor, origin: string, basePath?: string): Nimble;
 
   public services(): any;
 }
+
+export function Service(rootPath: string): (target: any) => void;
+export function Get(path?: string): (target: any, propertyKey: string) => void;
+export function Post(path?: string): (target: any, propertyKey: string) => void;
+export function Put(path?: string): (target: any, propertyKey: string) => void;
+export function Delete(path?: string): (target: any, propertyKey: string) => void;
+export function Patch(path?: string): (target: any, propertyKey: string) => void;

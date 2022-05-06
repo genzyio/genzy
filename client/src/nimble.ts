@@ -16,15 +16,15 @@ export class Nimble extends Interceptable<InterceptorCallback> {
 
   public ofLocal(type): Nimble { return this.of(type); }
   public andLocal(type): Nimble { return this.of(type); }
-  public andRemote(type, origin: string): Nimble { return this.ofRemote(type, origin); }
+  public andRemote(type, origin: string, basePath: string = '/api'): Nimble { return this.ofRemote(type, origin, basePath); }
 
   public of(type): Nimble {
     LocalProxyOf(type, this.registry);
     return this;
   }
 
-  public ofRemote(type, origin: string): Nimble {
-    RemoteProxyOf(type, origin, this.registry, this.interceptors);
+  public ofRemote(type, origin: string, basePath: string = '/api'): Nimble {
+    RemoteProxyOf(type, origin, this.registry, this.interceptors, basePath);
     return this;
   }
 
