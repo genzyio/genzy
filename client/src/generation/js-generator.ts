@@ -36,10 +36,10 @@ import { Nimble } from 'nimbly-client';
 const host = "{%=o.host%}";
 
 export const {
-{% for (var i=0; i < o.services.length; i++) { %} {%=o.services[i].name%},{% } %}
+{% for (var i=0; i < o.services.length; i++) { %} {%=o.services[i].name.charAt(0).toLowerCase() + o.services[i].name.slice(1)%},{% } %}
 } = new Nimble()
-{% for (var i=0; i < o.services.length; i++) { %}.ofRemote({%=o.services[i].name%}Local, host)
-{% } %}
+{% for (var i=0; i < o.services.length; i++) { %}.ofRemote({%=o.services[i].name.charAt(0).toLowerCase() + o.services[i].name.slice(1)%}Local, host)
+{% } %}.services();
 `;
 
 

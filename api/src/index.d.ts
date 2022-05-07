@@ -13,9 +13,16 @@ type CustomInterceptors<TInterceptorCallback> = {
 
 type ErrorRegistry = { [key: string]: number };
 
+type NimblyInfo = {
+  version?: string;
+  name?: string;
+  description?: string;
+  basePath?: string;
+}
+
 export class NimblyApi {
   constructor();
-  constructor(app: Application);
+  constructor(options: {app?: Application, nimblyInfo?: NimblyInfo, basePath?: string});
 
   public intercept(customInterceptors: CustomInterceptors<InterceptorCallback>): NimblyApi;
   public interceptAfter(customInterceptors: CustomInterceptors<InterceptorCallback>): NimblyApi;

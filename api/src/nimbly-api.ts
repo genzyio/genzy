@@ -58,7 +58,7 @@ export class NimblyApi extends Interceptable<InterceptorCallback> {
     const options = {
       explorer: true
     };
-    this.app.use('/explorer', swaggerUi.serve, swaggerUi.setup(generateDocsFrom(this.meta, this.nimblyInfo), options));
+    this.app.use('/explorer', express.static('node_modules/swagger-ui-dist/', {index: false}), swaggerUi.serve, swaggerUi.setup(generateDocsFrom(this.meta, this.nimblyInfo), options));
 
     return this.app;
   }

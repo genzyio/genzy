@@ -47,15 +47,15 @@ import { Nimble } from 'nimbly-client';
 const host = "{%=o.host%}";
 
 export type NimblyServices = {
-  {% for (var i=0; i < o.services.length; i++) { %}{%=o.services[i].name%}: {%=o.services[i].name%}Local;
+  {% for (var i=0; i < o.services.length; i++) { %}{%=o.services[i].name.charAt(0).toLowerCase() + o.services[i].name.slice(1)%}: {%=o.services[i].name%}Local;
   {% } %}
 };
 
 export const {
-{% for (var i=0; i < o.services.length; i++) { %} {%=o.services[i].name%},{% } %}
+{% for (var i=0; i < o.services.length; i++) { %} {%=o.services[i].name.charAt(0).toLowerCase() + o.services[i].name.slice(1)%},{% } %}
 } : NimblyServices = new Nimble()
 {% for (var i=0; i < o.services.length; i++) { %}.ofRemote({%=o.services[i].name%}Local, host)
-{% } %}
+{% } %}.services();
 `;
 
 function capitalizeFirstLetter(string: string) {

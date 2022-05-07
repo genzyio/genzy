@@ -1,18 +1,17 @@
-const path = require('path');
-const { ESBuildMinifyPlugin } = require('esbuild-loader')
+const path = require("path");
+const { ESBuildMinifyPlugin } = require("esbuild-loader");
+const CopyPlugin = require('copy-webpack-plugin');
 
-const {
-  NODE_ENV = 'production',
-} = process.env;
+const { NODE_ENV = "production" } = process.env;
 module.exports = {
-  entry: './src/index.ts',
+  entry: "./src/index.ts",
   mode: NODE_ENV,
-  target: ['node', 'es2015'],
+  target: ["node", "es2015"],
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        use: "ts-loader",
         exclude: /node_modules/,
       },
     ],
@@ -25,11 +24,20 @@ module.exports = {
     ],
   },
   output: {
-    path: path.resolve(__dirname, 'build'),
-    filename: 'index.js',
-    libraryTarget: 'umd'
+    path: path.resolve(__dirname, "build"),
+    filename: "index.js",
+    libraryTarget: "umd",
   },
   resolve: {
-    extensions: ['.ts', '.js'],
-  }
-}
+    extensions: [".ts", ".js"],
+  },
+  plugins: [
+    new CopyPlugin({
+      patterns: [{
+        from: path.resolve(__dirname, "node_modules/swagger-ui-dist/"),
+        to: "node_modules/swagger-ui-dist",
+        
+      }],
+    }),
+  ],
+};
