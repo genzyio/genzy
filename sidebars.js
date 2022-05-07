@@ -7,10 +7,8 @@ module.exports = {
   ],
   serverSidebar: [
     "server-api",
-    "server-options"
   ],
   clientSidebar: [
     "client-api",
-    "client-options"
   ]
 };

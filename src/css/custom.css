@@ -14,6 +14,13 @@
   --ifm-color-primary-light: rgb(70, 203, 174);
   --ifm-color-primary-lighter: rgb(102, 212, 189);
   --ifm-color-primary-lightest: rgb(146, 224, 208);
+  /* --ifm-color-primary: #f81e01;
+  --ifm-color-primary-dark: #b11501;
+  --ifm-color-primary-darker: #8d1100;
+  --ifm-color-primary-darkest: #6a0c00;
+  --ifm-color-primary-light: #fd391f;
+  --ifm-color-primary-lighter: #fd5943;
+  --ifm-color-primary-lightest: #fe7866; */
   --ifm-code-font-size: 95%;
 }
 

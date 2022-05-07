@@ -5,7 +5,7 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 module.exports = {
   title: "Nimbly",
   tagline: "Focused on the domain.",
-  url: "https://bjelicaluka.github.io/nimbly",
+  url: "https://bjelicaluka.github.io",
   baseUrl: "/nimbly/",
   onBrokenLinks: "warn",
   onBrokenMarkdownLinks: "warn",
@@ -24,14 +24,9 @@ module.exports = {
       items: [
         {
           type: "doc",
-          docId: "categories/Documentation/index",
+          docId: "categories/Introduction/index",
           position: "left",
           label: "Documentation",
-        },
-        {
-          position: "left",
-          label: "Examples",
-          to: "/get-started/"
         },
         {
           type: "doc",

@@ -32,7 +32,7 @@ export default function HomepageHeader() {
             </Link>
             <Link
               className="button button--secondary button--lg"
-              to="/docs/v4/">
+              to="/docs/v1/">
               <Translate>Documentation</Translate>
             </Link>
           </div>
