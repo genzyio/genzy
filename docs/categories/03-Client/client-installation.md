@@ -61,36 +61,10 @@ yarn add nimbly-client@version
 
 ### Dependency tree
 
-A basic installation of the client includes 23 packages:
+A basic installation of the client includes 2 packages:
 
 ```
-└─┬ socket.io@4.5.0
-  ├─┬ accepts@1.3.8
-  │ ├─┬ mime-types@2.1.35
-  │ │ └── mime-db@1.52.0
-  │ └── negotiator@0.6.3
-  ├── base64id@2.0.0
-  ├─┬ debug@4.3.4
-  │ └── ms@2.1.2
-  ├─┬ engine.io@6.2.0
-  │ ├── @types/cookie@0.4.1
-  │ ├── @types/cors@2.8.12
-  │ ├── @types/node@17.0.26
-  │ ├── accepts@1.3.8 deduped
-  │ ├── base64id@2.0.0 deduped
-  │ ├── cookie@0.4.2
-  │ ├─┬ cors@2.8.5
-  │ │ ├── object-assign@4.1.1
-  │ │ └── vary@1.1.2
-  │ ├── debug@4.3.4 deduped
-  │ ├─┬ engine.io-parser@5.0.3
-  │ │ └── @socket.io/base64-arraybuffer@1.0.2
-  │ └─┬ ws@8.2.3
-  │   ├── UNMET OPTIONAL DEPENDENCY bufferutil@^4.0.1
-  │   └── UNMET OPTIONAL DEPENDENCY utf-8-validate@^5.0.2
-  ├── socket.io-adapter@2.4.0
-  └─┬ socket.io-parser@4.0.4
-    ├── @types/component-emitter@1.2.11
-    ├── component-emitter@1.3.0
-    └── debug@4.3.4 deduped
+nimbly-client@1.2.3
+├── axios@0.24.0
+└── blueimp-tmpl@3.20.0
 ```
