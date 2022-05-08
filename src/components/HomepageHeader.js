@@ -22,12 +22,12 @@ export default function HomepageHeader() {
         <div className={styles.right}>
           <h1 className="title">Nimbly</h1>
           <p >
-            <Translate>A simple JavaScript framework that puts the focus on implementing the business logic.</Translate>
+            <Translate>Nimbly is a JavaScript framework that enables rapid development of web applications and puts the focus on implementing the business logic.</Translate>
           </p>
           <div className={styles.buttons}>
             <Link
               className="button button--primary button--lg"
-              to="/get-started/chat">
+              to="/docs/v1/getting-started/">
               <Translate>Get started</Translate>
             </Link>
             <Link

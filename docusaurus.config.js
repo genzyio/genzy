@@ -24,6 +24,12 @@ module.exports = {
       items: [
         {
           type: "doc",
+          docId: "getting-started",
+          position: "left",
+          label: "Getting Started",
+        },
+        {
+          type: "doc",
           docId: "categories/Introduction/index",
           position: "left",
           label: "Documentation",

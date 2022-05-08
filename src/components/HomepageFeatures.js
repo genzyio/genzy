@@ -2,37 +2,37 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './HomepageFeatures.module.css';
 import Translate from '@docusaurus/Translate';
-import Shield from './images/shield.svg';
-import Rocket from './images/rocket.svg';
-import Cluster from './images/cluster.svg';
+import Automate from './images/engineering.svg';
+import Rapid from './images/clock.svg';
+import Flexibility from './images/network.svg';
 
 const FeatureList = [
   {
-    title: <Translate>Performant</Translate>,
+    title: <Translate>Rapid Development</Translate>,
     description: (
       <Translate>
-        In most cases, the connection will be established with WebSocket, providing a low-overhead communication channel between the server and the client.
+        You don't have to spend time and effort on configuring the web API and the documentation. Focus on the business logic, and let Nimbly handle the rest.
       </Translate>
     ),
-    icon: <Rocket className={ styles.icon } />
+    icon: <Rapid className={ styles.icon + ' ' + styles.padding  } />
   },
   {
-    title: <Translate>Reliable</Translate>,
+    title: <Translate>Automation</Translate>,
     description: (
       <Translate>
-        Rest assured! In case the WebSocket connection is not possible, it will fall back to HTTP long-polling. And if the connection is lost, the client will automatically try to reconnect.
+        Nimbly is able to automatically generate a Rest API with OpenAPI documentation and SwaggerUI just from the plain service classes that are provided. It also automatically generates the client code, supports custom configuration and more!
       </Translate>
     ),
-    icon: <Shield className={ styles.icon } />,
+    icon: <Automate className={ styles.icon + ' ' + styles.padding } />,
   },
   {
-    title: <Translate>Scalable</Translate>,
+    title: <Translate>Flexibility</Translate>,
     description: (
       <Translate>
-        Scale to multiple servers and send events to all connected clients with ease.
+        Start with a monolithic application, group services into Nimbles and once you got the final picture of existing domains, scale to multiple servivces with ease in no time.
       </Translate>
     ),
-    icon: <Cluster className={ styles.icon } />
+    icon: <Flexibility className={ styles.icon + ' ' + styles.padding  } />
   },
 ];
 
