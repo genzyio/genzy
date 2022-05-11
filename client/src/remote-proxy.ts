@@ -30,7 +30,7 @@ const remoteCallHandler = {
           const body = args?.length ? args[args.length-1] : null;
           const [headers, data] = applyInterceptors(target, className, prop, {}, { data: body }, "before");
 
-          const meta = target?.$nimbly;
+          const meta = {...(target?.$nimbly_config ?? {}), ...(target?.$nimbly ?? {})};
           const rootPath = meta?.rootPath != null ? meta?.rootPath : `/${camelToDashCase(className)}`;
           const methodPath = meta?.[prop]?.path != null ? meta?.[prop].path : `/${camelToDashCase(prop)}`;
           const httpMethod = meta?.[prop]?.method != null ? meta?.[prop].method.toLowerCase() : getHttpMethod(prop);

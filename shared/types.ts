@@ -51,6 +51,11 @@ export class Interceptable<TInterceptorCallback> {
   }
 }
 
+export type QueryParamDefinition = {
+  name: string;
+  index: number;
+}
+
 export type ServiceMetaInfo = {
   name: string;
   $nimbly: any;

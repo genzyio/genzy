@@ -28,3 +28,9 @@ export const PREFIX_TO_METHOD_REG = {
 }
 
 export const MatchPathParamsRegex = /(?<=\/:).*?(?=(\/|$))/g;
+
+export const BASIC_TYPES = {
+  string: 'string',
+  boolean: 'boolean',
+  number: 'number',
+}
