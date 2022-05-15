@@ -1,5 +1,6 @@
 import { Nimble, NimblyApi } from '../../api/src';
 import { Get, Post, Service } from '../../client/src';
+import { arrayOf, number, Returns, ReturnsArrayOf, string, type } from '../../shared/decorators';
 
 class TestService {
   $nimbly = {
@@ -24,6 +25,17 @@ class TestService {
   }
 }
 
+class Test {
+  @string test: string;
+  @number asdf: number;
+}
+
+class Model {
+  @string name: string;
+  @number age: number;
+  @arrayOf(Test) tests: Test[];
+}
+
 @Service('/')
 class DecoratedService {
   private testService: TestService;
@@ -33,12 +45,13 @@ class DecoratedService {
   }
 
   @Get('/:id')
-  test(id: string) {
+  test(@string id: string) {
     return { id, arr: this.testService.get(id) }
   }
 
   @Post()
-  post(body: any) {
+  @ReturnsArrayOf(Model)
+  post(@type(Model) body: Model) {
     return body;
   }
 }

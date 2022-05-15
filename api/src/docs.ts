@@ -1,4 +1,4 @@
-import { RouteMetaInfo, ServiceMetaInfo } from "../../shared/types";
+import { ComplexType, RouteMetaInfo, ServiceMetaInfo } from "../../shared/types";
 import { NimblyInfo } from "./nimbly-api";
 
 export const generateDocsFrom = (
@@ -48,9 +48,30 @@ const getPathDocFrom = (s: ServiceMetaInfo, r: RouteMetaInfo) => ({
 });
 
 const getParametersDocFrom = (r: RouteMetaInfo) => {
-  return r.pathParams.map((p) => ({
+  return [
+    ...getPathParametersDocFrom(r),
+    ...getQueryParametersDocFrom(r),
+  ];
+};
+
+const getPathParametersDocFrom = (r: RouteMetaInfo) => {
+  return r.pathParams.map((p, i) => ({
     name: p,
     in: "path",
+    schema: {
+      type: r.pathParamTypes[i],
+    },
+    required: true,
+  }));
+};
+
+const getQueryParametersDocFrom = (r: RouteMetaInfo) => {
+  return r.queryParams.map((p, i) => ({
+    name: p,
+    in: "query",
+    schema: {
+      type: r.queryParamTypes[i],
+    },
     required: true,
   }));
 };
@@ -62,9 +83,7 @@ const getBodyDocFrom = (r: RouteMetaInfo) => ({
         required: true,
         content: {
           "application/json": {
-            schema: {
-              type: "object",
-            },
+            schema: getSchemaFrom(r.bodyType),
           },
         },
       }
@@ -72,16 +91,26 @@ const getBodyDocFrom = (r: RouteMetaInfo) => ({
   )
 });
 
-const getResponsesDocFrom = (_: RouteMetaInfo) => ({
+const getResponsesDocFrom = (r: RouteMetaInfo) => ({
   200: {
-    description: "A paged array of pets",
     headers: {},
     content: {
       "application/json": {
-        schema: {
-          type: "object",
-        },
+        schema: getSchemaFrom(r.returnType),
       },
     },
   },
 });
+
+const getSchemaFrom = (type: ComplexType) => {
+  const objectSchema = { type: "object", properties: getPropertiesFrom(type) };
+  return type?.$isArray ? { type: "array", items: objectSchema } : objectSchema;
+}
+
+const getPropertiesFrom = (type: ComplexType) => {
+  const properties = {};
+  Object.keys(type ?? {}).filter(key => key !== '$isArray').forEach(key => {
+    properties[key] = typeof type[key] === "object" ? getSchemaFrom(type[key] as any) : { type: type[key] };
+  });
+  return properties;
+}

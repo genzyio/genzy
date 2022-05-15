@@ -3,11 +3,12 @@ import { NimblyApi } from '../src/nimbly-api';
 import { agent } from 'supertest'
 import { NextFunction, Request, Response } from 'express';
 import { Delete, Get, Service, Patch, Post, Put } from '../../shared/decorators';
+import { NimblyConfig } from '../../shared/types';
 
 const getAllResult = [1, 2, 3];
 
 class TestService {
-  $nimbly = {
+  $nimbly: NimblyConfig = {
     rootPath: '/tests',
     getAll: {
       method: 'GET',

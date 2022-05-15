@@ -1,13 +1,14 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import { ErrorHandler, ErrorRegistry } from "./error-handler";
-import { getMethodsOfClassInstance, getHttpMethod, camelToDashCase, extractPathParamsFrom } from "../../shared/functions";
-import { QueryParamDefinition, ServiceMetaInfo } from '../../shared/types';
+import { getMethodsOfClassInstance, getHttpMethod, camelToDashCase, extractPathParamsFrom, combineNimblyConfigs, getPathParamTypes, getBodyType } from "../../shared/functions";
+import { NimblyConfig, QueryParamDefinition, RouteMetaInfo, ServiceMetaInfo } from '../../shared/types';
 
 export function RegisterRoutesFor(instance, app: Application, interceptors?: any, errorRegistry?: ErrorRegistry, basePath: string = '/api'): ServiceMetaInfo {
   const serviceClassName = instance.constructor.name || instance._class_name_;
-  const meta = {...(instance?.$nimbly_config ?? {}), ...(instance?.$nimbly ?? {})};
-  const routes = getMethodsOfClassInstance(instance).map((method: string) => {
-    const rootPath = meta?.rootPath != null ? meta?.rootPath : `/${camelToDashCase(serviceClassName)}`;
+  const meta: NimblyConfig = combineNimblyConfigs(instance?.$nimbly_config ?? {}, instance?.$nimbly ?? {});
+  const rootPath = meta?.rootPath != null ? meta?.rootPath : `/${camelToDashCase(serviceClassName)}`;
+
+  const routes: RouteMetaInfo[] = getMethodsOfClassInstance(instance).map((method: string) => {
     const methodPath = meta?.[method]?.path != null ? meta?.[method].path : `/${camelToDashCase(method)}`;
     const httpMethod = meta?.[method]?.method != null ? meta?.[method].method.toLowerCase() : getHttpMethod(method);
     const queryParamDefinitions = meta?.[method]?.query ?? [];
@@ -28,13 +29,22 @@ export function RegisterRoutesFor(instance, app: Application, interceptors?: any
 
     const fullRoutePath = `${basePath}${rootPath}${methodPath}`.replace('\/\/', '/');
     app[httpMethod](fullRoutePath, ...handlers);
+
+    const pathParams = extractPathParamsFrom(fullRoutePath);
+    const queryParams: string[] = queryParamDefinitions.map(q => q.name);
+    const methodParamTypes = meta?.types?.[method]?.sort((a: any, b: any) => a.index - b.index)?.map(t => t.type) ?? [];
     return {
       httpMethod,
       methodName: method,
+      methodPath,
       path: fullRoutePath,
-      pathParams: extractPathParamsFrom(fullRoutePath),
+      pathParams,
+      pathParamTypes: getPathParamTypes(pathParams, queryParamDefinitions, methodParamTypes),
+      queryParams,
+      queryParamTypes: queryParamDefinitions.map((q: QueryParamDefinition) => methodParamTypes[q.index]),
       body: !!meta?.[method]?.body,
-      methodPath
+      bodyType: getBodyType(methodParamTypes),
+      returnType: meta?.returnTypes?.[method] ?? null
     }
   });
   return {

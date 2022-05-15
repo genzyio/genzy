@@ -27,19 +27,20 @@ export function Patch(path: string = '') {
   return pathDecorator(path, 'patch', true);
 }
 
-const typeDecorator = (typeParam: string | { new(): any }) => (target: any, propertyKey?: string | symbol, parameterIndex?: number) => {
+const typeDecorator = (typeParam: string | { new(): any }, typesKey: 'types'|'returnTypes' = 'types', isArray: boolean = false) => (target: any, propertyKey?: string | symbol, parameterIndex?: any) => {
   let type = typeParam;
   if(!target.$nimbly_config) target.$nimbly_config = {};
-  if(!target.$nimbly_config.types) target.$nimbly_config.types = {};
+  if(!target.$nimbly_config[typesKey]) target.$nimbly_config[typesKey] = {};
   if(typeof type === 'function') {
     const instance = new type();
-    type = instance.$nimbly_config.types;
+    type = {...instance.$nimbly_config.types};
+    (type as any).$isArray = isArray;
   }
-  if(parameterIndex === undefined) {
-    if(!target.$nimbly_config.types[propertyKey]) target.$nimbly_config.types[propertyKey] = type;
+  if(parameterIndex === undefined || typeof parameterIndex !== 'number') {
+    if(!target.$nimbly_config[typesKey][propertyKey]) target.$nimbly_config[typesKey][propertyKey] = type;
   } else {
-    if(!target.$nimbly_config.types[propertyKey]) target.$nimbly_config.types[propertyKey] = [];
-    target.$nimbly_config.types[propertyKey].push({ index: parameterIndex, type });
+    if(!target.$nimbly_config[typesKey][propertyKey]) target.$nimbly_config[typesKey][propertyKey] = [];
+    target.$nimbly_config[typesKey][propertyKey].push({ index: parameterIndex, type, isArray });
   }
 }
 
@@ -47,6 +48,10 @@ export const string = typeDecorator(BASIC_TYPES.string);
 export const boolean = typeDecorator(BASIC_TYPES.boolean);
 export const number = typeDecorator(BASIC_TYPES.number);
 export const type = (type: { new(): any }) => typeDecorator(type);
+export const arrayOf = (type: { new(): any }) => typeDecorator(type, 'types', true);
+
+export const Returns = (type: { new(): any }) => typeDecorator(type, 'returnTypes');
+export const ReturnsArrayOf = (type: { new(): any }) => typeDecorator(type, 'returnTypes', true);
 
 export function Query(name: string) {
   return function (target: any, propertyKey: string | symbol, parameterIndex: number) {
