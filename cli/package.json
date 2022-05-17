@@ -1,5 +1,5 @@
 {
-  "name": "@nimbly/cli",
+  "name": "nimbly-cli",
   "version": "1.0.0",
   "description": "Nimbly CLI used for client code generation.",
   "main": "bin/index.js",
@@ -9,11 +9,14 @@
     "prepublish": "webpack",
     "test": "jest"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [],
-  "author": "isobar.ot team (https://isobarot.com)",
-  "license": "MIT",
+  "author": "bjelicaluka",
+  "license": "ISC",
   "bin": {
-    "nimbly": "./bin/index.js"
+    "nimbly": "bin/index.js"
   },
   "dependencies": {
     "axios": "^0.27.2",
