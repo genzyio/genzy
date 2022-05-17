@@ -1,0 +1,36 @@
+{
+  "name": "@nimbly/cli",
+  "version": "1.0.0",
+  "description": "Nimbly CLI used for client code generation.",
+  "main": "bin/index.js",
+  "scripts": {
+    "start": "ts-node src",
+    "build": "webpack",
+    "prepublish": "webpack",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "isobar.ot team (https://isobarot.com)",
+  "license": "MIT",
+  "bin": {
+    "nimbly": "./bin/index.js"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "nunjucks": "^3.2.3",
+    "yargs": "^17.5.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.5.1",
+    "@types/nunjucks": "^3.2.1",
+    "@types/yargs": "^17.0.10",
+    "copy-webpack-plugin": "^11.0.0",
+    "esbuild-loader": "^2.16.0",
+    "jest": "^28.1.0",
+    "ts-jest": "^28.0.2",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.6.4",
+    "webpack": "^5.64.2",
+    "webpack-cli": "^4.9.1"
+  }
+}
