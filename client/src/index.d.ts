@@ -35,3 +35,4 @@ export function Post(path?: string): (target: any, propertyKey: string) => void;
 export function Put(path?: string): (target: any, propertyKey: string) => void;
 export function Delete(path?: string): (target: any, propertyKey: string) => void;
 export function Patch(path?: string): (target: any, propertyKey: string) => void;
+export function Query(name: string): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
