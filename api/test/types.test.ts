@@ -83,12 +83,21 @@ describe("Types", () => {
     expect(model.$nimbly_config?.types.num).toBe(BASIC_TYPES.number);
   });
 
+  it("should add meta info with @type", async () => {
+    const model: any = new Model();
+
+    expect(model.$nimbly_config?.types).not.toBe(undefined);
+    expect(model.$nimbly_config?.types.type).not.toBe(undefined);
+    expect(model.$nimbly_config?.types.type.$isArray).toBe(false);
+    expect(model.$nimbly_config?.types.type.$typeName).toBe("Example");
+  });
+
   it("should support type decorator", async () => {
     const model: any = new Model();
     const example: any = new Example();
 
     expect(model.$nimbly_config?.types).not.toBe(undefined);
-    expect(model.$nimbly_config?.types.type).toStrictEqual({...example.$nimbly_config.types, $isArray: false});
+    expect(model.$nimbly_config?.types.type).toStrictEqual({...example.$nimbly_config.types, $isArray: false, $typeName: 'Example'});
   });
 
   it("should support type decorator in the list of params", async () => {
@@ -112,7 +121,7 @@ describe("Types", () => {
     });
     expect(test3Service.$nimbly_config?.types.get).toContainEqual({
       index: 3,
-      type: {...(new Example() as any).$nimbly_config?.types, $isArray: false},
+      type: {...(new Example() as any).$nimbly_config?.types, $isArray: false, $typeName: 'Example'},
       isArray: false
     });
   });
@@ -140,7 +149,8 @@ describe("Types", () => {
       index: 3,
       type: {
         ...(new Example() as any).$nimbly_config?.types,
-        $isArray: true
+        $isArray: true,
+        $typeName: 'Example'
       },
       isArray: true
     });

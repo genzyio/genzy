@@ -1,12 +1,13 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import { ErrorHandler, ErrorRegistry } from "./error-handler";
-import { getMethodsOfClassInstance, getHttpMethod, camelToDashCase, extractPathParamsFrom, combineNimblyConfigs, getPathParamTypes, getBodyType } from "../../shared/functions";
-import { NimblyConfig, QueryParamDefinition, RouteMetaInfo, ServiceMetaInfo } from '../../shared/types';
+import { getMethodsOfClassInstance, getHttpMethod, camelToDashCase, extractPathParamsFrom, combineNimblyConfigs, getPathParamTypes, getBodyType, getTypesFrom } from "../../shared/functions";
+import { ComplexType, NimblyConfig, QueryParamDefinition, RouteMetaInfo, ServiceMetaInfo } from '../../shared/types';
 
 export function RegisterRoutesFor(instance, app: Application, interceptors?: any, errorRegistry?: ErrorRegistry, basePath: string = '/api'): ServiceMetaInfo {
   const serviceClassName = instance.constructor.name || instance._class_name_;
   const meta: NimblyConfig = combineNimblyConfigs(instance?.$nimbly_config ?? {}, instance?.$nimbly ?? {});
   const rootPath = meta?.rootPath != null ? meta?.rootPath : `/${camelToDashCase(serviceClassName)}`;
+  const schemas: ComplexType[] = [];
 
   const routes: RouteMetaInfo[] = getMethodsOfClassInstance(instance).map((method: string) => {
     const methodPath = meta?.[method]?.path != null ? meta?.[method].path : `/${camelToDashCase(method)}`;
@@ -32,7 +33,16 @@ export function RegisterRoutesFor(instance, app: Application, interceptors?: any
 
     const pathParams = extractPathParamsFrom(fullRoutePath);
     const queryParams: string[] = queryParamDefinitions.map(q => q.name);
-    const methodParamTypes = meta?.types?.[method]?.sort((a: any, b: any) => a.index - b.index)?.map(t => t.type) ?? [];
+
+    const {
+      bodyType,
+      returnType,
+      methodParamTypes,
+      schemas: methodSchemas
+    } = getTypesFrom(meta, method);
+
+    schemas.push(...methodSchemas);
+
     return {
       httpMethod,
       methodName: method,
@@ -43,14 +53,16 @@ export function RegisterRoutesFor(instance, app: Application, interceptors?: any
       queryParams,
       queryParamTypes: queryParamDefinitions.map((q: QueryParamDefinition) => methodParamTypes[q.index]),
       body: !!meta?.[method]?.body,
-      bodyType: getBodyType(methodParamTypes),
-      returnType: meta?.returnTypes?.[method] ?? null
+      bodyType,
+      returnType,
+      queryParamDefinitions
     }
   });
   return {
     name: serviceClassName,
     $nimbly: meta || {},
-    routes
+    routes,
+    schemas
   }
 }
 

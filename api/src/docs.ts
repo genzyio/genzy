@@ -109,7 +109,7 @@ const getSchemaFrom = (type: ComplexType) => {
 
 const getPropertiesFrom = (type: ComplexType) => {
   const properties = {};
-  Object.keys(type ?? {}).filter(key => key !== '$isArray').forEach(key => {
+  Object.keys(type ?? {}).filter(key => !key.startsWith('$')).forEach(key => {
     properties[key] = typeof type[key] === "object" ? getSchemaFrom(type[key] as any) : { type: type[key] };
   });
   return properties;

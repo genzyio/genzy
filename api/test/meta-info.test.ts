@@ -50,7 +50,8 @@ describe('NimblyApi Meta Info', () => {
 
     const exampleType = {
       ...(new Example() as any).$nimbly_config.types,
-      $isArray: false
+      $isArray: false,
+      $typeName: 'Example'
     };
 
     expect(meta.routes).toHaveLength(1);

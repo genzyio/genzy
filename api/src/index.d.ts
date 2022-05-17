@@ -1,7 +1,7 @@
 export { Application, Request, Response, NextFunction } from "express";
 import { Application, NextFunction } from "express";
 import { Nimble } from 'nimbly-client';
-export { Nimble, Service, Get, Post, Put, Delete, Patch } from 'nimbly-client';
+export { Nimble, Service, Get, Post, Put, Delete, Patch, Query } from 'nimbly-client';
 
 type InterceptorCallback = (req: Request, res: Response, next: NextFunction) => any;
 
@@ -20,6 +20,10 @@ type NimblyInfo = {
   basePath?: string;
 }
 
+interface Constructor {
+  new (...args: any[]);
+}
+
 export class NimblyApi {
   constructor();
   constructor(options: {app?: Application, nimblyInfo?: NimblyInfo, basePath?: string});
@@ -31,3 +35,11 @@ export class NimblyApi {
   public withErrors(errors: ErrorRegistry): NimblyApi;
   public from(...nimbles: Nimble[]): Application;
 }
+
+export function string(target: any, propertyKey?: string | symbol, parameterIndex?: any): void;
+export function boolean(target: any, propertyKey?: string | symbol, parameterIndex?: any): void;
+export function number(target: any, propertyKey?: string | symbol, parameterIndex?: any): void;
+export function type(type: Constructor): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
+export function arrayOf(type: Constructor): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
+export function Returns(type: Constructor): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
+export function ReturnsArrayOf(type: Constructor): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
