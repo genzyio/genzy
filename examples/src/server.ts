@@ -1,6 +1,6 @@
 import { Nimble, NimblyApi } from '../../api/src';
 import { Get, Post, Service } from '../../client/src';
-import { arrayOf, number, Returns, ReturnsArrayOf, string, type } from '../../shared/decorators';
+import { arrayOf, number, Query, Returns, ReturnsArrayOf, string, type } from '../../shared/decorators';
 
 class TestService {
   $nimbly = {
@@ -45,8 +45,8 @@ class DecoratedService {
   }
 
   @Get('/:id')
-  test(@string id: string) {
-    return { id, arr: this.testService.get(id) }
+  test(@string id: string, @Query('test') @string test?: string) {
+    return { id, arr: this.testService.get(id), test }
   }
 
   @Post()
@@ -61,6 +61,6 @@ export const api = new NimblyApi({
     version: '0.0.1-alpha1',
     name: 'Random Microservice',
     description: 'This microservice is used for random stuff.',
-    basePath: '/api/v1'
+    basePath: '/api'
   }
 }).from(new Nimble().ofLocal(TestService).andLocal(DecoratedService));

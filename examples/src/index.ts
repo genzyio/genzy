@@ -5,7 +5,7 @@ if(process.argv.length > 2) {
   const cmd = process.argv[2];
 
   if(cmd === 'client') {
-    decoratedService.test('123')
+    decoratedService.test('123', 'luka')
       .then(r => console.log(r))
       .catch(e => console.log(e));
   } else {

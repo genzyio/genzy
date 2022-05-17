@@ -1,5 +1,6 @@
 import { Nimble } from "../../client/src";
 import { Get, Post, Service } from "../../client/src";
+import { Query } from "../../shared/decorators";
 
 class TestService {
   $nimbly = {
@@ -23,7 +24,7 @@ class TestService {
 @Service("/")
 class DecoratedService {
   @Get("/:id")
-  async test(id: string) {}
+  async test(id: string, @Query('test') test?: string) {}
 
   @Post()
   async post(body: any) {}
