@@ -98,6 +98,7 @@ export type ServiceMetaInfo = {
   name: string;
   $nimbly: NimblyConfig;
   routes: RouteMetaInfo[];
+  schemas: ComplexType[];
 };
 
 export type RouteMetaInfo = {
@@ -109,6 +110,7 @@ export type RouteMetaInfo = {
   pathParamTypes?: Type[];
   queryParams?: string[];
   queryParamTypes?: Type[];
+  queryParamDefinitions?: QueryParamDefinition[];
   body?: boolean;
   bodyType?: ComplexType;
   returnType?: ComplexType;

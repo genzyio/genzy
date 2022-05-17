@@ -33,8 +33,10 @@ const typeDecorator = (typeParam: string | { new(): any }, typesKey: 'types'|'re
   if(!target.$nimbly_config[typesKey]) target.$nimbly_config[typesKey] = {};
   if(typeof type === 'function') {
     const instance = new type();
+    const typeName = instance.constructor.name || instance._class_name_;
     type = {...instance.$nimbly_config.types};
     (type as any).$isArray = isArray;
+    (type as any).$typeName = typeName;
   }
   if(parameterIndex === undefined || typeof parameterIndex !== 'number') {
     if(!target.$nimbly_config[typesKey][propertyKey]) target.$nimbly_config[typesKey][propertyKey] = type;
