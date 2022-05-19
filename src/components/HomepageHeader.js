@@ -22,7 +22,7 @@ export default function HomepageHeader() {
         <div className={styles.right}>
           <h1 className="title">Nimbly</h1>
           <p >
-            <Translate>Nimbly is a JavaScript framework that enables rapid development of web applications and puts the focus on implementing the business logic.</Translate>
+            <Translate>Nimbly is a JavaScript library that enables rapid development of web applications and puts the focus on implementing the business logic instead of spending much time and effort on configuration.</Translate>
           </p>
           <div className={styles.buttons}>
             <Link

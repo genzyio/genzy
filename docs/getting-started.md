@@ -5,6 +5,7 @@ slug: /getting-started/
 
 [![NPM](https://nodei.co/npm/nimbly-client.png)](https://nodei.co/npm/nimbly-client/)
 [![NPM](https://nodei.co/npm/nimbly-api.png)](https://nodei.co/npm/nimbly-api/)
+[![NPM](https://nodei.co/npm/nimbly-cli.png)](https://nodei.co/npm/nimbly-cli/)
 
 ## Setting up the server
 
@@ -12,70 +13,86 @@ slug: /getting-started/
 ```bash
 npm init -y
 ```
-2. Install `nimbly-api` library
+2. [Install](./categories/02-Server/server-installation.md) `nimbly-api` library
 ```bash
 npm i -S nimbly-api
 ```
-3. Implement [services](./categories/service-class.md)
-```js
-class UserService {
-  async createUser(user) {
-    // logic for adding the user
-    return user;
-  }
+3. Implement Example [service](./categories/06-Services/service-class.md)
+```ts
+// example.ts
+import { Service, Get, Post, Put, Delete, Query, string, number, boolean, type, Returns, ReturnsArrayOf } from "nimbly-api";
+
+class Example {
+  @string name: string;
+  @number age: number;
 }
 
-class AccountService {
-  // UserService is automatically injected
-  constructor({ userService }) {
-    this.userService = userService;
-  }
-
-  async getAllAccounts() {
+@Service('/examples')
+export class ExampleService {
+  @Get()
+  @ReturnsArrayOf(Example)
+  async getAll(@Query('pageNumber') @number pageNumber: number, @Query('pageSize') @number pageSize: number): Promise<Example[]> {
     return [];
   }
-
-  // take accountInfo object as parameter 
-  async createAccount({username, firstName, lastName, email}) {
-    // logic for adding the account
-    const newAccount = {id: 1, username};
-    // call another service
-    this.userService.createUser({
-      accountId: newAccount.id,
-      firstName,
-      lastName,
-      email
-    })
-    return newAccount;
+  @Get('/:id')
+  @Returns(Example)
+  async getById(@Query('includeDetails') @boolean includeDetails: boolean, @string id: string): Promise<Example> {
+    return;
+  }
+  @Post()
+  @Returns(Example)
+  async add(@type(Example) example: Example): Promise<Example> {
+    return example;
+  }
+  @Put('/:id')
+  @Returns(Example)
+  async update(@string id: string, @type(Example) example: Example): Promise<Example> {
+    return example;
+  }
+  @Delete('/:id')
+  @Returns(Example)
+  async delete(@string id: string): Promise<Example> {
+    return;
   }
 }
 ```
-4. Create a [Nimble](./categories/nimble.md) of services
-```js
-import { Nimble } from 'nimbly-api';
+4. Create a [Nimble](./categories/nimble.md) of services and the [NimblyApi](./categories/nimbly-api.md)
+```ts
+// index.ts
+import { Nimble, NimblyApi } from "nimbly-api";
+import { ExampleService } from "./example";
 
-const usersNimble = new Nimble()
-  .ofLocal(UserService)
-  .andLocal(AccountService);
+const nimble = new Nimble()
+  .ofLocal(ExampleService);
+
+const api = new NimblyApi({
+  nimblyInfo: {
+    name: 'Example Microservice',
+    version: '1.0.0',
+    description: 'This is an example microservice.'
+  },
+}).from(nimble);
+
+const PORT = 3000;
+api.listen(PORT, () => console.log(`Started listening on ${PORT}`));
+
+type NimbleServices = {
+  exampleService: ExampleService;
+}
 
 // The instances are available for custom usage
-const { userService, accountService } = usersNimble.services();
+const { exampleService } = usersNimble.services();
 ```
 
-5. Create the [NimblyApi](./categories/nimbly-api.md)
-```js
-import { NimblyApi } from 'nimbly-api';
-
-const app = new NimblyApi().from(usersNimble);
-
-app.listen(3000);
-```
-
-:::info 3 routes have been registered
-- POST /api/user-service/create-user
-- GET /api/account-service/get-all-accounts
-- POST /api/account-service/create-account
+:::info 5 routes have been registered
+- GET /api/examples
+- GET /api/examples/{id}
+- POST /api/examples
+- PUT /api/examples/{id}
+- DELETE /api/examples/{id}
 :::
+
+![img](/images/example_swagger.png)
 
 ## Setting up the client
 
@@ -83,50 +100,91 @@ app.listen(3000);
 ```bash
 npm init -y
 ```
-2. Install `nimbly-client` library
+2. [Install](./categories/03-Client/client-installation.md) `nimbly-client` library
 ```bash
 npm i -S nimbly-client
 ```
-3. Define [services](./categories/service-class.md)
-```js
-class UserService {
-  async createUser(user) {}
-}
-
-class AccountService {
-  async getAllAccounts() {}
-  async createAccount(account) {}
-}
+3. [Install](./categories/05-CLI/cli-installation.md) `nimbly-cli` CLI
+```bash
+npm i -g nimbly-cli
 ```
-4. Create a [Nimble](./categories/nimble.md) of remote services
-```js
-import { Nimble } from 'nimbly-client';
-
-const host = 'http://localhost:3000';
-
-const usersNimble = new Nimble()
-  .ofRemote(UserService, host)
-  .andRemote(AccountService, host);
-
-// The instances are available for custom usage
-const { userService, accountService } = usersNimble.services();
-
-// Use the services
-accountService.createAccount({
-  username: 'test',
-  email: 'test@test.com',
-  firstName: 'Test',
-  lastName: 'Test',
-})
-.then(newAccount => console.log(newAccount)) // created account from server
-.catch(error => console.log(error));
-
-// Fetch all accounts
-const allAccounts = await accountService.getAllAccounts();
+4. [Generate](./categories/05-CLI/cli-usage.md#typescript) TypeScript client code
+```bash
+nimbly -l ts -h http://localhost:3000 -o ./services/example
 ```
-
-:::info 2 requests have been sent
-- `POST` /api/account-service/create-account
-- body: `{ username: 'test', email: 'test@test.com', firstName: 'Test', lastName: 'Test' }`
-- `GET` /api/account-service/get-all-accounts
+:::info 2 files have been generated
+- services/example/index.ts
+- services/example/ExampleService.ts
 :::
+
+```ts
+// services/example/index.ts
+
+// Auto-generated by Nimbly Client CLI
+import { Nimble } from 'nimbly-client';
+import { ExampleService as ExampleServiceLocal } from './ExampleService';
+
+const host = "http://localhost:3000";
+
+export type NimbleServices = {
+  exampleService: ExampleServiceLocal;
+  
+};
+
+export const {
+  exampleService,
+  
+}: NimbleServices = new Nimble()
+  .ofRemote(ExampleServiceLocal, host)
+  .services();
+```
+
+```ts
+// services/example/ExampleService.ts
+
+// Auto-generated by Nimbly Client CLI
+import {
+  Service,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Query
+} from 'nimbly-client';
+
+
+export class Example {
+  name: string;
+  age: number
+}
+
+
+@Service('/examples')
+export class ExampleService {
+ 
+  @Get('/')
+  async getAll(@Query('pageNumber') pageNumber: number, @Query('pageSize') pageSize: number) {}
+ 
+  @Get('/:id')
+  async getById(@Query('includeDetails') includeDetails: string, id: boolean) {}
+ 
+  @Post('/')
+  async add(body: Example) {}
+ 
+  @Put('/:id')
+  async update(id: string, body: Example) {}
+ 
+  @Delete('/:id')
+  async delete(id: string) {}
+
+}
+```
+
+5. Use the ExampleService elsewhere
+```ts
+// somewhere.ts
+
+import { exampleService } from './services/example';
+
+exampleService.getAll().then(console.log).catch(console.log);
+```

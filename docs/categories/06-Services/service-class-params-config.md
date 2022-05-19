@@ -1,0 +1,162 @@
+---
+title: Parameter Configuration
+sidebar_position: 3
+slug: /service-class-params-config/
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+If you'd like the service methods to be able to receive [query](https://en.wikipedia.org/wiki/Query_string) and/or [path](https://rapidapi.com/blog/api-glossary/parameters/path/) parameters, you can customize them in a `$nimbly` property.
+
+If you're using [TypeScript](https://www.typescriptlang.org/) you can define configuration using [TypeScript decorators](https://www.typescriptlang.org/docs/handbook/decorators.html).
+
+:::note
+If you're using decorators, make sure that you've set `"experimentalDecorators"` option to `true` in your `tsconfig.json` file.
+:::
+
+<Tabs groupId="lang">
+  <TabItem value="cjs" label="CommonJS" default>
+
+```js
+class ExampleService {
+  $nimbly = {
+    rootPath: '/',
+    getAll: {
+      method: 'GET',
+      path: '/',
+      query: [
+        { index: 0, name: "pageNumber" },
+        { index: 1, name: "pageSize" },
+      ]
+    },
+    getById: {
+      method: 'GET',
+      path: '/:id',
+      query: [ { index: 0, name: "includeDetails" } ]
+    },
+    add: {
+      method: 'POST',
+      path: '/',
+      body: true
+    },
+    update: {
+      method: 'PUT',
+      path: '/:id',
+      body: true
+    },
+    delete: {
+      method: 'DELETE',
+      path: '/:id'
+    },
+  }
+  
+  async getAll(pageNumber, pageSize) {
+    return [];
+  }
+  async getById(includeDetails, id) {
+    return [];
+  }
+  async add(example) {
+    return example;
+  }
+  async update(id, example) {
+    return example;
+  }
+  async delete(id) {
+    return { id };
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="mjs" label="ES modules">
+
+```js
+class ExampleService {
+  $nimbly = {
+    rootPath: '/',
+    getAll: {
+      method: 'GET',
+      path: '/',
+      query: [
+        { index: 0, name: "pageNumber" },
+        { index: 1, name: "pageSize" },
+      ]
+    },
+    getById: {
+      method: 'GET',
+      path: '/:id',
+      query: [ { index: 0, name: "includeDetails" } ]
+    },
+    add: {
+      method: 'POST',
+      path: '/',
+      body: true
+    },
+    update: {
+      method: 'PUT',
+      path: '/:id',
+      body: true
+    },
+    delete: {
+      method: 'DELETE',
+      path: '/:id'
+    },
+  }
+  
+  async getAll(pageNumber, pageSize) {
+    return [];
+  }
+  async getById(includeDetails, id) {
+    return [];
+  }
+  async add(example) {
+    return example;
+  }
+  async update(id, example) {
+    return example;
+  }
+  async delete(id) {
+    return { id };
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="ts" label="TypeScript">
+
+```ts
+import { Service, Get, Post, Put, Delete, Query } from "nimbly-client"; // or nimbly-api
+
+@Service('/')
+class ExampleService {
+  @Get()
+  async getAll(@Query('pageNumber') pageNumber: number, @Query('pageSize') pageSize: number): Promise<any[]> {
+    return [];
+  }
+  @Get('/:id')
+  async getById(@Query('includeDetails') includeDetails: boolean, id: string): Promise<any> {
+    return {};
+  }
+  @Post()
+  async add(example: any): Promise<any> {
+    return example;
+  }
+  @Put('/:id')
+  async update(id: string, example: any): Promise<any> {
+    return example;
+  }
+  @Delete('/:id')
+  async delete(id: string): Promise<any> {
+    return { id };
+  }
+}
+```
+
+  </TabItem>
+</Tabs>
+
+:::important
+Configuration must be used both on the client and the server side, since it is used for telling `Nimbly` how and where to send the requests, or register the API routes.
+:::

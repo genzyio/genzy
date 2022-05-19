@@ -9,9 +9,9 @@ import TabItem from '@theme/TabItem';
 
 ## What Nimbly is
 
-Nimbly is a JavaScript framework that enables rapid development of web applications.
+Nimbly is a JavaScript library that enables rapid development of web applications.
 
-It is built on top of the [Express](https://expressjs.com/) framework and provides additional features like automatic routes registration, client generation and [OpenAPI](https://www.openapis.org/) documentation, along with [SwaggerUI](https://swagger.io/).
+It is built on top of the [Express](https://expressjs.com/) framework and provides additional features like automatic routes registration, client code generation and [OpenAPI](https://www.openapis.org/) documentation, along with [SwaggerUI](https://swagger.io/).
 
 Here's a basic example:
 

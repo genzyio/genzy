@@ -1,6 +1,6 @@
 ---
 title: Service class
-sidebar_position: 5
+sidebar_position: 1
 slug: /service-class/
 ---
 
@@ -9,7 +9,9 @@ import TabItem from '@theme/TabItem';
 
 ## What Service class is
 
-Service class is a JavaScript class that implements some arbitrary piece of business logic. It's methods can have parameters, and can also return results.
+Service class is a JavaScript class that implements an arbitrary piece of business logic. It's methods can have parameters, and can also return results.
+
+Nimbly can generate a Web API or an HTTP Client from any Service Class.
 
 ## Plain
 
@@ -66,19 +68,19 @@ class ExampleService {
 
 ```ts
 class ExampleService {
-  async getAll(): any[] {
+  async getAll(): Promise<any[]> {
     return [];
   }
-  async getById(id: string): any {
-    return [];
+  async getById(id: string): Promise<any> {
+    return {};
   }
-  async add(example: any): any {
+  async add(example: any): Promise<any> {
     return example;
   }
-  async update(id: string, example: any): any {
+  async update(id: string, example: any): Promise<any> {
     return example;
   }
-  async delete(id: string): any {
+  async delete(id: string): Promise<any> {
     return { id };
   }
 }
@@ -204,23 +206,23 @@ import { Service, Get, Post, Put, Delete } from "nimbly-client"; // or nimbly-ap
 @Service('/')
 class ExampleService {
   @Get()
-  async getAll(): any[] {
+  async getAll(): Promise<any[]> {
     return [];
   }
   @Get('/:id')
-  async getById(id: string): any {
+  async getById(id: string): Promise<any> {
     return [];
   }
   @Post()
-  async add(example: any): any {
+  async add(example: any): Promise<any> {
     return example;
   }
   @Put('/:id')
-  async update(id: string, example: any): any {
+  async update(id: string, example: any): Promise<any> {
     return example;
   }
   @Delete('/:id')
-  async delete(id: string): any {
+  async delete(id: string): Promise<any> {
     return { id };
   }
 }
