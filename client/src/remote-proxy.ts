@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ServiceRegistry } from "./service-registry";
-import { lowerFirstLetter, getHttpMethod, camelToDashCase, extractPathParamsFrom, combineNimblyConfigs } from "../../shared/functions";
+import { lowerFirstLetter, getHttpMethod, camelToKebabCase, extractPathParamsFrom, combineNimblyConfigs } from "../../shared/functions";
 import { NimblyConfig, QueryParamDefinition } from "../../shared/types";
 
 function applyInterceptors(target: any, className: string, methodName: string, headers: any, body: any, type: "before" | "after") {
@@ -29,8 +29,8 @@ const remoteCallHandler = {
       return function(...args) {
         return new Promise((res, rej) => {
           const meta: NimblyConfig = combineNimblyConfigs(target?.$nimbly_config ?? {}, target?.$nimbly ?? {});
-          const rootPath = meta?.rootPath != null ? meta?.rootPath : `/${camelToDashCase(className)}`;
-          const methodPath = meta?.[prop]?.path != null ? meta?.[prop].path : `/${camelToDashCase(prop)}`;
+          const rootPath = meta?.rootPath != null ? meta?.rootPath : `/${camelToKebabCase(className)}`;
+          const methodPath = meta?.[prop]?.path != null ? meta?.[prop].path : `/${camelToKebabCase(prop)}`;
           const httpMethod = meta?.[prop]?.method != null ? meta?.[prop].method.toLowerCase() : getHttpMethod(prop);
 
           const queryParamDefinitions = meta?.[prop]?.query ?? [];

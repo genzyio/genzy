@@ -1,16 +1,16 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import { ErrorHandler, ErrorRegistry } from "./error-handler";
-import { getMethodsOfClassInstance, getHttpMethod, camelToDashCase, extractPathParamsFrom, combineNimblyConfigs, getPathParamTypes, getBodyType, getTypesFrom } from "../../shared/functions";
+import { getMethodsOfClassInstance, getHttpMethod, camelToKebabCase, extractPathParamsFrom, combineNimblyConfigs, getPathParamTypes, getBodyType, getTypesFrom } from "../../shared/functions";
 import { ComplexType, NimblyConfig, Param, QueryParamDefinition, RouteMetaInfo, ServiceMetaInfo } from '../../shared/types';
 
 export function RegisterRoutesFor(instance, app: Application, interceptors?: any, errorRegistry?: ErrorRegistry, basePath: string = '/api'): ServiceMetaInfo {
   const serviceClassName = instance.constructor.name || instance._class_name_;
   const meta: NimblyConfig = combineNimblyConfigs(instance?.$nimbly_config ?? {}, instance?.$nimbly ?? {});
-  const rootPath = meta?.rootPath != null ? meta?.rootPath as string : `/${camelToDashCase(serviceClassName)}`;
+  const rootPath = meta?.rootPath != null ? meta?.rootPath as string : `/${camelToKebabCase(serviceClassName)}`;
   const schemas: ComplexType[] = [];
 
   const routes: RouteMetaInfo[] = getMethodsOfClassInstance(instance).map((method: string) => {
-    const methodPath = meta?.[method]?.path != null ? meta?.[method].path : `/${camelToDashCase(method)}`;
+    const methodPath = meta?.[method]?.path != null ? meta?.[method].path : `/${camelToKebabCase(method)}`;
     const httpMethod = meta?.[method]?.method != null ? meta?.[method].method.toLowerCase() : getHttpMethod(method);
     const queryParamDefinitions = meta?.[method]?.query ?? [];
 

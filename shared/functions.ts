@@ -18,7 +18,7 @@ export function upperFirstLetter(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-export function camelToDashCase(key) {
+export function camelToKebabCase(key) {
   var result = key.replace(/([A-Z])/g, " $1");
   return result.split(" ").join("-").toLowerCase().replace(/^-/g, "");
 }
@@ -43,7 +43,7 @@ export function getMethodsOfClassInstance(obj: any): string[] {
 }
 
 export function getResourcePath(cname, fname) {
-  return `${camelToDashCase(cname)}/${camelToDashCase(fname)}`;
+  return `${camelToKebabCase(cname)}/${camelToKebabCase(fname)}`;
 }
 
 export function extractPathParamsFrom(fullRoutePath: string) {
