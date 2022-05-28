@@ -1,5 +1,5 @@
 import { Nimble, NimblyApi } from '../../api/src';
-import { Get, Post, Service } from '../../client/src';
+import { Get, Post, Controller } from '../../client/src';
 import { arrayOf, int, Query, Returns, ReturnsArrayOf, string, type } from '../../shared/decorators';
 
 class TestService {
@@ -36,7 +36,7 @@ class Model {
   @arrayOf(Test) tests: Test[];
 }
 
-@Service('/decorated')
+@Controller('/decorated')
 class DecoratedService {
   private testService: TestService;
 
@@ -63,9 +63,7 @@ class NoviServis {
 }
 
 const modul = new Nimble()
-  .ofLocal(TestService)
-  .andLocal(DecoratedService)
-  .andLocal(NoviServis);
+  .addLocalServices(TestService, DecoratedService, NoviServis)
 
 export const api = new NimblyApi({
   nimblyInfo: {

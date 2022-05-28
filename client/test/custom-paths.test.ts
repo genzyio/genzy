@@ -1,7 +1,7 @@
 import realAxios from 'axios';
 import { RemoteProxyOf } from '../src/remote-proxy';
 import { ServiceRegistry } from '../src/service-registry';
-import { Get, Service, Post, Put } from '../../shared/decorators';
+import { Get, Controller, Post, Put } from '../../shared/decorators';
 
 jest.mock('axios');
 
@@ -29,7 +29,7 @@ class TestService {
   async differentUpdate(id, test) {}
 }
 
-@Service('/tests')
+@Controller('/tests')
 class TestServiceDecorated {
   $nimbly = {
     rootPath: '/tests',
@@ -59,7 +59,7 @@ const serviceRegistry = new ServiceRegistry();
 
 describe('Custom Paths', () => {
   it('should send get request to the root path', async () => {
-    const origin = 'http://localhost/';
+    const origin = 'http://localhost';
     const testServiceProxy = RemoteProxyOf<TestService>(TestService, origin, serviceRegistry);
     (axios as any).mockResolvedValue({ data: [1] });
 
@@ -69,14 +69,14 @@ describe('Custom Paths', () => {
       method: 'get',
       data: null,
       headers: {},
-      url: origin + 'api/tests'
+      url: origin + '/tests'
     });
 
     expect(result).toEqual([1]);
   });
 
   it('should send post request to the root path', async () => {
-    const origin = 'http://test-origin/';
+    const origin = 'http://test-origin';
     const testServiceProxy = RemoteProxyOf<TestService>(TestService, origin, serviceRegistry);
     (axios as any).mockResolvedValue({ data: [1] });
 
@@ -87,14 +87,14 @@ describe('Custom Paths', () => {
       method: 'post',
       data: arg,
       headers: {},
-      url: origin + 'api/tests'
+      url: origin + '/tests'
     });
 
     expect(result).toEqual([1]);
   });
 
   it('should send put request to the root path with path param', async () => {
-    const origin = 'http://test-origin/';
+    const origin = 'http://test-origin';
     const testServiceProxy = RemoteProxyOf<TestService>(TestService, origin, serviceRegistry);
     (axios as any).mockResolvedValue({ data: [1] });
 
@@ -105,14 +105,14 @@ describe('Custom Paths', () => {
       method: 'put',
       data: arg,
       headers: {},
-      url: origin + 'api/tests/1'
+      url: origin + '/tests/1'
     });
 
     expect(result).toEqual([1]);
   });
 
   it('should send get request to the root path decorated', async () => {
-    const origin = 'http://localhost/';
+    const origin = 'http://localhost';
     const testServiceProxy = RemoteProxyOf<TestServiceDecorated>(TestServiceDecorated, origin, serviceRegistry);
     (axios as any).mockResolvedValue({ data: [1] });
 
@@ -122,14 +122,14 @@ describe('Custom Paths', () => {
       method: 'get',
       data: null,
       headers: {},
-      url: origin + 'api/tests'
+      url: origin + '/tests'
     });
 
     expect(result).toEqual([1]);
   });
 
   it('should send post request to the root path decorated', async () => {
-    const origin = 'http://test-origin/';
+    const origin = 'http://test-origin';
     const testServiceProxy = RemoteProxyOf<TestServiceDecorated>(TestServiceDecorated, origin, serviceRegistry);
     (axios as any).mockResolvedValue({ data: [1] });
 
@@ -140,14 +140,14 @@ describe('Custom Paths', () => {
       method: 'post',
       data: arg,
       headers: {},
-      url: origin + 'api/tests'
+      url: origin + '/tests'
     });
 
     expect(result).toEqual([1]);
   });
 
   it('should send put request to the root path with path param decorated', async () => {
-    const origin = 'http://test-origin/';
+    const origin = 'http://test-origin';
     const testServiceProxy = RemoteProxyOf<TestServiceDecorated>(TestServiceDecorated, origin, serviceRegistry);
     (axios as any).mockResolvedValue({ data: [1] });
 
@@ -158,15 +158,15 @@ describe('Custom Paths', () => {
       method: 'put',
       data: arg,
       headers: {},
-      url: origin + 'api/tests/1'
+      url: origin + '/tests/1'
     });
 
     expect(result).toEqual([1]);
   });
 
   it('should use passed base path', async () => {
-    const origin = 'http://test-origin/';
-    const testServiceProxy = RemoteProxyOf<TestService>(TestService, origin, serviceRegistry, null, '/api/v1');
+    const origin = 'http://test-origin/v1';
+    const testServiceProxy = RemoteProxyOf<TestService>(TestService, origin, serviceRegistry, null);
     (axios as any).mockResolvedValue({ data: [1] });
 
     const result = await testServiceProxy.getAll();
@@ -175,7 +175,7 @@ describe('Custom Paths', () => {
       method: 'get',
       data: null,
       headers: {},
-      url: origin + 'api/v1/tests'
+      url: origin + '/tests'
     });
 
     expect(result).toEqual([1]);

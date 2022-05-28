@@ -17,7 +17,7 @@ const serviceRegistry = new ServiceRegistry();
 
 describe('Query Params', () => {
   it('should not send a query param if not passed as an argument', async () => {
-    const origin = 'http://localhost/';
+    const origin = 'http://localhost';
     const testServiceProxy = RemoteProxyOf<TestService>(TestService, origin, serviceRegistry);
     (axios as any).mockResolvedValue({ data: [1] });
 
@@ -27,14 +27,14 @@ describe('Query Params', () => {
       method: 'get',
       data: null,
       headers: {},
-      url: origin + 'api/test-service/get-all'
+      url: origin + '/test-service/get-all'
     });
 
     expect(result).toEqual([1]);
   });
 
   it('should send a query param if not passed as an argument', async () => {
-    const origin = 'http://localhost/';
+    const origin = 'http://localhost';
     const testServiceProxy = RemoteProxyOf<TestService>(TestService, origin, serviceRegistry);
     (axios as any).mockResolvedValue({ data: [1] });
 
@@ -45,14 +45,14 @@ describe('Query Params', () => {
       data: null,
       headers: {},
       params: { test: 'testing' },
-      url: origin + 'api/test-service/get-all'
+      url: origin + '/test-service/get-all'
     });
 
     expect(result).toEqual([1]);
   });
 
   it('should send a arguments in correct order', async () => {
-    const origin = 'http://localhost/';
+    const origin = 'http://localhost';
     const testServiceProxy = RemoteProxyOf<TestService>(TestService, origin, serviceRegistry);
     const body = { random: 1 };
     (axios as any).mockResolvedValue({ data: body });
@@ -64,7 +64,7 @@ describe('Query Params', () => {
       data: body,
       headers: {},
       params: { second: false },
-      url: origin + 'api/test-service/first/third'
+      url: origin + '/test-service/first/third'
     });
 
     expect(result).toEqual(body);

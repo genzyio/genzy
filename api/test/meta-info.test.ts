@@ -3,7 +3,7 @@ import { NimblyApi } from '../src/nimbly-api';
 import { agent } from 'supertest'
 import { RegisterRoutesFor } from '../src/routes-handler';
 import * as express from 'express';
-import { boolean, int, Post, Query, Returns, Service, string, type } from '../../shared/decorators';
+import { boolean, int, Post, Query, Returns, Controller, string, type } from '../../shared/decorators';
 import { BASIC_TYPES } from '../../shared/constants';
 
 class TestService {
@@ -16,7 +16,7 @@ class Example {
   @int num: number;
 }
 
-@Service('/')
+@Controller('/')
 class Test3Service {
   @Post('/:one/:three')
   @Returns(Example)
@@ -33,7 +33,7 @@ describe('NimblyApi Meta Info', () => {
   it('should register meta path', async () => {
     const meta = RegisterRoutesFor(new TestService(), express());
 
-    const nimble = new Nimble().of(TestService);
+    const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi().from(nimble);
 
     await agent(app)

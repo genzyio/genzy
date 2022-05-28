@@ -3,6 +3,10 @@ import { RemoteProxyOf } from './remote-proxy';
 import { LocalProxyOf } from './local-proxy';
 import { CustomInterceptors, Interceptable } from '../../shared/types';
 
+interface Constructor {
+  new (...args: any[]);
+}
+
 type InterceptorCallback = ({setHeader, getHeader, setBody, getBody}: 
   {setHeader: (key: string, value: string) => any, getHeader: (key: string) => string, setBody: (body: any) => any, getBody: () => any}) => any;
 
@@ -14,21 +18,26 @@ export class Nimble extends Interceptable<InterceptorCallback> {
     this.registry = new ServiceRegistry();
   }
 
-  public ofLocal(type): Nimble { return this.of(type); }
-  public andLocal(type): Nimble { return this.of(type); }
-  public andRemote(type, origin: string, basePath: string = '/api'): Nimble { return this.ofRemote(type, origin, basePath); }
+  public addLocalService(type: Constructor): Nimble { return this.of(type); }
+  public addLocalServices(...types: Constructor[]): Nimble { return this.of(...types); }
+  public addRemoteService(origin: string, type: Constructor): Nimble { return this.ofRemote(origin, type); }
+  public addRemoteServices(origin: string, ...types: Constructor[]): Nimble { return this.ofRemote(origin, ...types); }
 
-  public of(type): Nimble {
-    LocalProxyOf(type, this.registry);
+  private of(...types: Constructor[]): Nimble {
+    types.forEach(type => {
+      LocalProxyOf(type, this.registry);
+    });
     return this;
   }
 
-  public ofRemote(type, origin: string, basePath: string = '/api'): Nimble {
-    RemoteProxyOf(type, origin, this.registry, this.interceptors, basePath);
+  private ofRemote(origin: string, ...types: Constructor[]): Nimble {
+    types.forEach(type => {
+      RemoteProxyOf(type, origin, this.registry, this.interceptors);
+    });
     return this;
   }
 
-  public services(): any {
+  public getAllServices(): any {
     return this.registry.getAll();
   }
 

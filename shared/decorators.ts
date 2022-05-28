@@ -1,6 +1,6 @@
 import { BASIC_TYPES } from "./constants";
 
-export function Service(rootPath: string) {
+export function Controller(rootPath: string) {
   return function (target: any): void {
     if(!target.prototype.$nimbly_config) target.prototype.$nimbly_config = {};
     target.prototype.$nimbly_config.rootPath = rootPath;

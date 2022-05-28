@@ -43,7 +43,7 @@ describe('ServiceRegistry', () => {
   it('should update dependencies', async () => {
     serviceRegistry.register(LocalProxyOf<TestService>(TestService, serviceRegistry));
     serviceRegistry.register(LocalProxyOf<ExampleService>(ExampleService, serviceRegistry));
-    serviceRegistry.register(RemoteProxyOf<AnotherService>(AnotherService, '', serviceRegistry));
+    serviceRegistry.register(RemoteProxyOf<AnotherService>(AnotherService, 'http://localhost', serviceRegistry));
 
     const result = serviceRegistry.getAll() as any;
 

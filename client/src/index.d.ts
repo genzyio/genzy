@@ -19,17 +19,15 @@ export class Nimble {
   public interceptCalls(customInterceptors: CustomInterceptors<InterceptorCallback>): Nimble;
   public interceptResults(customInterceptors: CustomInterceptors<InterceptorCallback>): Nimble;
 
-  public ofLocal(type: Constructor): Nimble;
-  public andLocal(type: Constructor): Nimble;
-  public andRemote(type: Constructor, origin: string, basePath?: string): Nimble;
+  public addLocalService(type: Constructor): Nimble;
+  public addLocalServices(...types: Constructor[]): Nimble;
+  public addRemoteService(origin: string, basePath: string, type: Constructor): Nimble;
+  public addRemoteServices(origin: string, basePath: string, ...types: Constructor[]): Nimble;
 
-  public of(type: Constructor): Nimble;
-  public ofRemote(type: Constructor, origin: string, basePath?: string): Nimble;
-
-  public services(): any;
+  public getAllServices(): any;
 }
 
-export function Service(rootPath: string): (target: any) => void;
+export function Controller(rootPath: string): (target: any) => void;
 export function Get(path?: string): (target: any, propertyKey: string) => void;
 export function Post(path?: string): (target: any, propertyKey: string) => void;
 export function Put(path?: string): (target: any, propertyKey: string) => void;

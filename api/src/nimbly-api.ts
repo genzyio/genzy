@@ -38,7 +38,7 @@ export class NimblyApi extends Interceptable<InterceptorCallback> {
 
   public from(...nimbles: Nimble[]): Application {
     nimbles.forEach((nimble) => {
-      const serviceRegistry = nimble.services();
+      const serviceRegistry = nimble.getAllServices();
       Object.keys(serviceRegistry).forEach((serviceKey) => {
         const serviceMeta = RegisterRoutesFor(
           serviceRegistry[serviceKey],

@@ -20,7 +20,7 @@ export const generateDocsFrom = (meta: ServiceMetaInfo[], info: NimblyInfo) => {
 
   meta.forEach((service) => {
     service.actions.forEach((action) => {
-      const path = getPathFrom(info, action);
+      const path = getPathFrom(info, service, action);
 
       if (!doc.paths[path]) doc.paths[path] = {};
 
@@ -34,13 +34,13 @@ export const generateDocsFrom = (meta: ServiceMetaInfo[], info: NimblyInfo) => {
   return doc;
 };
 
-const getPathFrom = (info: NimblyInfo, r: RouteMetaInfo) => {
+const getPathFrom = (info: NimblyInfo, s: ServiceMetaInfo, r: RouteMetaInfo) => {
   let path = r.path.replace(info.basePath, "");
   r.params
     .filter((p) => p.source === "path")
     .map((p) => p.name)
     .forEach((p) => (path = path.replace(`:${p}`, `{${p}}`)));
-  return path;
+  return `${s.path}${path}`;
 };
 
 const getPathDocFrom = (s: ServiceMetaInfo, r: RouteMetaInfo) => ({

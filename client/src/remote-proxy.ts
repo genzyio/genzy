@@ -43,7 +43,7 @@ const remoteCallHandler = {
           const body = argsWithoudQueryParams?.length ? argsWithoudQueryParams[argsWithoudQueryParams.length-1] : null;
           const [headers, data] = applyInterceptors(target, className, prop, {}, { data: body }, "before");
 
-          let fullPath = `${target.$nimblyBasePath}${rootPath}${methodPath}`.replace('\/\/', '/');
+          let fullPath = `${rootPath}${methodPath}`.replace('\/\/', '/');
           extractPathParamsFrom(fullPath).forEach((param: string, i: number) => {
             fullPath = fullPath.replace(`:${param}`, argsWithoudQueryParams[i]);
           });
@@ -73,12 +73,11 @@ const constructHandler = {
   },
 }
 
-export function RemoteProxyOf<T>(type, origin: string, serviceRegistry: ServiceRegistry, interceptors?: any, basePath: string = '/api'): T {
+export function RemoteProxyOf<T>(type, origin: string, serviceRegistry: ServiceRegistry, interceptors?: any): T {
   const creator = new Proxy(type, constructHandler);
   const instance = new Proxy(new creator(serviceRegistry), remoteCallHandler);
-  instance.$nimblyOrigin = origin;
+  instance.$nimblyOrigin = new URL(origin).toString();
   instance.$nimblyInterceptors = interceptors;
-  instance.$nimblyBasePath = basePath;
   serviceRegistry.register(lowerFirstLetter(type.name || type.constructor.name), instance);
   return instance;
 }

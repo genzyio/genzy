@@ -4,7 +4,7 @@ import realAxios from 'axios';
 jest.mock('axios');
 const axios = realAxios as jest.Mocked<typeof realAxios>;
 
-const origin = 'http://localhost/';
+const origin = 'http://localhost';
 class TestService {
   public deps: { exampleService?: ExampleService } = {};
   
@@ -65,10 +65,9 @@ describe('Nimble', () => {
       anotherService: AnotherService;
       exampleService: ExampleService;
       testService: TestService;
-    } = new Nimble().ofLocal(ExampleService)
-      .andRemote(AnotherService, origin)
-      .andLocal(TestService)
-      .services();
+    } = new Nimble().addLocalServices(ExampleService, TestService)
+      .addRemoteService(origin, AnotherService)
+      .getAllServices();
     
     expect(anotherService.deps).toHaveProperty('exampleService');
     expect(anotherService.deps).toHaveProperty('testService');
@@ -87,13 +86,13 @@ describe('Nimble', () => {
       anotherService,
     }: {
       anotherService: AnotherService;
-    } = new Nimble().ofLocal(ExampleService)
-      .andRemote(AnotherService, origin)
-      .andLocal(TestService)
+    } = new Nimble().addLocalService(ExampleService)
+      .addRemoteService(origin, AnotherService)
+      .addLocalService(TestService)
       .interceptAllCalls(({setHeader, getHeader, setBody, getBody}) => {
         setHeader('testHeader', 'testValue');
       })
-      .services();
+      .getAllServices();
     (axios as any).mockResolvedValue({ data: 123 });
     
     await anotherService.getTest();
@@ -104,7 +103,7 @@ describe('Nimble', () => {
       headers: {
         testHeader: 'testValue'
       },
-      url: origin + 'api/another-service/get-test'
+      url: origin + '/another-service/get-test'
     });
   });
 
@@ -113,9 +112,9 @@ describe('Nimble', () => {
       anotherService,
     }: {
       anotherService: AnotherService;
-    } = new Nimble().ofLocal(ExampleService)
-      .andRemote(AnotherService, origin)
-      .andLocal(TestService)
+    } = new Nimble().addLocalService(ExampleService)
+      .addRemoteService(origin, AnotherService)
+      .addLocalService(TestService)
       .interceptCalls({
         anotherService: {
           getTest({setHeader, getHeader, setBody, getBody}) {
@@ -124,7 +123,7 @@ describe('Nimble', () => {
           }
         }
       })
-      .services();
+      .getAllServices();
     (axios as any).mockResolvedValue({ data: 123 });
   
     await anotherService.getTest();
@@ -135,7 +134,7 @@ describe('Nimble', () => {
       headers: {
         anotherHeader: 'anotherValue'
       },
-      url: origin + 'api/another-service/get-test'
+      url: origin + '/another-service/get-test'
     });
   });
 
@@ -144,13 +143,13 @@ describe('Nimble', () => {
       anotherService,
     }: {
       anotherService: AnotherService;
-    } = new Nimble().ofLocal(ExampleService)
-      .andRemote(AnotherService, origin)
-      .andLocal(TestService)
+    } = new Nimble().addLocalService(ExampleService)
+      .addRemoteService(origin, AnotherService)
+      .addLocalService(TestService)
       .interceptCalls({
         anotherService: AnotherServiceCallInterceptor
       })
-      .services();
+      .getAllServices();
     (axios as any).mockResolvedValue({ data: 123 });
 
     await anotherService.getTest();
@@ -161,7 +160,7 @@ describe('Nimble', () => {
       headers: {
         classInterceptor: 'Works!'
       },
-      url: origin + 'api/another-service/get-test'
+      url: origin + '/another-service/get-test'
     });
   });
 
@@ -170,13 +169,13 @@ describe('Nimble', () => {
       anotherService,
     }: {
       anotherService: AnotherService;
-    } = new Nimble().ofLocal(ExampleService)
-      .andRemote(AnotherService, origin)
-      .andLocal(TestService)
+    } = new Nimble().addLocalService(ExampleService)
+      .addRemoteService(origin, AnotherService)
+      .addLocalService(TestService)
       .interceptAllResults(({setHeader, getHeader, setBody, getBody}) => {
         setBody(getBody() + 10);
       })
-      .services();
+      .getAllServices();
     const initialResult = 123;
     (axios as any).mockResolvedValue({ data: initialResult });
 
@@ -190,9 +189,9 @@ describe('Nimble', () => {
       anotherService,
     }: {
       anotherService: AnotherService;
-    } = new Nimble().ofLocal(ExampleService)
-      .andRemote(AnotherService, origin)
-      .andLocal(TestService)
+    } = new Nimble().addLocalService(ExampleService)
+      .addRemoteService(origin, AnotherService)
+      .addLocalService(TestService)
       .interceptResults({
         anotherService: {
           getTest({setHeader, getHeader, setBody, getBody}) {
@@ -200,7 +199,7 @@ describe('Nimble', () => {
           }
         }
       })
-      .services();
+      .getAllServices();
     const initialResult = { does: 'it work?' };
     (axios as any).mockResolvedValue({ data: initialResult });
 
@@ -214,13 +213,13 @@ describe('Nimble', () => {
       anotherService,
     }: {
       anotherService: AnotherService;
-    } = new Nimble().ofLocal(ExampleService)
-      .andRemote(AnotherService, origin)
-      .andLocal(TestService)
+    } = new Nimble().addLocalService(ExampleService)
+      .addRemoteService(origin, AnotherService)
+      .addLocalService(TestService)
       .interceptResults({
         anotherService: AnotherServiceResultInterceptor
       })
-      .services();
+      .getAllServices();
     (axios as any).mockResolvedValue({ data: null });
     
     const resultNull = await anotherService.getTest();

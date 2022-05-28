@@ -1,5 +1,5 @@
 import { Nimble } from "../../client/src";
-import { Get, Post, Service } from "../../client/src";
+import { Get, Post, Controller } from "../../client/src";
 import { Query } from "../../shared/decorators";
 
 class TestService {
@@ -21,7 +21,7 @@ class TestService {
   async update(id, body) {}
 }
 
-@Service("/")
+@Controller("/decorated")
 class DecoratedService {
   @Get("/:id")
   async test(id: string, @Query('test') test?: string) {}
@@ -40,15 +40,13 @@ export type NimblyServices = {
   noviServis: NoviServis
 }
 
-const origin = "http://localhost:3030";
+const origin = "http://localhost:3030/api";
 export const {
   testService,
   decoratedService,
   noviServis
 }: NimblyServices = new Nimble()
-  .ofRemote(TestService, origin, '/api')
-  .andRemote(DecoratedService, origin, '/api')
-  .andRemote(NoviServis, origin, '/api')
-  .services();
+  .addRemoteServices(origin, TestService, DecoratedService, NoviServis)
+  .getAllServices();
 
 noviServis.getNesto().then(console.log)

@@ -17,7 +17,7 @@ const serviceRegistry = new ServiceRegistry();
 
 describe('RemoteProxyOf', () => {
   it('should send get request with expected args and default origin', async () => {
-    const origin = 'http://localhost/';
+    const origin = 'http://localhost';
     const testServiceProxy = RemoteProxyOf<TestService>(TestService, origin, serviceRegistry);
     (axios as any).mockResolvedValue({ data: [1] });
 
@@ -27,14 +27,14 @@ describe('RemoteProxyOf', () => {
       method: 'get',
       data: null,
       headers: {},
-      url: origin + 'api/test-service/get-all'
+      url: origin + '/test-service/get-all'
     });
 
     expect(result).toEqual([1]);
   });
 
   it('should send post request with provided origin', async () => {
-    const origin = 'http://test-origin/';
+    const origin = 'http://test-origin';
     const testServiceProxy = RemoteProxyOf<TestService>(TestService, origin, serviceRegistry);
     (axios as any).mockResolvedValue({ data: [1] });
 
@@ -45,14 +45,14 @@ describe('RemoteProxyOf', () => {
       method: 'post',
       data: arg,
       headers: {},
-      url: origin + 'api/test-service/add-something'
+      url: origin + '/test-service/add-something'
     });
 
     expect(result).toEqual([1]);
   });
 
   it('should send put request with provided origin', async () => {
-    const origin = 'http://test-put-origin/';
+    const origin = 'http://test-put-origin';
     const testServiceProxy = RemoteProxyOf<TestService>(TestService, origin, serviceRegistry);
     (axios as any).mockResolvedValue({ data: [1] });
 
@@ -63,14 +63,14 @@ describe('RemoteProxyOf', () => {
       method: 'put',
       data: arg,
       headers: {},
-      url: origin + 'api/test-service/update-something'
+      url: origin + '/test-service/update-something'
     });
 
     expect(result).toEqual([1]);
   });
 
   it('should send delete request with provided origin and multiple args', async () => {
-    const origin = 'http://origin/';
+    const origin = 'http://origin';
     const testServiceProxy = RemoteProxyOf<TestService>(TestService, origin, serviceRegistry);
     (axios as any).mockResolvedValue({ data: [1] });
 
@@ -82,14 +82,14 @@ describe('RemoteProxyOf', () => {
       method: 'delete',
       data: arg2,
       headers: {},
-      url: origin + 'api/test-service/delete-something'
+      url: origin + '/test-service/delete-something'
     });
 
     expect(result).toEqual([1]);
   });
 
   it('should return class name', async () => {
-    const testServiceProxy = RemoteProxyOf<TestService>(TestService, '', serviceRegistry);
+    const testServiceProxy = RemoteProxyOf<TestService>(TestService, 'http://localhost', serviceRegistry);
 
     expect((testServiceProxy as any)._class_name_).toEqual('TestService');
   });

@@ -2,7 +2,7 @@ import { Nimble } from 'nimbly-client';
 import { NimblyApi } from '../src/nimbly-api';
 import { agent } from 'supertest'
 import { NextFunction, Request, Response } from 'express';
-import { Delete, Get, Service, Patch, Post, Put } from '../../shared/decorators';
+import { Delete, Get, Controller, Patch, Post, Put } from '../../shared/decorators';
 import { NimblyConfig } from '../../shared/types';
 
 const getAllResult = [1, 2, 3];
@@ -44,7 +44,7 @@ class TestService {
   }
 }
 
-@Service('/annotated')
+@Controller('/annotated')
 class AnnotatedService {
  
   async get() {}
@@ -81,7 +81,7 @@ class TestServiceInterceptor {
 describe('NimblyApi Custom Paths', () => {
 
   it('should register a custom root path', async () => {
-    const nimble = new Nimble().of(TestService);
+    const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi().from(nimble);
 
     await agent(app)
@@ -96,7 +96,7 @@ describe('NimblyApi Custom Paths', () => {
   });
 
   it('should register interceptors for interceptor class', async () => {
-    const nimble = new Nimble().of(TestService);
+    const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi()
       .intercept({
         testService: TestServiceInterceptor as any
@@ -112,7 +112,7 @@ describe('NimblyApi Custom Paths', () => {
   });
 
   it('should register route with path param', async () => {
-    const nimble = new Nimble().of(TestService);
+    const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi()
       .intercept({
         testService: TestServiceInterceptor as any
@@ -130,7 +130,7 @@ describe('NimblyApi Custom Paths', () => {
   });
 
   it('should register a custom root path with annotation', async () => {
-    const nimble = new Nimble().of(AnnotatedService);
+    const nimble = new Nimble().addLocalService(AnnotatedService);
     const app = new NimblyApi().from(nimble);
     await agent(app)
       .get('/api/annotated-service/get')
@@ -141,7 +141,7 @@ describe('NimblyApi Custom Paths', () => {
   });
 
   it('should register a custom method path with annotation', async () => {
-    const nimble = new Nimble().of(AnnotatedService);
+    const nimble = new Nimble().addLocalService(AnnotatedService);
     const app = new NimblyApi().from(nimble);
     await agent(app)
       .get('/api/annotated/testing')
@@ -149,7 +149,7 @@ describe('NimblyApi Custom Paths', () => {
   });
 
   it('should work for all annotations', async () => {
-    const nimble = new Nimble().of(AnnotatedService);
+    const nimble = new Nimble().addLocalService(AnnotatedService);
     const app = new NimblyApi().from(nimble);
     const id = '1234';
     const body = { test: '123', a: 1 };
