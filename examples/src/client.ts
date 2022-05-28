@@ -30,16 +30,25 @@ class DecoratedService {
   async post(body: any) {}
 }
 
+class NoviServis {
+  async getNesto() {}
+}
+
 export type NimblyServices = {
   testService: TestService,
   decoratedService: DecoratedService,
+  noviServis: NoviServis
 }
 
-const origin = "http://localhost:3000";
+const origin = "http://localhost:3030";
 export const {
   testService,
-  decoratedService
+  decoratedService,
+  noviServis
 }: NimblyServices = new Nimble()
-  .ofRemote(TestService, origin, '/api/v1')
-  .andRemote(DecoratedService, origin, '/api/v1')
+  .ofRemote(TestService, origin, '/api')
+  .andRemote(DecoratedService, origin, '/api')
+  .andRemote(NoviServis, origin, '/api')
   .services();
+
+noviServis.getNesto().then(console.log)

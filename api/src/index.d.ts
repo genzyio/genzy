@@ -38,7 +38,8 @@ export class NimblyApi {
 
 export function string(target: any, propertyKey?: string | symbol, parameterIndex?: any): void;
 export function boolean(target: any, propertyKey?: string | symbol, parameterIndex?: any): void;
-export function number(target: any, propertyKey?: string | symbol, parameterIndex?: any): void;
+export function int(target: any, propertyKey?: string | symbol, parameterIndex?: any): void;
+export function float(target: any, propertyKey?: string | symbol, parameterIndex?: any): void;
 export function type(type: Constructor): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
 export function arrayOf(type: Constructor): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
 export function Returns(type: Constructor): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;

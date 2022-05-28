@@ -1,6 +1,6 @@
 import { Nimble } from "nimbly-client";
 import { BASIC_TYPES } from "../../shared/constants";
-import { arrayOf, boolean, number, string, type } from "../../shared/decorators";
+import { arrayOf, boolean, int, string, type } from "../../shared/decorators";
 
 class Test1Service {
   async get() {}
@@ -9,7 +9,7 @@ class Test1Service {
 class Test2Service {
   async get(
     @string one: string,
-    @number two: number,
+    @int two: number,
     @boolean three: boolean
   ) {}
 }
@@ -17,20 +17,20 @@ class Test2Service {
 class Example {
   @string test: string;
   @boolean bool: boolean;
-  @number num: number;
+  @int num: number;
 }
 
 class Model {
   @string test: string;
   @boolean bool: boolean;
-  @number num: number;
+  @int num: number;
   @type(Example) type: Example;
 }
 
 class Test3Service {
   async get(
     @string one: string,
-    @number two: number,
+    @int two: number,
     @boolean three: boolean,
     @type(Example) body: Example
   ) {}
@@ -39,7 +39,7 @@ class Test3Service {
 class Test4Service {
   async get(
     @string one: string,
-    @number two: number,
+    @int two: number,
     @boolean three: boolean,
     @arrayOf(Example) body: Example[]
   ) {}
@@ -64,7 +64,7 @@ describe("Types", () => {
     });
     expect(test2Service.$nimbly_config?.types.get).toContainEqual({
       index: 1,
-      type: BASIC_TYPES.number,
+      type: BASIC_TYPES.int,
       isArray: false
     });
     expect(test2Service.$nimbly_config?.types.get).toContainEqual({
@@ -80,7 +80,7 @@ describe("Types", () => {
     expect(model.$nimbly_config?.types).not.toBe(undefined);
     expect(model.$nimbly_config?.types.test).toBe(BASIC_TYPES.string);
     expect(model.$nimbly_config?.types.bool).toBe(BASIC_TYPES.boolean);
-    expect(model.$nimbly_config?.types.num).toBe(BASIC_TYPES.number);
+    expect(model.$nimbly_config?.types.num).toBe(BASIC_TYPES.int);
   });
 
   it("should add meta info with @type", async () => {
@@ -111,7 +111,7 @@ describe("Types", () => {
     });
     expect(test3Service.$nimbly_config?.types.get).toContainEqual({
       index: 1,
-      type: BASIC_TYPES.number,
+      type: BASIC_TYPES.int,
       isArray: false
     });
     expect(test3Service.$nimbly_config?.types.get).toContainEqual({
@@ -137,7 +137,7 @@ describe("Types", () => {
     });
     expect(test4Service.$nimbly_config?.types.get).toContainEqual({
       index: 1,
-      type: BASIC_TYPES.number,
+      type: BASIC_TYPES.int,
       isArray: false
     });
     expect(test4Service.$nimbly_config?.types.get).toContainEqual({

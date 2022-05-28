@@ -9,7 +9,7 @@ if(process.argv.length > 2) {
       .then(r => console.log(r))
       .catch(e => console.log(e));
   } else {
-    const PORT = 3000;
+    const PORT = 3030;
     api.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
   }
 }

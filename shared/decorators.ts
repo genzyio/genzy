@@ -48,7 +48,8 @@ const typeDecorator = (typeParam: string | { new(): any }, typesKey: 'types'|'re
 
 export const string = typeDecorator(BASIC_TYPES.string);
 export const boolean = typeDecorator(BASIC_TYPES.boolean);
-export const number = typeDecorator(BASIC_TYPES.number);
+export const int = typeDecorator(BASIC_TYPES.int);
+export const float = typeDecorator(BASIC_TYPES.float);
 export const type = (type: { new(): any }) => typeDecorator(type);
 export const arrayOf = (type: { new(): any }) => typeDecorator(type, 'types', true);
 

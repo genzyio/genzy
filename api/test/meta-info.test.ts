@@ -3,7 +3,7 @@ import { NimblyApi } from '../src/nimbly-api';
 import { agent } from 'supertest'
 import { RegisterRoutesFor } from '../src/routes-handler';
 import * as express from 'express';
-import { boolean, number, Post, Query, Returns, Service, string, type } from '../../shared/decorators';
+import { boolean, int, Post, Query, Returns, Service, string, type } from '../../shared/decorators';
 import { BASIC_TYPES } from '../../shared/constants';
 
 class TestService {
@@ -13,7 +13,7 @@ class TestService {
 class Example {
   @string test: string;
   @boolean bool: boolean;
-  @number num: number;
+  @int num: number;
 }
 
 @Service('/')
@@ -22,7 +22,7 @@ class Test3Service {
   @Returns(Example)
   async get(
     @string one: string,
-    @Query('two') @number two: number,
+    @Query('two') @int two: number,
     @boolean three: boolean,
     @type(Example) body: Example
   ) {}
@@ -54,31 +54,32 @@ describe('NimblyApi Meta Info', () => {
       $typeName: 'Example'
     };
 
-    expect(meta.routes).toHaveLength(1);
+    expect(meta.actions).toHaveLength(1);
 
-    const route = meta.routes[0];
+    const action = meta.actions[0];
 
-    expect(route.body).toBe(true);
-    expect(route.bodyType).toStrictEqual(exampleType);
-    expect(route.httpMethod).toBe('post');
-    expect(route.methodName).toBe('get');
-    expect(route.methodPath).toBe('/:one/:three');
-    expect(route.path).toBe('/api/:one/:three');
+    expect(action.httpMethod).toBe('post');
+    expect(action.name).toBe('get');
+    expect(action.path).toBe('/:one/:three');
     
-    expect(route.pathParamTypes).toHaveLength(2);
-    expect(route.pathParamTypes).toContainEqual(BASIC_TYPES.string);
-    expect(route.pathParamTypes).toContainEqual(BASIC_TYPES.boolean);
+    const bodyParam = action.params.find(p => p.source === 'body');
+    const pathParams = action.params.filter(p => p.source === 'path');
+    const queryParams = action.params.filter(p => p.source === 'query');
+
+    expect(bodyParam?.type).toStrictEqual(exampleType);
+    expect(pathParams.map(p => p.type)).toHaveLength(2);
+    expect(pathParams.map(p => p.type)).toContainEqual(BASIC_TYPES.string);
+    expect(pathParams.map(p => p.type)).toContainEqual(BASIC_TYPES.boolean);
+    expect(queryParams.map(p => p.type)).toHaveLength(1);
+    expect(queryParams.map(p => p.type)).toContainEqual(BASIC_TYPES.int);
     
-    expect(route.pathParams).toHaveLength(2);
-    expect(route.pathParams).toContainEqual('one');
-    expect(route.pathParams).toContainEqual('three');
+    expect(pathParams.map(p => p.name)).toHaveLength(2);
+    expect(pathParams.map(p => p.name)).toContainEqual('one');
+    expect(pathParams.map(p => p.name)).toContainEqual('three');
     
-    expect(route.queryParamTypes).toHaveLength(1);
-    expect(route.queryParamTypes).toContainEqual(BASIC_TYPES.number);
+    expect(queryParams.map(p => p.name)).toHaveLength(1);
+    expect(queryParams.map(p => p.name)).toContainEqual('two');
     
-    expect(route.queryParams).toHaveLength(1);
-    expect(route.queryParams).toContainEqual('two');
-    
-    expect(route.returnType).toStrictEqual(exampleType);
+    expect(action.result).toStrictEqual(exampleType);
   });
 });

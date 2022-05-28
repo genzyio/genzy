@@ -32,5 +32,6 @@ export const MatchPathParamsRegex = /(?<=\/:).*?(?=(\/|$))/g;
 export const BASIC_TYPES = {
   string: 'string',
   boolean: 'boolean',
-  number: 'number',
+  int: 'int',
+  float: 'float',
 }

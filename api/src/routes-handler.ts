@@ -1,12 +1,12 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import { ErrorHandler, ErrorRegistry } from "./error-handler";
 import { getMethodsOfClassInstance, getHttpMethod, camelToDashCase, extractPathParamsFrom, combineNimblyConfigs, getPathParamTypes, getBodyType, getTypesFrom } from "../../shared/functions";
-import { ComplexType, NimblyConfig, QueryParamDefinition, RouteMetaInfo, ServiceMetaInfo } from '../../shared/types';
+import { ComplexType, NimblyConfig, Param, QueryParamDefinition, RouteMetaInfo, ServiceMetaInfo } from '../../shared/types';
 
 export function RegisterRoutesFor(instance, app: Application, interceptors?: any, errorRegistry?: ErrorRegistry, basePath: string = '/api'): ServiceMetaInfo {
   const serviceClassName = instance.constructor.name || instance._class_name_;
   const meta: NimblyConfig = combineNimblyConfigs(instance?.$nimbly_config ?? {}, instance?.$nimbly ?? {});
-  const rootPath = meta?.rootPath != null ? meta?.rootPath : `/${camelToDashCase(serviceClassName)}`;
+  const rootPath = meta?.rootPath != null ? meta?.rootPath as string : `/${camelToDashCase(serviceClassName)}`;
   const schemas: ComplexType[] = [];
 
   const routes: RouteMetaInfo[] = getMethodsOfClassInstance(instance).map((method: string) => {
@@ -40,29 +40,30 @@ export function RegisterRoutesFor(instance, app: Application, interceptors?: any
       methodParamTypes,
       schemas: methodSchemas
     } = getTypesFrom(meta, method);
-
     schemas.push(...methodSchemas);
+
+    const hasBody = !!meta?.[method]?.body;
+    const pathParamTypes = getPathParamTypes(pathParams, queryParamDefinitions, methodParamTypes);
+
+    const params: Param[] = [
+      ...pathParams.map((pathParam, i) => ({ type: pathParamTypes[i], name: pathParam, source: 'path' })),
+      ...(hasBody ? [{ type: bodyType, name: 'body', source: 'body' }] : [])
+    ] as any;
+    queryParamDefinitions.sort((a, b) => a.index - b.index).forEach(({index, name}) => 
+      params.splice(index, 0, { type: methodParamTypes[index], name, source: 'query' }));
 
     return {
       httpMethod,
-      methodName: method,
-      methodPath,
-      path: fullRoutePath,
-      pathParams,
-      pathParamTypes: getPathParamTypes(pathParams, queryParamDefinitions, methodParamTypes),
-      queryParams,
-      queryParamTypes: queryParamDefinitions.map((q: QueryParamDefinition) => methodParamTypes[q.index]),
-      body: !!meta?.[method]?.body,
-      bodyType,
-      returnType,
-      queryParamDefinitions
+      name: method,
+      path: methodPath,
+      params,
+      result: returnType
     }
   });
   return {
     name: serviceClassName,
-    $nimbly: meta || {},
-    routes,
-    schemas
+    actions: routes,
+    path: rootPath
   }
 }
 

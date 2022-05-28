@@ -1,10 +1,12 @@
-import { ComplexType, RouteMetaInfo, ServiceMetaInfo } from "../../shared/types";
+import {
+  ComplexType,
+  Param,
+  RouteMetaInfo,
+  ServiceMetaInfo,
+} from "../../shared/types";
 import { NimblyInfo } from "./nimbly-api";
 
-export const generateDocsFrom = (
-  meta: ServiceMetaInfo[],
-  info: NimblyInfo
-) => {
+export const generateDocsFrom = (meta: ServiceMetaInfo[], info: NimblyInfo) => {
   const doc = {
     openapi: "3.0.0",
     info: {
@@ -12,21 +14,19 @@ export const generateDocsFrom = (
       title: info?.name ?? "Nimbly API",
       description: info?.description ?? "",
     },
-    servers: [
-      { url: info.basePath }
-    ],
+    servers: [{ url: info.basePath }],
     paths: {},
   };
 
   meta.forEach((service) => {
-    service.routes.forEach((route) => {
-      const path = getPathFrom(info, route);
+    service.actions.forEach((action) => {
+      const path = getPathFrom(info, action);
 
       if (!doc.paths[path]) doc.paths[path] = {};
 
       doc.paths[path] = {
         ...doc.paths[path],
-        [route.httpMethod.toLowerCase()]: getPathDocFrom(service, route),
+        [action.httpMethod.toLowerCase()]: getPathDocFrom(service, action),
       };
     });
   });
@@ -35,68 +35,58 @@ export const generateDocsFrom = (
 };
 
 const getPathFrom = (info: NimblyInfo, r: RouteMetaInfo) => {
-  let path = r.path.replace(info.basePath, '');
-  r.pathParams.forEach((p) => (path = path.replace(`:${p}`, `{${p}}`)));
+  let path = r.path.replace(info.basePath, "");
+  r.params
+    .filter((p) => p.source === "path")
+    .map((p) => p.name)
+    .forEach((p) => (path = path.replace(`:${p}`, `{${p}}`)));
   return path;
-}
+};
 
 const getPathDocFrom = (s: ServiceMetaInfo, r: RouteMetaInfo) => ({
-    tags: [s.name],
-    ...(getBodyDocFrom(r)),
-    parameters: getParametersDocFrom(r),
-    responses: getResponsesDocFrom(r),
+  tags: [s.name],
+  ...getBodyDocFrom(r),
+  parameters: getParametersDocFrom(r),
+  responses: getResponsesDocFrom(r),
 });
 
 const getParametersDocFrom = (r: RouteMetaInfo) => {
-  return [
-    ...getPathParametersDocFrom(r),
-    ...getQueryParametersDocFrom(r),
-  ];
+  return r.params
+    .filter((p) => p.source !== "body")
+    .map((p) => ({
+      name: p.name,
+      in: p.source,
+      schema: {
+        type: mapTypeToOpenAPIType(p.type as string),
+      },
+      required: true,
+    }));
 };
 
-const getPathParametersDocFrom = (r: RouteMetaInfo) => {
-  return r.pathParams.map((p, i) => ({
-    name: p,
-    in: "path",
-    schema: {
-      type: r.pathParamTypes[i],
-    },
-    required: true,
-  }));
-};
-
-const getQueryParametersDocFrom = (r: RouteMetaInfo) => {
-  return r.queryParams.map((p, i) => ({
-    name: p,
-    in: "query",
-    schema: {
-      type: r.queryParamTypes[i],
-    },
-    required: true,
-  }));
-};
-
-const getBodyDocFrom = (r: RouteMetaInfo) => ({
-  ...(
-    r.body ? {
-      requestBody: {
-        required: true,
-        content: {
-          "application/json": {
-            schema: getSchemaFrom(r.bodyType),
+const getBodyDocFrom = (r: RouteMetaInfo) => {
+  const bodyParam: Param = r.params.find((p) => p.source === "body");
+  return {
+    ...(!!bodyParam
+      ? {
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: getSchemaFrom(bodyParam.type as ComplexType),
+              },
+            },
           },
-        },
-      }
-    } : {}
-  )
-});
+        }
+      : {}),
+  };
+};
 
 const getResponsesDocFrom = (r: RouteMetaInfo) => ({
   200: {
     headers: {},
     content: {
       "application/json": {
-        schema: getSchemaFrom(r.returnType),
+        schema: getSchemaFrom(r.result),
       },
     },
   },
@@ -105,12 +95,28 @@ const getResponsesDocFrom = (r: RouteMetaInfo) => ({
 const getSchemaFrom = (type: ComplexType) => {
   const objectSchema = { type: "object", properties: getPropertiesFrom(type) };
   return type?.$isArray ? { type: "array", items: objectSchema } : objectSchema;
-}
+};
 
 const getPropertiesFrom = (type: ComplexType) => {
+  return modifyPropertiesOf(type, (key: string, type: any) =>
+    typeof type[key] === "object"
+      ? getSchemaFrom(type[key] as any)
+      : { type: mapTypeToOpenAPIType(type[key]) }
+  );
+};
+
+const modifyPropertiesOf = (
+  type: ComplexType,
+  gen: (key: string, type: any) => any
+) => {
   const properties = {};
-  Object.keys(type ?? {}).filter(key => !key.startsWith('$')).forEach(key => {
-    properties[key] = typeof type[key] === "object" ? getSchemaFrom(type[key] as any) : { type: type[key] };
-  });
+  Object.keys(type ?? {})
+    .filter((key) => !key.startsWith("$"))
+    .forEach((key) => {
+      properties[key] = gen(key, type);
+    });
   return properties;
-}
+};
+
+const mapTypeToOpenAPIType = (type: string) =>
+  type === "int" || type === "float" ? "number" : type;

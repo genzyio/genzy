@@ -83,7 +83,7 @@ export type ComplexType = {
   [key: ParamName]: Type;
 }
 
-export type Type = "boolean" | "string" | "number" | ComplexType;
+export type Type = "boolean" | "string" | "int" | "float" | ComplexType;
 
 export type PathConfig = {
   [key: MethodName]: {
@@ -96,22 +96,20 @@ export type PathConfig = {
 
 export type ServiceMetaInfo = {
   name: string;
-  $nimbly: NimblyConfig;
-  routes: RouteMetaInfo[];
-  schemas: ComplexType[];
+  path: string;
+  actions: RouteMetaInfo[];
 };
 
 export type RouteMetaInfo = {
   httpMethod: string;
-  methodName: MethodName;
-  methodPath: string;
+  name: MethodName;
   path: string;
-  pathParams?: string[];
-  pathParamTypes?: Type[];
-  queryParams?: string[];
-  queryParamTypes?: Type[];
-  queryParamDefinitions?: QueryParamDefinition[];
-  body?: boolean;
-  bodyType?: ComplexType;
-  returnType?: ComplexType;
+  params: Param[];
+  result?: ComplexType;
 };
+
+export type Param = {
+  source: 'query' | 'path' | 'body';
+  name: string;
+  type: Type;
+}

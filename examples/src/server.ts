@@ -1,6 +1,6 @@
 import { Nimble, NimblyApi } from '../../api/src';
 import { Get, Post, Service } from '../../client/src';
-import { arrayOf, number, Query, Returns, ReturnsArrayOf, string, type } from '../../shared/decorators';
+import { arrayOf, int, Query, Returns, ReturnsArrayOf, string, type } from '../../shared/decorators';
 
 class TestService {
   $nimbly = {
@@ -27,16 +27,16 @@ class TestService {
 
 class Test {
   @string test: string;
-  @number asdf: number;
+  @int asdf: number;
 }
 
 class Model {
   @string name: string;
-  @number age: number;
+  @int age: number;
   @arrayOf(Test) tests: Test[];
 }
 
-@Service('/')
+@Service('/decorated')
 class DecoratedService {
   private testService: TestService;
 
@@ -56,6 +56,17 @@ class DecoratedService {
   }
 }
 
+class NoviServis {
+  async getNesto() {
+    return [1, 2, 3, 4];
+  }
+}
+
+const modul = new Nimble()
+  .ofLocal(TestService)
+  .andLocal(DecoratedService)
+  .andLocal(NoviServis);
+
 export const api = new NimblyApi({
   nimblyInfo: {
     version: '0.0.1-alpha1',
@@ -63,4 +74,4 @@ export const api = new NimblyApi({
     description: 'This microservice is used for random stuff.',
     basePath: '/api'
   }
-}).from(new Nimble().ofLocal(TestService).andLocal(DecoratedService));
+}).from(modul);
