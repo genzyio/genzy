@@ -27,6 +27,19 @@ export const PREFIX_TO_METHOD_REG = {
   remove: 'delete',
 }
 
+export const METHOD_TO_HAS_BODY = {
+  'get': false,
+  'GET': false,
+  'post': true,
+  'POST': true,
+  'put': true,
+  'PUT': true,
+  'delete': false,
+  'DELETE': false,
+  'patch': true,
+  'PATCH': true,
+}
+
 export const MatchPathParamsRegex = /(?<=\/:).*?(?=(\/|$))/g;
 
 export const BASIC_TYPES = {

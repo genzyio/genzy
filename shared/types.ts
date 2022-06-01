@@ -58,41 +58,7 @@ export class Interceptable<TInterceptorCallback> {
   }
 }
 
-export type QueryParamDefinition = {
-  name: string;
-  index: number;
-};
-
-export type NimblyConfig = {
-  rootPath?: string;
-} & TypesConfig | PathConfig;
-
-export type MethodName = string;
-export type ParamName = string;
-
-export type TypesConfig = {
-  types?: {
-    [key: MethodName]: ({ index: number, type: Type })[];
-  };
-  returnTypes?: {
-    [key: MethodName]: ComplexType;
-  };
-};
-
-export type ComplexType = {
-  [key: ParamName]: Type;
-}
-
-export type Type = "boolean" | "string" | "int" | "float" | ComplexType;
-
-export type PathConfig = {
-  [key: MethodName]: {
-    method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-    path?: string;
-    query?: { index: number, name: string }[];
-    body?: boolean;
-  };
-};
+export type Modify<T, R> = Omit<T, keyof R> & R;
 
 export type ServiceMetaInfo = {
   name: string;
@@ -101,7 +67,7 @@ export type ServiceMetaInfo = {
 };
 
 export type RouteMetaInfo = {
-  httpMethod: string;
+  httpMethod: HTTPMethod;
   name: MethodName;
   path: string;
   params: Param[];
@@ -109,7 +75,33 @@ export type RouteMetaInfo = {
 };
 
 export type Param = {
-  source: 'query' | 'path' | 'body';
+  source: ParamSource;
   name: string;
-  type: Type;
+  type?: Type;
 }
+
+export type NimblyConfig = {
+  path?: string;
+} | PathConfig;
+
+
+export type ComplexType = {
+  [key: ParamName]: Type;
+}
+
+export type Action =  Modify<Omit<RouteMetaInfo, "name">, {
+  httpMethod?: HTTPMethod;
+  path?: string;
+  params?: Param[];
+  result?: ComplexType;
+}>;
+
+export type PathConfig = {
+  [key: MethodName]: Action;
+};
+
+export type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+export type ParamSource = 'query' | 'path' | 'body';
+export type Type = "boolean" | "string" | "int" | "float" | ComplexType;
+export type MethodName = string;
+export type ParamName = string;

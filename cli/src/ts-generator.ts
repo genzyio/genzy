@@ -1,5 +1,5 @@
 import { ServiceMetaInfo } from "../../shared/types";
-import { generate as generateUtil, getAllSubtypesFrom, getParametersFor, getSetFrom } from "./utils";
+import { adoptParams, generate as generateUtil, getSchemaInfoFrom } from "./utils";
 
 export function generate(url: string, dirPath: string, nunjucks: any) {
   generateUtil(url, dirPath, nunjucks, 'ts', fileContentFrom, indexFileContentFrom);
@@ -10,19 +10,17 @@ function capitalizeFirstLetter(string: string) {
 }
 
 export function fileContentFrom(service: ServiceMetaInfo, nunjucks: any): string {
-  const schemas = [];
-  const schemaNames = [];
-  service.schemas.forEach(schema => getAllSubtypesFrom(schema, schemas, schemaNames));
+  const { schemas, schemaNames } = getSchemaInfoFrom(service);
   return nunjucks.render('service.njk', {
     ...service,
-    schemas: getSetFrom(schemas).map(schema => JSON.stringify(schema, (k, v) => k.startsWith('$') ? undefined : v, 2)),
-    schemaNames: getSetFrom(schemaNames),
-    routes: service.routes.map((r) => ({
+    schemas,
+    schemaNames,
+    actions: service.actions.map((r) => ({
       ...r,
       httpMethod: capitalizeFirstLetter(r.httpMethod.toLowerCase()),
-      parameters: getParametersFor(r)
+      params: adoptParams(r.params)
     })),
-    existingMethods: [...new Set(service.routes.map((r) => capitalizeFirstLetter(r.httpMethod.toLowerCase())))]
+    existingMethods: [...new Set(service.actions.map((r) => capitalizeFirstLetter(r.httpMethod.toLowerCase())))]
   });
 }
 

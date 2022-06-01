@@ -1,13 +1,12 @@
 import {
   BUILT_IN_METHODS,
   MatchPathParamsRegex,
+  METHOD_TO_HAS_BODY,
   PREFIX_TO_METHOD_REG,
 } from "./constants";
 import {
-  ComplexType,
-  NimblyConfig,
-  QueryParamDefinition,
-  Type,
+  Action,
+  NimblyConfig, Param, ParamSource, PathConfig, ServiceMetaInfo,
 } from "./types";
 
 export function lowerFirstLetter(s: string) {
@@ -46,6 +45,24 @@ export function getResourcePath(cname, fname) {
   return `${camelToKebabCase(cname)}/${camelToKebabCase(fname)}`;
 }
 
+export function formParamsOf(methodName: string, action: Action|undefined): Param[] {
+  const params: Param[] = [...(action?.params ?? [] as any)];
+  if(params.filter(p => p.source === 'path').length === 0) {
+    const pathParamNames = extractPathParamsFrom(action?.path ?? '');
+    params.unshift(
+      ...pathParamNames.filter(name => !params.find(p => p.name === name))
+        .map(name => ({ name, source: "path" as ParamSource }))
+    );
+  }
+  if(METHOD_TO_HAS_BODY[action?.httpMethod ?? getHttpMethod(methodName)] && !params.find(p => p.source === 'body')) {
+    params.push({
+      name: 'body',
+      source: 'body'
+    });
+  }
+  return params;
+}
+
 export function extractPathParamsFrom(fullRoutePath: string) {
   return [...fullRoutePath.matchAll(MatchPathParamsRegex)].map((r) => r[0]);
 }
@@ -57,44 +74,17 @@ export function combineNimblyConfigs(
   return { ...(nimbly_config ?? {}), ...(nimbly ?? {}) };
 }
 
-export function getPathParamTypes(
-  pathParams: string[],
-  queryParamDefinitions: QueryParamDefinition[],
-  methodParamTypes: Type[]
-): Type[] {
-  return methodParamTypes
-    .filter((_, i) => !queryParamDefinitions.find((e) => e.index === i))
-    .filter((_, i) => pathParams[i])
-    .filter(type => typeof type !== "object");
-}
-
-export function getTypesFrom(meta: NimblyConfig, method: string) {
-  const schemas = [];
-  const methodParamTypes =
-    meta?.types?.[method]
-      ?.sort((a: any, b: any) => a.index - b.index)
-      ?.map((t) => t.type) ?? [];
-
-  const bodyType = getBodyType(methodParamTypes);
-  const returnType = meta?.returnTypes?.[method] ?? null;
-  if (!schemas.find((schema) => schema?.$typeName === bodyType?.$typeName)) {
-    !!bodyType && schemas.push(bodyType);
-  }
-  if (!schemas.find((schema) => schema?.$typeName === returnType?.$typeName)) {
-    !!returnType && schemas.push(returnType);
-  }
-
-  return {
-    bodyType,
-    returnType,
-    schemas,
-    methodParamTypes
-  }
-}
-
-export function getBodyType(methodParamTypes: Type[]): ComplexType {
-  const objectMethodParamType: any = methodParamTypes.find(
-    (type) => typeof type === "object"
-  );
-  return objectMethodParamType ?? null;
+export function nimblyConfigFrom(serviceMetaInfo: ServiceMetaInfo): NimblyConfig {
+  const result: NimblyConfig = {
+    path: serviceMetaInfo.path,
+  };
+  serviceMetaInfo.actions.forEach(action => {
+    result[action.name] = {
+      httpMethod: action.httpMethod,
+      params: action.params,
+      path: action.path,
+      result: action.result,
+    } as Action;
+  });
+  return result;
 }

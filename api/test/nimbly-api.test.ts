@@ -66,7 +66,7 @@ class AdditionalService {
 describe('NimblyApi', () => {
 
   it('should create nimble api', async () => {
-    const nimble = new Nimble().of(TestService).of(AdditionalService);
+    const nimble = new Nimble().addLocalServices(TestService, AdditionalService);
     const app = new NimblyApi().from(nimble);
 
     expect(app).toHaveProperty('listen');
@@ -89,7 +89,7 @@ describe('NimblyApi', () => {
   });
 
   it('should register before interceptors for object', async () => {
-    const nimble = new Nimble().of(TestService);
+    const nimble = new Nimble().addLocalService(TestService);
     const interceptorResult = { result: [ { test: 'result' } ] };
     const interceptorAddResult = { result: [ { test: 'result' } ] };
     const app = new NimblyApi()
@@ -124,7 +124,7 @@ describe('NimblyApi', () => {
   });
 
   it('should register after interceptors for object', async () => {
-    const nimble = new Nimble().of(TestService);
+    const nimble = new Nimble().addLocalService(TestService);
 
     const app = new NimblyApi()
       .interceptAfter({
@@ -156,7 +156,7 @@ describe('NimblyApi', () => {
   });
 
   it('should register interceptors for interceptor class', async () => {
-    const nimble = new Nimble().of(TestService);
+    const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi()
       .intercept({
         testService: TestServiceInterceptor as any
@@ -181,7 +181,7 @@ describe('NimblyApi', () => {
   });
 
   it('should register a global interceptor before function', async () => {
-    const nimble = new Nimble().of(TestService);
+    const nimble = new Nimble().addLocalService(TestService);
     const interceptorResult = { test: 'result' };
     const app = new NimblyApi()
       .interceptAll((req: Request, res: Response, next: NextFunction) => {
@@ -199,7 +199,7 @@ describe('NimblyApi', () => {
   });
 
   it('should register a global interceptor after function', async () => {
-    const nimble = new Nimble().of(TestService);
+    const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi()
       .interceptAllAfter((req: Request, res: Response, next: NextFunction) => {
         res.status(201);
@@ -216,7 +216,7 @@ describe('NimblyApi', () => {
   });
 
   it('should call after interceptor function last', async () => {
-    const nimble = new Nimble().of(TestService);
+    const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi()
       .interceptAllAfter((req: Request, res: Response, next: NextFunction) => {
         res.status(201);
@@ -237,7 +237,7 @@ describe('NimblyApi', () => {
   });
 
   it('should register error mappings', async () => {
-    const nimble = new Nimble().of(TestService);
+    const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi()
       .withErrors({
         [BadLogicError.name]: 400,
@@ -258,7 +258,7 @@ describe('NimblyApi', () => {
     existingApp.use(express.urlencoded({ extended: true }));
     existingApp.use(express.json());
     existingApp.use(cors({ origin: "*" }));
-    const nimble = new Nimble().of(TestService);
+    const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi({app: existingApp})
       .withErrors({
         [BadLogicError.name]: 400,

@@ -9,21 +9,29 @@ const getAllResult = [1, 2, 3];
 
 class TestService {
   $nimbly: NimblyConfig = {
-    rootPath: '/tests',
+    path: '/tests',
     getAll: {
-      method: 'GET',
+      httpMethod: 'GET',
       path: '/'
     },
     getById: {
-      path: '/:id'
+      path: '/:id',
+      params: [
+        { name: 'id', source: 'path' },
+        { name: 'body', source: 'body'}
+      ]
     },
     differentAddSomething: {
-      method: 'POST',
+      httpMethod: 'POST',
       path: '/'
     },
     randomUpdate: {
-      method: 'PUT',
-      path: '/random/:entityId'
+      httpMethod: 'PUT',
+      path: '/random/:entityId',
+      params: [
+        { name: 'entityId', source: 'path' },
+        { name: 'body', source: 'body'}
+      ]
     }
   }
 

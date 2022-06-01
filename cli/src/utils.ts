@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as fs from "fs";
-import { RouteMetaInfo } from "../../shared/types";
+import { Param, ServiceMetaInfo } from "../../shared/types";
 
 export function generate(
   url: string,
@@ -34,47 +34,51 @@ export async function fetchMeta(url: string) {
   return (await axios.get(`${url}/api/meta`)).data;
 }
 
-export function getParametersFor(route: RouteMetaInfo): any[] {
-  const params = getAllParamNamesFrom(route);
-  const types = getAllTypeNamesFrom(route);
-  return params.map((param, i) => ({
-    name: param,
-    type: types[i],
-    isQuery: !!route.queryParamDefinitions.find(({ index }) => index === i),
+export function adoptParams(params: Param[]) {
+  return params.map((p) => ({
+    ...p,
+    type: adoptType(p.type)
   }));
 }
 
-function getAllParamNamesFrom(route: RouteMetaInfo): any[] {
-  const params = [...route.pathParams] ?? [];
-  route.queryParamDefinitions
-    ?.sort((a, b) => a.index - b.index)
-    .forEach(({ index, name }) => params.splice(index, 0, name));
-  route.body && params.push("body");
-  return params;
+function adoptType(type) {
+  if(!type) return "any";
+  if(typeof type === "string")
+    return (type === "int" || type === "float") ? "number" : type;
+  return type.$typeName + (type.$isArray ? '[]' : '');
 }
 
-function getAllTypeNamesFrom(route: RouteMetaInfo): any[] {
-  return [
-    ...(route.pathParams.length ? (route.pathParamTypes.length ? route.pathParamTypes : ["any"]) : []),
-    ...(route.queryParams.length ? (route.queryParamTypes.length ? route.queryParamTypes : ["any"]) : []),
-    ...(route.bodyType
-      ? [route.bodyType.$typeName + (route.bodyType.$isArray ? "[]" : "")]
-      : ["any"]),
-  ];
+export function getSchemaInfoFrom(service: ServiceMetaInfo) {
+  const schemas = [];
+  const schemaNames = [];
+  service.actions.forEach((action) =>
+    action.params
+      .filter((p) => typeof p.type !== "string")
+      .forEach((p) => getAllSubtypesFrom(p.type, schemas, schemaNames))
+  );
+  return {
+    schemas: getSetFrom(schemas).map(schema => JSON.stringify(schema, (k, v) => k.startsWith('$') ? undefined : v, 2)),
+    schemaNames: getSetFrom(schemaNames),
+  };
 }
 
-export function getAllSubtypesFrom(schema: any, subtypes: any[], subtypeNames: string[]) {
-  if(typeof schema !== 'object')
-    return schema;
+export function getAllSubtypesFrom(
+  schema: any,
+  subtypes: any[],
+  subtypeNames: string[]
+) {
+  if (!schema || typeof schema !== "object") return adoptType(schema);
   const result = {};
-  Object.keys(schema).filter(k => !k.startsWith('$')).forEach(k => {
-    result[k] = getAllSubtypesFrom(schema[k], subtypes, subtypeNames);
-  });
+  Object.keys(schema)
+    .filter((k) => !k.startsWith("$"))
+    .forEach((k) => {
+      result[k] = getAllSubtypesFrom(schema[k], subtypes, subtypeNames);
+    });
   subtypes.push(result);
   subtypeNames.push(schema.$typeName);
-  return schema.$isArray ? `${schema.$typeName}[]` : schema.$typeName;
+  return adoptType(schema);
 }
 
 export function getSetFrom(list: any[]): any[] {
-  return [...new Set(list)].filter(s => !!s);
+  return [...new Set(list)].filter((s) => !!s);
 }

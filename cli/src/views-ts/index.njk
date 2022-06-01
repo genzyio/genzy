@@ -2,7 +2,7 @@
 import { Nimble } from 'nimbly-client';
 {% for service in services %}import { {{ service.name }} as {{service.name}}Local } from './{{ service.name }}';
 {% endfor %}
-const host = "{{ host }}";
+const host = "{{ host }}/api";
 
 export type NimbleServices = {
   {% for service in services %}{{ service.name.charAt(0).toLowerCase() + service.name.slice(1) }}: {{ service.name }}Local;
@@ -13,5 +13,5 @@ export const {
   {% for service in services %}{{ service.name.charAt(0).toLowerCase() + service.name.slice(1) }},
   {% endfor %}
 }: NimbleServices = new Nimble()
-{% for service in services %}  .ofRemote({{ service.name }}Local, host)
-{% endfor %}  .services();
+{% for service in services %}  .addRemoteService(host, {{ service.name }}Local)
+{% endfor %}  .getAllServices();

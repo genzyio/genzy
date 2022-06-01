@@ -1,7 +1,7 @@
 import realAxios from 'axios';
 import { RemoteProxyOf } from '../src/remote-proxy';
 import { ServiceRegistry } from '../src/service-registry';
-import { Post, Query } from '../../shared/decorators';
+import { Path, Post, Query } from '../../shared/decorators';
 
 jest.mock('axios');
 
@@ -10,7 +10,7 @@ const axios = realAxios as jest.Mocked<typeof realAxios>;
 class TestService {
   async getAll(@Query('test') test?: string) {}
   @Post('/:first/:third')
-  async test(first: string, @Query('second') second: boolean, third: string, body: any) {}
+  async test(@Path('first') first: string, @Query('second') second: boolean, @Path('third') third: string, body: any) {}
 }
 
 const serviceRegistry = new ServiceRegistry();

@@ -2,24 +2,25 @@ import realAxios from 'axios';
 import { RemoteProxyOf } from '../src/remote-proxy';
 import { ServiceRegistry } from '../src/service-registry';
 import { Get, Controller, Post, Put } from '../../shared/decorators';
+import { NimblyConfig } from '../../shared/types';
 
 jest.mock('axios');
 
 const axios = realAxios as jest.Mocked<typeof realAxios>;
 
 class TestService {
-  $nimbly = {
-    rootPath: '/tests',
+  $nimbly: NimblyConfig = {
+    path: '/tests',
     getAll: {
-      method: 'GET',
+      httpMethod: 'GET',
       path: ''
     },
     differentAdd: {
-      method: 'POST',
+      httpMethod: 'POST',
       path: ''
     },
     differentUpdate: {
-      method: 'PUT',
+      httpMethod: 'PUT',
       path: '/:id'
     },
   }
@@ -31,22 +32,6 @@ class TestService {
 
 @Controller('/tests')
 class TestServiceDecorated {
-  $nimbly = {
-    rootPath: '/tests',
-    getAll: {
-      method: 'GET',
-      path: ''
-    },
-    differentAdd: {
-      method: 'POST',
-      path: ''
-    },
-    differentUpdate: {
-      method: 'PUT',
-      path: '/:id'
-    },
-  }
-
   @Get('')
   async getAll() {}
   @Post('')

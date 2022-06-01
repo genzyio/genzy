@@ -1,20 +1,20 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import { ErrorHandler, ErrorRegistry } from "./error-handler";
-import { getMethodsOfClassInstance, getHttpMethod, camelToKebabCase, extractPathParamsFrom, combineNimblyConfigs, getPathParamTypes, getBodyType, getTypesFrom } from "../../shared/functions";
-import { ComplexType, NimblyConfig, Param, QueryParamDefinition, RouteMetaInfo, ServiceMetaInfo } from '../../shared/types';
+import { getMethodsOfClassInstance, getHttpMethod, camelToKebabCase, combineNimblyConfigs, formParamsOf } from "../../shared/functions";
+import { NimblyConfig, Param, RouteMetaInfo, ServiceMetaInfo } from '../../shared/types';
 
 export function RegisterRoutesFor(instance, app: Application, interceptors?: any, errorRegistry?: ErrorRegistry, basePath: string = '/api'): ServiceMetaInfo {
   const serviceClassName = instance.constructor.name || instance._class_name_;
   const meta: NimblyConfig = combineNimblyConfigs(instance?.$nimbly_config ?? {}, instance?.$nimbly ?? {});
-  const rootPath = meta?.rootPath != null ? meta?.rootPath as string : `/${camelToKebabCase(serviceClassName)}`;
-  const schemas: ComplexType[] = [];
+  const rootPath = meta?.path != null ? meta?.path as string : `/${camelToKebabCase(serviceClassName)}`;
 
   const routes: RouteMetaInfo[] = getMethodsOfClassInstance(instance).map((method: string) => {
     const methodPath = meta?.[method]?.path != null ? meta?.[method].path : `/${camelToKebabCase(method)}`;
-    const httpMethod = meta?.[method]?.method != null ? meta?.[method].method.toLowerCase() : getHttpMethod(method);
-    const queryParamDefinitions = meta?.[method]?.query ?? [];
+    const httpMethod = meta?.[method]?.httpMethod != null ? meta?.[method].httpMethod.toLowerCase() : getHttpMethod(method);
+    const params = formParamsOf(method, meta?.[method]);
+    const result = meta?.[method]?.result;
 
-    const handlers = [getServiceHandler(instance, method, errorRegistry, queryParamDefinitions)];
+    const handlers = [getServiceHandler(instance, method, errorRegistry, params)];
     if(interceptors) {
       handlers.unshift(...interceptors.beforeInterceptors);
       handlers.push(...interceptors.afterInterceptors);
@@ -31,33 +31,12 @@ export function RegisterRoutesFor(instance, app: Application, interceptors?: any
     const fullRoutePath = `${basePath}${rootPath}${methodPath}`.replace('\/\/', '/');
     app[httpMethod](fullRoutePath, ...handlers);
 
-    const pathParams = extractPathParamsFrom(fullRoutePath);
-    const queryParams: string[] = queryParamDefinitions.map(q => q.name);
-
-    const {
-      bodyType,
-      returnType,
-      methodParamTypes,
-      schemas: methodSchemas
-    } = getTypesFrom(meta, method);
-    schemas.push(...methodSchemas);
-
-    const hasBody = !!meta?.[method]?.body;
-    const pathParamTypes = getPathParamTypes(pathParams, queryParamDefinitions, methodParamTypes);
-
-    const params: Param[] = [
-      ...pathParams.map((pathParam, i) => ({ type: pathParamTypes[i], name: pathParam, source: 'path' })),
-      ...(hasBody ? [{ type: bodyType, name: 'body', source: 'body' }] : [])
-    ] as any;
-    queryParamDefinitions.sort((a, b) => a.index - b.index).forEach(({index, name}) => 
-      params.splice(index, 0, { type: methodParamTypes[index], name, source: 'query' }));
-
     return {
       httpMethod,
       name: method,
       path: methodPath,
-      params,
-      result: returnType
+      params: params.map(({ name, source, type }) => ({ name, source, type })),
+      ...(result ? {result} : {})
     }
   });
   return {
@@ -67,12 +46,20 @@ export function RegisterRoutesFor(instance, app: Application, interceptors?: any
   }
 }
 
-function getServiceHandler(instance, method: string, errorRegistry: ErrorRegistry, queryParamDefinitions: QueryParamDefinition[]) {
+function getServiceHandler(instance, method: string, errorRegistry: ErrorRegistry, params: Param[]) {
   return (req: Request, res: Response, next: NextFunction) => {
-    const pathParams = Object.values(req.params || {});
-    const bodyArgs = req.body ? [req.body] : [];
-    const argumentList = [...(pathParams), ...(bodyArgs)];
-    queryParamDefinitions.sort((a, b) => a.index - b.index).forEach(({index, name}) => argumentList.splice(index, 0, req.query[name]));
+    const argumentList = params.map(p => {
+      if(p.source === "body") {
+        return req.body;
+      } else if (p.source === "path") {
+        return req.params[p.name];
+      } else if (p.source === "query") {
+        return req.query[p.name];
+      }
+    });
+    if(req.body && !params.find(p => p.source === 'body')) {
+      argumentList.push(req.body);
+    }
     const result = instance[method](...argumentList);
     if (result instanceof Promise) {
       result.then(r => {

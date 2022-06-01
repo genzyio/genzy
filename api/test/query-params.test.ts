@@ -1,15 +1,21 @@
-import { Nimble } from "../../client/src/nimble";
+import { Nimble } from "nimbly-client";
 import { NimblyApi } from "../src/nimbly-api";
 import { agent } from "supertest";
 import { Get, Query } from "../../shared/decorators";
+import { NimblyConfig } from "../../shared/types";
 
 class TestService {
-  $nimbly = {
+  $nimbly: NimblyConfig = {
     get: {
-      query: [{ index: 0, name: "test" }],
+      params: [
+        { name: "test", source: 'query' }
+      ]
     },
     getMultiple: {
-      query: [{ index: 0, name: "test" }, { index: 1, name: "test2" }],
+      params: [
+        { name: "test", source: 'query' },
+        { name: "test2", source: 'query' },
+      ]
     },
   };
 
@@ -32,7 +38,7 @@ class TestService {
 
 describe("QueryParams", () => {
   it("should register a path that is able to receive query params", async () => {
-    const nimble = new Nimble().of(TestService);
+    const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi().from(nimble);
 
     await agent(app)
@@ -41,14 +47,14 @@ describe("QueryParams", () => {
   });
 
   it("should return undefined for not passed query param", async () => {
-    const nimble = new Nimble().of(TestService);
+    const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi().from(nimble);
 
     await agent(app).get("/api/test-service/get").expect(200, {});
   });
 
   it("should register a path that is able to receive multiple query params", async () => {
-    const nimble = new Nimble().of(TestService);
+    const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi().from(nimble);
 
     await agent(app).get("/api/test-service/get-multiple?test=asdf&test2=123").expect(200, {
@@ -58,7 +64,7 @@ describe("QueryParams", () => {
   });
 
   it("should register a path that is able to receive query params with Query decorator", async () => {
-    const nimble = new Nimble().of(TestService);
+    const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi().from(nimble);
 
     await agent(app).get("/api/test-service/decorated?testing=asdf&another=123").expect(200, {

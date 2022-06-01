@@ -1,6 +1,6 @@
 import { Nimble, NimblyApi } from '../../api/src';
 import { Get, Post, Controller } from '../../client/src';
-import { arrayOf, int, Query, Returns, ReturnsArrayOf, string, type } from '../../shared/decorators';
+import { arrayOf, int, Path, Query, Returns, ReturnsArrayOf, string, type } from '../../shared/decorators';
 
 class TestService {
   $nimbly = {
@@ -45,7 +45,7 @@ class DecoratedService {
   }
 
   @Get('/:id')
-  test(@string id: string, @Query('test') @string test?: string) {
+  test(@Path('id') @string id: string, @Query('test') @string test?: string) {
     return { id, arr: this.testService.get(id), test }
   }
 
@@ -56,6 +56,26 @@ class DecoratedService {
   }
 }
 
+@Controller('/configuration')
+class ConfigurationService {
+  @Get()
+  getAll() {
+    return [
+      {
+        id: 'prvi',
+        frequency: 1,
+        filter: `function filter(value, status) {
+          return true;
+        }
+        function finalFilter(topic, value, status) {
+          return filter(value, status) && topic === "test";
+        }`
+      }
+
+    ]
+  }
+}
+
 class NoviServis {
   async getNesto() {
     return [1, 2, 3, 4];
@@ -63,7 +83,7 @@ class NoviServis {
 }
 
 const modul = new Nimble()
-  .addLocalServices(TestService, DecoratedService, NoviServis)
+  .addLocalServices(TestService, DecoratedService, NoviServis, ConfigurationService)
 
 export const api = new NimblyApi({
   nimblyInfo: {

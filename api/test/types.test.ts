@@ -48,30 +48,18 @@ class Test4Service {
 
 describe("Types", () => {
   it("should be undefined", async () => {
-    const { test1Service } = new Nimble().of(Test1Service).services();
+    const { test1Service } = new Nimble().addLocalService(Test1Service).getAllServices();
 
     expect(test1Service.$nimbly_config?.types).toBe(undefined);
   });
 
   it("should have param string", async () => {
-    const { test2Service } = new Nimble().of(Test2Service).services();
+    const { test2Service } = new Nimble().addLocalService(Test2Service).getAllServices();
 
-    expect(test2Service.$nimbly_config?.types).not.toBeUndefined();
-    expect(test2Service.$nimbly_config?.types.get).toContainEqual({
-      index: 0,
-      type: BASIC_TYPES.string,
-      isArray: false
-    });
-    expect(test2Service.$nimbly_config?.types.get).toContainEqual({
-      index: 1,
-      type: BASIC_TYPES.int,
-      isArray: false
-    });
-    expect(test2Service.$nimbly_config?.types.get).toContainEqual({
-      index: 2,
-      type: BASIC_TYPES.boolean,
-      isArray: false
-    });
+    expect(test2Service.$nimbly_config?.get).not.toBeUndefined();
+    expect(test2Service.$nimbly_config.get.params[0].type).toBe(BASIC_TYPES.string);
+    expect(test2Service.$nimbly_config.get.params[1].type).toBe(BASIC_TYPES.int);
+    expect(test2Service.$nimbly_config.get.params[2].type).toBe(BASIC_TYPES.boolean);
   });
 
   it("should support property in model", async () => {
@@ -100,59 +88,29 @@ describe("Types", () => {
     expect(model.$nimbly_config?.types.type).toStrictEqual({...example.$nimbly_config.types, $isArray: false, $typeName: 'Example'});
   });
 
-  it("should support type decorator in the list of params", async () => {
-    const { test3Service } = new Nimble().of(Test3Service).services();
+  it("should support type decorator in the list addLocalService params", async () => {
+    const { test3Service } = new Nimble().addLocalService(Test3Service).getAllServices();
 
-    expect(test3Service.$nimbly_config?.types).not.toBeUndefined();
-    expect(test3Service.$nimbly_config?.types.get).toContainEqual({
-      index: 0,
-      type: BASIC_TYPES.string,
-      isArray: false
-    });
-    expect(test3Service.$nimbly_config?.types.get).toContainEqual({
-      index: 1,
-      type: BASIC_TYPES.int,
-      isArray: false
-    });
-    expect(test3Service.$nimbly_config?.types.get).toContainEqual({
-      index: 2,
-      type: BASIC_TYPES.boolean,
-      isArray: false
-    });
-    expect(test3Service.$nimbly_config?.types.get).toContainEqual({
-      index: 3,
-      type: {...(new Example() as any).$nimbly_config?.types, $isArray: false, $typeName: 'Example'},
-      isArray: false
-    });
+    expect(test3Service.$nimbly_config?.get).not.toBeUndefined();
+    expect(test3Service.$nimbly_config.get.params[0].type).toBe(BASIC_TYPES.string);
+    expect(test3Service.$nimbly_config.get.params[1].type).toBe(BASIC_TYPES.int);
+    expect(test3Service.$nimbly_config.get.params[2].type).toBe(BASIC_TYPES.boolean);
+    expect(test3Service.$nimbly_config.get.params[3].type)
+      .toStrictEqual({...(new Example() as any).$nimbly_config?.types, $isArray: false, $typeName: 'Example'});
   });
 
-  it("should support array decorator in the list of params", async () => {
-    const { test4Service } = new Nimble().of(Test4Service).services();
+  it("should support array decorator in the list addLocalService params", async () => {
+    const { test4Service } = new Nimble().addLocalService(Test4Service).getAllServices();
 
-    expect(test4Service.$nimbly_config?.types).not.toBeUndefined();
-    expect(test4Service.$nimbly_config?.types.get).toContainEqual({
-      index: 0,
-      type: BASIC_TYPES.string,
-      isArray: false
-    });
-    expect(test4Service.$nimbly_config?.types.get).toContainEqual({
-      index: 1,
-      type: BASIC_TYPES.int,
-      isArray: false
-    });
-    expect(test4Service.$nimbly_config?.types.get).toContainEqual({
-      index: 2,
-      type: BASIC_TYPES.boolean,
-      isArray: false
-    });
-    expect(test4Service.$nimbly_config?.types.get).toContainEqual({
-      index: 3,
-      type: {
+    expect(test4Service.$nimbly_config?.get).not.toBeUndefined();
+    expect(test4Service.$nimbly_config.get.params[0].type).toBe(BASIC_TYPES.string);
+    expect(test4Service.$nimbly_config.get.params[1].type).toBe(BASIC_TYPES.int);
+    expect(test4Service.$nimbly_config.get.params[2].type).toBe(BASIC_TYPES.boolean);
+    expect(test4Service.$nimbly_config.get.params[3].type)
+      .toStrictEqual({
         ...(new Example() as any).$nimbly_config?.types,
         $isArray: true,
         $typeName: 'Example'
-      },
-      isArray: true
-    });
+      });
   });
 });

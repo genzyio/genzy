@@ -12,7 +12,8 @@ const options = yargs
  .option("o", { alias: "outDir", describe: "Output directory", type: "string", demandOption: true })
  .argv as any;
 
-nunjucks.configure(path.resolve(__dirname, "./src/views-" + options.language), { autoescape: true });
+// path.resolve(__dirname, 
+nunjucks.configure("./src/views-" + options.language, { autoescape: true });
 
 switch (options.language) {
   case 'js':

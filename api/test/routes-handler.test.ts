@@ -26,6 +26,7 @@ const invokeRequestHandler = (route: string, body: any, params?: any) => {
 
 class TestService {
   $nimbly = {
+    path: '/tests',
     deleteSomething: {
       path: '/delete-something/:id'
     }
@@ -50,7 +51,7 @@ describe('RegisterRoutesFor', () => {
   it('should register all GET routes of the service', async () => {
     RegisterRoutesFor(new TestService(), app);
 
-    const expectedGetRoute = '/api/test-service/get-all';
+    const expectedGetRoute = '/api/tests/get-all';
     expect(app.get).toBeCalledWith(expectedGetRoute, expect.anything(), expect.anything());
 
     
@@ -65,7 +66,7 @@ describe('RegisterRoutesFor', () => {
   it('should register all POST routes of the service', async () => {
     RegisterRoutesFor(new TestService(), app);
 
-    const expectedPostRoute = '/api/test-service/add-something';
+    const expectedPostRoute = '/api/tests/add-something';
     expect(app.post).toBeCalledWith(expectedPostRoute, expect.anything(), expect.anything());
 
     const arg = { test: "asdf" };
@@ -79,7 +80,7 @@ describe('RegisterRoutesFor', () => {
   it('should register all PUT routes of the service', async () => {
     RegisterRoutesFor(new TestService(), app);
 
-    const expectedPutRoute = '/api/test-service/update-something';
+    const expectedPutRoute = '/api/tests/update-something';
     expect(app.put).toBeCalledWith(expectedPutRoute, expect.anything(), expect.anything());
 
     const arg = { test: "asdf" };
@@ -94,8 +95,8 @@ describe('RegisterRoutesFor', () => {
     RegisterRoutesFor(new TestService(), app);
 
     const id = 'asdf';
-    const expectedDeleteRegisterRoute = '/api/test-service/delete-something/:id';
-    const expectedDeleteCallRoute = '/api/test-service/delete-something/' + id;
+    const expectedDeleteRegisterRoute = '/api/tests/delete-something/:id';
+    const expectedDeleteCallRoute = '/api/tests/delete-something/' + id;
     expect(app.delete).toBeCalledWith(expectedDeleteRegisterRoute, expect.anything(), expect.anything());
 
     const secArg = { lala: "po" };

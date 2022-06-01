@@ -10,7 +10,7 @@ class TestService {
   async getAll() {}
   async addSomething(test) {}
   async updateSomething(test) {}
-  async deleteSomething(test, test2) {}
+  async deleteSomething(test) {}
 }
 
 const serviceRegistry = new ServiceRegistry();
@@ -74,13 +74,12 @@ describe('RemoteProxyOf', () => {
     const testServiceProxy = RemoteProxyOf<TestService>(TestService, origin, serviceRegistry);
     (axios as any).mockResolvedValue({ data: [1] });
 
-    const arg1 = { test: "123" };
-    const arg2 = 123;
-    const result = await testServiceProxy.deleteSomething(arg1, arg2);
+    const arg = { test: "123" };
+    const result = await testServiceProxy.deleteSomething(arg);
 
     expect(axios).toBeCalledWith({
       method: 'delete',
-      data: arg2,
+      data: null, // because delete has no body
       headers: {},
       url: origin + '/test-service/delete-something'
     });
