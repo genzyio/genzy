@@ -24,9 +24,9 @@ class ExampleService {
   async get() {}
 }
 
-const nimble = new Nimble().ofRemote(ExampleService, "http://localhost:3000");
+const nimble = new Nimble().addRemoteService("http://localhost:3000", ExampleService);
 
-const { exampleService } = nimble.services();
+const { exampleService } = nimble.getAllServices();
 ```
 
   </TabItem>
@@ -39,9 +39,9 @@ class ExampleService {
   async get() {}
 }
 
-const nimble = new Nimble().ofRemote(ExampleService, "http://localhost:3000");
+const nimble = new Nimble().addRemoteService("http://localhost:3000", ExampleService);
 
-const { exampleService } = nimble.services();
+const { exampleService } = nimble.getAllServices();
 ```
 
   </TabItem>
@@ -54,13 +54,13 @@ class ExampleService {
   async get() {}
 }
 
-const nimble = new Nimble().ofRemote(ExampleService, "http://localhost:3000");
+const nimble = new Nimble().addRemoteService("http://localhost:3000", ExampleService);
 
 type NimblyServices = {
   exampleService: ExampleService;
 };
 
-const { exampleService }: NimblyServices = nimble.services();
+const { exampleService }: NimblyServices = nimble.getAllServices();
 ```
 
   </TabItem>

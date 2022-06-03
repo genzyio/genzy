@@ -7,9 +7,9 @@ slug: /
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-## What Nimbly is
+## What N1mbly is
 
-Nimbly is a JavaScript library that enables rapid development of web applications.
+N1mbly is a JavaScript library that enables rapid development of web applications.
 
 It is built on top of the [Express](https://expressjs.com/) framework and provides additional features like automatic routes registration, client code generation and [OpenAPI](https://www.openapis.org/) documentation, along with [SwaggerUI](https://swagger.io/).
 
@@ -50,8 +50,7 @@ class AccountService {
 }
 
 const usersNimble = new Nimble()
-  .ofLocal(UserService)
-  .andLocal(AccountService);
+  .addLocalServices(UserService, AccountService);
 
 const app = new NimblyApi().from(usersNimble);
 app.listen(3000);
@@ -91,8 +90,7 @@ class AccountService {
 }
 
 const usersNimble = new Nimble()
-  .ofLocal(UserService)
-  .andLocal(AccountService);
+  .addLocalServices(UserService, AccountService);
 
 const app = new NimblyApi().from(usersNimble);
 app.listen(3000);
@@ -102,9 +100,9 @@ app.listen(3000);
 
 #### Server
 ```ts
-import { Nimble, NimblyApi, Service, Post, Get } from 'nimbly-api';
+import { Nimble, NimblyApi, Controller, Post, Get } from 'nimbly-api';
 
-@Service('/users')
+@Controller('/users')
 class UserService {
   @Post()
   async createUser(user) {
@@ -113,7 +111,7 @@ class UserService {
   }
 }
 
-@Service('/accounts')
+@Controller('/accounts')
 class AccountService {
   // UserService is automatically injected
   constructor({ userService }) {
@@ -136,8 +134,7 @@ class AccountService {
 }
 
 const usersNimble = new Nimble()
-  .ofLocal(UserService)
-  .andLocal(AccountService);
+  .addLocalServices(UserService, AccountService);
 
 const app = new NimblyApi().from(usersNimble);
 app.listen(3000);
@@ -164,11 +161,10 @@ class AccountService {
 }
 
 const usersNimble = new Nimble()
-  .ofRemote(UserService, host)
-  .andRemote(AccountService, host);
+  .addRemoteServices(host, UserService, AccountService);
 
 // The instances are available for custom usage
-const { userService, accountService } = usersNimble.services();
+const { userService, accountService } = usersNimble.getAllServices();
 
 // Use the services
 accountService.createAccount({
@@ -200,11 +196,10 @@ class AccountService {
 }
 
 const usersNimble = new Nimble()
-  .ofRemote(UserService, host)
-  .andRemote(AccountService, host);
+  .addRemoteServices(host, UserService, AccountService);
 
 // The instances are available for custom usage
-const { userService, accountService } = usersNimble.services();
+const { userService, accountService } = usersNimble.getAllServices();
 
 // Use the services
 accountService.createAccount({
@@ -222,18 +217,18 @@ const allAccounts = await accountService.getAllAccounts();
 #### Client
 
 ```ts
-import { Nimble, Service, Post, Get } from 'nimbly-client';
+import { Nimble, Controller, Post, Get } from 'nimbly-client';
 
 const host = 'http://localhost:3000';
 
 // With TS you can use decorators
-@Service('/users')
+@Controller('/users')
 class UserService {
   @Post()
   async createUser(user) {}
 }
 
-@Service('/accounts')
+@Controller('/accounts')
 class AccountService {
   @Get('/all')
   async getAllAccounts() {}
@@ -241,8 +236,7 @@ class AccountService {
 }
 
 const usersNimble = new Nimble()
-  .ofRemote(UserService, host)
-  .andRemote(AccountService, host);
+  .addRemoteServices(host, UserService, AccountService);
 
 type NimblyServices = {
   userService: UserService,
@@ -250,7 +244,7 @@ type NimblyServices = {
 }
 
 // The instances are available for custom usage
-const { userService, accountService }: NimblyServices = usersNimble.services();
+const { userService, accountService }: NimblyServices = usersNimble.getAllServices();
 
 // Use the services
 accountService.createAccount({
@@ -267,7 +261,7 @@ const allAccounts = await accountService.getAllAccounts();
 
 ## Features
 
-Here are the features provided by Nimbly:
+Here are the features provided by N1mbly:
 
 ### API
 

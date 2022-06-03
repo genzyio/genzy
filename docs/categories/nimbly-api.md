@@ -36,8 +36,7 @@ class AccountService {
 }
 
 const usersNimble = new Nimble()
-  .ofLocal(UserService)
-  .andLocal(AccountService);
+  .addLocalServices(UserService, AccountService);
 
 const app = new NimblyApi().from(usersNimble);
 app.listen(3000);
@@ -61,8 +60,7 @@ class AccountService {
 }
 
 const usersNimble = new Nimble()
-  .ofLocal(UserService)
-  .andLocal(AccountService);
+  .addLocalServices(UserService, AccountService);
 
 const app = new NimblyApi().from(usersNimble);
 app.listen(3000);
@@ -86,8 +84,7 @@ class AccountService {
 }
 
 const usersNimble = new Nimble()
-  .ofLocal(UserService)
-  .andLocal(AccountService);
+  .addLocalServices(UserService, AccountService);
 
 const app = new NimblyApi().from(usersNimble);
 app.listen(3000);
@@ -118,8 +115,7 @@ class AccountService {
 }
 
 const usersNimble = new Nimble()
-  .ofRemote(UserService, 'http://localhost:3000')
-  .andRemote(AccountService, 'http://localhost:3000');
+  .addRemoteServices('http://localhost:3000', UserService, AccountService);
 
 const app = new NimblyApi().from(usersNimble);
 app.listen(3000);
@@ -139,8 +135,7 @@ class AccountService {
 }
 
 const usersNimble = new Nimble()
-  .ofRemote(UserService, 'http://localhost:3000')
-  .andRemote(AccountService, 'http://localhost:3000');
+  .addRemoteServices('http://localhost:3000', UserService, AccountService);
 
 const app = new NimblyApi().from(usersNimble);
 app.listen(3000);
@@ -160,8 +155,7 @@ class AccountService {
 }
 
 const usersNimble = new Nimble()
-  .ofRemote(UserService, 'http://localhost:3000')
-  .andRemote(AccountService, 'http://localhost:3000');
+  .addRemoteServices('http://localhost:3000', UserService, AccountService);
 
 const app = new NimblyApi().from(usersNimble);
 app.listen(3000);
@@ -181,11 +175,13 @@ const { Nimble, NimblyApi } = require('nimbly-api');
 
 class UserService {
   $nimbly = {
-    rootPath: '/users',
+    path: '/users',
     createUser: {
-      method: 'POST',
+      httpMethod: 'POST',
       path: '/',
-      body: true
+      params: [
+        { name: 'user', source: 'body' }
+      ]
     }
   }
   async createUser(user) {
@@ -194,8 +190,8 @@ class UserService {
 }
 
 class AccountService {
-    $nimbly = {
-    rootPath: '/accounts',
+  $nimbly = {
+    path: '/accounts',
     getAllAccounts: {
       method: 'GET',
       path: '/'
@@ -207,8 +203,7 @@ class AccountService {
 }
 
 const usersNimble = new Nimble()
-  .ofLocal(UserService)
-  .andLocal(AccountService);
+  .addLocalServices(UserService, AccountService);
 
 const app = new NimblyApi().from(usersNimble);
 app.listen(3000);
@@ -221,11 +216,13 @@ import { Nimble, NimblyApi } from 'nimbly-api';
 
 class UserService {
   $nimbly = {
-    rootPath: '/users',
+    path: '/users',
     createUser: {
-      method: 'POST',
+      httpMethod: 'POST',
       path: '/',
-      body: true
+      params: [
+        { name: 'user', source: 'body' }
+      ]
     }
   }
   async createUser(user) {
@@ -234,8 +231,8 @@ class UserService {
 }
 
 class AccountService {
-    $nimbly = {
-    rootPath: '/accounts',
+  $nimbly = {
+    path: '/accounts',
     getAllAccounts: {
       method: 'GET',
       path: '/'
@@ -247,8 +244,7 @@ class AccountService {
 }
 
 const usersNimble = new Nimble()
-  .ofLocal(UserService)
-  .andLocal(AccountService);
+  .addLocalServices(UserService, AccountService);
 
 const app = new NimblyApi().from(usersNimble);
 app.listen(3000);
@@ -257,17 +253,17 @@ app.listen(3000);
   <TabItem value="ts" label="TypeScript" default>
 
 ```ts
-import { Nimble, NimblyApi, Service, Get, Post } from 'nimbly-api';
+import { Nimble, NimblyApi, Controller, Get, Post, Body } from 'nimbly-api';
 
-@Service('/users')
+@Controller('/users')
 class UserService {
   @Post()
-  async createUser(user): Promise<any> {
+  async createUser(@Body() user): Promise<any> {
     return user;
   }
 }
 
-@Service('/accounts')
+@Controller('/accounts')
 class AccountService {
   @Get()
   async getAllAccounts(): Promise<any[]> {
@@ -276,8 +272,7 @@ class AccountService {
 }
 
 const usersNimble = new Nimble()
-  .ofLocal(UserService)
-  .andLocal(AccountService);
+  .addLocalServices(UserService, AccountService);
 
 const app = new NimblyApi().from(usersNimble);
 app.listen(3000);

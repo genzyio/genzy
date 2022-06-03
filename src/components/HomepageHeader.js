@@ -12,17 +12,18 @@ export default function HomepageHeader() {
         <div className={styles.left}>
           <ThemedImage
             className={styles.logo}
-            alt="Nimbly logo"
+            alt="N1mbly logo"
             sources={{
-              light: useBaseUrl("images/logo.svg"),
-              dark: useBaseUrl("images/logo-dark.svg"),
+              light: useBaseUrl("images/logo-new.svg"),
+              dark: useBaseUrl("images/logo-new-dark.svg"),
             }}
           />
         </div>
         <div className={styles.right}>
-          <h1 className="title">Nimbly</h1>
-          <p >
-            <Translate>Nimbly is a JavaScript library that enables rapid development of web applications and puts the focus on implementing the business logic instead of spending much time and effort on configuration.</Translate>
+          <h1 className="title">N1m<span className={styles.colorPrimary}>b</span>ly</h1>
+          <h4>Number 1 microservice <span className={styles.colorPrimary}>d</span>evelopment library.</h4>
+          <p>
+            <Translate>N1mbly is a JavaScript library that enables rapid development of web applications and puts the focus on implementing the business logic instead of spending much time and effort on configuration.</Translate>
           </p>
           <div className={styles.buttons}>
             <Link

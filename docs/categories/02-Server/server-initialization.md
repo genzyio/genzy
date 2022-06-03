@@ -20,7 +20,7 @@ Once you have [installed](server-installation.md) the `nimbly-api` library, you 
 ```js
 const { NimblyApi, Nimble } = require('nimbly-api');
 
-const nimble = new Nimble().of(/* service */);
+const nimble = new Nimble().addLocalServices(/* services */);
 
 const app = new NimblyApi().from(nimble);
 
@@ -33,7 +33,7 @@ app.listen(3000);
 ```js
 import { NimblyApi, Nimble } from 'nimbly-api';
 
-const nimble = new Nimble().of(/* service */);
+const nimble = new Nimble().addLocalServices(/* services */);
 
 const app = new NimblyApi().from(nimble);
 
@@ -46,7 +46,7 @@ app.listen(3000);
 ```ts
 import { NimblyApi, Nimble } from 'nimbly-api';
 
-const nimble = new Nimble().of(/* service */);
+const nimble = new Nimble().addLocalServices(/* services */);
 
 const app = new NimblyApi().from(nimble);
 
@@ -67,7 +67,7 @@ This implicitly starts a [Express Application](http://expressjs.com/en/4x/api.ht
 const express = require("express");
 const { NimblyApi, Nimble } = require('nimbly-api');
 
-const nimble = new Nimble().of(/* service */);
+const nimble = new Nimble().addLocalServices(/* services */);
 
 const existingApp = express();
 
@@ -83,7 +83,7 @@ existingApp.listen(3000);
 import * as express from 'express';
 import { NimblyApi, Nimble } from 'nimbly-api';
 
-const nimble = new Nimble().of(/* service */);
+const nimble = new Nimble().addLocalServices(/* services */);
 
 const existingApp = express();
 
@@ -99,7 +99,7 @@ existingApp.listen(3000);
 import * as express from 'express';
 import { NimblyApi, Nimble } from 'nimbly-api';
 
-const nimble = new Nimble().of(/* service */);
+const nimble = new Nimble().addLocalServices(/* services */);
 
 const existingApp = express();
 

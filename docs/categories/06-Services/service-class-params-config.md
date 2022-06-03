@@ -21,33 +21,44 @@ If you're using decorators, make sure that you've set `"experimentalDecorators"`
 ```js
 class ExampleService {
   $nimbly = {
-    rootPath: '/',
+    path: '/',
     getAll: {
-      method: 'GET',
+      httpMethod: 'GET',
       path: '/',
-      query: [
-        { index: 0, name: "pageNumber" },
-        { index: 1, name: "pageSize" },
+      params: [
+        { source: 'query', name: "pageNumber" },
+        { source: 'query', name: "pageSize" },
       ]
     },
     getById: {
-      method: 'GET',
+      httpMethod: 'GET',
       path: '/:id',
-      query: [ { index: 0, name: "includeDetails" } ]
+      params: [
+        { source: 'query', name: "includeDetails" }
+        { source: 'path', name: 'id' },
+      ]
     },
     add: {
-      method: 'POST',
+      httpMethod: 'POST',
       path: '/',
-      body: true
+      params: [
+        { source: 'body', name: 'example' }
+      ]
     },
     update: {
-      method: 'PUT',
+      httpMethod: 'PUT',
       path: '/:id',
-      body: true
+      params: [
+        { source: 'path', name: 'id' },
+        { source: 'body', name: 'example' }
+      ]
     },
     delete: {
-      method: 'DELETE',
-      path: '/:id'
+      httpMethod: 'DELETE',
+      path: '/:id',
+      params: [
+        { source: 'path', name: 'id' },
+      ]
     },
   }
   
@@ -75,33 +86,44 @@ class ExampleService {
 ```js
 class ExampleService {
   $nimbly = {
-    rootPath: '/',
+    path: '/',
     getAll: {
-      method: 'GET',
+      httpMethod: 'GET',
       path: '/',
-      query: [
-        { index: 0, name: "pageNumber" },
-        { index: 1, name: "pageSize" },
+      params: [
+        { source: 'query', name: "pageNumber" },
+        { source: 'query', name: "pageSize" },
       ]
     },
     getById: {
-      method: 'GET',
+      httpMethod: 'GET',
       path: '/:id',
-      query: [ { index: 0, name: "includeDetails" } ]
+      params: [
+        { source: 'query', name: "includeDetails" },
+        { source: 'path', name: 'id' },
+      ]
     },
     add: {
-      method: 'POST',
+      httpMethod: 'POST',
       path: '/',
-      body: true
+      params: [
+        { source: 'body', name: 'example' }
+      ]
     },
     update: {
-      method: 'PUT',
+      httpMethod: 'PUT',
       path: '/:id',
-      body: true
+      params: [
+        { source: 'path', name: 'id' },
+        { source: 'body', name: 'example' }
+      ]
     },
     delete: {
-      method: 'DELETE',
-      path: '/:id'
+      httpMethod: 'DELETE',
+      path: '/:id',
+      params: [
+        { source: 'path', name: 'id' },
+      ]
     },
   }
   
@@ -127,28 +149,28 @@ class ExampleService {
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { Service, Get, Post, Put, Delete, Query } from "nimbly-client"; // or nimbly-api
+import { Controller, Get, Post, Put, Delete, Query, Path, Body } from "nimbly-client"; // or nimbly-api
 
-@Service('/')
+@Controller('/')
 class ExampleService {
   @Get()
   async getAll(@Query('pageNumber') pageNumber: number, @Query('pageSize') pageSize: number): Promise<any[]> {
     return [];
   }
   @Get('/:id')
-  async getById(@Query('includeDetails') includeDetails: boolean, id: string): Promise<any> {
+  async getById(@Query('includeDetails') includeDetails: boolean, @Path('id') id: string): Promise<any> {
     return {};
   }
   @Post()
-  async add(example: any): Promise<any> {
+  async add(@Body() example: any): Promise<any> {
     return example;
   }
   @Put('/:id')
-  async update(id: string, example: any): Promise<any> {
+  async update(@Path('id') id: string, @Body() example: any): Promise<any> {
     return example;
   }
   @Delete('/:id')
-  async delete(id: string): Promise<any> {
+  async delete(@Path('id') id: string): Promise<any> {
     return { id };
   }
 }
@@ -158,5 +180,5 @@ class ExampleService {
 </Tabs>
 
 :::important
-Configuration must be used both on the client and the server side, since it is used for telling `Nimbly` how and where to send the requests, or register the API routes.
+Configuration must be used both on the client and the server side, since it is used for telling `N1mbly` how and where to send the requests, or register the API routes.
 :::

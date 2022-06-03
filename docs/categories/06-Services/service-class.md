@@ -11,7 +11,7 @@ import TabItem from '@theme/TabItem';
 
 Service class is a JavaScript class that implements an arbitrary piece of business logic. It's methods can have parameters, and can also return results.
 
-Nimbly can generate a Web API or an HTTP Client from any Service Class.
+N1mbly can generate a Web API or an HTTP Client from any Service Class.
 
 ## Plain
 
@@ -31,7 +31,7 @@ class ExampleService {
   async add(example) {
     return example;
   }
-  async update(id, example) {
+  async update(example) {
     return example;
   }
   async delete(id) {
@@ -54,7 +54,7 @@ class ExampleService {
   async add(example) {
     return example;
   }
-  async update(id, example) {
+  async update(example) {
     return example;
   }
   async delete(id) {
@@ -77,7 +77,7 @@ class ExampleService {
   async add(example: any): Promise<any> {
     return example;
   }
-  async update(id: string, example: any): Promise<any> {
+  async update(example: any): Promise<any> {
     return example;
   }
   async delete(id: string): Promise<any> {
@@ -105,27 +105,25 @@ If you're using decorators, make sure that you've set `"experimentalDecorators"`
 ```js
 class ExampleService {
   $nimbly = {
-    rootPath: '/',
+    path: '/',
     getAll: {
-      method: 'GET',
+      httpMethod: 'GET',
       path: '/'
     },
     getById: {
-      method: 'GET',
+      httpMethod: 'GET',
       path: '/:id'
     },
     add: {
-      method: 'POST',
-      path: '/',
-      body: true
+      httpMethod: 'POST',
+      path: '/'
     },
     update: {
-      method: 'PUT',
-      path: '/:id',
-      body: true
+      httpMethod: 'PUT',
+      path: '/'
     },
     delete: {
-      method: 'DELETE',
+      httpMethod: 'DELETE',
       path: '/:id'
     },
   }
@@ -139,7 +137,7 @@ class ExampleService {
   async add(example) {
     return example;
   }
-  async update(id, example) {
+  async update(example) {
     return example;
   }
   async delete(id) {
@@ -154,27 +152,25 @@ class ExampleService {
 ```js
 class ExampleService {
   $nimbly = {
-    rootPath: '/',
+    path: '/',
     getAll: {
-      method: 'GET',
+      httpMethod: 'GET',
       path: '/'
     },
     getById: {
-      method: 'GET',
+      httpMethod: 'GET',
       path: '/:id'
     },
     add: {
-      method: 'POST',
-      path: '/',
-      body: true
+      httpMethod: 'POST',
+      path: '/'
     },
     update: {
-      method: 'PUT',
-      path: '/:id',
-      body: true
+      httpMethod: 'PUT',
+      path: '/'
     },
     delete: {
-      method: 'DELETE',
+      httpMethod: 'DELETE',
       path: '/:id'
     },
   }
@@ -188,7 +184,7 @@ class ExampleService {
   async add(example) {
     return example;
   }
-  async update(id, example) {
+  async update(example) {
     return example;
   }
   async delete(id) {
@@ -201,9 +197,9 @@ class ExampleService {
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { Service, Get, Post, Put, Delete } from "nimbly-client"; // or nimbly-api
+import { Controller, Get, Post, Put, Delete } from "nimbly-client"; // or nimbly-api
 
-@Service('/')
+@Controller('/')
 class ExampleService {
   @Get()
   async getAll(): Promise<any[]> {
@@ -217,8 +213,8 @@ class ExampleService {
   async add(example: any): Promise<any> {
     return example;
   }
-  @Put('/:id')
-  async update(id: string, example: any): Promise<any> {
+  @Put()
+  async update(example: any): Promise<any> {
     return example;
   }
   @Delete('/:id')

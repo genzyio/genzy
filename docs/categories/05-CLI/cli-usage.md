@@ -21,7 +21,7 @@ The syntax for generating the client code is simple, you need to run the `nimbly
 - `-l` - language
 - - `ts` - generates the TypeScript client.
 - - `js` - generates the JavaScript client.
-- `-h` - the url of the Nimbly deployment.
+- `-h` - the url of the N1mbly deployment.
 - `-o` - the path of the directory (existing or new) in which the client files will be stored.
 
 ## Generating the Client

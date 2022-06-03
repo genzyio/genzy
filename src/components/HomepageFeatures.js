@@ -11,7 +11,7 @@ const FeatureList = [
     title: <Translate>Rapid Development</Translate>,
     description: (
       <Translate>
-        You don't have to spend time and effort on configuring the web API and the documentation. Focus on the business logic, and let Nimbly handle the rest.
+        You don't have to spend time and effort on configuring the web API and the documentation. Focus on the business logic, and let N1mbly handle the rest.
       </Translate>
     ),
     icon: <Rapid className={ styles.icon + ' ' + styles.padding  } />
@@ -20,7 +20,7 @@ const FeatureList = [
     title: <Translate>Automation</Translate>,
     description: (
       <Translate>
-        Nimbly is able to automatically generate a Rest API with OpenAPI documentation and SwaggerUI just from the plain service classes that are provided. It also automatically generates the client code, supports custom configuration and more!
+        N1mbly is able to automatically generate a Rest API with OpenAPI documentation and SwaggerUI just from the plain service classes that are provided. It also automatically generates the client code, supports custom configuration and more!
       </Translate>
     ),
     icon: <Automate className={ styles.icon + ' ' + styles.padding } />,

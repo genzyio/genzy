@@ -13,18 +13,17 @@ The following is the `Nimble` class with all method signatures.
 export class Nimble {
   constructor();
 
-  public of(type: Constructor): Nimble;
-  public ofLocal(type: Constructor): Nimble;
-  public andLocal(type: Constructor): Nimble;
-  public ofRemote(type: Constructor, origin: string, basePath?: string): Nimble;
-  public andRemote(type: Constructor, origin: string, basePath?: string): Nimble;
+  public addLocalService(type: Constructor): Nimble;
+  public addLocalServices(...types: Constructor): Nimble;
+  public addRemoteService(origin: string, type: Constructor): Nimble;
+  public addRemoteServices(origin: string, ...types: Constructor): Nimble;
 
   public interceptCalls(customInterceptors: CustomInterceptors<InterceptorCallback>): Nimble;
   public interceptResults(customInterceptors: CustomInterceptors<InterceptorCallback>): Nimble;
   public interceptAllCalls(callback: InterceptorCallback): Nimble;
   public interceptAllResults(callback: InterceptorCallback): Nimble;
 
-  public services(): any;
+  public getAllServices(): any;
 }
 ```
 
@@ -32,39 +31,29 @@ export class Nimble {
 
 - Creates a new instance of Nimble.
 
-### nimble.of(type)
+### nimble.addLocalService(type)
 
 - Registers a `local` service class to the nimble.
 
 - `type` [`<Constructor>`](#constructor)
 
-### nimble.ofLocal(type)
+### nimble.addLocalServices(types)
 
-- Registers a `local` service class to the nimble.
+- Registers `local` service classes to the nimble.
 
-- `type` [`<Constructor>`](#constructor)
+- `types` [`<Constructor>[]`](#constructor)
 
-### nimble.andLocal(type)
-
-- Registers a `local` service class to the nimble.
-
-- `type` [`<Constructor>`](#constructor)
-
-### nimble.ofRemote(type, origin[, basePath])
+### nimble.addRemoteService(origin, type)
 
 - Registers a `remote` service class to the nimble.
 
-- `type` [`<Constructor>`](#constructor)
 - `origin` [`<string>`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
-- `basePath?` [`<string>`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
-
-### nimble.andRemote(type, origin[, basePath])
-
-- Registers a `remote` service class to the nimble.
-
 - `type` [`<Constructor>`](#constructor)
+
+- Registers `remote` service classes to the nimble.
+
 - `origin` [`<string>`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
-- `basePath?` [`<string>`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
+- `types` [`<Constructor>[]`](#constructor)
 
 ### nimble.interceptCalls(interceptors)
 
@@ -90,7 +79,7 @@ export class Nimble {
 
 - `callback` [`<InterceptorCallback>`](#interceptorcallback)
 
-### nimble.services()
+### nimble.getAllServices()
 
 - Returns Nimble's service registry.
 

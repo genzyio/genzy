@@ -3,23 +3,23 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
-  title: "Nimbly",
+  title: "N1mbly",
   tagline: "Focused on the domain.",
   url: "https://bjelicaluka.github.io",
   baseUrl: "/nimbly/",
   onBrokenLinks: "warn",
   onBrokenMarkdownLinks: "warn",
-  favicon: "images/favicon.png",
+  favicon: "images/logo-new-dark.svg",
   organizationName: "bjelicaluka",
   projectName: "nimbly",
   themeConfig: {
     navbar: {
-      title: "Nimbly",
+      title: "N1mbly",
       hideOnScroll: true,
       logo: {
-        alt: "Nimbly logo",
-        src: "images/logo.svg",
-        srcDark: "images/logo-dark.svg"
+        alt: "N1mbly logo",
+        src: "images/logo-new.svg",
+        srcDark: "images/logo-new-dark.svg"
       },
       items: [
         {
@@ -59,7 +59,7 @@ module.exports = {
     },
     footer: {
       style: "dark",
-      copyright: `Copyright © ${new Date().getFullYear()} isobar.ot`,
+      copyright: `Copyright © ${new Date().getFullYear()} n1mbly`,
     },
     prism: {
       theme: lightCodeTheme,

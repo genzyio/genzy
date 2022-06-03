@@ -45,10 +45,10 @@ class AccountService {
 }
 
 // Creating the Nimble 
-const nimble = new Nimble().ofLocal(UserService).andLocal(AccountService);
+const nimble = new Nimble().addLocalServices(UserService, AccountService);
 
 // Getting the services out of the Nimble.
-const { accountService } = nimble.services();
+const { accountService } = nimble.getAllServices();
 ```
 
   </TabItem>
@@ -79,10 +79,10 @@ class AccountService {
 }
 
 // Creating the Nimble 
-const nimble = new Nimble().ofLocal(UserService).andLocal(AccountService);
+const nimble = new Nimble().addLocalServices(UserService, AccountService);
 
 // Getting the services out of the Nimble.
-const { accountService } = nimble.services();
+const { accountService } = nimble.getAllServices();
 ```
 
   </TabItem>
@@ -118,10 +118,10 @@ class AccountService {
 }
 
 // Creating the Nimble 
-const nimble = new Nimble().ofLocal(UserService).andLocal(AccountService);
+const nimble = new Nimble().addLocalServices(UserService, AccountService);
 
 // Getting the services out of the Nimble
-const { accountService }: NimbleServices = nimble.services();
+const { accountService }: NimbleServices = nimble.getAllServices();
 ```
 
   </TabItem>
@@ -147,11 +147,10 @@ class AccountService {
 
 // Creating the Nimble 
 const nimble = new Nimble()
-  .ofRemote(UserService, "http://localhost:3000")
-  .andRemote(AccountService, "http://localhost:3000");
+  .addRemoteServices("http://localhost:3000", UserService, AccountService);
 
 // Getting the services out of the Nimble.
-const { accountService } = nimble.services();
+const { accountService } = nimble.getAllServices();
 ```
 
   </TabItem>
@@ -172,11 +171,10 @@ class AccountService {
 
 // Creating the Nimble 
 const nimble = new Nimble()
-  .ofRemote(UserService, "http://localhost:3000")
-  .andRemote(AccountService, "http://localhost:3000");
+  .addRemoteServices("http://localhost:3000", UserService, AccountService);
 
 // Getting the services out of the Nimble.
-const { accountService } = nimble.services();
+const { accountService } = nimble.getAllServices();
 ```
 
   </TabItem>
@@ -200,11 +198,10 @@ class AccountService {
 
 // Creating the Nimble 
 const nimble = new Nimble()
-  .ofRemote(UserService, "http://localhost:3000")
-  .andRemote(AccountService, "http://localhost:3000");
+  .addRemoteServices("http://localhost:3000", UserService, AccountService);
 
 // Getting the services out of the Nimble
-const { accountService }: NimbleServices = nimble.services();
+const { accountService }: NimbleServices = nimble.getAllServices();
 ```
 
   </TabItem>

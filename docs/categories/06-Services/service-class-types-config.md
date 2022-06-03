@@ -7,7 +7,7 @@ slug: /service-class-types-config/
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-If you'd like `Nimbly` to be able to generate a detailed [OpenAPI](https://www.openapis.org/) documentation, with [SwaggerUI](https://swagger.io/) that includes [Type Definitions](https://swagger.io/docs/specification/data-models/data-types/), you can define types in a `$nimbly` property.
+If you'd like `N1mbly` to be able to generate a detailed [OpenAPI](https://www.openapis.org/) documentation, with [SwaggerUI](https://swagger.io/) that includes [Type Definitions](https://swagger.io/docs/specification/data-models/data-types/), you can define types in a `$nimbly` property.
 
 If you're using [TypeScript](https://www.typescriptlang.org/) you can define configuration using [TypeScript decorators](https://www.typescriptlang.org/docs/handbook/decorators.html).
 
@@ -33,70 +33,49 @@ const exampleArrayTypeDefinition = {
 
 class ExampleService {
   $nimbly = {
-    types: {
-      getAll: [
-        { index: 0, type: "number" },
-        { index: 1, type: "number" },
-      ],
-      getById: [
-        { index: 0, type: "boolean" },
-        { index: 1, type: "string" },
-      ],
-      add: [
-        {
-          index: 0,
-          type: {
-            $typeName: "Example",
-            name: "string",
-            age: "number"
-          }
-        }
-      ],
-      update: [
-        { index: 0, type: "string" },
-        {
-          index: 1,
-          type: exampleTypeDefinition
-        }
-      ],
-      delete: [
-        { index: 0, type: "string" }
-      ],
-    },
-    returnTypes: {
-      getAll: exampleArrayTypeDefinition,
-      getById: exampleTypeDefinition,
-      add: exampleTypeDefinition,
-      update: exampleTypeDefinition,
-      delete: exampleTypeDefinition,
-    },
-    rootPath: '/',
+    path: '/',
     getAll: {
-      method: 'GET',
+      httpMethod: 'GET',
       path: '/',
-      query: [
-        { index: 0, name: "pageNumber" },
-        { index: 1, name: "pageSize" },
-      ]
+      params: [
+        { source: 'query', name: "pageNumber", type: 'string' },
+        { source: 'query', name: "pageSize", type: 'string' },
+      ],
+      result: exampleArrayTypeDefinition
     },
     getById: {
-      method: 'GET',
+      httpMethod: 'GET',
       path: '/:id',
-      query: [ { index: 0, name: "includeDetails" } ]
+      params: [
+        { source: 'query', name: "includeDetails", type: 'boolean' }
+        { source: 'path', name: 'id', type: 'string' },
+      ],
+      result: exampleTypeDefinition
     },
     add: {
-      method: 'POST',
+      httpMethod: 'POST',
       path: '/',
-      body: true
+      params: [
+        { source: 'body', name: 'example', type: exampleTypeDefinition }
+      ],
+      result: exampleTypeDefinition
     },
     update: {
-      method: 'PUT',
+      httpMethod: 'PUT',
       path: '/:id',
-      body: true
+      params: [
+        { source: 'path', name: 'id', type: 'string' },
+        { source: 'body', name: 'example', type: exampleTypeDefinition }
+      ],
+      result: exampleTypeDefinition
     },
     delete: {
-      method: 'DELETE',
-      path: '/:id'
+      httpMethod: 'DELETE',
+      path: '/:id',
+      params: [
+        { source: 'path', name: 'id', type: 'string' },
+      ],
+      result: exampleTypeDefinition
     },
   }
   
@@ -136,70 +115,49 @@ const exampleArrayTypeDefinition = {
 
 class ExampleService {
   $nimbly = {
-    types: {
-      getAll: [
-        { index: 0, type: "number" },
-        { index: 1, type: "number" },
-      ],
-      getById: [
-        { index: 0, type: "boolean" },
-        { index: 1, type: "string" },
-      ],
-      add: [
-        {
-          index: 0,
-          type: {
-            $typeName: "Example",
-            name: "string",
-            age: "number"
-          }
-        }
-      ],
-      update: [
-        { index: 0, type: "string" },
-        {
-          index: 1,
-          type: exampleTypeDefinition
-        }
-      ],
-      delete: [
-        { index: 0, type: "string" }
-      ],
-    },
-    returnTypes: {
-      getAll: exampleArrayTypeDefinition,
-      getById: exampleTypeDefinition,
-      add: exampleTypeDefinition,
-      update: exampleTypeDefinition,
-      delete: exampleTypeDefinition,
-    },
-    rootPath: '/',
+    path: '/',
     getAll: {
-      method: 'GET',
+      httpMethod: 'GET',
       path: '/',
-      query: [
-        { index: 0, name: "pageNumber" },
-        { index: 1, name: "pageSize" },
-      ]
+      params: [
+        { source: 'query', name: "pageNumber", type: 'string' },
+        { source: 'query', name: "pageSize", type: 'string' },
+      ],
+      result: exampleArrayTypeDefinition
     },
     getById: {
-      method: 'GET',
+      httpMethod: 'GET',
       path: '/:id',
-      query: [ { index: 0, name: "includeDetails" } ]
+      params: [
+        { source: 'query', name: "includeDetails", type: 'boolean' }
+        { source: 'path', name: 'id', type: 'string' },
+      ],
+      result: exampleTypeDefinition
     },
     add: {
-      method: 'POST',
+      httpMethod: 'POST',
       path: '/',
-      body: true
+      params: [
+        { source: 'body', name: 'example', type: exampleTypeDefinition }
+      ],
+      result: exampleTypeDefinition
     },
     update: {
-      method: 'PUT',
+      httpMethod: 'PUT',
       path: '/:id',
-      body: true
+      params: [
+        { source: 'path', name: 'id', type: 'string' },
+        { source: 'body', name: 'example', type: exampleTypeDefinition }
+      ],
+      result: exampleTypeDefinition
     },
     delete: {
-      method: 'DELETE',
-      path: '/:id'
+      httpMethod: 'DELETE',
+      path: '/:id',
+      params: [
+        { source: 'path', name: 'id', type: 'string' },
+      ],
+      result: exampleTypeDefinition
     },
   }
   
@@ -225,14 +183,14 @@ class ExampleService {
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { Service, Get, Post, Put, Delete, Query, string, number, boolean, type, Returns, ReturnsArrayOf } from "nimbly-client"; // or nimbly-api
+import { Controller, Get, Post, Put, Delete, Query, Path, Body, string, number, boolean, type, Returns, ReturnsArrayOf } from "nimbly-client"; // or nimbly-api
 
 class Example {
   @string name: string;
   @number age: number;
 }
 
-@Service('/')
+@Controller('/')
 class ExampleService {
   @Get()
   @ReturnsArrayOf(Example)
@@ -241,22 +199,22 @@ class ExampleService {
   }
   @Get('/:id')
   @Returns(Example)
-  async getById(@Query('includeDetails') @boolean includeDetails: boolean, @string id: string): Promise<Example> {
+  async getById(@Query('includeDetails') @boolean includeDetails: boolean, @Path('id') @string id: string): Promise<Example> {
     return {};
   }
   @Post()
   @Returns(Example)
-  async add(@type(Example) example: Example): Promise<Example> {
+  async add(@Body() @type(Example) example: Example): Promise<Example> {
     return example;
   }
   @Put('/:id')
   @Returns(Example)
-  async update(@string id: string, @type(Example) example: Example): Promise<Example> {
+  async update(@Path('id') @string id: string, @Body() @type(Example) example: Example): Promise<Example> {
     return example;
   }
   @Delete('/:id')
   @Returns(Example)
-  async delete(@string id: string): Promise<Example> {
+  async delete(@Path('id') @string id: string): Promise<Example> {
     return { id };
   }
 }
