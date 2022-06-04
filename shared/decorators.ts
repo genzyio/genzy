@@ -40,6 +40,9 @@ const typeDecorator = (typeParam: string | { new(): any }, typeKey: 'result'|'ty
   }
   if(parameterIndex === undefined || typeof parameterIndex !== 'number') {
     if(typeKey === 'result') {
+      if(!target.$nimbly_config[propertyKey]) {
+        target.$nimbly_config[propertyKey] = {};
+      }
       target.$nimbly_config[propertyKey].result = type;
     } else {
       if(!target.$nimbly_config.types) target.$nimbly_config.types = {};
