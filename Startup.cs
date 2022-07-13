@@ -5,8 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-
+using Models;
 using N1mbly.Models;
+using N1mbly.Models.Interfaces;
 using N1mbly.Repositories;
 using N1mbly.Repositories.Interfaces;
 using N1mbly.Services;
@@ -27,8 +28,11 @@ namespace N1mbly
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient();
+
             // Define services here
             services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
+            services.AddScoped<IRemoteProxy, RemoteProxy>();
 
             // Define repositories here
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));

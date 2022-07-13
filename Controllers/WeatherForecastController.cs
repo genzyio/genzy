@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-
+using N1mbly.Common;
 using N1mbly.Examples;
+using N1mbly.Models.Interfaces;
 
 namespace N1mbly.Controllers
 {
@@ -18,15 +20,20 @@ namespace N1mbly.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly IRemoteProxy _remoteProxy;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IRemoteProxy remoteProxy)
         {
             _logger = logger;
+            _remoteProxy = remoteProxy;
         }
 
         [HttpGet("temperatures")]
-        public IEnumerable<WeatherForecast> Get()
+        public async Task<IEnumerable<WeatherForecast>> Get()
         {
+            var result = await _remoteProxy.RemoteCallHandler("http://localhost:5001", "/something/v1/nesto/temperatures", null, HttpMethod.Get);
+            System.Console.WriteLine(result);
+
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
