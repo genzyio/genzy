@@ -64,7 +64,6 @@ namespace N1mbly.Models
 
         private static ExpandoObject GetNestedTypes(Type currentType)
         {
-            return null;
             if ((!currentType.IsClass && !typeof(IEnumerable<object>).IsAssignableFrom(currentType)) || currentType == typeof(string))
             {
                 return null;
@@ -79,11 +78,10 @@ namespace N1mbly.Models
                 return nativeObject;
             }
 
-            // if (currentType.FullName.StartsWith("System.Threading.Tasks"))
-            // {
-            //     System.Console.WriteLine(currentType.GetGenericArguments()[0].GetGenericArguments()[0]);
-
-            // }
+            if (currentType.FullName.StartsWith("System.Threading.Tasks"))
+            {
+                currentType = currentType.GetGenericArguments()[0];
+            }
 
             var result = new ExpandoObject { };
             var modelProperties = new PropertyInfo[0];
