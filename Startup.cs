@@ -32,7 +32,7 @@ namespace N1mbly
 
             // Define services here
             services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
-            services.AddScoped<IRemoteProxy, RemoteProxy>();
+            services.AddScoped(typeof(IRemoteProxy<>), typeof(RemoteProxy<>));
 
             // Define repositories here
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));

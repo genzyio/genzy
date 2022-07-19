@@ -12,7 +12,7 @@ namespace N1mbly.Controllers
 {
     [ApiController]
     [Route("something/v1/nesto")]
-    public class WeatherForecastController : ControllerBase
+    public class WeatherForecastController : ResponseProvider
     {
         private static readonly string[] Summaries = new[]
         {
@@ -20,9 +20,9 @@ namespace N1mbly.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
-        private readonly IRemoteProxy _remoteProxy;
+        private readonly IRemoteProxy<WeatherForecast> _remoteProxy;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IRemoteProxy remoteProxy)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IRemoteProxy<WeatherForecast> remoteProxy)
         {
             _logger = logger;
             _remoteProxy = remoteProxy;
@@ -31,8 +31,16 @@ namespace N1mbly.Controllers
         [HttpGet("temperatures")]
         public async Task<IEnumerable<WeatherForecast>> Get()
         {
-            var result = await _remoteProxy.RemoteCallHandler("http://localhost:5001", "/something/v1/nesto/temperatures", null, HttpMethod.Get);
-            System.Console.WriteLine(result);
+            var result = await _remoteProxy.RemoteCallHandler(HttpMethod.Post, "https://localhost:5001", "something/v1/nesto/temperatures-form/1");
+
+            if (!result.IsSuccess)
+            {
+                System.Console.WriteLine(result.Error.Message);
+            }
+            else
+            {
+                System.Console.WriteLine(result.Data.Date);
+            }
 
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast

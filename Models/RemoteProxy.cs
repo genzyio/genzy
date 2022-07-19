@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,38 +11,99 @@ using HttpMethod = N1mbly.Common.HttpMethod;
 
 namespace Models
 {
-    public class RemoteProxy : IRemoteProxy
+    public class RemoteProxy<T> : IRemoteProxy<T> where T : class
     {
         private readonly IHttpClientFactory _clientFactory;
-        private readonly HttpClient _client;
+        private HttpClient _client;
 
         public RemoteProxy(IHttpClientFactory clientFactory)
         {
             _clientFactory = clientFactory;
-            _client = _clientFactory.CreateClient();
         }
 
-        public async Task<Result<object>> RemoteCallHandler(string origin, string path, object body, HttpMethod httpMethod)
+        public async Task<Result<T>> RemoteCallHandler(HttpMethod httpMethod, string origin, string path)
         {
             try
             {
-                var response = await GetResponse($"{origin}/{path}", body, httpMethod);
+                _client = _clientFactory.CreateClient();
+                var response = await GetResponse(httpMethod, $"{origin}/{path}");
                 if (!response.IsSuccessStatusCode)
                 {
-                    return Result<object>.ErrorResult("Error while calling remote service", ErrorType.Error);
+                    return Result<T>.ErrorResult("Error while calling remote service", ErrorType.Error);
                 }
                 var content = await response.Content.ReadAsStringAsync();
-                var jsonObject = JsonConvert.DeserializeObject<object>(content);
-                return Result<object>.SuccessResult(jsonObject);
+                var jsonObject = JsonConvert.DeserializeObject<T>(content);
+                return Result<T>.SuccessResult(jsonObject);
             }
             catch
             {
-                return Result<object>.ErrorResult("Error while calling remote service", ErrorType.Error);
+                return Result<T>.ErrorResult("Error while calling remote service", ErrorType.Error);
             }
         }
 
-        // TODO: Add support for query and header params
-        private async Task<HttpResponseMessage> GetResponse(string path, object body, HttpMethod httpMethod)
+        public async Task<Result<T>> RemoteCallHandler(HttpMethod httpMethod, string origin, string path, object body = null)
+        {
+            try
+            {
+                _client = _clientFactory.CreateClient();
+                var response = await GetResponse(httpMethod, $"{origin}/{path}", body);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return Result<T>.ErrorResult("Error while calling remote service", ErrorType.Error);
+                }
+                var content = await response.Content.ReadAsStringAsync();
+                var jsonObject = JsonConvert.DeserializeObject<T>(content);
+                return Result<T>.SuccessResult(jsonObject);
+            }
+            catch
+            {
+                return Result<T>.ErrorResult("Error while calling remote service", ErrorType.Error);
+            }
+        }
+
+        public async Task<Result<T>> RemoteCallHandler(HttpMethod httpMethod, string origin, string path, List<Dictionary<string, string>> headers = null)
+        {
+            try
+            {
+                _client = _clientFactory.CreateClient();
+                SetRequestHeaders(headers);
+                var response = await GetResponse(httpMethod, $"{origin}/{path}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    return Result<T>.ErrorResult("Error while calling remote service", ErrorType.Error);
+                }
+                var content = await response.Content.ReadAsStringAsync();
+                var jsonObject = JsonConvert.DeserializeObject<T>(content);
+                return Result<T>.SuccessResult(jsonObject);
+            }
+            catch
+            {
+                return Result<T>.ErrorResult("Error while calling remote service", ErrorType.Error);
+            }
+        }
+
+        public async Task<Result<T>> RemoteCallHandler(HttpMethod httpMethod, string origin, string path, object body = null, List<Dictionary<string, string>> headers = null)
+        {
+            try
+            {
+                _client = _clientFactory.CreateClient();
+                SetRequestHeaders(headers);
+                var response = await GetResponse(httpMethod, $"{origin}/{path}", body);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return Result<T>.ErrorResult("Error while calling remote service", ErrorType.Error);
+                }
+                var content = await response.Content.ReadAsStringAsync();
+                var jsonObject = JsonConvert.DeserializeObject<T>(content);
+                return Result<T>.SuccessResult(jsonObject);
+            }
+            catch
+            {
+                return Result<T>.ErrorResult("Error while calling remote service", ErrorType.Error);
+            }
+        }
+
+        private async Task<HttpResponseMessage> GetResponse(HttpMethod httpMethod, string path, object body = null)
         {
             HttpResponseMessage response = null;
             switch (httpMethod)
@@ -49,7 +112,7 @@ namespace Models
                     response = await _client.GetAsync(path);
                     break;
                 case HttpMethod.Post:
-                    response = await _client.PostAsync(path, GetJson(body));
+                    response = await _client.PostAsync(path, null);
                     break;
                 case HttpMethod.Put:
                     response = await _client.PutAsync(path, GetJson(body));
@@ -70,11 +133,24 @@ namespace Models
 
         private StringContent GetJson(object body, string encoding = "application/json")
         {
+            if (body == null)
+            {
+                return null;
+            }
+
             var json = new StringContent(
                     JsonConvert.SerializeObject(body),
                     Encoding.UTF8,
                     encoding);
             return json;
+        }
+
+        private void SetRequestHeaders(List<Dictionary<string, string>> headers)
+        {
+            foreach (var header in headers)
+            {
+                _client.DefaultRequestHeaders.Add(header.Keys.FirstOrDefault(), header.Values);
+            }
         }
     }
 }
