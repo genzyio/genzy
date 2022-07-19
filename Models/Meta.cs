@@ -43,7 +43,7 @@ namespace N1mbly.Models
                     controllerAction.Name = action.ActionName;
                     controllerAction.Path = route;
                     controllerAction.HttpMethod = httpMethod;
-                    controllerAction.Result = nestedTypes == null ? returnType.Name : nestedTypes;
+                    controllerAction.Result = nestedTypes == null ? GetParsedTypeName(returnType.Name) : nestedTypes;
 
                     foreach (var actionParameter in action.Parameters.Where(param => !param.Equals(null)))
                     {
@@ -53,7 +53,7 @@ namespace N1mbly.Models
                         var parameterSource = actionParameter.BindingInfo.BindingSource.DisplayName;
                         param.Source = (ParamType)Enum.Parse(typeof(ParamType), parameterSource);
                         param.Name = actionParameter.Name;
-                        param.Type = nestedParamTypes == null ? paramType.Name : nestedParamTypes;
+                        param.Type = nestedParamTypes == null ? GetParsedTypeName(paramType.Name) : nestedParamTypes;
                         controllerAction.Params.Add(param);
                     }
                     controller.Actions.Add(controllerAction);
@@ -73,8 +73,8 @@ namespace N1mbly.Models
             {
                 var nativeTypeName = currentType.FullName.Contains("[]") ? currentType.Name : currentType.GetGenericArguments()[0].Name;
                 var nativeObject = new ExpandoObject();
-                nativeObject.TryAdd("$IsArray", true);
-                nativeObject.TryAdd("$TypeName", nativeTypeName);
+                nativeObject.TryAdd("$isArray", true);
+                nativeObject.TryAdd("$typeName", GetParsedTypeName(nativeTypeName));
                 return nativeObject;
             }
 
@@ -86,14 +86,14 @@ namespace N1mbly.Models
             var result = new ExpandoObject { };
             var modelProperties = new PropertyInfo[0];
             var isArray = false;
-            var typeName = currentType.Name;
+            var typeName = GetParsedTypeName(currentType.Name);
             if (typeof(IEnumerable<object>).IsAssignableFrom(currentType))
             {
                 var genericArguments = currentType.GetGenericArguments();
                 var model = genericArguments.Length > 0 ? genericArguments[0] : null;
                 modelProperties = model?.GetProperties() ?? new PropertyInfo[0];
                 isArray = true;
-                typeName = model?.Name ?? currentType.Name;
+                typeName = GetParsedTypeName(model?.Name ?? currentType.Name);
             }
             else if (currentType.IsClass)
             {
@@ -103,13 +103,15 @@ namespace N1mbly.Models
             foreach (var property in modelProperties)
             {
                 var nestedType = GetNestedTypes(property.PropertyType);
-                result.TryAdd(property.Name, nestedType == null ? property.PropertyType.Name : nestedType);
+                result.TryAdd(property.Name, nestedType == null ? GetParsedTypeName(property.PropertyType.Name) : nestedType);
             }
-            result.TryAdd("$IsArray", isArray);
-            result.TryAdd("$TypeName", typeName);
+            result.TryAdd("$isArray", isArray);
+            result.TryAdd("$typeName", GetParsedTypeName(typeName));
 
             return result;
         }
+
+        private static string GetParsedTypeName(string typeName) => typeName.ToLower().Replace("32", "").Replace("[]", "").Replace("64", "").Replace("double", "float").Replace("single", "float");
     }
 
     public class Controller

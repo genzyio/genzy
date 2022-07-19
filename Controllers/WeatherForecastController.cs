@@ -53,7 +53,7 @@ namespace N1mbly.Controllers
         }
 
         [HttpPost("temperatures")]
-        public IEnumerable<WeatherForecast> Update(string something)
+        public IEnumerable<WeatherForecast> Update(string something, bool nesto)
         {
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
