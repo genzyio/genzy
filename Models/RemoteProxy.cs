@@ -23,71 +23,39 @@ namespace Models
 
         public async Task<Result<T>> RemoteCallHandler(HttpMethod httpMethod, string origin, string path)
         {
-            try
-            {
-                _client = _clientFactory.CreateClient();
-                var response = await GetResponse(httpMethod, $"{origin}/{path}");
-                if (!response.IsSuccessStatusCode)
-                {
-                    return Result<T>.ErrorResult("Error while calling remote service", ErrorType.Error);
-                }
-                var content = await response.Content.ReadAsStringAsync();
-                var jsonObject = JsonConvert.DeserializeObject<T>(content);
-                return Result<T>.SuccessResult(jsonObject);
-            }
-            catch
-            {
-                return Result<T>.ErrorResult("Error while calling remote service", ErrorType.Error);
-            }
+            var result = await ProcessRemoteCall(httpMethod, origin, path);
+            return result;
         }
 
         public async Task<Result<T>> RemoteCallHandler(HttpMethod httpMethod, string origin, string path, object body = null)
         {
-            try
-            {
-                _client = _clientFactory.CreateClient();
-                var response = await GetResponse(httpMethod, $"{origin}/{path}", body);
-                if (!response.IsSuccessStatusCode)
-                {
-                    return Result<T>.ErrorResult("Error while calling remote service", ErrorType.Error);
-                }
-                var content = await response.Content.ReadAsStringAsync();
-                var jsonObject = JsonConvert.DeserializeObject<T>(content);
-                return Result<T>.SuccessResult(jsonObject);
-            }
-            catch
-            {
-                return Result<T>.ErrorResult("Error while calling remote service", ErrorType.Error);
-            }
+            var result = await ProcessRemoteCall(httpMethod, origin, path, body);
+            return result;
         }
 
         public async Task<Result<T>> RemoteCallHandler(HttpMethod httpMethod, string origin, string path, List<Dictionary<string, string>> headers = null)
         {
-            try
-            {
-                _client = _clientFactory.CreateClient();
-                SetRequestHeaders(headers);
-                var response = await GetResponse(httpMethod, $"{origin}/{path}");
-                if (!response.IsSuccessStatusCode)
-                {
-                    return Result<T>.ErrorResult("Error while calling remote service", ErrorType.Error);
-                }
-                var content = await response.Content.ReadAsStringAsync();
-                var jsonObject = JsonConvert.DeserializeObject<T>(content);
-                return Result<T>.SuccessResult(jsonObject);
-            }
-            catch
-            {
-                return Result<T>.ErrorResult("Error while calling remote service", ErrorType.Error);
-            }
+            var result = await ProcessRemoteCall(httpMethod, origin, path, null, headers);
+            return result;
         }
 
         public async Task<Result<T>> RemoteCallHandler(HttpMethod httpMethod, string origin, string path, object body = null, List<Dictionary<string, string>> headers = null)
         {
+            var result = await ProcessRemoteCall(httpMethod, origin, path, body, headers);
+            return result;
+        }
+
+        private async Task<Result<T>> ProcessRemoteCall(HttpMethod httpMethod, string origin, string path, object body = null, List<Dictionary<string, string>> headers = null)
+        {
             try
             {
                 _client = _clientFactory.CreateClient();
-                SetRequestHeaders(headers);
+
+                if (headers != null)
+                {
+                    SetRequestHeaders(headers);
+                }
+
                 var response = await GetResponse(httpMethod, $"{origin}/{path}", body);
                 if (!response.IsSuccessStatusCode)
                 {
@@ -112,7 +80,7 @@ namespace Models
                     response = await _client.GetAsync(path);
                     break;
                 case HttpMethod.Post:
-                    response = await _client.PostAsync(path, null);
+                    response = await _client.PostAsync(path, GetJson(body));
                     break;
                 case HttpMethod.Put:
                     response = await _client.PutAsync(path, GetJson(body));
