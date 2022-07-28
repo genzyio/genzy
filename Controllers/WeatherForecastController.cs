@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-
+using N1mbly.Common;
 using N1mbly.Examples;
+using N1mbly.Models.Interfaces;
 
 namespace N1mbly.Controllers
 {
     [ApiController]
     [Route("something/v1/nesto")]
-    public class WeatherForecastController : ControllerBase
+    public class WeatherForecastController : ResponseProvider
     {
         private static readonly string[] Summaries = new[]
         {
@@ -18,15 +20,28 @@ namespace N1mbly.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly IRemoteProxy<WeatherForecast> _remoteProxy;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IRemoteProxy<WeatherForecast> remoteProxy)
         {
             _logger = logger;
+            _remoteProxy = remoteProxy;
         }
 
         [HttpGet("temperatures")]
-        public IEnumerable<WeatherForecast> Get()
+        public async Task<IEnumerable<WeatherForecast>> Get()
         {
+            var result = await _remoteProxy.RemoteCallHandler(HttpMethod.Post, "https://localhost:5001", "something/v1/nesto/temperatures-form/1");
+
+            if (!result.IsSuccess)
+            {
+                System.Console.WriteLine(result.Error.Message);
+            }
+            else
+            {
+                System.Console.WriteLine(result.Data.Date);
+            }
+
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
@@ -38,7 +53,7 @@ namespace N1mbly.Controllers
         }
 
         [HttpPost("temperatures")]
-        public IEnumerable<WeatherForecast> Update(string something)
+        public IEnumerable<WeatherForecast> Update(string something, bool nesto)
         {
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast

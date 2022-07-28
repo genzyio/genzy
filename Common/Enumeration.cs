@@ -16,4 +16,13 @@ namespace N1mbly.Common
         Header,
         Services
     }
+
+    public enum HttpMethod
+    {
+        Get,
+        Post,
+        Put,
+        Delete,
+        Patch
+    }
 }
