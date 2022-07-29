@@ -1,4 +1,4 @@
-import { Nimble } from 'nimbly-client';
+import { Nimble } from '@n1mbly/client';
 import { NimblyApi } from '../src/nimbly-api';
 import { agent } from 'supertest'
 import { NextFunction, Request, Response } from 'express';

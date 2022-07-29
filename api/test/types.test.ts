@@ -1,4 +1,4 @@
-import { Nimble } from "nimbly-client";
+import { Nimble } from '@n1mbly/client';
 import { BASIC_TYPES } from "../../shared/constants";
 import { arrayOf, boolean, int, string, type } from "../../shared/decorators";
 

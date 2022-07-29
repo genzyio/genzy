@@ -1,7 +1,7 @@
 {
-  "name": "nimbly-api",
-  "version": "1.5.3",
-  "description": "Nimbly - focused on the domain.",
+  "name": "@n1mbly/api",
+  "version": "0.0.1-beta",
+  "description": "N1mbly - focused on the domain.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
@@ -9,8 +9,11 @@
     "test": "jest",
     "build": "webpack"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [],
-  "author": "bjelicaluka",
+  "author": "@n1mbly",
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^4.17.13",
@@ -28,9 +31,9 @@
     "webpack-cli": "^4.9.1"
   },
   "dependencies": {
+    "@n1mbly/client": "file:../client",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "nimbly-client": "file:../client",
     "swagger-ui-express": "^4.3.0"
   }
 }

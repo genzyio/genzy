@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import * as cors from "cors";
 import * as swaggerUi from "swagger-ui-express";
 import { Application } from "express";
-import { Nimble } from "nimbly-client";
+import { Nimble } from '@n1mbly/client';
 import { RegisterRoutesFor } from "./routes-handler";
 import { CustomInterceptors, Interceptable, ServiceMetaInfo } from "../../shared/types";
 import { ErrorRegistry } from "./error-handler";

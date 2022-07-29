@@ -1,11 +1,11 @@
-# Nimbly Server
+# N1mbly API
 
-[![NPM](https://nodei.co/npm/nimbly-api.png)](https://nodei.co/npm/nimbly-api/)
+[![NPM](https://nodei.co/npm/@n1mbly/api.png)](https://nodei.co/npm/@n1mbly/api/)
 
 # Getting Started
 
 1. `npm init -y`
-2. `npm i -S nimbly-api`
+2. `npm i -S @n1mbly/api`
 3. Implement services
 ```js
 class UserService {
@@ -42,7 +42,7 @@ class AccountService {
 ```
 4. Create a Nimble of services
 ```js
-import { Nimble } from 'nimbly-api';
+import { Nimble } from '@n1mbly/api';
 
 const usersNimble = new Nimble()
   .ofLocal(UserService)
@@ -54,7 +54,7 @@ const { userService, accountService } = usersNimble.services();
 
 5. Create the NimblyApi
 ```js
-import { NimblyApi } from 'nimbly-api';
+import { NimblyApi } from '@n1mbly/api';
 
 const app = new NimblyApi().from(usersNimble);
 

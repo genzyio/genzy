@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as cors from "cors";
 import { NextFunction, Request, Response } from 'express';
-import { Nimble } from 'nimbly-client';
+import { Nimble } from '@n1mbly/client';
 import { NimblyApi } from '../src/nimbly-api';
 import { agent } from 'supertest'
 
