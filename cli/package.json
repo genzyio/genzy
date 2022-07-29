@@ -13,7 +13,7 @@
     "access": "public"
   },
   "keywords": [],
-  "author": "bjelicaluka",
+  "author": "@n1mbly",
   "license": "ISC",
   "bin": {
     "n1mbly": "bin/index.js"
