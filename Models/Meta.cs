@@ -41,9 +41,9 @@ namespace N1mbly.Models
                     var returnType = actionMethodInfo.ReturnType;
                     var nestedTypes = GetNestedTypes(returnType);
                     controllerAction.Name = action.ActionName;
-                    controllerAction.Path = route;
+                    controllerAction.Path = Helpers.ConstructJsPath(route);
                     controllerAction.HttpMethod = httpMethod;
-                    controllerAction.Result = nestedTypes == null ? GetParsedTypeName(returnType.Name) : nestedTypes;
+                    controllerAction.Result = nestedTypes == null ? GetParsedTypeName(returnType) : nestedTypes;
 
                     foreach (var actionParameter in action.Parameters.Where(param => !param.Equals(null)))
                     {
@@ -53,7 +53,7 @@ namespace N1mbly.Models
                         var parameterSource = actionParameter.BindingInfo.BindingSource.DisplayName;
                         param.Source = (ParamType)Enum.Parse(typeof(ParamType), parameterSource);
                         param.Name = actionParameter.Name;
-                        param.Type = nestedParamTypes == null ? GetParsedTypeName(paramType.Name) : nestedParamTypes;
+                        param.Type = nestedParamTypes == null ? GetParsedTypeName(paramType) : nestedParamTypes;
                         controllerAction.Params.Add(param);
                     }
                     controller.Actions.Add(controllerAction);
@@ -71,10 +71,10 @@ namespace N1mbly.Models
 
             if ((currentType.FullName.StartsWith("System.Collections.Generic") && currentType.GetGenericArguments()[0].FullName.StartsWith("System")) || currentType.FullName.Contains("[]"))
             {
-                var nativeTypeName = currentType.FullName.Contains("[]") ? currentType.Name : currentType.GetGenericArguments()[0].Name;
+                var nativeType = currentType.FullName.Contains("[]") ? currentType : currentType.GetGenericArguments()[0];
                 var nativeObject = new ExpandoObject();
                 nativeObject.TryAdd("$isArray", true);
-                nativeObject.TryAdd("$typeName", GetParsedTypeName(nativeTypeName));
+                nativeObject.TryAdd("$typeName", GetParsedTypeName(nativeType));
                 return nativeObject;
             }
 
@@ -86,14 +86,14 @@ namespace N1mbly.Models
             var result = new ExpandoObject { };
             var modelProperties = new PropertyInfo[0];
             var isArray = false;
-            var typeName = GetParsedTypeName(currentType.Name);
+            var type = currentType;
             if (typeof(IEnumerable<object>).IsAssignableFrom(currentType))
             {
                 var genericArguments = currentType.GetGenericArguments();
                 var model = genericArguments.Length > 0 ? genericArguments[0] : null;
                 modelProperties = model?.GetProperties() ?? new PropertyInfo[0];
                 isArray = true;
-                typeName = GetParsedTypeName(model?.Name ?? currentType.Name);
+                type = model ?? currentType;
             }
             else if (currentType.IsClass)
             {
@@ -103,15 +103,15 @@ namespace N1mbly.Models
             foreach (var property in modelProperties)
             {
                 var nestedType = GetNestedTypes(property.PropertyType);
-                result.TryAdd(property.Name, nestedType == null ? GetParsedTypeName(property.PropertyType.Name) : nestedType);
+                result.TryAdd(property.Name, nestedType == null ? GetParsedTypeName(property.PropertyType) : nestedType);
             }
             result.TryAdd("$isArray", isArray);
-            result.TryAdd("$typeName", GetParsedTypeName(typeName));
+            result.TryAdd("$typeName", GetParsedTypeName(type));
 
             return result;
         }
 
-        private static string GetParsedTypeName(string typeName) => typeName.ToLower().Replace("32", "").Replace("[]", "").Replace("64", "").Replace("double", "float").Replace("single", "float");
+        private static string GetParsedTypeName(Type type) => type.FullName.Contains("System") ? type.Name.ToLower().Replace("32", "").Replace("[]", "").Replace("64", "").Replace("double", "float").Replace("single", "float").Replace("datetime", "").Replace("char", "").Replace("date", "") : type.Name;
     }
 
     public class Controller

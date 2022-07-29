@@ -10,10 +10,10 @@ namespace N1mbly
         public N1mblyApi(IConfiguration configuration) : base(configuration)
         {
             var n1mbly = new N1mble();
-            n1mbly.AddLocalService(typeof(WeatherForecast));
+            n1mbly.AddLocalService(typeof(ExampleModel));
             dynamic service = new object();
-            n1mbly.Registry.Services.TryGetValue("WeatherForecast", out service);
-            System.Console.WriteLine($"Value from WeatherForecast controller {service.GetName()} by using N1mbly");
+            n1mbly.Registry.Services.TryGetValue("ExampleModel", out service);
+            System.Console.WriteLine($"Value from ExampleModel controller -- {service.GetName()} -- by using N1mbly");
             // TODO: Get service
             // TODO: Register routes (routes with n1mbly decorators will be automatically added, register only ones inside addLocalService/addRemoteService)
             // TODO: Add swagger

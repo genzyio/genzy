@@ -10,6 +10,20 @@ namespace N1mbly.Common
     {
         public static string CamelToKebab(string camelCaseString) => Regex.Replace(camelCaseString, "([a-z0-9]|(?=[a-z]))([A-Z])", "$1-$2").ToLower();
 
+        public static string ConstructJsPath(string dotnetPath)
+        {
+            var jsPath = dotnetPath;
+            var regex = new Regex("{(.*?)}");
+            var matches = regex.Matches(dotnetPath);
+            foreach (Match match in matches)
+            {
+                var valueWithoutBrackets = match.Groups[1].Value;
+                var valueWithBrackets = match.Value;
+                jsPath = jsPath.Replace(valueWithBrackets, $":{valueWithoutBrackets}");
+            }
+            return jsPath;
+        }
+
         public static void MatchAndMap<TSource, TDestination>(this TSource source, TDestination destination)
             where TSource : class, new()
             where TDestination : class, new()

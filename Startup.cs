@@ -13,6 +13,7 @@ using N1mbly.Repositories.Interfaces;
 using N1mbly.Services;
 using N1mbly.Services.Interfaces;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace N1mbly
 {
@@ -39,7 +40,7 @@ namespace N1mbly
 
             services.AddRouting(options => options.LowercaseUrls = true);
             services.AddControllers().AddNewtonsoftJson(opts => opts.SerializerSettings
-                .Converters.Add(new StringEnumConverter()));
+                .Converters.Add(new StringEnumConverter(typeof(CamelCaseNamingStrategy))));
             services.AddMvc(o =>
                  o.Conventions.Add(new GenericControllerRouteConvention())
             ).ConfigureApplicationPartManager(m =>
@@ -64,8 +65,6 @@ namespace N1mbly
                     c.RoutePrefix = "docs";
                 });
             }
-
-            app.UseHttpsRedirection();
 
             app.UseRouting();
 
