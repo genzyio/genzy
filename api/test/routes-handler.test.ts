@@ -20,7 +20,7 @@ const invokeRequestHandler = (route: string, body: any, params?: any) => {
     send: jest.fn(),
   };
   const key = Object.keys(handlers).find(key => route.startsWith(key.replace(/:.*/g, '')))
-  handlers[key]({ body, params }, res, () => {});
+  handlers[key as any]({ body, params }, res, () => {});
   return res;
 }
 

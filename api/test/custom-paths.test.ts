@@ -86,6 +86,18 @@ class TestServiceInterceptor {
   differentAddSomething(req: Request, res: Response, next: NextFunction) { res.sendStatus(202); }
 }
 
+@Controller()
+class RootService {
+  @Get()
+  public async testRoot() {
+    return [];
+  }
+  @Get('/test')
+  public async test() {
+    return [];
+  }
+}
+
 describe('NimblyApi Custom Paths', () => {
 
   it('should register a custom root path', async () => {
@@ -179,6 +191,17 @@ describe('NimblyApi Custom Paths', () => {
       .patch(`/api/annotated/testing/${id}`)
       .send(body)
       .expect(200, [{...body, id}]);
+  });
+
+  it('should work with root path not passed', async () => {
+    const nimble = new Nimble().addLocalService(RootService);
+    const app = new NimblyApi().from(nimble);
+    await agent(app)
+      .get('/api/test')
+      .expect(200);
+    await agent(app)
+      .get('/api')
+      .expect(200);
   });
 
 });

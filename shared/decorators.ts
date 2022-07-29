@@ -1,7 +1,7 @@
 import { BASIC_TYPES } from "./constants";
 import { HTTPMethod, Param, ParamSource } from "./types";
 
-export function Controller(path: string) {
+export function Controller(path: string = '/') {
   return function (target: any): void {
     if(!target.prototype.$nimbly_config) target.prototype.$nimbly_config = {};
     target.prototype.$nimbly_config.path = path;
@@ -28,7 +28,11 @@ export function Patch(path: string = '') {
   return pathDecorator(path, 'PATCH', true);
 }
 
-const typeDecorator = (typeParam: string | { new(): any }, typeKey: 'result'|'type' = 'type', isArray: boolean = false) => (target: any, propertyKey?: string | symbol, parameterIndex?: any) => {
+const typeDecorator = (
+  typeParam: string | { new(): any },
+  typeKey: 'result'|'type' = 'type',
+  isArray: boolean = false
+) => (target: any, propertyKey?: string | symbol, parameterIndex?: any) => {
   let type = typeParam;
   if(!target.$nimbly_config) target.$nimbly_config = {};
   if(typeof type === 'function') {
@@ -38,6 +42,7 @@ const typeDecorator = (typeParam: string | { new(): any }, typeKey: 'result'|'ty
     (type as any).$isArray = isArray;
     (type as any).$typeName = typeName;
   }
+  if(!propertyKey) return;
   if(parameterIndex === undefined || typeof parameterIndex !== 'number') {
     if(typeKey === 'result') {
       if(!target.$nimbly_config[propertyKey]) {
@@ -90,7 +95,7 @@ function paramDecorator(source: ParamSource, name?: string) {
     }
     const existingIndex = params.findIndex((p: any) => p.index === parameterIndex);
     if(existingIndex !== -1) {
-      params[existingIndex] = { ...params[existingIndex], name, source };
+      params[existingIndex] = { ...params[existingIndex], name: name ?? '', source };
     } else {
       params.splice(parameterIndex, 0, { name, source, index: parameterIndex } as any);
     }
@@ -114,7 +119,7 @@ const pathDecorator = (path: string, httpMethod: HTTPMethod, body: boolean = fal
   }
   target.$nimbly_config[propertyKey] = {
     ...existing,
-    path,
+    path: path.replace('\/\/', '/'),
     httpMethod,
     params: existingParams,
   };
