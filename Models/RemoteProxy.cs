@@ -23,6 +23,9 @@ namespace Models
 
         public async Task<Result<T>> RemoteCallHandler(HttpMethod httpMethod, string origin, string path)
         {
+            // Play around Luka :)
+            var newPath = Helpers.ConstructPathFromParams(":param/pa/:gdje/sad/:to/moze/:biti/tako/:tocno", new List<object> { 5, "gdje", "to", "biti", true });
+            System.Console.WriteLine(newPath);
             var result = await ProcessRemoteCall(httpMethod, origin, path);
             return result;
         }
@@ -43,6 +46,12 @@ namespace Models
         {
             var result = await ProcessRemoteCall(httpMethod, origin, path, body, headers);
             return result;
+        }
+
+        public async Task<Result<T>> RemoteCallHandler(HttpMethod httpMethod, string origin, string path, List<object> pathParams = null, object body = null, List<Dictionary<string, string>> headers = null)
+        {
+            var preProcessedPath = Helpers.ConstructPathFromParams(path, pathParams);
+            return await ProcessRemoteCall(httpMethod, origin, preProcessedPath, body, headers);
         }
 
         private async Task<Result<T>> ProcessRemoteCall(HttpMethod httpMethod, string origin, string path, object body = null, List<Dictionary<string, string>> headers = null)

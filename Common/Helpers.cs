@@ -24,6 +24,20 @@ namespace N1mbly.Common
             return jsPath;
         }
 
+        public static string ConstructPathFromParams(string path, List<object> pathParams)
+        {
+            var constructedPath = path;
+            var regex = new Regex("(:\\w+)");
+            var matches = regex.Matches(path);
+            var index = 0;
+            foreach (Match match in matches)
+            {
+                var matchedValue = match.Value;
+                constructedPath = constructedPath.Replace(matchedValue, pathParams[index++].ToString());
+            }
+            return constructedPath;
+        }
+
         public static void MatchAndMap<TSource, TDestination>(this TSource source, TDestination destination)
             where TSource : class, new()
             where TDestination : class, new()
