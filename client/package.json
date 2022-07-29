@@ -1,7 +1,7 @@
 {
-  "name": "nimbly-client",
-  "version": "1.5.1",
-  "description": "Nimbly - focused on the domain.",
+  "name": "@n1mbly/client",
+  "version": "0.0.1-beta",
+  "description": "N1mbly - focused on the domain.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
@@ -10,8 +10,11 @@
     "build": "webpack",
     "start": "ts-node src"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [],
-  "author": "bjelicaluka",
+  "author": "@n1mbly",
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^27.0.3",
