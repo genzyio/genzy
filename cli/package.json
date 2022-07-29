@@ -1,7 +1,7 @@
 {
   "name": "@n1mbly/cli",
-  "version": "0.0.1",
-  "description": "Nimbly CLI used for client code generation.",
+  "version": "0.0.1-beta",
+  "description": "N1mbly CLI used for client code generation.",
   "main": "bin/index.js",
   "scripts": {
     "start": "ts-node src",
@@ -16,7 +16,7 @@
   "author": "bjelicaluka",
   "license": "ISC",
   "bin": {
-    "nimbly": "bin/index.js"
+    "n1mbly": "bin/index.js"
   },
   "dependencies": {
     "axios": "^0.27.2",
