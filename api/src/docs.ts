@@ -40,7 +40,7 @@ const getPathFrom = (info: NimblyInfo, s: ServiceMetaInfo, r: RouteMetaInfo) => 
     .filter((p) => p.source === "path")
     .map((p) => p.name)
     .forEach((p) => (path = path.replace(`:${p}`, `{${p}}`)));
-  return `${s.path}${path}`;
+  return `${s.path}${path}`.replace('\/\/', '/');
 };
 
 const getPathDocFrom = (s: ServiceMetaInfo, r: RouteMetaInfo) => ({

@@ -21,8 +21,8 @@ export class Nimble {
 
   public addLocalService(type: Constructor): Nimble;
   public addLocalServices(...types: Constructor[]): Nimble;
-  public addRemoteService(origin: string, basePath: string, type: Constructor): Nimble;
-  public addRemoteServices(origin: string, basePath: string, ...types: Constructor[]): Nimble;
+  public addRemoteService(origin: string, type: Constructor): Nimble;
+  public addRemoteServices(origin: string, ...types: Constructor[]): Nimble;
 
   public getAllServices(): any;
 }
@@ -34,3 +34,5 @@ export function Put(path?: string): (target: any, propertyKey: string) => void;
 export function Delete(path?: string): (target: any, propertyKey: string) => void;
 export function Patch(path?: string): (target: any, propertyKey: string) => void;
 export function Query(name: string): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
+export function Path(name: string): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
+export function Body(): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
