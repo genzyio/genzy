@@ -1,6 +1,6 @@
 {
   "name": "nimbly-cli",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Nimbly CLI used for client code generation.",
   "main": "bin/index.js",
   "scripts": {

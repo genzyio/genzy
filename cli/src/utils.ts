@@ -31,7 +31,7 @@ export function generate(
 }
 
 export async function fetchMeta(url: string) {
-  return (await axios.get(`${url}/api/meta`)).data;
+  return (await axios.get(`${url}/meta`)).data;
 }
 
 export function adoptParams(params: Param[]) {
@@ -41,7 +41,7 @@ export function adoptParams(params: Param[]) {
   }));
 }
 
-function adoptType(type) {
+export function adoptType(type) {
   if(!type) return "any";
   if(typeof type === "string")
     return (type === "int" || type === "float") ? "number" : type;
@@ -51,10 +51,12 @@ function adoptType(type) {
 export function getSchemaInfoFrom(service: ServiceMetaInfo) {
   const schemas = [];
   const schemaNames = [];
-  service.actions.forEach((action) =>
-    action.params
-      .filter((p) => typeof p.type !== "string")
-      .forEach((p) => getAllSubtypesFrom(p.type, schemas, schemaNames))
+  service.actions.forEach((action) => {
+      action.params
+        .filter((p) => typeof p.type !== "string")
+        .forEach((p) => getAllSubtypesFrom(p.type, schemas, schemaNames));
+      action.result && getAllSubtypesFrom(action.result, schemas, schemaNames)
+    }
   );
   return {
     schemas: getSetFrom(schemas).map(schema => JSON.stringify(schema, (k, v) => k.startsWith('$') ? undefined : v, 2)),

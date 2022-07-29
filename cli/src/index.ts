@@ -8,7 +8,7 @@ import * as path from 'path'
 const options = yargs
  .usage("Usage: -l <language> -h <host> -o")
  .option("l", { alias: "language", describe: "Target language", type: "string", demandOption: true, choices: ['js', 'ts'] })
- .option("h", { alias: "host", describe: "Target API URL", type: "string", demandOption: true })
+ .option("h", { alias: "host", describe: "Target API URL (including the base path like '/api')", type: "string", demandOption: true })
  .option("o", { alias: "outDir", describe: "Output directory", type: "string", demandOption: true })
  .argv as any;
 

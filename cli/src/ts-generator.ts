@@ -1,5 +1,5 @@
 import { ServiceMetaInfo } from "../../shared/types";
-import { adoptParams, generate as generateUtil, getSchemaInfoFrom } from "./utils";
+import { adoptParams, adoptType, generate as generateUtil, getSchemaInfoFrom } from "./utils";
 
 export function generate(url: string, dirPath: string, nunjucks: any) {
   generateUtil(url, dirPath, nunjucks, 'ts', fileContentFrom, indexFileContentFrom);
@@ -18,7 +18,8 @@ export function fileContentFrom(service: ServiceMetaInfo, nunjucks: any): string
     actions: service.actions.map((r) => ({
       ...r,
       httpMethod: capitalizeFirstLetter(r.httpMethod.toLowerCase()),
-      params: adoptParams(r.params)
+      params: adoptParams(r.params),
+      result: adoptType(r.result)
     })),
     existingMethods: [...new Set(service.actions.map((r) => capitalizeFirstLetter(r.httpMethod.toLowerCase())))]
   });

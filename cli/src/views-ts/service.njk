@@ -2,7 +2,9 @@
 import {
   {% if path != null %}Controller,{% endif %}
   {% for method in existingMethods %}{{ method }},
-  {% endfor %}Query
+  {% endfor %}Query,
+  Path,
+  Body,
 } from 'nimbly-client';
 
 {% for schemaName in schemaNames %}
@@ -13,6 +15,9 @@ export class {{ schemaName }} {{schemas[loop.index0] | replace('"', "") | replac
 export class {{ name }} {
 {% for action in actions %} {{ methods }}
 {% if action.httpMethod %}  @{{ action.httpMethod }}({% if action.httpMethod %}'{{ action.path }}'{% endif %}){% endif %}
-  async {{ action.name }}({% for param in action.params %}{% if param.source == "query" %}@Query('{{ param.name }}') {% endif %}{{ param.name }}: {{ param.type }}{% if not loop.last %}, {% endif %}{% endfor %}) {}
+  async {{ action.name }}({% for param in action.params %}{% if param.source == "query" %}@Query('{{ param.name }}'){% endif %}{% if param.source == "path" %}@Path('{{ param.name }}'){% endif %}{% if param.source == "body" %}@Body(){% endif %} {{ param.name }}: {{ param.type }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{{ action.result }}> {
+    // @ts-ignore
+    return null;
+  }
 {% endfor %}
 }
