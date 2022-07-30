@@ -6,7 +6,7 @@ export function generate(
   url: string,
   dirPath: string,
   nunjucks: any,
-  extension: "ts" | "js",
+  extension: "ts" | "js" | 'cs',
   fileContentFrom: Function,
   indexFileContentFrom: Function
 ) {
@@ -34,28 +34,35 @@ export async function fetchMeta(url: string) {
   return (await axios.get(`${url}/meta`)).data;
 }
 
-export function adoptParams(params: Param[]) {
+export function adoptParams(params: Param[], typeAdopt: (p: any) => string) {
   return params.map((p) => ({
     ...p,
-    type: adoptType(p.type)
+    type: typeAdopt(p.type)
   }));
 }
 
-export function adoptType(type) {
+export function adoptTypeJS(type) {
   if(!type) return "any";
   if(typeof type === "string")
     return (type === "int" || type === "float") ? "number" : type;
   return type.$typeName + (type.$isArray ? '[]' : '');
 }
 
-export function getSchemaInfoFrom(service: ServiceMetaInfo) {
+export function adoptTypeCS(type) {
+  if(!type) return "object";
+  if(typeof type === "string")
+    return type;
+  return type.$typeName + (type.$isArray ? '[]' : '');
+}
+
+export function getSchemaInfoFrom(service: ServiceMetaInfo, typeAdopt: (p: any) => string) {
   const schemas = [];
   const schemaNames = [];
   service.actions.forEach((action) => {
       action.params
         .filter((p) => typeof p.type !== "string")
-        .forEach((p) => getAllSubtypesFrom(p.type, schemas, schemaNames));
-      action.result && getAllSubtypesFrom(action.result, schemas, schemaNames)
+        .forEach((p) => getAllSubtypesFrom(p.type, schemas, schemaNames, typeAdopt));
+      action.result && getAllSubtypesFrom(action.result, schemas, schemaNames, typeAdopt)
     }
   );
   return {
@@ -67,18 +74,19 @@ export function getSchemaInfoFrom(service: ServiceMetaInfo) {
 export function getAllSubtypesFrom(
   schema: any,
   subtypes: any[],
-  subtypeNames: string[]
+  subtypeNames: string[],
+  typeAdopt: (p: any) => string
 ) {
-  if (!schema || typeof schema !== "object") return adoptType(schema);
+  if (!schema || typeof schema !== "object") return typeAdopt(schema);
   const result = {};
   Object.keys(schema)
     .filter((k) => !k.startsWith("$"))
     .forEach((k) => {
-      result[k] = getAllSubtypesFrom(schema[k], subtypes, subtypeNames);
+      result[k] = getAllSubtypesFrom(schema[k], subtypes, subtypeNames, typeAdopt);
     });
   subtypes.push(result);
   subtypeNames.push(schema.$typeName);
-  return adoptType(schema);
+  return typeAdopt(schema);
 }
 
 export function getSetFrom(list: any[]): any[] {

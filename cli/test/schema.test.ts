@@ -1,4 +1,4 @@
-import { getAllSubtypesFrom } from '../src/utils';
+import { adoptTypeJS, getAllSubtypesFrom } from '../src/utils';
 
 describe("Schema", () => {
   it("should ", async () => {
@@ -16,7 +16,7 @@ describe("Schema", () => {
 
     const subtypes = [];
     const subtypeNames = [];
-    getAllSubtypesFrom(schema, subtypes, subtypeNames);
+    getAllSubtypesFrom(schema, subtypes, subtypeNames, adoptTypeJS);
 
     expect(subtypeNames).toHaveLength(2);
     expect(subtypeNames[0]).toBe('Complex');

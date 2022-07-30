@@ -41,11 +41,15 @@ module.exports = {
       patterns: [
         {
           from: path.resolve(__dirname, "src/views-js/"),
-          to: "src/views-js/",
+          to: "views-js/",
         },
         {
           from: path.resolve(__dirname, "src/views-ts/"),
-          to: "src/views-ts/",
+          to: "views-ts/",
+        },
+        {
+          from: path.resolve(__dirname, "src/views-cs/"),
+          to: "views-cs/",
         },
       ],
     }),

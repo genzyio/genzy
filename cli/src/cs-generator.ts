@@ -1,8 +1,8 @@
 import { ServiceMetaInfo } from "../../shared/types";
-import { adoptParams, adoptTypeJS, generate as generateUtil, getSchemaInfoFrom } from "./utils";
+import { adoptParams, adoptTypeCS, generate as generateUtil, getSchemaInfoFrom } from "./utils";
 
 export function generate(url: string, dirPath: string, nunjucks: any) {
-  generateUtil(url, dirPath, nunjucks, 'ts', fileContentFrom, indexFileContentFrom);
+  generateUtil(url, dirPath, nunjucks, 'cs', fileContentFrom, indexFileContentFrom);
 }
 
 function capitalizeFirstLetter(string: string) {
@@ -10,16 +10,27 @@ function capitalizeFirstLetter(string: string) {
 }
 
 export function fileContentFrom(service: ServiceMetaInfo, nunjucks: any): string {
-  const { schemas, schemaNames } = getSchemaInfoFrom(service, adoptTypeJS);
+  const { schemas, schemaNames } = getSchemaInfoFrom(service, adoptTypeCS);
   return nunjucks.render('service.njk', {
     ...service,
-    schemas,
+    schemas: schemas.map(s => {
+      const parsedSchema = JSON.parse(s);
+      return Object.keys(parsedSchema).map(propertyName => {
+        const propertyValue = parsedSchema[propertyName];
+        const isList = propertyValue.endsWith('[]');
+        return {
+          name: propertyName,
+          type: propertyValue,
+          isList
+        }
+      });
+    }),
     schemaNames,
     actions: service.actions.map((r) => ({
       ...r,
       httpMethod: capitalizeFirstLetter(r.httpMethod.toLowerCase()),
-      params: adoptParams(r.params, adoptTypeJS),
-      result: adoptTypeJS(r.result)
+      params: adoptParams(r.params, adoptTypeCS),
+      result: adoptTypeCS(r.result)
     })),
     existingMethods: [...new Set(service.actions.map((r) => capitalizeFirstLetter(r.httpMethod.toLowerCase())))]
   });
