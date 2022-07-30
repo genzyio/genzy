@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using N1mbly.Models;
 
 namespace N1mbly.Common
 {
@@ -24,16 +25,23 @@ namespace N1mbly.Common
             return jsPath;
         }
 
-        public static string ConstructPathFromParams(string path, List<object> pathParams)
+        public static string ConstructPathFromParams(string path, List<Argument> pathArgs, List<Argument> queryArgs)
         {
             var constructedPath = path;
             var regex = new Regex("(:\\w+)");
             var matches = regex.Matches(path);
-            var index = 0;
             foreach (Match match in matches)
             {
                 var matchedValue = match.Value;
-                constructedPath = constructedPath.Replace(matchedValue, pathParams[index++].ToString());
+                var matchedParamName = matchedValue.Substring(1);
+                var value = pathArgs.FirstOrDefault(p => p.Name == matchedParamName)?.Value?.ToString() ?? "";
+                constructedPath = constructedPath.Replace(matchedValue, value);
+            }
+            var index = 0;
+            foreach(Argument param in queryArgs)
+            {
+                constructedPath += index == 0 ? "?" : "&";
+                constructedPath += $"{param.Name}={param.Value}";
             }
             return constructedPath;
         }

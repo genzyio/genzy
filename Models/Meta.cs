@@ -136,4 +136,11 @@ namespace N1mbly.Models
         public string Name { get; set; }
         public object Type { get; set; }
     }
+    
+    public class Argument
+    {
+        public string Source { get; set; }
+        public string Name { get; set; }
+        public object Value { get; set; }
+    }
 }
