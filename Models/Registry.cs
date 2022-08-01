@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Models
+namespace N1mbly.Models
 {
     public class Registry
     {

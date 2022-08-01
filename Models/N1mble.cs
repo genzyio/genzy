@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-using Models;
-
 namespace N1mbly.Models
 {
     public class N1mble

@@ -6,7 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 using N1mbly.Common;
+using N1mbly.Models;
 using N1mbly.Models.Interfaces;
+using N1mbly.Services.Randomservice;
+
+using HttpMethod = N1mbly.Common.HttpMethod;
 
 namespace N1mbly.Examples
 {
@@ -20,12 +24,11 @@ namespace N1mbly.Examples
         };
 
         private readonly ILogger<ExampleController> _logger;
-        private readonly IRemoteProxy<ExampleModel> _remoteProxy;
+        private readonly IRemoteProxy _remoteProxy = new RemoteProxy();
 
-        public ExampleController(ILogger<ExampleController> logger, IRemoteProxy<ExampleModel> remoteProxy)
+        public ExampleController(ILogger<ExampleController> logger)
         {
             _logger = logger;
-            _remoteProxy = remoteProxy;
         }
 
         [HttpGet("queries/{query1}/queries/{query2}")]
@@ -92,9 +95,18 @@ namespace N1mbly.Examples
         [HttpPost("remote-proxy")]
         public async Task<IActionResult> RemoteProxyInteractionTest()
         {
-            var result = await _remoteProxy.RemoteCallHandler(HttpMethod.Post, "http://localhost:5000", "api-example/v1/single-model-response");
+            var result = await _remoteProxy.RemoteCallHandler<ExampleModel>(HttpMethod.Post, "http://localhost:5000", "api-example/v1/single-model-response");
 
             return FromResult(result);
+        }
+
+        [HttpPost("remote-js-call")]
+        public async Task<IActionResult> RemoteJsCallTest()
+        {
+            var remoteJsRandomService = new RandomService();
+            var remoteJsResult = await remoteJsRandomService.DobaviNesto();
+
+            return FromResult(remoteJsResult);
         }
     }
 }

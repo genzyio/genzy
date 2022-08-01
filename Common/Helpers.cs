@@ -38,7 +38,7 @@ namespace N1mbly.Common
                 constructedPath = constructedPath.Replace(matchedValue, value);
             }
             var index = 0;
-            foreach(Argument param in queryArgs)
+            foreach (Argument param in queryArgs)
             {
                 constructedPath += index == 0 ? "?" : "&";
                 constructedPath += $"{param.Name}={param.Value}";
