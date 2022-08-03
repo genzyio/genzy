@@ -8,7 +8,8 @@ export function generate(
   nunjucks: any,
   extension: "ts" | "js" | 'cs',
   fileContentFrom: Function,
-  indexFileContentFrom: Function
+  indexFileContentFrom: Function,
+  indexFileName: string = 'index'
 ) {
   fetchMeta(url)
     .then((data) => {
@@ -18,12 +19,12 @@ export function generate(
       data.forEach((service) => {
         fs.writeFileSync(
           dirPath + `/${service.name}.${extension}`,
-          fileContentFrom(service, nunjucks)
+          fileContentFrom(service, url, nunjucks)
         );
       });
 
       const indexContent = indexFileContentFrom(data, url, nunjucks);
-      fs.writeFileSync(dirPath + `/index.${extension}`, indexContent);
+      fs.writeFileSync(dirPath + `/${indexFileName}.${extension}`, indexContent);
     })
     .catch((err) => {
       console.log(err);

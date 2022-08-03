@@ -4,28 +4,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using N1mbly;
 using N1mbly.Common;
 using N1mbly.Models;
 using N1mbly.Models.Interfaces;
 
-namespace n1mbly.services.{{ name | lower }}
+using {{ namespaceName }}.Models;
+
+namespace {{ namespaceName }}
 {
-{% for schemaName in schemaNames %}
-  public class {{ schemaName }}
-  {
-    {% for property in schemas[loop.index0] %}public {% if property.isList %}List<{{ property.type }}>{% else %}{{ property.type }}{% endif %} {{ property.name | capitalizeFirstLetter }} { get; set; }
-    {% endfor %}
-  }
-{% endfor %}
   public class {{ name }}
   {
+    private readonly IRemoteProxy _remoteProxy = new RemoteProxy();
 {% for action in actions %}
-    public async Task<{{ action.result }}> {{ action.name | capitalizeFirstLetter }}({% for param in action.params %}{{ param.type }} {{ param.name }}{% if not loop.last %}, {% endif %}{% endfor %})
+    public async Task<Result<{{ action.result }}>> {{ action.name | capitalizeFirstLetter }}({% for param in action.params %}{{ param.type }} {{ param.name }}{% if not loop.last %}, {% endif %}{% endfor %})
     {
-      return await _remoteProxy.RemoteCallHandler(
+      var result = await _remoteProxy.RemoteCallHandler(
         HttpMethod.{{ action.httpMethod }},
-        "http://localhost:5000" + "{% if path != null %}{{ path }}{% endif %}",
+        "{{host}}" + "{% if path != null %}{{ path }}{% endif %}",
         "{{ action.path }}",
         new List<Argument>
         {
@@ -33,6 +28,7 @@ namespace n1mbly.services.{{ name | lower }}
           {% endfor %}
         }
       );
+      return result;
     }
 {% endfor %}
   }
