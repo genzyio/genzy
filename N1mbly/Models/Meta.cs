@@ -43,7 +43,7 @@ namespace N1mbly.Models
                     controllerAction.Name = action.ActionName;
                     controllerAction.Path = Helpers.ConstructJsPath(route);
                     controllerAction.HttpMethod = httpMethod;
-                    controllerAction.Result = nestedTypes == null ? GetParsedTypeName(returnType) : nestedTypes;
+                    controllerAction.Result = nestedTypes ?? (object)GetParsedTypeName(returnType);
 
                     foreach (var actionParameter in action.Parameters.Where(param => !param.Equals(null)))
                     {
@@ -53,7 +53,7 @@ namespace N1mbly.Models
                         var parameterSource = actionParameter.BindingInfo.BindingSource.DisplayName;
                         param.Source = (ParamType)Enum.Parse(typeof(ParamType), parameterSource);
                         param.Name = actionParameter.Name;
-                        param.Type = nestedParamTypes == null ? GetParsedTypeName(paramType) : nestedParamTypes;
+                        param.Type = nestedParamTypes ?? (object)GetParsedTypeName(paramType);
                         controllerAction.Params.Add(param);
                     }
                     controller.Actions.Add(controllerAction);
@@ -103,7 +103,7 @@ namespace N1mbly.Models
             foreach (var property in modelProperties)
             {
                 var nestedType = GetNestedTypes(property.PropertyType);
-                result.TryAdd(property.Name, nestedType == null ? GetParsedTypeName(property.PropertyType) : nestedType);
+                result.TryAdd(property.Name, nestedType ?? (object)GetParsedTypeName(property.PropertyType));
             }
             result.TryAdd("$isArray", isArray);
             result.TryAdd("$typeName", GetParsedTypeName(type));
@@ -136,7 +136,7 @@ namespace N1mbly.Models
         public string Name { get; set; }
         public object Type { get; set; }
     }
-    
+
     public class Argument
     {
         public string Source { get; set; }
