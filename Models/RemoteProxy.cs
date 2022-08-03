@@ -9,12 +9,16 @@ using N1mbly.Models.Interfaces;
 using Newtonsoft.Json;
 
 using HttpMethod = N1mbly.Common.HttpMethod;
+using NetHttpMethod = System.Net.Http.HttpMethod;
 
 namespace N1mbly.Models
 {
     public class RemoteProxy : IRemoteProxy
     {
-        public RemoteProxy() { }
+        private static readonly HttpClient _client = new();
+
+        public RemoteProxy()
+        { }
 
         public async Task<Result<T>> RemoteCallHandler<T>(HttpMethod httpMethod, string origin, string pathTemplate, List<Argument> argsList)
         {
@@ -54,14 +58,10 @@ namespace N1mbly.Models
         {
             try
             {
-                using var client = new HttpClient();
+                var fullPath = $"{origin}{$"/{path}".Replace("//", "/")}";
+                var message = GetRequestMessage(httpMethod, fullPath, headers, body);
 
-                if (headers != null)
-                {
-                    SetRequestHeaders(client, headers);
-                }
-
-                var response = await GetResponse(client, httpMethod, $"{origin}{$"/{path}".Replace("//", "/")}", body);
+                using var response = await _client.SendAsync(message);
                 if (!response.IsSuccessStatusCode)
                 {
                     return Result<T>.ErrorResult("Error while calling remote service", ErrorType.Error);
@@ -76,32 +76,17 @@ namespace N1mbly.Models
             }
         }
 
-        private async Task<HttpResponseMessage> GetResponse(HttpClient client, HttpMethod httpMethod, string path, object body = null)
+        private HttpRequestMessage GetRequestMessage(HttpMethod httpMethod, string path, List<Dictionary<string, string>> headers = null, object body = null)
         {
-            HttpResponseMessage response = null;
-            switch (httpMethod)
+            HttpRequestMessage message = new(new NetHttpMethod(httpMethod.ToString()), path);
+            if (headers != null)
             {
-                case HttpMethod.Get:
-                    response = await client.GetAsync(path);
-                    break;
-                case HttpMethod.Post:
-                    response = await client.PostAsync(path, GetJson(body));
-                    break;
-                case HttpMethod.Put:
-                    response = await client.PutAsync(path, GetJson(body));
-                    break;
-                case HttpMethod.Delete:
-                    response = await client.DeleteAsync(path);
-                    break;
-                case HttpMethod.Patch:
-                    response = await client.PatchAsync(path, GetJson(body));
-                    break;
-                default:
-                    response = new HttpResponseMessage();
-                    break;
+                SetRequestHeaders(message, headers);
             }
 
-            return response;
+            message.Content = GetJson(body);
+
+            return message;
         }
 
         private StringContent GetJson(object body, string encoding = "application/json")
@@ -118,11 +103,11 @@ namespace N1mbly.Models
             return json;
         }
 
-        private void SetRequestHeaders(HttpClient client, List<Dictionary<string, string>> headers)
+        private void SetRequestHeaders(HttpRequestMessage message, List<Dictionary<string, string>> headers)
         {
             foreach (var header in headers)
             {
-                client.DefaultRequestHeaders.Add(header.Keys.FirstOrDefault(), header.Values);
+                message.Headers.Add(header.Keys.FirstOrDefault(), header.Values);
             }
         }
     }
