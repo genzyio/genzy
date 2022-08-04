@@ -6,9 +6,9 @@ namespace N1mbly.Controllers
 {
     [ApiController]
     [Route("api/meta")]
-    public class MetaController
+    public class N1mblyMetaController
     {
-        public MetaController() { }
+        public N1mblyMetaController() { }
 
         [HttpGet]
         public object Get()

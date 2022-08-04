@@ -9,9 +9,8 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>n1mbly</Company>
     <Product>N1mbly</Product>
-    <Description>
-      N1mbly is a .NET library that enables rapid development of web applications and puts the focus on implementing the business logic instead of spending much time and effort on configuration.
-    </Description>
+    <Description>N1mbly is a .NET library that enables rapid development of web applications and puts the focus on implementing the business logic instead of spending much time and effort on configuration.
+</Description>
     <Copyright>N1mbly 2022</Copyright>
     <PackageLicenseExpression>ISC</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/n1mbly/n1mbly-dotnet</RepositoryUrl>

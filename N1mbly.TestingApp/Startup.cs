@@ -26,6 +26,11 @@ namespace N1mbly
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddN1mbly(options =>
+            {
+                options.AddMetaRoute = false;
+            });
+
             services.AddHttpClient();
 
             // Define services here
@@ -72,8 +77,6 @@ namespace N1mbly
             {
                 endpoints.MapControllers();
             });
-
-            app.UseN1mbly();
         }
     }
 }
