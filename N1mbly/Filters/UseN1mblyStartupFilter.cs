@@ -10,8 +10,6 @@ namespace N1mbly.Filters
     {
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
-            Console.WriteLine("Collection meta.");
-
             return app =>
             {
                 var provider = app.ApplicationServices.GetService(typeof(IActionDescriptorCollectionProvider)) as IActionDescriptorCollectionProvider;
