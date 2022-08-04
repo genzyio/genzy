@@ -15,7 +15,7 @@ namespace N1mbly.Models
 {
     public class RemoteProxy : IRemoteProxy
     {
-        private static readonly HttpClient _client = new();
+        private static readonly HttpClient _client = new HttpClient();
 
         public RemoteProxy()
         { }
@@ -78,7 +78,7 @@ namespace N1mbly.Models
 
         private HttpRequestMessage GetRequestMessage(HttpMethod httpMethod, string path, List<Dictionary<string, string>> headers = null, object body = null)
         {
-            HttpRequestMessage message = new(new NetHttpMethod(httpMethod.ToString()), path);
+            var message = new HttpRequestMessage(new NetHttpMethod(httpMethod.ToString()), path);
             if (headers != null)
             {
                 SetRequestHeaders(message, headers);

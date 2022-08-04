@@ -8,7 +8,7 @@ namespace N1mbly.Controllers
 {
     public class BaseController<T> : ResponseProvider where T : class
     {
-        private IBaseService<T> _baseService;
+        private readonly IBaseService<T> _baseService;
 
         public BaseController(IBaseService<T> baseService)
         {
