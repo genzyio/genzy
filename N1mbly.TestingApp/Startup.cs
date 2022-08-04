@@ -28,7 +28,7 @@ namespace N1mbly
         {
             services.AddN1mbly(options =>
             {
-                options.AddMetaRoute = false;
+                options.AddMetaRoute = true;
             });
 
             services.AddHttpClient();

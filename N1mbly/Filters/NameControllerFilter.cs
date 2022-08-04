@@ -16,18 +16,9 @@ namespace N1mbly.Filters
         protected override bool IsController(TypeInfo typeInfo)
         {
             var isController = base.IsController(typeInfo);
+            var hasWantedName = _names.Contains(typeInfo.Name);
 
-            if (!isController)
-            {
-                return false;
-            }
-
-            if (_names.Contains(typeInfo.Name))
-            {
-                return false;
-            }
-
-            return isController;
+            return isController || hasWantedName;
         }
     }
 }

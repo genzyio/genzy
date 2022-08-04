@@ -14,19 +14,18 @@ namespace N1mbly.Extensions
             var options = new N1mblyOptions();
             optionsBuilder(options);
 
-            if (options.AddMetaRoute)
+            if (!options.AddMetaRoute)
             {
-                return services.AddSingleton<IStartupFilter, UseN1mblyStartupFilter>();
+                return services;
             }
 
             services.AddControllers()
                     .ConfigureApplicationPartManager(m =>
                     {
-                        m.FeatureProviders.Clear();
-                        m.FeatureProviders.Add(new NameControllerFilter(nameof(N1mblyMetaController)));
+                        m.FeatureProviders.Add(new NameControllerFilter(nameof(N1mblyMeta)));
                     });
 
-            return services;
+            return services.AddSingleton<IStartupFilter, UseN1mblyStartupFilter>();
         }
     }
 }

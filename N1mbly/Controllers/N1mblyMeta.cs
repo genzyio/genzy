@@ -4,11 +4,11 @@ using N1mbly.Models;
 
 namespace N1mbly.Controllers
 {
-    [ApiController]
     [Route("api/meta")]
-    public class N1mblyMetaController
+    public class N1mblyMeta
     {
-        public N1mblyMetaController() { }
+        public N1mblyMeta()
+        { }
 
         [HttpGet]
         public object Get()
