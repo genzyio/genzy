@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using N1mbly.Controllers;
 using N1mbly.Filters;
 using N1mbly.Options;
-using System;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace N1mbly.Extensions
 {
@@ -24,6 +26,9 @@ namespace N1mbly.Extensions
                     {
                         m.FeatureProviders.Add(new NameControllerFilter(nameof(N1mblyMeta)));
                     });
+
+            services.AddControllers().AddNewtonsoftJson(opts => opts.SerializerSettings
+                    .Converters.Add(new StringEnumConverter(typeof(CamelCaseNamingStrategy))));
 
             return services.AddSingleton<IStartupFilter, UseN1mblyStartupFilter>();
         }

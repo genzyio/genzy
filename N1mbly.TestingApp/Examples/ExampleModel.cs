@@ -10,6 +10,7 @@ namespace N1mbly.Examples
         public double Third { get; set; }
         public float Fourth { get; set; }
         public List<string> EndString { get; set; }
+        public NestedModel2 CircularModel { get; set; }
     }
 
     public class NestedModel1

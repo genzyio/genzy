@@ -40,8 +40,6 @@ namespace N1mbly
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 
             services.AddRouting(options => options.LowercaseUrls = true);
-            services.AddControllers().AddNewtonsoftJson(opts => opts.SerializerSettings
-                .Converters.Add(new StringEnumConverter(typeof(CamelCaseNamingStrategy))));
 
             services.AddMvc(o =>
                  o.Conventions.Add(new GenericControllerRouteConvention())

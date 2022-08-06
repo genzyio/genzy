@@ -102,7 +102,7 @@ namespace N1mbly.Models
 
             foreach (var property in modelProperties)
             {
-                var nestedType = GetNestedTypes(property.PropertyType);
+                var nestedType = currentType.Equals(property.PropertyType) ? null : GetNestedTypes(property.PropertyType);
                 result.TryAdd(property.Name, nestedType ?? (object)GetParsedTypeName(property.PropertyType));
             }
             result.TryAdd("$isArray", isArray);
