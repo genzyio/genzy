@@ -1,17 +1,32 @@
 import { ServiceMetaInfo } from "../../shared/types";
-import { adoptParams, adoptTypeJS, generate as generateUtil, getSchemaInfoFrom } from "./utils";
+import {
+  adoptParams,
+  adoptTypeJS,
+  generate as generateUtil,
+  getSchemaInfoFrom,
+} from "./utils";
 
 export function generate(url: string, dirPath: string, nunjucks: any) {
-  generateUtil(url, dirPath, nunjucks, 'ts', fileContentFrom, indexFileContentFrom);
+  generateUtil(
+    url,
+    dirPath,
+    nunjucks,
+    "ts",
+    fileContentFrom,
+    indexFileContentFrom
+  );
 }
 
 function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export function fileContentFrom(service: ServiceMetaInfo, nunjucks: any): string {
+export function fileContentFrom(
+  service: ServiceMetaInfo,
+  nunjucks: any
+): string {
   const { schemas, schemaNames } = getSchemaInfoFrom(service, adoptTypeJS);
-  return nunjucks.render('service.njk', {
+  return nunjucks.render("service.njk", {
     ...service,
     schemas,
     schemaNames,
@@ -19,9 +34,15 @@ export function fileContentFrom(service: ServiceMetaInfo, nunjucks: any): string
       ...r,
       httpMethod: capitalizeFirstLetter(r.httpMethod.toLowerCase()),
       params: adoptParams(r.params, adoptTypeJS),
-      result: adoptTypeJS(r.result)
+      result: adoptTypeJS(r.result),
     })),
-    existingMethods: [...new Set(service.actions.map((r) => capitalizeFirstLetter(r.httpMethod.toLowerCase())))]
+    existingMethods: [
+      ...new Set(
+        service.actions.map((r) =>
+          capitalizeFirstLetter(r.httpMethod.toLowerCase())
+        )
+      ),
+    ],
   });
 }
 
@@ -30,5 +51,5 @@ export function indexFileContentFrom(
   host: string,
   nunjucks: any
 ): string {
-  return nunjucks.render('index.njk', { services, host });
+  return nunjucks.render("index.njk", { services, host });
 }

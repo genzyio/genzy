@@ -53,7 +53,7 @@ export function indexFileContentFrom(
   nunjucks: any
 ): string {
   const namespaces = [
-    ...services.map(service => { 
+    ...services.map((service) => {
       const { schemas, schemaNames } = getSchemaInfoFrom(service, adoptTypeCS);
       return {
         name: getNamespaceNameFrom(service),
@@ -70,8 +70,8 @@ export function indexFileContentFrom(
             };
           });
         }),
-      }
-    })
+      };
+    }),
   ];
   return nunjucks.render("models.njk", {
     namespaces,
