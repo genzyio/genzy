@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "jsxImportSource": "react",
+    "jsx": "react-jsx"
+  }
+}
