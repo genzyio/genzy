@@ -3,9 +3,18 @@ import path from "path";
 import eventEmitter from "../../core/events/events.utils";
 import { Project } from "./projects.models";
 
-export const PROJECT_CREATED = Symbol.for("ProjectCreated");
+export const ProjectCreated = Symbol.for("ProjectCreated");
+export const ProjectDeleted = Symbol.for("ProjectDeleted");
 
-eventEmitter.on(PROJECT_CREATED, (project: Project) => {
+eventEmitter.on(ProjectCreated, (project: Project) => {
   fs.mkdirSync(project.path);
   fs.writeFileSync(path.join(project.path, "project.json"), "{\n}");
+});
+
+eventEmitter.on(ProjectDeleted, ({ project, deletePhysically }: { project: Project; deletePhysically: boolean }) => {
+  if (!deletePhysically) {
+    return;
+  }
+
+  fs.rmdirSync(project.path, { recursive: true });
 });

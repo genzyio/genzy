@@ -1,7 +1,6 @@
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
 
 describe("Test example", () => {
-  
   beforeEach(async () => {
     // Do some logic before each test
   });
@@ -24,5 +23,4 @@ describe("Test example", () => {
       expect(sum).toBe(5);
     });
   });
-
 });
