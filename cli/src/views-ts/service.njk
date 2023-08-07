@@ -5,7 +5,7 @@ import {
   {% endfor %}Query,
   Path,
   Body,
-} from 'nimbly-client';
+} from '@n1mbly/client';
 
 {% for schemaName in schemaNames %}
 export class {{ schemaName }} {{schemas[loop.index0] | replace('"', "") | replace(',', ';') | safe}}

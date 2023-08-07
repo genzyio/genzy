@@ -5,7 +5,6 @@ import { generate as generateJS } from "./js-generator";
 import { generate as generateTS } from "./ts-generator";
 import { generate as generateCS } from "./cs-generator";
 import * as path from "path";
-import { exec } from "child_process";
 
 const options = yargs
   .usage("Usage: -l <language> -h <host> -o")
@@ -47,13 +46,13 @@ env.addFilter(
 
 switch (options.language) {
   case "js":
-    generateJS(options.host, options.outDir, nunjucks);
+    generateJS(options.host, options.outDir, env);
     break;
   case "ts":
-    generateTS(options.host, options.outDir, nunjucks);
+    generateTS(options.host, options.outDir, env);
     break;
   case "cs":
-    generateCS(options.host, options.outDir, nunjucks);
+    generateCS(options.host, options.outDir, env);
     break;
   default:
     break;

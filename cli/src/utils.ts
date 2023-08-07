@@ -19,7 +19,7 @@ export function generate(
       data.forEach((service) => {
         fs.writeFileSync(
           dirPath + `/${service.name}.${extension}`,
-          fileContentFrom(service, url, nunjucks)
+          fileContentFrom(service, nunjucks, url)
         );
       });
 

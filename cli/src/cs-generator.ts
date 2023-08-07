@@ -24,8 +24,8 @@ function capitalizeFirstLetter(string: string) {
 
 export function fileContentFrom(
   service: ServiceMetaInfo,
-  host: string,
-  nunjucks: any
+  nunjucks: any,
+  host: string
 ): string {
   return nunjucks.render("service.njk", {
     host,
