@@ -3,30 +3,46 @@ import { NextFunction, Request, Response } from "express";
 import * as cors from "cors";
 import * as swaggerUi from "swagger-ui-express";
 import { Application } from "express";
-import { Nimble } from '@n1mbly/client';
+import { Nimble } from "@n1mbly/client";
 import { RegisterRoutesFor } from "./routes-handler";
-import { CustomInterceptors, Interceptable, ServiceMetaInfo } from "../../shared/types";
+import {
+  CustomInterceptors,
+  Interceptable,
+  ServiceMetaInfo,
+} from "../../shared/types";
 import { ErrorRegistry } from "./error-handler";
 import { generateDocsFrom } from "./docs";
 
-type InterceptorCallback = (req: Request, res: Response, next: NextFunction) => any;
+type InterceptorCallback = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => any;
 
 export type NimblyInfo = {
   version?: string;
   name?: string;
   description?: string;
   basePath?: string;
-}
+};
 export class NimblyApi extends Interceptable<InterceptorCallback> {
   private app: Application;
   private errorRegistry: ErrorRegistry = {};
   private nimblyInfo?: NimblyInfo;
   private meta: ServiceMetaInfo[] = [];
 
-  constructor({ app, nimblyInfo, basePath='/api' }: {app?: Application, nimblyInfo?: NimblyInfo, basePath?: string} = {}) {
+  constructor({
+    app,
+    nimblyInfo,
+    basePath = "/api",
+  }: {
+    app?: Application;
+    nimblyInfo?: Omit<NimblyInfo, "basePath">;
+    basePath?: string;
+  } = {}) {
     super();
     this.nimblyInfo = !!nimblyInfo ? { basePath, ...nimblyInfo } : { basePath };
-    if(!app) {
+    if (!app) {
       this.app = express();
       this.app.use(express.urlencoded({ extended: true }));
       this.app.use(express.json());
@@ -51,30 +67,41 @@ export class NimblyApi extends Interceptable<InterceptorCallback> {
       });
     });
 
-    this.app.get('/api/meta', (_, res) => {
+    this.app.get(`${this.nimblyInfo.basePath}/meta`, (_, res) => {
       res.status(200).send(this.meta);
     });
 
     const options = {
       explorer: true,
       swaggerOptions: {
-        url: "/api/swagger.json",
+        url: `${this.nimblyInfo.basePath}/swagger.json`,
       },
     };
     const swaggerDocument = generateDocsFrom(this.meta, this.nimblyInfo);
-    this.app.get(options.swaggerOptions.url, (req, res) => res.json(swaggerDocument));
-    this.app.use('/explorer', express.static('node_modules/swagger-ui-dist/', {index: false}), swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
+    this.app.get(options.swaggerOptions.url, (req, res) =>
+      res.json(swaggerDocument)
+    );
+    this.app.use(
+      "/explorer",
+      express.static("node_modules/swagger-ui-dist/", { index: false }),
+      swaggerUi.serve,
+      swaggerUi.setup(swaggerDocument, options)
+    );
 
     return this.app;
   }
 
-  public intercept(customInterceptors: CustomInterceptors<InterceptorCallback>): NimblyApi {
-    this.interceptCustom(customInterceptors, 'beforeCustomInterceptors');
+  public intercept(
+    customInterceptors: CustomInterceptors<InterceptorCallback>
+  ): NimblyApi {
+    this.interceptCustom(customInterceptors, "beforeCustomInterceptors");
     return this;
   }
 
-  public interceptAfter(customInterceptors: CustomInterceptors<InterceptorCallback>): NimblyApi {
-    this.interceptCustom(customInterceptors, 'afterCustomInterceptors');
+  public interceptAfter(
+    customInterceptors: CustomInterceptors<InterceptorCallback>
+  ): NimblyApi {
+    this.interceptCustom(customInterceptors, "afterCustomInterceptors");
     return this;
   }
 
@@ -89,7 +116,7 @@ export class NimblyApi extends Interceptable<InterceptorCallback> {
   }
 
   public withErrors(errors: ErrorRegistry): NimblyApi {
-    this.errorRegistry = {...this.errorRegistry, ...errors};
+    this.errorRegistry = { ...this.errorRegistry, ...errors };
     return this;
   }
 }
