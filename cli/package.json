@@ -21,6 +21,7 @@
   "dependencies": {
     "axios": "^0.27.2",
     "nunjucks": "^3.2.3",
+    "prettier": "^3.0.1",
     "yargs": "^17.5.1"
   },
   "devDependencies": {

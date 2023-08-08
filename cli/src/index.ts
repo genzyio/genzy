@@ -6,9 +6,8 @@ import { generate as generateTS } from "./ts-generator";
 import { generate as generateCS } from "./cs-generator";
 import * as path from "path";
 import { fetchMeta, readFile } from "./utils";
-
 const options = yargs
-  .usage("Usage: -l <language> -h <host> -o")
+  .usage("Usage: -l <language> -h <host> -o -f")
   .option("l", {
     alias: "language",
     describe: "Target language",
@@ -21,6 +20,12 @@ const options = yargs
     describe: "Target API URL (including the base path like '/api')",
     type: "string",
     demandOption: true,
+  })
+  .option("f", {
+    alias: "isFile",
+    describe: "Is source a file",
+    type: "boolean",
+    demandOption: false,
   })
   .option("o", {
     alias: "outDir",
@@ -45,9 +50,8 @@ env.addFilter(
   true,
 );
 
+const meta = options.isFile ? readFile(options.host) : fetchMeta(options.host);
 //TODO: maybe add option for JSON file or url, for now only url data
-const meta = fetchMeta(options.host);
-//const meta = readFile(options.host);
 
 switch (options.language) {
   case "js":

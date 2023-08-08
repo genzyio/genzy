@@ -1,17 +1,13 @@
 import axios from "axios";
 import * as fs from "fs";
 import { Param, ServiceMetaInfo } from "../../shared/types";
+import { format } from "prettier";
 
 export async function readFile(
   filePath: string,
 ) {
   return new Promise((resolve) => {
-    /*     try { */
     resolve(JSON.parse(fs.readFileSync(filePath, "utf8")));
-
-    // } catch (e) {
-    //   console.log(e);
-    // }
   });
 }
 
@@ -29,23 +25,29 @@ export function generate(
     fs.mkdirSync(dirPath, { recursive: true });
   }
   meta.then(
-    (data) => {
+    (data: any) => {
       data.forEach((service) => {
-        fs.writeFileSync(
+        writeToFile(
           dirPath + `/${service.name}.${extension}`,
           fileContentFrom(service, nunjucks, url),
         );
       });
-
-      const indexContent = indexFileContentFrom(data, url, nunjucks);
-      fs.writeFileSync(
+      writeToFile(
         dirPath + `/${indexFileName}.${extension}`,
-        indexContent,
+        indexFileContentFrom(data, url, nunjucks),
       );
     },
   ).catch((err) => {
     console.log(err);
   });
+}
+export async function writeToFile(filePath: any, fileContent: any) {
+  format(fileContent, {
+    parser: "typescript",
+  }).then((data) => {
+    fs.writeFileSync(filePath, data);
+  });
+  /*   fs.writeFileSync(filePath, fileContent); */
 }
 
 export async function fetchMeta(url: string) {
