@@ -1,21 +1,27 @@
 import { nimblyConfigFrom } from "../../shared/functions";
 import { ServiceMetaInfo } from "../../shared/types";
-import { generate as generateUtil } from "./utils";
+import { fetchMeta, generate as generateUtil } from "./utils";
 
-export function generate(url: string, dirPath: string, nunjucks: any) {
+export function generate(
+  meta: any,
+  url: string,
+  dirPath: string,
+  nunjucks: any,
+) {
   generateUtil(
+    meta,
     url,
     dirPath,
     nunjucks,
     "js",
     fileContentFrom,
-    indexFileContentFrom
+    indexFileContentFrom,
   );
 }
 
 export function fileContentFrom(
   service: ServiceMetaInfo,
-  nunjucks: any
+  nunjucks: any,
 ): string {
   return nunjucks.render("service.njk", {
     ...service,
@@ -26,7 +32,7 @@ export function fileContentFrom(
 export function indexFileContentFrom(
   services: ServiceMetaInfo[],
   host: string,
-  nunjucks: any
+  nunjucks: any,
 ): string {
   return nunjucks.render("index.njk", { services, host });
 }

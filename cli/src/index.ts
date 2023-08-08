@@ -5,6 +5,7 @@ import { generate as generateJS } from "./js-generator";
 import { generate as generateTS } from "./ts-generator";
 import { generate as generateCS } from "./cs-generator";
 import * as path from "path";
+import { fetchMeta, readFile } from "./utils";
 
 const options = yargs
   .usage("Usage: -l <language> -h <host> -o")
@@ -13,7 +14,7 @@ const options = yargs
     describe: "Target language",
     type: "string",
     demandOption: true,
-    choices: ["js", "ts", "cs"],
+    choices: ["js", "ts", "cs", "fs"],
   })
   .option("h", {
     alias: "host",
@@ -30,7 +31,7 @@ const options = yargs
 
 const env = nunjucks.configure(
   path.resolve(__dirname, "./views-" + options.language),
-  { autoescape: true }
+  { autoescape: true },
 );
 env.addFilter(
   "capitalizeFirstLetter",
@@ -41,18 +42,22 @@ env.addFilter(
     }
     cb(null, `${val[0].toUpperCase()}${val.substring(1)}`);
   },
-  true
+  true,
 );
+
+//TODO: maybe add option for JSON file or url, for now only url data
+const meta = fetchMeta(options.host);
+//const meta = readFile(options.host);
 
 switch (options.language) {
   case "js":
-    generateJS(options.host, options.outDir, env);
+    generateJS(meta, options.host, options.outDir, env);
     break;
   case "ts":
-    generateTS(options.host, options.outDir, env);
+    generateTS(meta, options.host, options.outDir, env);
     break;
   case "cs":
-    generateCS(options.host, options.outDir, env);
+    generateCS(meta, options.host, options.outDir, env);
     break;
   default:
     break;

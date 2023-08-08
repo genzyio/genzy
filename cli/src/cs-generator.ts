@@ -2,19 +2,26 @@ import { ServiceMetaInfo } from "../../shared/types";
 import {
   adoptParams,
   adoptTypeCS,
+  fetchMeta,
   generate as generateUtil,
   getSchemaInfoFrom,
 } from "./utils";
 
-export function generate(url: string, dirPath: string, nunjucks: any) {
+export function generate(
+  meta: any,
+  url: string,
+  dirPath: string,
+  nunjucks: any,
+) {
   generateUtil(
+    meta,
     url,
     dirPath,
     nunjucks,
     "cs",
     fileContentFrom,
     indexFileContentFrom,
-    "Models"
+    "Models",
   );
 }
 
@@ -25,7 +32,7 @@ function capitalizeFirstLetter(string: string) {
 export function fileContentFrom(
   service: ServiceMetaInfo,
   nunjucks: any,
-  host: string
+  host: string,
 ): string {
   return nunjucks.render("service.njk", {
     host,
@@ -41,7 +48,7 @@ export function fileContentFrom(
       ...new Set(
         service.actions.map((r) =>
           capitalizeFirstLetter(r.httpMethod.toLowerCase())
-        )
+        ),
       ),
     ],
   });
@@ -50,7 +57,7 @@ export function fileContentFrom(
 export function indexFileContentFrom(
   services: ServiceMetaInfo[],
   host: string,
-  nunjucks: any
+  nunjucks: any,
 ): string {
   const namespaces = [
     ...services.map((service) => {
