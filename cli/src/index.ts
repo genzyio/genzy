@@ -14,7 +14,7 @@ const options = yargs
     describe: "Target language",
     type: "string",
     demandOption: true,
-    choices: ["js", "ts", "cs", "fs"],
+    choices: ["js", "ts", "cs"],
   })
   .option("h", {
     alias: "host",
