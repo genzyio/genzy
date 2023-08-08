@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Handle, Position } from "reactflow";
-import { Attribute, Class } from "./models";
+import { Class } from "./models";
 
 interface ClassNodeProps {
   data: Class;
@@ -27,21 +27,20 @@ const ClassNode: React.FC<ClassNodeProps> = ({ data, selected, id }) => {
   };
 
   return (
-    <div
-      className="p-2"
-      style={{
-        border: selected ? "2px solid #aaa" : "1px solid #555",
-      }}
-    >
+    <div className="p-4 rounded-lg border border-gray-400/80 bg-white flex flex-col gap-y-3">
       <Handle
         type="target"
         position={Position.Top}
-        className="bg-red-600"
+        style={{
+          background: "#555",
+          width: "1rem",
+          height: "1rem",
+          top: -10,
+        }}
         isConnectable={true}
-        id="t"
       />
       <input
-        className="border px-2 py-1 w-full text-center"
+        className="border px-2 py-1 w-full text-center rounded-md"
         value={classData.name}
         onChange={(e) => setClassData({ ...classData, name: e.target.value })}
       />
