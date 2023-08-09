@@ -3,7 +3,7 @@ import * as fs from "fs";
 import { Param, ServiceMetaInfo } from "../../shared/types";
 import { format } from "prettier";
 
-export async function readFile(
+export async function readMetaFromFile(
   filePath: string,
 ) {
   return new Promise((resolve) => {
@@ -47,7 +47,6 @@ export async function writeToFile(filePath: any, fileContent: any) {
   }).then((data) => {
     fs.writeFileSync(filePath, data);
   });
-  /*   fs.writeFileSync(filePath, fileContent); */
 }
 
 export async function fetchMeta(url: string) {

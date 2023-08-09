@@ -5,9 +5,9 @@ import { generate as generateJS } from "./js-generator";
 import { generate as generateTS } from "./ts-generator";
 import { generate as generateCS } from "./cs-generator";
 import * as path from "path";
-import { fetchMeta, readFile } from "./utils";
+import { fetchMeta, readMetaFromFile } from "./utils";
 const options = yargs
-  .usage("Usage: -l <language> -h <host> -o -f")
+  .usage("Usage: -l <language> -h <host> -o <out_dir> -f ")
   .option("l", {
     alias: "language",
     describe: "Target language",
@@ -50,8 +50,9 @@ env.addFilter(
   true,
 );
 
-const meta = options.isFile ? readFile(options.host) : fetchMeta(options.host);
-//TODO: maybe add option for JSON file or url, for now only url data
+const meta = options.isFile
+  ? readMetaFromFile(options.host)
+  : fetchMeta(options.host);
 
 switch (options.language) {
   case "js":
