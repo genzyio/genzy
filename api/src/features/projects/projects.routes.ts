@@ -15,6 +15,16 @@ projectRouters.get("/projects", async (req: Request, res: Response) => {
   return res.status(200).send(projects);
 });
 
+projectRouters.get("/projects/:name", async (req: Request, res: Response) => {
+  const projectName = req.params.name || "";
+  const existingProject = await projectsRepo.GetByName(projectName);
+  if (!existingProject) {
+    return res.status(404).send(ProjectDoesNotExistError(projectName));
+  }
+
+  return res.status(200).send(existingProject);
+});
+
 projectRouters.post("/projects", async (req: Request, res: Response) => {
   const project: Project = req.body;
 

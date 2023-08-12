@@ -1,20 +1,21 @@
 import { type FC } from "react";
-import { type Project } from "../projects-models";
-import { Button } from "../../../components/button";
+import { type Project } from "../../models/project.models";
+import { Button } from "../../../../components/button";
 import moment = require("moment");
-import { getProjectScreenshotUrl } from "../project-screenshots";
+import { getProjectScreenshotUrl } from "../../api/project-screenshots.actions";
 
 type ProjectListItemProps = {
   project: Project;
+  onViewProject: () => any;
 };
 
-export const ProjectListItem: FC<ProjectListItemProps> = ({ project }) => {
+export const ProjectListItem: FC<ProjectListItemProps> = ({ project, onViewProject }) => {
   return (
     <li key={project.path} className="flex justify-between gap-x-6 py-5">
       <div className="flex min-w-0 gap-x-4">
         <img
-          className="h-12 w-12 flex-none rounded-full bg-gray-50"
-          src={getProjectScreenshotUrl(project)}
+          className="h-12 w-12 flex-none rounded-full bg-gray-50 border border-black-100"
+          src={getProjectScreenshotUrl(project.name)}
           alt=""
         />
         <div className="min-w-0 flex-auto">
@@ -25,7 +26,7 @@ export const ProjectListItem: FC<ProjectListItemProps> = ({ project }) => {
         </div>
       </div>
       <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
-        <Button>View Project</Button>
+        <Button onClick={onViewProject}>View Project</Button>
       </div>
     </li>
   );

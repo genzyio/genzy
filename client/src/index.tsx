@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { App } from "./app";
+import { ProjectContextProvider } from "./features/projects/contexts/project.context";
 import { ToastContainer, type ToastContainerProps } from "react-toastify";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { API_URL } from "./url";
@@ -33,7 +34,9 @@ const root = createRoot(container);
 root.render(
   <>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <ProjectContextProvider>
+        <App />
+      </ProjectContextProvider>
     </QueryClientProvider>
 
     <ToastContainer {...toastrOptions} />

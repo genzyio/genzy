@@ -1,13 +1,12 @@
 import html2canvas from "html2canvas";
-import { API_URL } from "../../url";
-import { type Project } from "./projects-models";
 import axios from "axios";
+import { API_URL } from "../../../url";
 
-function getProjectScreenshotUrl({ name }: Project) {
-  return `${API_URL}/projects/${name}/screenshot`;
+function getProjectScreenshotUrl(projectName: string) {
+  return `${API_URL}/projects/${projectName}/screenshot`;
 }
 
-async function saveProjectScreenshot() {
+async function saveProjectScreenshot(projectName: string) {
   const canvas = await html2canvas(document.body, {
     allowTaint: true,
     useCORS: true,
@@ -18,8 +17,7 @@ async function saveProjectScreenshot() {
   const fd = new FormData();
   fd.append("images", blob);
 
-  // TODO: Pass project name
-  axios.post(`/projects/test6/screenshot`, fd, {
+  axios.post(`/projects/${projectName}/screenshot`, fd, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 }
