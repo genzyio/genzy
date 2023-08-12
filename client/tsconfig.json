@@ -2,6 +2,7 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "jsxImportSource": "react",
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "lib": ["es6", "dom"]
   }
 }

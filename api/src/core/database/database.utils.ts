@@ -24,7 +24,8 @@ function createTables(db: Database) {
     (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name   VARCHAR(50) NOT NULL UNIQUE,
-      path   VARCHAR(255) NOT NULL UNIQUE
+      path   VARCHAR(255) NOT NULL UNIQUE,
+      createdAt TIMESTAMP NOT NULL
     );
   `);
 }

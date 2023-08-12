@@ -1,3 +1,4 @@
+import moment from "moment";
 import dbConnection from "../../core/database/database.utils";
 import { CreateProject, type ProjectId, type Project } from "./projects.models";
 
@@ -17,8 +18,10 @@ function GetByName(projectName: string): Promise<Project | null> {
 
 function Add(project: Project): Promise<void> {
   return new Promise((resolve, reject) => {
-    dbConnection.run(`INSERT INTO Projects (name, path) VALUES (?, ?)`, [project.name, project.path], (error) =>
-      error ? reject(error) : resolve()
+    dbConnection.run(
+      `INSERT INTO Projects (name, path, createdAt) VALUES (?, ?, ?)`,
+      [project.name, project.path, moment().format()],
+      (error) => (error ? reject(error) : resolve())
     );
   });
 }

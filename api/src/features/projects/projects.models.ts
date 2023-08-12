@@ -6,8 +6,9 @@ type Project = {
   id: ProjectId;
   name: string;
   path: string;
+  createdAt: string;
 };
 
-type CreateProject = Omit<Project, "id"> & {};
+type CreateProject = Omit<Project, "id" | "createdAt"> & {};
 
 export type { Project, ProjectId, CreateProject };
