@@ -33,7 +33,9 @@ export const Tabs: FC<PropsWithChildren> = ({ children }) => {
         </ul>
       </div>
 
-      <div role="tabpanel">{children[activeTab]}</div>
+      <div key={activeTab} role="tabpanel">
+        {children[activeTab]}
+      </div>
     </>
   );
 };

@@ -7,23 +7,47 @@ import { useAction } from "../../../hooks/useAction";
 import { type ProjectDefinition } from "../models/project-definition.models";
 import { saveProjectDefinition } from "../api/project-definition.actions";
 import { EmptyDiagram } from "../../model/EmptyDiagram";
+import { useNotifications } from "../../../hooks/useNotifications";
+import { extractErrorMessage } from "../../../utils/errors";
 
 // NOTE: Everything done with forwardRef is temporal solution
 export const Project: FC = () => {
-  const { project, projectDefinition } = useProjectContext();
+  const notificator = useNotifications();
+  const {
+    project,
+    projectDefinition: initialProjectDefinition,
+    closeProject,
+  } = useProjectContext();
 
   const diagramRef = createRef<any>();
+  const currentProjectDefinition = diagramRef.current?.getState();
 
   const saveProjectDefinitionAction = useAction<ProjectDefinition>(
     saveProjectDefinition(project.name),
-    { onSuccess: () => {}, onError: () => {} }
+    {
+      onSuccess: () => {
+        notificator.success("Project is saved.");
+        saveProjectScreenshot(project.name);
+      },
+      onError: (error) => {
+        notificator.error(extractErrorMessage(error));
+      },
+    }
   );
 
-  const saveProject = () => {
-    const projectDefinition = diagramRef.current?.getState();
-    saveProjectDefinitionAction(projectDefinition);
-    saveProjectScreenshot(project.name);
-  };
+  const saveAndCloseProjectDefinitionAction = useAction<ProjectDefinition>(
+    saveProjectDefinition(project.name),
+    {
+      onSuccess: () => {
+        notificator.success("Project is saved.");
+        saveProjectScreenshot(project.name);
+        closeProject();
+      },
+      onError: (error) => {
+        notificator.error(extractErrorMessage(error));
+      },
+    }
+  );
 
   if (!project.name) {
     return <EmptyDiagram />;
@@ -31,9 +55,15 @@ export const Project: FC = () => {
 
   return (
     <>
-      <Button onClick={saveProject}>Save Project</Button>
+      <div className="flex gap-x-2">
+        <Button onClick={() => saveProjectDefinitionAction(currentProjectDefinition)}>Save</Button>
+        <Button onClick={() => saveAndCloseProjectDefinitionAction(currentProjectDefinition)}>
+          Save And Close
+        </Button>
+        <Button onClick={closeProject}>Close</Button>
+      </div>
 
-      <Diagram ref={diagramRef} {...projectDefinition} />
+      <Diagram ref={diagramRef} {...initialProjectDefinition} />
     </>
   );
 };

@@ -14,7 +14,7 @@ export const ProjectListItem: FC<ProjectListItemProps> = ({ project, onViewProje
     <li key={project.path} className="flex justify-between gap-x-6 py-5">
       <div className="flex min-w-0 gap-x-4">
         <img
-          className="h-12 w-12 flex-none rounded-full bg-gray-50 border border-black-100"
+          className="h-14 w-14 flex-none rounded-full bg-gray-50 border border-black-100"
           src={getProjectScreenshotUrl(project.name)}
           alt=""
         />

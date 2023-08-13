@@ -4,18 +4,33 @@ import { Tabs } from "./components/tabs";
 import { Tab } from "./components/tab";
 import { ProjectsList } from "./features/projects/components/projects-list/projects-list";
 import { Project } from "./features/projects/components/project";
+import { CreateProjectForm } from "./features/projects/components/create/create-project-form";
 
 export function App() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [openProject, setOpenProject] = useState(false);
+  const [createProject, setCreateProject] = useState(false);
 
-  const toggleIsOpen = useCallback(() => setIsOpen((open) => !open), [setIsOpen]);
+  const toggleOpenProject = useCallback(() => setOpenProject((open) => !open), [setOpenProject]);
+  const toggleCreateProject = useCallback(
+    () => setCreateProject((open) => !open),
+    [setCreateProject]
+  );
 
   return (
     <>
       <div className="h-full w-full">
         Above and GN1mblyeyond!
         <>
-          <Modal title="Open Project" isOpen={isOpen} onClose={toggleIsOpen}>
+          <Modal title="Create Project" isOpen={createProject} onClose={toggleCreateProject}>
+            <CreateProjectForm onSaved={toggleCreateProject} onClosed={toggleCreateProject} />
+          </Modal>
+
+          <Modal
+            title="Open Project"
+            isLarge={true}
+            isOpen={openProject}
+            onClose={toggleOpenProject}
+          >
             <Tabs>
               <Tab title="Recently Opened">Recently Opened</Tab>
               <Tab title="All Projects">
@@ -24,7 +39,10 @@ export function App() {
             </Tabs>
           </Modal>
 
-          <p onClick={toggleIsOpen}>Open Project</p>
+          <div className="flex gap-x-2">
+            <p onClick={toggleCreateProject}>Create Project</p>
+            <p onClick={toggleOpenProject}>Open Project</p>
+          </div>
         </>
         <Project />
       </div>

@@ -6,6 +6,7 @@ import ReactFlow, {
   Connection,
   Controls,
   Background,
+  MiniMap,
 } from "reactflow";
 
 import "reactflow/dist/style.css";
@@ -87,6 +88,7 @@ export const Diagram = forwardRef<any, DiagramProps>(
             }}
             proOptions={{ account: "paid-sponsor", hideAttribution: true }}
           >
+            <MiniMap zoomable pannable />
             <Controls />
             <Background size={0} />
           </ReactFlow>

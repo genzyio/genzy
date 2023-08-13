@@ -6,8 +6,10 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { API_URL } from "./url";
 import axios from "axios";
 
+import "react-toastify/dist/ReactToastify.css";
+
 const toastrOptions: ToastContainerProps = {
-  position: "top-center",
+  position: "bottom-right",
   autoClose: 5000,
   hideProgressBar: true,
   newestOnTop: false,

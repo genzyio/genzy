@@ -8,12 +8,14 @@ type ProjectContextValues = {
   project: Project;
   projectDefinition: ProjectDefinition;
   loadProject: (projectName: string) => any;
+  closeProject: () => any;
 };
 
 const initialProjectContextValues: ProjectContextValues = {
   project: { name: "", path: "", createdAt: "" },
   projectDefinition: { nodes: [], edges: [] },
   loadProject: () => {},
+  closeProject: () => {},
 };
 
 const ProjectContext = createContext<ProjectContextValues | null>(null);
@@ -34,7 +36,12 @@ export const ProjectContextProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <ProjectContext.Provider
       key={project?.name ?? ""}
-      value={{ project, projectDefinition, loadProject: setProjectName }}
+      value={{
+        project,
+        projectDefinition,
+        loadProject: setProjectName,
+        closeProject: () => setProjectName(""),
+      }}
     >
       {children}
     </ProjectContext.Provider>
