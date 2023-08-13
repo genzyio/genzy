@@ -20,7 +20,6 @@ export const Project: FC = () => {
   } = useProjectContext();
 
   const diagramRef = createRef<any>();
-  const currentProjectDefinition = diagramRef.current?.getState();
 
   const saveProjectDefinitionAction = useAction<ProjectDefinition>(
     saveProjectDefinition(project.name),
@@ -56,8 +55,10 @@ export const Project: FC = () => {
   return (
     <>
       <div className="flex gap-x-2">
-        <Button onClick={() => saveProjectDefinitionAction(currentProjectDefinition)}>Save</Button>
-        <Button onClick={() => saveAndCloseProjectDefinitionAction(currentProjectDefinition)}>
+        <Button onClick={() => saveProjectDefinitionAction(diagramRef.current?.getState())}>
+          Save
+        </Button>
+        <Button onClick={() => saveAndCloseProjectDefinitionAction(diagramRef.current?.getState())}>
           Save And Close
         </Button>
         <Button onClick={closeProject}>Close</Button>
