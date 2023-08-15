@@ -7,7 +7,7 @@ import { generate as generateCS } from "./cs-generator";
 import * as path from "path";
 import { fetchMeta, readMetaFromFile } from "./utils";
 const options = yargs
-  .usage("Usage: -l <language> -h <host> -o <out_dir> -f ")
+  .usage("Usage: -l <language> -h <host> -o <out_dir> -f -server")
   .option("l", {
     alias: "language",
     describe: "Target language",
@@ -15,16 +15,22 @@ const options = yargs
     demandOption: true,
     choices: ["js", "ts", "cs"],
   })
+  .option("s", {
+    alias: "isServer",
+    describe: "Is target a server code",
+    type: "boolean",
+    demandOption: false,
+  })
   .option("h", {
     alias: "host",
     describe: "Target API URL (including the base path like '/api')",
     type: "string",
-    demandOption: true,
+    demandOption: false,
   })
   .option("f", {
-    alias: "isFile",
-    describe: "Is source a file",
-    type: "boolean",
+    alias: "filePath",
+    describe: "Path to meta JSON file",
+    type: "string",
     demandOption: false,
   })
   .option("o", {
@@ -36,7 +42,7 @@ const options = yargs
 
 const env = nunjucks.configure(
   path.resolve(__dirname, "./views-" + options.language),
-  { autoescape: true },
+  { autoescape: true }
 );
 env.addFilter(
   "capitalizeFirstLetter",
@@ -47,23 +53,41 @@ env.addFilter(
     }
     cb(null, `${val[0].toUpperCase()}${val.substring(1)}`);
   },
-  true,
+  true
 );
 
-const meta = options.isFile
-  ? readMetaFromFile(options.host)
-  : fetchMeta(options.host);
+main();
 
-switch (options.language) {
-  case "js":
-    generateJS(meta, options.host, options.outDir, env);
-    break;
-  case "ts":
-    generateTS(meta, options.host, options.outDir, env);
-    break;
-  case "cs":
-    generateCS(meta, options.host, options.outDir, env);
-    break;
-  default:
-    break;
+async function main() {
+  if (!options.filePath && !options.host) {
+    throw new Error("You must provide either a host or a file path.");
+  }
+  const meta = await (options.filePath
+    ? readMetaFromFile(options.filePath)
+    : fetchMeta(options.host));
+
+  switch (options.language) {
+    case "js":
+      generateJS(meta, options.host, options.outDir, env, options.isServer);
+      break;
+    case "ts":
+      generateTS(meta, options.host, options.outDir, env, options.isServer);
+      break;
+    case "cs":
+      if (options.isServer) {
+        throw new Error(
+          "There is no support for generating CS server code yet!"
+        );
+      }
+      generateCS(
+        meta,
+        options.host ?? "http://localhost:3000/api",
+        options.outDir,
+        env,
+        options.isServer
+      );
+      break;
+    default:
+      break;
+  }
 }

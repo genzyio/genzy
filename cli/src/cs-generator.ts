@@ -2,7 +2,6 @@ import { ServiceMetaInfo } from "../../shared/types";
 import {
   adoptParams,
   adoptTypeCS,
-  fetchMeta,
   generate as generateUtil,
   getSchemaInfoFrom,
 } from "./utils";
@@ -12,6 +11,7 @@ export function generate(
   url: string,
   dirPath: string,
   nunjucks: any,
+  isServer = false
 ) {
   generateUtil(
     meta,
@@ -22,6 +22,7 @@ export function generate(
     fileContentFrom,
     indexFileContentFrom,
     "Models",
+    isServer
   );
 }
 
@@ -33,9 +34,11 @@ export function fileContentFrom(
   service: ServiceMetaInfo,
   nunjucks: any,
   host: string,
+  isServer: boolean
 ): string {
   return nunjucks.render("service.njk", {
     host,
+    isServer,
     namespaceName: getNamespaceNameFrom(service),
     ...service,
     actions: service.actions.map((r) => ({
@@ -58,6 +61,7 @@ export function indexFileContentFrom(
   services: ServiceMetaInfo[],
   host: string,
   nunjucks: any,
+  isServer: boolean
 ): string {
   const namespaces = [
     ...services.map((service) => {
@@ -84,6 +88,7 @@ export function indexFileContentFrom(
     namespaces,
     services,
     host,
+    isServer
   });
 }
 

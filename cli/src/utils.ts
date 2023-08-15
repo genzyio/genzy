@@ -3,50 +3,55 @@ import * as fs from "fs";
 import { Param, ServiceMetaInfo } from "../../shared/types";
 import { format } from "prettier";
 
-export async function readMetaFromFile(
-  filePath: string,
-) {
+export async function readMetaFromFile(filePath: string) {
   return new Promise((resolve) => {
     resolve(JSON.parse(fs.readFileSync(filePath, "utf8")));
   });
 }
 
 export function generate(
-  meta: any,
+  meta: ServiceMetaInfo[],
   url: string,
   dirPath: string,
   nunjucks: any,
   extension: "ts" | "js" | "cs",
-  fileContentFrom: Function,
-  indexFileContentFrom: Function,
-  indexFileName: string = "index",
+  fileContentFrom: (
+    service: ServiceMetaInfo,
+    nunjucks: any,
+    host: string,
+    isServer: boolean
+  ) => void,
+  indexFileContentFrom: (
+    services: ServiceMetaInfo[],
+    host: string,
+    nunjucks: any,
+    isServer: boolean
+  ) => void,
+  indexFileName: string,
+  isServer: boolean
 ) {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
   }
-  meta.then(
-    (data: any) => {
-      data.forEach((service) => {
-        writeToFile(
-          dirPath + `/${service.name}.${extension}`,
-          fileContentFrom(service, nunjucks, url),
-        );
-      });
-      writeToFile(
-        dirPath + `/${indexFileName}.${extension}`,
-        indexFileContentFrom(data, url, nunjucks),
-      );
-    },
-  ).catch((err) => {
-    console.log(err);
+  meta.forEach((service) => {
+    writeToFile(
+      dirPath + `/${service.name}.${extension}`,
+      fileContentFrom(service, nunjucks, url, isServer)
+    );
   });
+
+  writeToFile(
+    dirPath + `/${indexFileName}.${extension}`,
+    indexFileContentFrom(meta, url, nunjucks, isServer)
+  );
 }
+
 export async function writeToFile(filePath: any, fileContent: any) {
-  format(fileContent, {
+  const formattedContent = await format(fileContent, {
     parser: "typescript",
-  }).then((data) => {
-    fs.writeFileSync(filePath, data);
   });
+
+  fs.writeFileSync(filePath, formattedContent);
 }
 
 export async function fetchMeta(url: string) {
@@ -76,7 +81,7 @@ export function adoptTypeCS(type) {
 
 export function getSchemaInfoFrom(
   service: ServiceMetaInfo,
-  typeAdopt: (p: any) => string,
+  typeAdopt: (p: any) => string
 ) {
   const schemas = [];
   const schemaNames = [];
@@ -101,7 +106,7 @@ export function getAllSubtypesFrom(
   schema: any,
   subtypes: any[],
   subtypeNames: string[],
-  typeAdopt: (p: any) => string,
+  typeAdopt: (p: any) => string
 ) {
   if (!schema || typeof schema !== "object") return typeAdopt(schema);
   const result = {};
@@ -112,7 +117,7 @@ export function getAllSubtypesFrom(
         schema[k],
         subtypes,
         subtypeNames,
-        typeAdopt,
+        typeAdopt
       );
     });
   subtypes.push(result);

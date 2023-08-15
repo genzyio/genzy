@@ -1,0 +1,30 @@
+[
+  {
+    "name": "TestService",
+    "actions": [
+      {
+        "httpMethod": "get",
+        "name": "getSomething",
+        "path": "/something",
+        "params": [
+          {
+            "name": "test",
+            "source": "query",
+            "type": "string"
+          },
+          {
+            "name": "lala",
+            "source": "path"
+          }
+        ],
+        "result": {
+          "lala": "string",
+          "isJaje": "boolean",
+          "$isArray": true,
+          "$typeName": "Test"
+        }
+      }
+    ],
+    "path": "/panic"
+  }
+]

@@ -11,6 +11,7 @@ export function generate(
   url: string,
   dirPath: string,
   nunjucks: any,
+  isServer = false
 ) {
   generateUtil(
     meta,
@@ -20,6 +21,8 @@ export function generate(
     "ts",
     fileContentFrom,
     indexFileContentFrom,
+    "index",
+    isServer
   );
 }
 
@@ -30,10 +33,13 @@ function capitalizeFirstLetter(string: string) {
 export function fileContentFrom(
   service: ServiceMetaInfo,
   nunjucks: any,
+  host: string | undefined,
+  isServer: boolean
 ): string {
   const { schemas, schemaNames } = getSchemaInfoFrom(service, adoptTypeJS);
   return nunjucks.render("service.njk", {
     ...service,
+    isServer,
     schemas,
     schemaNames,
     actions: service.actions.map((r) => ({
@@ -46,7 +52,7 @@ export function fileContentFrom(
       ...new Set(
         service.actions.map((r) =>
           capitalizeFirstLetter(r.httpMethod.toLowerCase())
-        ),
+        )
       ),
     ],
   });
@@ -54,8 +60,9 @@ export function fileContentFrom(
 
 export function indexFileContentFrom(
   services: ServiceMetaInfo[],
-  host: string,
+  host: string | undefined,
   nunjucks: any,
+  isServer: boolean
 ): string {
-  return nunjucks.render("index.njk", { services, host });
+  return nunjucks.render("index.njk", { services, host, isServer });
 }
