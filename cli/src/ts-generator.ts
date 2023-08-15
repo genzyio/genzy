@@ -6,14 +6,20 @@ import {
   getSchemaInfoFrom,
 } from "./utils";
 
-export function generate(url: string, dirPath: string, nunjucks: any) {
+export function generate(
+  meta: any,
+  url: string,
+  dirPath: string,
+  nunjucks: any,
+) {
   generateUtil(
+    meta,
     url,
     dirPath,
     nunjucks,
     "ts",
     fileContentFrom,
-    indexFileContentFrom
+    indexFileContentFrom,
   );
 }
 
@@ -23,7 +29,7 @@ function capitalizeFirstLetter(string: string) {
 
 export function fileContentFrom(
   service: ServiceMetaInfo,
-  nunjucks: any
+  nunjucks: any,
 ): string {
   const { schemas, schemaNames } = getSchemaInfoFrom(service, adoptTypeJS);
   return nunjucks.render("service.njk", {
@@ -40,7 +46,7 @@ export function fileContentFrom(
       ...new Set(
         service.actions.map((r) =>
           capitalizeFirstLetter(r.httpMethod.toLowerCase())
-        )
+        ),
       ),
     ],
   });
@@ -49,7 +55,7 @@ export function fileContentFrom(
 export function indexFileContentFrom(
   services: ServiceMetaInfo[],
   host: string,
-  nunjucks: any
+  nunjucks: any,
 ): string {
   return nunjucks.render("index.njk", { services, host });
 }

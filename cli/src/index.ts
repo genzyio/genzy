@@ -5,9 +5,9 @@ import { generate as generateJS } from "./js-generator";
 import { generate as generateTS } from "./ts-generator";
 import { generate as generateCS } from "./cs-generator";
 import * as path from "path";
-
+import { fetchMeta, readMetaFromFile } from "./utils";
 const options = yargs
-  .usage("Usage: -l <language> -h <host> -o")
+  .usage("Usage: -l <language> -h <host> -o <out_dir> -f ")
   .option("l", {
     alias: "language",
     describe: "Target language",
@@ -21,6 +21,12 @@ const options = yargs
     type: "string",
     demandOption: true,
   })
+  .option("f", {
+    alias: "isFile",
+    describe: "Is source a file",
+    type: "boolean",
+    demandOption: false,
+  })
   .option("o", {
     alias: "outDir",
     describe: "Output directory",
@@ -30,7 +36,7 @@ const options = yargs
 
 const env = nunjucks.configure(
   path.resolve(__dirname, "./views-" + options.language),
-  { autoescape: true }
+  { autoescape: true },
 );
 env.addFilter(
   "capitalizeFirstLetter",
@@ -41,18 +47,22 @@ env.addFilter(
     }
     cb(null, `${val[0].toUpperCase()}${val.substring(1)}`);
   },
-  true
+  true,
 );
+
+const meta = options.isFile
+  ? readMetaFromFile(options.host)
+  : fetchMeta(options.host);
 
 switch (options.language) {
   case "js":
-    generateJS(options.host, options.outDir, env);
+    generateJS(meta, options.host, options.outDir, env);
     break;
   case "ts":
-    generateTS(options.host, options.outDir, env);
+    generateTS(meta, options.host, options.outDir, env);
     break;
   case "cs":
-    generateCS(options.host, options.outDir, env);
+    generateCS(meta, options.host, options.outDir, env);
     break;
   default:
     break;
