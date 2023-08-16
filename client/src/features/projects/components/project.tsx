@@ -9,6 +9,7 @@ import { saveProjectDefinition } from "../api/project-definition.actions";
 import { EmptyDiagram } from "../../model/EmptyDiagram";
 import { useNotifications } from "../../../hooks/useNotifications";
 import { extractErrorMessage } from "../../../utils/errors";
+import { ServiceDiagram } from "../../model/service/ServiceDiagram";
 
 // NOTE: Everything done with forwardRef is temporal solution
 export const Project: FC = () => {
@@ -64,7 +65,8 @@ export const Project: FC = () => {
         <Button onClick={closeProject}>Close</Button>
       </div>
 
-      <Diagram ref={diagramRef} {...initialProjectDefinition} />
+      {/* <Diagram ref={diagramRef} {...initialProjectDefinition} /> */}
+      <ServiceDiagram ref={diagramRef} {...initialProjectDefinition} />
     </>
   );
 };
