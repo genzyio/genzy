@@ -27,6 +27,14 @@ function createTables(db: Database) {
       path   VARCHAR(255) NOT NULL UNIQUE,
       createdAt TIMESTAMP NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS RecentlyOpened
+    (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      projectId INTEGER NOT NULL UNIQUE,
+      openedAt TIMESTAMP NOT NULL,
+      FOREIGN KEY (projectId) REFERENCES Projects(id)
+    );
   `);
 }
 

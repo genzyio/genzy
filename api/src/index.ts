@@ -5,6 +5,7 @@ import { ensureArtefactsFolderExist } from "./core/artefacts/artefacts.utils";
 import projectRouters from "./features/projects/projects.routes";
 import projectDefinitionRouters from "./features/project-definition/project-definition.routes";
 import projectScreenshotsRouters from "./features/project-screenshots/project-screenshots.routes";
+import recentlyOpenedRouters from "./features/recently-opened/recently-opened.routes";
 
 ensureArtefactsFolderExist();
 
@@ -15,7 +16,8 @@ app
   .use(express.json())
   .use("/api", projectRouters)
   .use("/api", projectDefinitionRouters)
-  .use("/api", projectScreenshotsRouters);
+  .use("/api", projectScreenshotsRouters)
+  .use("/api", recentlyOpenedRouters);
 
 app.listen(config.port, () => {
   console.log(`⚡️[server]: Server is running at https://localhost:${config.port}`);

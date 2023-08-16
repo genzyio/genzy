@@ -5,6 +5,8 @@ import { Tab } from "./components/tab";
 import { ProjectsList } from "./features/projects/components/projects-list/projects-list";
 import { Project } from "./features/projects/components/project";
 import { CreateProjectForm } from "./features/projects/components/create/create-project-form";
+import { RecentlyOpenedList } from "./features/projects/components/recently-opened/recently-opened-list";
+import { useProjectContext } from "./features/projects/contexts/project.context";
 
 export function App() {
   const [openProject, setOpenProject] = useState(false);
@@ -16,13 +18,20 @@ export function App() {
     [setCreateProject]
   );
 
+  const { loadProject } = useProjectContext();
+
+  const onCreatedProject = (projectName: string) => {
+    toggleCreateProject();
+    loadProject(projectName);
+  };
+
   return (
     <>
       <div className="h-full w-full">
         Above and GN1mblyeyond!
         <>
           <Modal title="Create Project" isOpen={createProject} onClose={toggleCreateProject}>
-            <CreateProjectForm onSaved={toggleCreateProject} onClosed={toggleCreateProject} />
+            <CreateProjectForm onSaved={onCreatedProject} onClosed={toggleCreateProject} />
           </Modal>
 
           <Modal
@@ -32,7 +41,9 @@ export function App() {
             onClose={toggleOpenProject}
           >
             <Tabs>
-              <Tab title="Recently Opened">Recently Opened</Tab>
+              <Tab title="Recently Opened">
+                <RecentlyOpenedList />
+              </Tab>
               <Tab title="All Projects">
                 <ProjectsList />
               </Tab>

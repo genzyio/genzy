@@ -7,7 +7,7 @@ import { useNotifications } from "../../../../hooks/useNotifications";
 import { extractErrorMessage } from "../../../../utils/errors";
 
 type CreateProjectFormProps = {
-  onSaved: () => any;
+  onSaved: (projectName: string) => any;
   onClosed: () => any;
 };
 
@@ -20,7 +20,7 @@ export const CreateProjectForm: FC<CreateProjectFormProps> = ({ onSaved, onClose
   const createProjectAction = useAction<CreateProject>(createProject, {
     onSuccess: () => {
       notificator.success("You have created a new project.");
-      onSaved();
+      onSaved(name);
     },
     onError: (error) => {
       notificator.error(extractErrorMessage(error));

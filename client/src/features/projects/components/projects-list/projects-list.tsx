@@ -2,10 +2,17 @@ import { type FC } from "react";
 import { useProjects } from "../../hooks/useProjects";
 import { ProjectListItem } from "./project-list-item";
 import { useProjectContext } from "../../contexts/project.context";
+import { modifyRecentlyOpened } from "../../api/recently-opened.actions";
+import { useAction } from "../../../../hooks/useAction";
 
 export const ProjectsList: FC = () => {
   const { projects } = useProjects();
   const { loadProject } = useProjectContext();
+
+  const modifyRecentlyOpenedAction = useAction<string>(modifyRecentlyOpened, {
+    onSuccess: () => {},
+    onError: (error) => {},
+  });
 
   return (
     <>
@@ -14,7 +21,10 @@ export const ProjectsList: FC = () => {
           <ProjectListItem
             key={project.path}
             project={project}
-            onViewProject={() => loadProject(project.name)}
+            onViewProject={() => {
+              loadProject(project.name);
+              modifyRecentlyOpenedAction(project.name);
+            }}
           />
         ))}
       </ul>

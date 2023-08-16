@@ -1,22 +1,22 @@
-function ProjectDoesNotExistError(projectName: string) {
+function projectDoesNotExistError(projectName: string) {
   return {
     error: "ProjectDoesNotExist",
     message: `Project '${projectName}' does not exist.`,
   };
 }
 
-function PathNotFound(projectPath: string) {
+function pathNotFound(projectPath: string) {
   return {
     error: "PathNotFound",
     message: `Path '${projectPath}' does not exist on the file system.`,
   };
 }
 
-function ProjectAlreadyExists(projectName: string) {
+function projectAlreadyExists(projectName: string) {
   return {
     error: "ProjectAlreadyExists",
     message: `Project '${projectName}' already exists.`,
   };
 }
 
-export { ProjectDoesNotExistError, PathNotFound, ProjectAlreadyExists };
+export { projectDoesNotExistError, pathNotFound, projectAlreadyExists };
