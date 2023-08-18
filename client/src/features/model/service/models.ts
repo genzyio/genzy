@@ -31,6 +31,7 @@ type Parameter = {
 type ServiceFunction = {
   name: string;
   returnType: string;
+  returnsCollection: boolean;
   route: string;
   method: HTTPMethod;
   params: Parameter[];
