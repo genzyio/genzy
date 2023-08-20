@@ -5,7 +5,14 @@ import { type RecentlyOpenedProject, type CreateRecentlyOpened, type RecentlyOpe
 function get(): Promise<RecentlyOpenedProject[]> {
   return new Promise((resolve, _) => {
     dbConnection.all(
-      `SELECT p.id, p.name, p.path, p.createdAt, r.openedAt FROM Projects AS p LEFT JOIN RecentlyOpened AS r ON p.id = r.projectId;`,
+      `SELECT p.id, p.name, p.path, p.createdAt, r.openedAt
+      FROM Projects AS p
+      LEFT JOIN RecentlyOpened AS r ON p.id = r.projectId
+      ORDER BY
+        CASE
+          WHEN r.openedAt IS NOT NULL THEN r.openedAt
+          ELSE p.createdAt
+        END DESC;`,
       [],
       (error, rows) => (error ? resolve([]) : resolve(rows as RecentlyOpenedProject[]))
     );

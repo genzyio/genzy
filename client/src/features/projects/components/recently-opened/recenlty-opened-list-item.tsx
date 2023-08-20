@@ -25,9 +25,15 @@ export const RecentlyOpenedListItem: FC<RecentlyOpenedListItemProps> = ({
           <p className="text-sm font-semibold leading-6 text-gray-900">
             {recentlyOpenedProject.name}
           </p>
-          <p className="mt-1 truncate text-xs leading-5 text-gray-500">
-            Created: {moment(recentlyOpenedProject.createdAt).fromNow()}
-          </p>
+          {!!recentlyOpenedProject.openedAt ? (
+            <p className="mt-1 truncate text-xs leading-5 text-gray-500">
+              Opened: {moment(recentlyOpenedProject.openedAt).fromNow()}
+            </p>
+          ) : (
+            <p className="mt-1 truncate text-xs leading-5 text-gray-500">
+              Created: {moment(recentlyOpenedProject.createdAt).fromNow()}
+            </p>
+          )}
         </div>
       </div>
       <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
