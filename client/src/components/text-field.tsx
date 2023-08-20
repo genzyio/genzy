@@ -24,7 +24,7 @@ export const TextField: FC<TextFieldProps> = ({ label, helpText, onChange, error
         />
       </div>
       {helpText && <p className="text-sm leading-6 text-gray-600">{helpText}</p>}
-      {error && <p className="font-medium mt-2 text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );
 };

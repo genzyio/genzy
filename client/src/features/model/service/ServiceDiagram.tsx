@@ -8,6 +8,7 @@ import ReactFlow, {
   Background,
   MiniMap,
   type Node,
+  MarkerType,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { type Service } from "./models";
@@ -31,8 +32,23 @@ export const ServiceDiagram = forwardRef<any, DiagramProps>(
 
     const [selected, setSelected] = useState<Node<Service, string>>();
 
+    // TODO: check circular dependencies
     const onConnect = useCallback(
-      (params: Connection) => setEdges((eds) => addEdge({ ...params, type: "smoothstep" }, eds)),
+      (params: Connection) =>
+        setEdges((eds) =>
+          addEdge(
+            {
+              ...params,
+              type: "smoothstep",
+              markerEnd: {
+                type: MarkerType.ArrowClosed,
+                width: 30,
+                height: 30,
+              },
+            },
+            eds
+          )
+        ),
       [setEdges]
     );
 
@@ -113,7 +129,13 @@ export const ServiceDiagram = forwardRef<any, DiagramProps>(
         </div>
 
         <Drawer open={isDrawerOpen} onClose={() => setDrawerOpen(false)} title={"GN1mbly"}>
-          {selected && <ServiceDrawer service={selected.data} updateService={handleUpdate} />}
+          {selected && (
+            <ServiceDrawer
+              service={selected.data}
+              updateService={handleUpdate}
+              nameExists={(name) => nodes.some((n) => n.id !== selected.id && n.data.name === name)}
+            />
+          )}
         </Drawer>
       </>
     );
