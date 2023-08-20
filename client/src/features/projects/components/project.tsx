@@ -10,6 +10,7 @@ import { EmptyDiagram } from "../../model/EmptyDiagram";
 import { useNotifications } from "../../../hooks/useNotifications";
 import { extractErrorMessage } from "../../../utils/errors";
 import { ServiceDiagram } from "../../model/service/ServiceDiagram";
+import { MicroservicesDiagram } from "../../model/microservices/MicroservicesDiagram";
 
 // NOTE: Everything done with forwardRef is temporal solution
 export const Project: FC = () => {
@@ -21,6 +22,7 @@ export const Project: FC = () => {
   } = useProjectContext();
 
   const diagramRef = createRef<any>();
+  const microservicesDiagramRef = createRef<any>();
 
   const saveProjectDefinitionAction = useAction<ProjectDefinition>(
     saveProjectDefinition(project.name),
@@ -56,10 +58,24 @@ export const Project: FC = () => {
   return (
     <>
       <div className="flex gap-x-2">
-        <Button onClick={() => saveProjectDefinitionAction(diagramRef.current?.getState())}>
+        <Button
+          onClick={() =>
+            saveProjectDefinitionAction({
+              ...diagramRef.current?.getState(),
+              microservices: microservicesDiagramRef.current?.getState(),
+            })
+          }
+        >
           Save
         </Button>
-        <Button onClick={() => saveAndCloseProjectDefinitionAction(diagramRef.current?.getState())}>
+        <Button
+          onClick={() =>
+            saveAndCloseProjectDefinitionAction({
+              ...diagramRef.current?.getState(),
+              microservices: microservicesDiagramRef.current?.getState(),
+            })
+          }
+        >
           Save And Close
         </Button>
         <Button onClick={closeProject}>Close</Button>
@@ -67,6 +83,10 @@ export const Project: FC = () => {
 
       {/* <Diagram ref={diagramRef} {...initialProjectDefinition} /> */}
       <ServiceDiagram ref={diagramRef} {...initialProjectDefinition} />
+      <MicroservicesDiagram
+        ref={microservicesDiagramRef}
+        {...initialProjectDefinition.microservices}
+      />
     </>
   );
 };

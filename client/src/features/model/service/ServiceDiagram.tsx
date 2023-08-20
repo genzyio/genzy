@@ -80,7 +80,7 @@ export const ServiceDiagram = forwardRef<any, DiagramProps>(
 
     return (
       <>
-        <div className="h-full w-full">
+        <div className="h-[50%] w-full">
           <div className="fixed left-1/2 -translate-x-1/2 top-3 z-10 p-3 rounded-lg border border-gray-200">
             <div className="flex justify-between gap-x-3">
               <button
