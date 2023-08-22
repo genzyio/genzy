@@ -1,4 +1,4 @@
-import { Nimble } from '@n1mbly/client';
+import { Nimble } from "@n1mbly/client";
 import { NimblyApi } from "../src/nimbly-api";
 import { agent } from "supertest";
 import { Get, Query } from "../../shared/decorators";
@@ -7,15 +7,13 @@ import { NimblyConfig } from "../../shared/types";
 class TestService {
   $nimbly: NimblyConfig = {
     get: {
-      params: [
-        { name: "test", source: 'query' }
-      ]
+      params: [{ name: "test", source: "query" }],
     },
     getMultiple: {
       params: [
-        { name: "test", source: 'query' },
-        { name: "test2", source: 'query' },
-      ]
+        { name: "test", source: "query" },
+        { name: "test2", source: "query" },
+      ],
     },
   };
 
@@ -27,7 +25,7 @@ class TestService {
     return { test, test2 };
   }
 
-  @Get('/decorated')
+  @Get("/decorated")
   async decorated(
     @Query("testing") testing: string,
     @Query("another") another: string
@@ -57,19 +55,23 @@ describe("QueryParams", () => {
     const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi().from(nimble);
 
-    await agent(app).get("/api/test-service/get-multiple?test=asdf&test2=123").expect(200, {
-      test: 'asdf',
-      test2: '123'
-    });
+    await agent(app)
+      .get("/api/test-service/get-multiple?test=asdf&test2=123")
+      .expect(200, {
+        test: "asdf",
+        test2: "123",
+      });
   });
 
   it("should register a path that is able to receive query params with Query decorator", async () => {
     const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi().from(nimble);
 
-    await agent(app).get("/api/test-service/decorated?testing=asdf&another=123").expect(200, {
-      testing: 'asdf',
-      another: '123'
-    });
+    await agent(app)
+      .get("/api/test-service/decorated?testing=asdf&another=123")
+      .expect(200, {
+        testing: "asdf",
+        another: "123",
+      });
   });
 });

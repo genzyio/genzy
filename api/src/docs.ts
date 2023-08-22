@@ -1,12 +1,13 @@
 import {
   ComplexType,
+  MetaInfo,
   Param,
   RouteMetaInfo,
   ServiceMetaInfo,
 } from "../../shared/types";
 import { NimblyInfo } from "./nimbly-api";
 
-export const generateDocsFrom = (meta: ServiceMetaInfo[], info: NimblyInfo) => {
+export const generateDocsFrom = (meta: MetaInfo, info: NimblyInfo) => {
   const doc = {
     openapi: "3.0.0",
     info: {
@@ -18,7 +19,7 @@ export const generateDocsFrom = (meta: ServiceMetaInfo[], info: NimblyInfo) => {
     paths: {},
   };
 
-  meta.forEach((service) => {
+  meta.services.forEach((service) => {
     service.actions.forEach((action) => {
       const path = getPathFrom(info, service, action);
 
@@ -31,16 +32,22 @@ export const generateDocsFrom = (meta: ServiceMetaInfo[], info: NimblyInfo) => {
     });
   });
 
+  // TODO: register Swagger / Open API schemas from meta.types
+
   return doc;
 };
 
-const getPathFrom = (info: NimblyInfo, s: ServiceMetaInfo, r: RouteMetaInfo) => {
+const getPathFrom = (
+  info: NimblyInfo,
+  s: ServiceMetaInfo,
+  r: RouteMetaInfo
+) => {
   let path = r.path.replace(info.basePath, "");
   r.params
     .filter((p) => p.source === "path")
     .map((p) => p.name)
     .forEach((p) => (path = path.replace(`:${p}`, `{${p}}`)));
-  return `${s.path}${path}`.replace('\/\/', '/');
+  return `${s.path}${path}`.replace("//", "/");
 };
 
 const getPathDocFrom = (s: ServiceMetaInfo, r: RouteMetaInfo) => ({

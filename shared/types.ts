@@ -60,6 +60,13 @@ export class Interceptable<TInterceptorCallback> {
 
 export type Modify<T, R> = Omit<T, keyof R> & R;
 
+export type MetaInfo = {
+  services: ServiceMetaInfo[];
+  types: MetaTypesRegistry;
+};
+
+export type MetaTypesRegistry = Record<string, ComplexTypeProperties>;
+
 export type ServiceMetaInfo = {
   name: string;
   path: string;
@@ -78,30 +85,45 @@ export type Param = {
   source: ParamSource;
   name: string;
   type?: Type;
-}
+};
 
-export type NimblyConfig = {
-  path?: string;
-} | PathConfig;
-
+export type NimblyConfig =
+  | {
+      path?: string;
+    }
+  | PathConfig;
 
 export type ComplexType = {
+  $typeName: string;
+  $isArray: boolean;
+} & {
   [key: ParamName]: Type;
-}
+};
 
-export type Action =  Modify<Omit<RouteMetaInfo, "name">, {
-  httpMethod?: HTTPMethod;
-  path?: string;
-  params?: Param[];
-  result?: ComplexType;
-}>;
+export type ComplexTypeProperties = Omit<ComplexType, "$typeName" | "$isArray">;
+export type ComplexTypeReference = Pick<ComplexType, "$typeName" | "$isArray">;
+
+export type Action = Modify<
+  Omit<RouteMetaInfo, "name">,
+  {
+    httpMethod?: HTTPMethod;
+    path?: string;
+    params?: Param[];
+    result?: ComplexTypeReference;
+  }
+>;
 
 export type PathConfig = {
   [key: MethodName]: Action;
 };
 
 export type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-export type ParamSource = 'query' | 'path' | 'body';
-export type Type = "boolean" | "string" | "int" | "float" | ComplexType;
+export type ParamSource = "query" | "path" | "body";
+export type Type =
+  | "boolean"
+  | "string"
+  | "int"
+  | "float"
+  | ComplexTypeReference;
 export type MethodName = string;
 export type ParamName = string;

@@ -1,45 +1,52 @@
-import { Nimble } from '@n1mbly/client';
-import { NimblyApi } from '../src/nimbly-api';
-import { agent } from 'supertest'
-import { NextFunction, Request, Response } from 'express';
-import { Delete, Get, Controller, Patch, Post, Put } from '../../shared/decorators';
-import { NimblyConfig } from '../../shared/types';
+import { Nimble } from "@n1mbly/client";
+import { NimblyApi } from "../src/nimbly-api";
+import { agent } from "supertest";
+import { NextFunction, Request, Response } from "express";
+import {
+  Delete,
+  Get,
+  Controller,
+  Patch,
+  Post,
+  Put,
+} from "../../shared/decorators";
+import { NimblyConfig } from "../../shared/types";
 
 const getAllResult = [1, 2, 3];
 
 class TestService {
   $nimbly: NimblyConfig = {
-    path: '/tests',
+    path: "/tests",
     getAll: {
-      httpMethod: 'GET',
-      path: '/'
+      httpMethod: "GET",
+      path: "/",
     },
     getById: {
-      path: '/:id',
+      path: "/:id",
       params: [
-        { name: 'id', source: 'path' },
-        { name: 'body', source: 'body'}
-      ]
+        { name: "id", source: "path" },
+        { name: "body", source: "body" },
+      ],
     },
     differentAddSomething: {
-      httpMethod: 'POST',
-      path: '/'
+      httpMethod: "POST",
+      path: "/",
     },
     randomUpdate: {
-      httpMethod: 'PUT',
-      path: '/random/:entityId',
+      httpMethod: "PUT",
+      path: "/random/:entityId",
       params: [
-        { name: 'entityId', source: 'path' },
-        { name: 'body', source: 'body'}
-      ]
-    }
-  }
+        { name: "entityId", source: "path" },
+        { name: "body", source: "body" },
+      ],
+    },
+  };
 
   async getAll() {
     return getAllResult;
   }
   async getById(id: number) {
-    return {id};
+    return { id };
   }
   async differentAddSomething(test) {
     return test;
@@ -47,43 +54,47 @@ class TestService {
   async randomUpdate(id: number, test: any) {
     return {
       id,
-      ...test
+      ...test,
     };
   }
 }
 
-@Controller('/annotated')
+@Controller("/annotated")
 class AnnotatedService {
- 
   async get() {}
- 
-  @Get('/testing')
+
+  @Get("/testing")
   async getTest() {}
 
-  @Post('/testing')
+  @Post("/testing")
   async postTest(body: any) {
     return body;
   }
 
-  @Put('/testing/:id')
+  @Put("/testing/:id")
   async putTest(id: string, body: any) {
-    return {...body, id};
+    return { ...body, id };
   }
 
-  @Delete('/testing/:id')
+  @Delete("/testing/:id")
   async delTest(id: string) {
-    return {id};
+    return { id };
   }
 
-  @Patch('/testing/:id')
+  @Patch("/testing/:id")
   async patchTest(id: string, body: any) {
-    return [{...body, id}];
+    return [{ ...body, id }];
   }
 }
 
 class TestServiceInterceptor {
-  getAll(req: Request, res: Response, next: NextFunction) { res.status(201); next(); }
-  differentAddSomething(req: Request, res: Response, next: NextFunction) { res.sendStatus(202); }
+  getAll(req: Request, res: Response, next: NextFunction) {
+    res.status(201);
+    next();
+  }
+  differentAddSomething(req: Request, res: Response, next: NextFunction) {
+    res.sendStatus(202);
+  }
 }
 
 @Controller()
@@ -92,116 +103,88 @@ class RootService {
   public async testRoot() {
     return [];
   }
-  @Get('/test')
+  @Get("/test")
   public async test() {
     return [];
   }
 }
 
-describe('NimblyApi Custom Paths', () => {
-
-  it('should register a custom root path', async () => {
+describe("NimblyApi Custom Paths", () => {
+  it("should register a custom root path", async () => {
     const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi().from(nimble);
 
-    await agent(app)
-      .get('/api/test-service/get-all')
-      .expect(404);
-    await agent(app)
-      .get('/api/tests')
-      .expect(200, getAllResult);
-    await agent(app)
-      .post('/api/tests')
-      .expect(200);
+    await agent(app).get("/api/test-service/get-all").expect(404);
+    await agent(app).get("/api/tests").expect(200, getAllResult);
+    await agent(app).post("/api/tests").expect(200);
   });
 
-  it('should register interceptors for interceptor class', async () => {
+  it("should register interceptors for interceptor class", async () => {
     const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi()
       .intercept({
-        testService: TestServiceInterceptor as any
+        testService: TestServiceInterceptor as any,
       })
       .from(nimble);
-    
-    await agent(app)
-      .get('/api/tests')
-      .expect(201, getAllResult);
-    await agent(app)
-      .post('/api/tests')
-      .expect(202);
+
+    await agent(app).get("/api/tests").expect(201, getAllResult);
+    await agent(app).post("/api/tests").expect(202);
   });
 
-  it('should register route with path param', async () => {
+  it("should register route with path param", async () => {
     const nimble = new Nimble().addLocalService(TestService);
     const app = new NimblyApi()
       .intercept({
-        testService: TestServiceInterceptor as any
+        testService: TestServiceInterceptor as any,
       })
       .from(nimble);
-    
+
+    await agent(app).get("/api/tests/123").expect(200, { id: "123" });
+    const obj = { test: "asdf" };
     await agent(app)
-      .get('/api/tests/123')
-      .expect(200, { id: '123' });
-    const obj = { test: 'asdf' };
-    await agent(app)
-      .put('/api/tests/random/123')
+      .put("/api/tests/random/123")
       .send(obj)
-      .expect(200, { id: '123', ...obj });
+      .expect(200, { id: "123", ...obj });
   });
 
-  it('should register a custom root path with annotation', async () => {
+  it("should register a custom root path with annotation", async () => {
     const nimble = new Nimble().addLocalService(AnnotatedService);
     const app = new NimblyApi().from(nimble);
-    await agent(app)
-      .get('/api/annotated-service/get')
-      .expect(404);
-    await agent(app)
-      .get('/api/annotated/get')
-      .expect(200);
+    await agent(app).get("/api/annotated-service/get").expect(404);
+    await agent(app).get("/api/annotated/get").expect(200);
   });
 
-  it('should register a custom method path with annotation', async () => {
+  it("should register a custom method path with annotation", async () => {
     const nimble = new Nimble().addLocalService(AnnotatedService);
     const app = new NimblyApi().from(nimble);
-    await agent(app)
-      .get('/api/annotated/testing')
-      .expect(200);
+    await agent(app).get("/api/annotated/testing").expect(200);
   });
 
-  it('should work for all annotations', async () => {
+  it("should work for all annotations", async () => {
     const nimble = new Nimble().addLocalService(AnnotatedService);
     const app = new NimblyApi().from(nimble);
-    const id = '1234';
-    const body = { test: '123', a: 1 };
+    const id = "1234";
+    const body = { test: "123", a: 1 };
+    await agent(app).get("/api/annotated/testing").expect(200);
     await agent(app)
-      .get('/api/annotated/testing')
-      .expect(200);
-    await agent(app)
-      .post('/api/annotated/testing')
+      .post("/api/annotated/testing")
       .send(body)
       .expect(200, body);
     await agent(app)
       .put(`/api/annotated/testing/${id}`)
       .send(body)
-      .expect(200, {...body, id});
-    await agent(app)
-      .delete(`/api/annotated/testing/${id}`)
-      .expect(200, {id});
+      .expect(200, { ...body, id });
+    await agent(app).delete(`/api/annotated/testing/${id}`).expect(200, { id });
     await agent(app)
       .patch(`/api/annotated/testing/${id}`)
       .send(body)
-      .expect(200, [{...body, id}]);
+      .expect(200, [{ ...body, id }]);
   });
 
-  it('should work with root path not passed', async () => {
+  it("should work with root path not passed", async () => {
     const nimble = new Nimble().addLocalService(RootService);
     const app = new NimblyApi().from(nimble);
-    await agent(app)
-      .get('/api/test')
-      .expect(200);
-    await agent(app)
-      .get('/api')
-      .expect(200);
+    await agent(app).get("/api/test").expect(200);
+    await agent(app).get("/api").expect(200);
   });
-
 });

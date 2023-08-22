@@ -8,7 +8,7 @@ import { RegisterRoutesFor } from "./routes-handler";
 import {
   CustomInterceptors,
   Interceptable,
-  ServiceMetaInfo,
+  MetaInfo,
 } from "../../shared/types";
 import { ErrorRegistry } from "./error-handler";
 import { generateDocsFrom } from "./docs";
@@ -29,7 +29,10 @@ export class NimblyApi extends Interceptable<InterceptorCallback> {
   private app: Application;
   private errorRegistry: ErrorRegistry = {};
   private nimblyInfo?: NimblyInfo;
-  private meta: ServiceMetaInfo[] = [];
+  private meta: MetaInfo = {
+    services: [],
+    types: {},
+  };
 
   constructor({
     app,
@@ -63,7 +66,14 @@ export class NimblyApi extends Interceptable<InterceptorCallback> {
           this.errorRegistry,
           this.nimblyInfo.basePath
         );
-        this.meta.push(serviceMeta);
+        // register service
+        this.meta.services.push(serviceMeta.service);
+        // register type
+        this.meta.types = {
+          ...this.meta.types,
+          ...serviceMeta.types,
+          // TODO: handle name conflicts
+        };
       });
     });
 

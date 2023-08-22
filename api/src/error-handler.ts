@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Response } from "express";
 
 interface ErrorResponse {
   statusCode: number;
@@ -8,7 +8,6 @@ interface ErrorResponse {
 export type ErrorRegistry = { [key: string]: number };
 
 export class ErrorHandler {
-
   private static response: Response;
 
   public static forResponse(response: Response) {
@@ -16,16 +15,18 @@ export class ErrorHandler {
     return this;
   }
 
-  public static handleError(e: Error, errorRegistry: ErrorRegistry): ErrorResponse {
+  public static handleError(
+    e: Error,
+    errorRegistry: ErrorRegistry
+  ): ErrorResponse {
     const statusCode = errorRegistry?.[e.name] || 500;
     const errorResponse = {
       statusCode,
-      message: e.message
+      message: e.message,
     };
 
-    if(this.response)
-      this.sendErrorResponse(errorResponse)
-    
+    if (this.response) this.sendErrorResponse(errorResponse);
+
     this.response = null;
     return errorResponse;
   }
@@ -34,5 +35,4 @@ export class ErrorHandler {
     this.response.status(errorResponse.statusCode);
     this.response.send({ message: errorResponse.message });
   }
-
 }

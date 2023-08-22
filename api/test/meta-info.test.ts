@@ -51,12 +51,13 @@ describe("NimblyApi Meta Info", () => {
       .then((res) => {
         expect(res).not.toBeNull();
         expect(res.status).toBe(200);
-        expect(res.body).toStrictEqual([meta]);
+        expect(res.body.services).toStrictEqual([meta.service]);
+        // TODO: assert that types are registered correctly
       });
   });
 
   it("should register meta path with all types and params", async () => {
-    const meta = RegisterRoutesFor(new Test3Service(), express());
+    const serviceMeta = RegisterRoutesFor(new Test3Service(), express());
 
     const exampleType = {
       ...(new Example() as any).$nimbly_config.types,
@@ -64,9 +65,11 @@ describe("NimblyApi Meta Info", () => {
       $typeName: "Example",
     };
 
-    expect(meta.actions).toHaveLength(1);
+    // TODO: assert that types are registered correctly
 
-    const action = meta.actions[0];
+    expect(serviceMeta.service.actions).toHaveLength(1);
+
+    const action = serviceMeta.service.actions[0];
 
     expect(action.httpMethod).toBe("post");
     expect(action.name).toBe("get");
@@ -110,7 +113,8 @@ describe("NimblyApi Meta Info", () => {
       .then((res) => {
         expect(res).not.toBeNull();
         expect(res.status).toBe(200);
-        expect(res.body).toStrictEqual([meta]);
+        expect(res.body.services).toStrictEqual([meta.service]);
+        // TODO: assert that types are registered correctly
       });
   });
 });

@@ -94,6 +94,8 @@ export function getSchemaInfoFrom(
     action.result &&
       getAllSubtypesFrom(action.result, schemas, schemaNames, typeAdopt);
   });
+  // TODO: hint - Object.values(meta.types); // schemas
+  // TODO: hint - Object.keys(meta.types); // schemaNames
   return {
     schemas: getSetFrom(schemas).map((schema) =>
       JSON.stringify(schema, (k, v) => (k.startsWith("$") ? undefined : v), 2)

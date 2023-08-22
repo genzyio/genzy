@@ -6,7 +6,11 @@ import {
 } from "./constants";
 import {
   Action,
-  NimblyConfig, Param, ParamSource, PathConfig, ServiceMetaInfo,
+  NimblyConfig,
+  Param,
+  ParamSource,
+  PathConfig,
+  ServiceMetaInfo,
 } from "./types";
 
 export function lowerFirstLetter(s: string) {
@@ -45,19 +49,26 @@ export function getResourcePath(cname, fname) {
   return `${camelToKebabCase(cname)}/${camelToKebabCase(fname)}`;
 }
 
-export function formParamsOf(methodName: string, action: Action|undefined): Param[] {
-  const params: Param[] = [...(action?.params ?? [] as any)];
-  if(params.filter(p => p.source === 'path').length === 0) {
-    const pathParamNames = extractPathParamsFrom(action?.path ?? '');
+export function formParamsOf(
+  methodName: string,
+  action: Action | undefined
+): Param[] {
+  const params: Param[] = [...(action?.params ?? ([] as any))];
+  if (params.filter((p) => p.source === "path").length === 0) {
+    const pathParamNames = extractPathParamsFrom(action?.path ?? "");
     params.unshift(
-      ...pathParamNames.filter(name => !params.find(p => p.name === name))
-        .map(name => ({ name, source: "path" as ParamSource }))
+      ...pathParamNames
+        .filter((name) => !params.find((p) => p.name === name))
+        .map((name) => ({ name, source: "path" as ParamSource }))
     );
   }
-  if(METHOD_TO_HAS_BODY[action?.httpMethod ?? getHttpMethod(methodName)] && !params.find(p => p.source === 'body')) {
+  if (
+    METHOD_TO_HAS_BODY[action?.httpMethod ?? getHttpMethod(methodName)] &&
+    !params.find((p) => p.source === "body")
+  ) {
     params.push({
-      name: 'body',
-      source: 'body'
+      name: "body",
+      source: "body",
     });
   }
   return params;
@@ -74,11 +85,13 @@ export function combineNimblyConfigs(
   return { ...(nimbly_config ?? {}), ...(nimbly ?? {}) };
 }
 
-export function nimblyConfigFrom(serviceMetaInfo: ServiceMetaInfo): NimblyConfig {
+export function nimblyConfigFrom(
+  serviceMetaInfo: ServiceMetaInfo
+): NimblyConfig {
   const result: NimblyConfig = {
     path: serviceMetaInfo.path,
   };
-  serviceMetaInfo.actions.forEach(action => {
+  serviceMetaInfo.actions.forEach((action) => {
     result[action.name] = {
       httpMethod: action.httpMethod,
       params: action.params,
