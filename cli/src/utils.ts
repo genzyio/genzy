@@ -36,6 +36,7 @@ export function generate(
   typesFileContentFrom: (
     types: MetaTypesRegistry,
     nunjucks: any,
+    isServer: boolean,
   ) => void,
   indexFileName: string,
   isServer: boolean,
@@ -56,7 +57,7 @@ export function generate(
   );
   writeToFile(
     dirPath + `/types.${extension}`,
-    typesFileContentFrom(meta.types, nunjucks),
+    typesFileContentFrom(meta.types, nunjucks, isServer),
   );
 }
 

@@ -70,6 +70,7 @@ export function indexFileContentFrom(
 export function typeFileContentFrom(
   types: MetaTypesRegistry,
   nunjucks: any,
+  isServer: boolean,
 ): string {
-  return nunjucks.render("types.njk", { types });
+  return nunjucks.render("types.njk", { types, isServer });
 }
