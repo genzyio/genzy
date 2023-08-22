@@ -1,4 +1,4 @@
-import { ServiceMetaInfo } from "../../shared/types";
+import { MetaTypesRegistry, ServiceMetaInfo } from "../../shared/types";
 import {
   adoptParams,
   adoptTypeJS,
@@ -11,7 +11,7 @@ export function generate(
   url: string,
   dirPath: string,
   nunjucks: any,
-  isServer = false
+  isServer = false,
 ) {
   generateUtil(
     meta,
@@ -21,8 +21,9 @@ export function generate(
     "ts",
     fileContentFrom,
     indexFileContentFrom,
+    typeFileContentFrom,
     "index",
-    isServer
+    isServer,
   );
 }
 
@@ -32,16 +33,15 @@ function capitalizeFirstLetter(string: string) {
 
 export function fileContentFrom(
   service: ServiceMetaInfo,
+  types: MetaTypesRegistry,
   nunjucks: any,
   host: string | undefined,
-  isServer: boolean
+  isServer: boolean,
 ): string {
-  const { schemas, schemaNames } = getSchemaInfoFrom(service, adoptTypeJS);
   return nunjucks.render("service.njk", {
     ...service,
     isServer,
-    schemas,
-    schemaNames,
+    types,
     actions: service.actions.map((r) => ({
       ...r,
       httpMethod: capitalizeFirstLetter(r.httpMethod.toLowerCase()),
@@ -52,7 +52,7 @@ export function fileContentFrom(
       ...new Set(
         service.actions.map((r) =>
           capitalizeFirstLetter(r.httpMethod.toLowerCase())
-        )
+        ),
       ),
     ],
   });
@@ -62,7 +62,14 @@ export function indexFileContentFrom(
   services: ServiceMetaInfo[],
   host: string | undefined,
   nunjucks: any,
-  isServer: boolean
+  isServer: boolean,
 ): string {
   return nunjucks.render("index.njk", { services, host, isServer });
+}
+
+export function typeFileContentFrom(
+  types: MetaTypesRegistry,
+  nunjucks: any,
+): string {
+  return nunjucks.render("types.njk", { types });
 }

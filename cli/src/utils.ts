@@ -1,6 +1,11 @@
 import axios from "axios";
 import * as fs from "fs";
-import { Param, ServiceMetaInfo } from "../../shared/types";
+import {
+  MetaInfo,
+  MetaTypesRegistry,
+  Param,
+  ServiceMetaInfo,
+} from "../../shared/types";
 import { format } from "prettier";
 
 export async function readMetaFromFile(filePath: string) {
@@ -10,39 +15,48 @@ export async function readMetaFromFile(filePath: string) {
 }
 
 export function generate(
-  meta: ServiceMetaInfo[],
+  meta: MetaInfo,
   url: string,
   dirPath: string,
   nunjucks: any,
   extension: "ts" | "js" | "cs",
   fileContentFrom: (
     service: ServiceMetaInfo,
+    types: MetaTypesRegistry,
     nunjucks: any,
     host: string,
-    isServer: boolean
+    isServer: boolean,
   ) => void,
   indexFileContentFrom: (
     services: ServiceMetaInfo[],
     host: string,
     nunjucks: any,
-    isServer: boolean
+    isServer: boolean,
+  ) => void,
+  typesFileContentFrom: (
+    types: MetaTypesRegistry,
+    nunjucks: any,
   ) => void,
   indexFileName: string,
-  isServer: boolean
+  isServer: boolean,
 ) {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
   }
-  meta.forEach((service) => {
+  meta.services.forEach((service) => {
     writeToFile(
       dirPath + `/${service.name}.${extension}`,
-      fileContentFrom(service, nunjucks, url, isServer)
+      fileContentFrom(service, meta.types, nunjucks, url, isServer),
     );
   });
 
   writeToFile(
     dirPath + `/${indexFileName}.${extension}`,
-    indexFileContentFrom(meta, url, nunjucks, isServer)
+    indexFileContentFrom(meta.services, url, nunjucks, isServer),
+  );
+  writeToFile(
+    dirPath + `/types.${extension}`,
+    typesFileContentFrom(meta.types, nunjucks),
   );
 }
 
@@ -81,7 +95,7 @@ export function adoptTypeCS(type) {
 
 export function getSchemaInfoFrom(
   service: ServiceMetaInfo,
-  typeAdopt: (p: any) => string
+  typeAdopt: (p: any) => string,
 ) {
   const schemas = [];
   const schemaNames = [];
@@ -94,8 +108,6 @@ export function getSchemaInfoFrom(
     action.result &&
       getAllSubtypesFrom(action.result, schemas, schemaNames, typeAdopt);
   });
-  // TODO: hint - Object.values(meta.types); // schemas
-  // TODO: hint - Object.keys(meta.types); // schemaNames
   return {
     schemas: getSetFrom(schemas).map((schema) =>
       JSON.stringify(schema, (k, v) => (k.startsWith("$") ? undefined : v), 2)
@@ -108,7 +120,7 @@ export function getAllSubtypesFrom(
   schema: any,
   subtypes: any[],
   subtypeNames: string[],
-  typeAdopt: (p: any) => string
+  typeAdopt: (p: any) => string,
 ) {
   if (!schema || typeof schema !== "object") return typeAdopt(schema);
   const result = {};
@@ -119,7 +131,7 @@ export function getAllSubtypesFrom(
         schema[k],
         subtypes,
         subtypeNames,
-        typeAdopt
+        typeAdopt,
       );
     });
   subtypes.push(result);
