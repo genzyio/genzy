@@ -40,7 +40,7 @@ export const generateDocsFrom = (meta: MetaInfo, info: NimblyInfo) => {
 const getPathFrom = (
   info: NimblyInfo,
   s: ServiceMetaInfo,
-  r: RouteMetaInfo
+  r: RouteMetaInfo,
 ) => {
   let path = r.path.replace(info.basePath, "");
   r.params
@@ -75,15 +75,15 @@ const getBodyDocFrom = (r: RouteMetaInfo) => {
   return {
     ...(!!bodyParam
       ? {
-          requestBody: {
-            required: true,
-            content: {
-              "application/json": {
-                schema: getSchemaFrom(bodyParam.type as ComplexType),
-              },
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: getSchemaFrom(bodyParam.type as ComplexType),
             },
           },
-        }
+        },
+      }
       : {}),
   };
 };
@@ -93,7 +93,7 @@ const getResponsesDocFrom = (r: RouteMetaInfo) => ({
     headers: {},
     content: {
       "application/json": {
-        schema: getSchemaFrom(r.result),
+        //      schema: getSchemaFrom(r.result),
       },
     },
   },
@@ -105,16 +105,18 @@ const getSchemaFrom = (type: ComplexType) => {
 };
 
 const getPropertiesFrom = (type: ComplexType) => {
-  return modifyPropertiesOf(type, (key: string, type: any) =>
-    typeof type[key] === "object"
-      ? getSchemaFrom(type[key] as any)
-      : { type: mapTypeToOpenAPIType(type[key]) }
+  return modifyPropertiesOf(
+    type,
+    (key: string, type: any) =>
+      typeof type[key] === "object"
+        ? getSchemaFrom(type[key] as any)
+        : { type: mapTypeToOpenAPIType(type[key]) },
   );
 };
 
 const modifyPropertiesOf = (
   type: ComplexType,
-  gen: (key: string, type: any) => any
+  gen: (key: string, type: any) => any,
 ) => {
   const properties = {};
   Object.keys(type ?? {})
