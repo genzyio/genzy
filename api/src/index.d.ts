@@ -1,18 +1,9 @@
 export { Application, Request, Response, NextFunction } from "express";
 import { Application, NextFunction } from "express";
 import { Nimble } from "@n1mbly/client";
-export {
-  Nimble,
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Patch,
-  Query,
-  Path,
-  Body,
-} from "@n1mbly/client";
+export { Nimble } from "@n1mbly/client";
+
+export class GenericType {}
 
 type InterceptorCallback = (
   req: Request,
@@ -58,6 +49,31 @@ export class NimblyApi {
   public withErrors(errors: ErrorRegistry): NimblyApi;
   public from(...nimbles: Nimble[]): Application;
 }
+
+export function Controller(
+  rootPath: string,
+  type?: Constructor
+): (target: any) => void;
+export function Get(path?: string): (target: any, propertyKey: string) => void;
+export function Post(path?: string): (target: any, propertyKey: string) => void;
+export function Put(path?: string): (target: any, propertyKey: string) => void;
+export function Delete(
+  path?: string
+): (target: any, propertyKey: string) => void;
+export function Patch(
+  path?: string
+): (target: any, propertyKey: string) => void;
+export function Query(
+  name: string
+): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
+export function Path(
+  name: string
+): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
+export function Body(): (
+  target: any,
+  propertyKey?: string | symbol,
+  parameterIndex?: any
+) => void;
 
 export function string(
   target: any,

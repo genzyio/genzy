@@ -22,29 +22,43 @@ export function RegisterRoutesFor(
   app: Application,
   interceptors?: any,
   errorRegistry?: ErrorRegistry,
-  basePath: string = "/api",
+  basePath: string = "/api"
 ): { service: ServiceMetaInfo; types: MetaTypesRegistry } {
   const serviceClassName = instance.constructor.name || instance._class_name_;
   const meta: NimblyConfig = combineNimblyConfigs(
     instance?.$nimbly_config ?? {},
-    instance?.$nimbly ?? {},
+    instance?.$nimbly ?? {}
   );
-  const rootPath = meta?.path != null
-    ? (meta?.path as string)
-    : `/${camelToKebabCase(serviceClassName)}`;
+  const rootPath =
+    meta?.path != null
+      ? (meta?.path as string)
+      : `/${camelToKebabCase(serviceClassName)}`;
 
   const types: MetaTypesRegistry = {};
 
   const routes: RouteMetaInfo[] = getMethodsOfClassInstance(instance).map(
     (method: string) => {
-      const methodPath = meta?.[method]?.path != null
-        ? meta?.[method].path
-        : `/${camelToKebabCase(method)}`;
-      const httpMethod = meta?.[method]?.httpMethod != null
-        ? meta?.[method].httpMethod.toLowerCase()
-        : getHttpMethod(method);
+      const methodPath =
+        meta?.[method]?.path != null
+          ? meta?.[method].path
+          : `/${camelToKebabCase(method)}`;
+      const httpMethod =
+        meta?.[method]?.httpMethod != null
+          ? meta?.[method].httpMethod.toLowerCase()
+          : getHttpMethod(method);
       const params = formParamsOf(method, meta?.[method]);
       const result: ComplexType | undefined = meta?.[method]?.result;
+
+      // extract all complex types
+      if (result) {
+        const { $typeName, $isArray, ...resultProperties } = result;
+        types[$typeName] = resultProperties;
+        meta[method].result = {
+          $typeName,
+          $isArray,
+        };
+      }
+      const processedResult: ComplexType | undefined = meta?.[method]?.result;
 
       params
         .filter((param) => param.type && typeof param.type === "object")
@@ -58,17 +72,6 @@ export function RegisterRoutesFor(
           };
         });
 
-      // extract all complex types
-      let resultReference: ComplexTypeReference;
-      if (result) {
-        const { $typeName, $isArray, ...resultProperties } = result;
-        types[$typeName] = resultProperties;
-        resultReference = {
-          $typeName,
-          $isArray,
-        };
-      }
-
       const handlers = [
         getServiceHandler(instance, method, errorRegistry, params),
       ];
@@ -79,14 +82,14 @@ export function RegisterRoutesFor(
           handlers.unshift(
             ...(interceptors.beforeCustomInterceptors[serviceClassName][
               method
-            ] || []),
+            ] || [])
           );
         }
         if (interceptors.afterCustomInterceptors[serviceClassName]) {
           handlers.push(
             ...(interceptors.afterCustomInterceptors[serviceClassName][
               method
-            ] || []),
+            ] || [])
           );
         }
       }
@@ -97,7 +100,7 @@ export function RegisterRoutesFor(
 
       const fullRoutePath = `${basePath}${rootPath}${methodPath}`.replace(
         "//",
-        "/",
+        "/"
       );
       app[httpMethod](fullRoutePath, ...handlers);
 
@@ -110,9 +113,9 @@ export function RegisterRoutesFor(
           source,
           type,
         })),
-        result: resultReference,
+        ...(processedResult ? { result: processedResult } : {}),
       };
-    },
+    }
   );
   return {
     types,
@@ -128,7 +131,7 @@ function getServiceHandler(
   instance,
   method: string,
   errorRegistry: ErrorRegistry,
-  params: Param[],
+  params: Param[]
 ) {
   return (req: Request, res: Response, next: NextFunction) => {
     const argumentList = params.map((p) => {
