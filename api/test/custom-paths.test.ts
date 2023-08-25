@@ -1,5 +1,5 @@
-import { Nimble } from "@n1mbly/client";
-import { NimblyApi } from "../src/nimbly-api";
+import { N1mblyContainer } from "@n1mbly/client";
+import { N1mblyApi } from "../src/n1mbly-api";
 import { agent } from "supertest";
 import { NextFunction, Request, Response } from "express";
 import {
@@ -10,12 +10,12 @@ import {
   Post,
   Put,
 } from "../../shared/decorators";
-import { NimblyConfig } from "../../shared/types";
+import { N1mblyConfig } from "../../shared/types";
 
 const getAllResult = [1, 2, 3];
 
 class TestService {
-  $nimbly: NimblyConfig = {
+  $nimbly: N1mblyConfig = {
     path: "/tests",
     getAll: {
       httpMethod: "GET",
@@ -109,10 +109,10 @@ class RootService {
   }
 }
 
-describe("NimblyApi Custom Paths", () => {
+describe("N1mblyApi Custom Paths", () => {
   it("should register a custom root path", async () => {
-    const nimble = new Nimble().addLocalService(TestService);
-    const app = new NimblyApi().from(nimble);
+    const container = new N1mblyContainer().addLocalService(TestService);
+    const app = new N1mblyApi().buildAppFrom(container);
 
     await agent(app).get("/api/test-service/get-all").expect(404);
     await agent(app).get("/api/tests").expect(200, getAllResult);
@@ -120,24 +120,24 @@ describe("NimblyApi Custom Paths", () => {
   });
 
   it("should register interceptors for interceptor class", async () => {
-    const nimble = new Nimble().addLocalService(TestService);
-    const app = new NimblyApi()
+    const container = new N1mblyContainer().addLocalService(TestService);
+    const app = new N1mblyApi()
       .intercept({
         testService: TestServiceInterceptor as any,
       })
-      .from(nimble);
+      .buildAppFrom(container);
 
     await agent(app).get("/api/tests").expect(201, getAllResult);
     await agent(app).post("/api/tests").expect(202);
   });
 
   it("should register route with path param", async () => {
-    const nimble = new Nimble().addLocalService(TestService);
-    const app = new NimblyApi()
+    const container = new N1mblyContainer().addLocalService(TestService);
+    const app = new N1mblyApi()
       .intercept({
         testService: TestServiceInterceptor as any,
       })
-      .from(nimble);
+      .buildAppFrom(container);
 
     await agent(app).get("/api/tests/123").expect(200, { id: "123" });
     const obj = { test: "asdf" };
@@ -148,21 +148,21 @@ describe("NimblyApi Custom Paths", () => {
   });
 
   it("should register a custom root path with annotation", async () => {
-    const nimble = new Nimble().addLocalService(AnnotatedService);
-    const app = new NimblyApi().from(nimble);
+    const container = new N1mblyContainer().addLocalService(AnnotatedService);
+    const app = new N1mblyApi().buildAppFrom(container);
     await agent(app).get("/api/annotated-service/get").expect(404);
     await agent(app).get("/api/annotated/get").expect(200);
   });
 
   it("should register a custom method path with annotation", async () => {
-    const nimble = new Nimble().addLocalService(AnnotatedService);
-    const app = new NimblyApi().from(nimble);
+    const container = new N1mblyContainer().addLocalService(AnnotatedService);
+    const app = new N1mblyApi().buildAppFrom(container);
     await agent(app).get("/api/annotated/testing").expect(200);
   });
 
   it("should work for all annotations", async () => {
-    const nimble = new Nimble().addLocalService(AnnotatedService);
-    const app = new NimblyApi().from(nimble);
+    const container = new N1mblyContainer().addLocalService(AnnotatedService);
+    const app = new N1mblyApi().buildAppFrom(container);
     const id = "1234";
     const body = { test: "123", a: 1 };
     await agent(app).get("/api/annotated/testing").expect(200);
@@ -182,8 +182,8 @@ describe("NimblyApi Custom Paths", () => {
   });
 
   it("should work with root path not passed", async () => {
-    const nimble = new Nimble().addLocalService(RootService);
-    const app = new NimblyApi().from(nimble);
+    const container = new N1mblyContainer().addLocalService(RootService);
+    const app = new N1mblyApi().buildAppFrom(container);
     await agent(app).get("/api/test").expect(200);
     await agent(app).get("/api").expect(200);
   });

@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import * as cors from "cors";
 import * as swaggerUi from "swagger-ui-express";
 import { Application } from "express";
-import { Nimble } from "@n1mbly/client";
+import { N1mblyContainer } from "@n1mbly/client";
 import { RegisterRoutesFor } from "./routes-handler";
 import {
   CustomInterceptors,
@@ -19,16 +19,17 @@ type InterceptorCallback = (
   next: NextFunction
 ) => any;
 
-export type NimblyInfo = {
+export type N1mblyInfo = {
   version?: string;
   name?: string;
   description?: string;
   basePath?: string;
 };
-export class NimblyApi extends Interceptable<InterceptorCallback> {
+
+export class N1mblyApi extends Interceptable<InterceptorCallback> {
   private app: Application;
   private errorRegistry: ErrorRegistry = {};
-  private nimblyInfo?: NimblyInfo;
+  private nimblyInfo?: N1mblyInfo;
   private meta: MetaInfo = {
     services: [],
     types: {},
@@ -40,7 +41,7 @@ export class NimblyApi extends Interceptable<InterceptorCallback> {
     basePath = "/api",
   }: {
     app?: Application;
-    nimblyInfo?: Omit<NimblyInfo, "basePath">;
+    nimblyInfo?: Omit<N1mblyInfo, "basePath">;
     basePath?: string;
   } = {}) {
     super();
@@ -55,9 +56,9 @@ export class NimblyApi extends Interceptable<InterceptorCallback> {
     }
   }
 
-  public from(...nimbles: Nimble[]): Application {
-    nimbles.forEach((nimble) => {
-      const serviceRegistry = nimble.getAllServices();
+  public buildAppFrom(...containers: N1mblyContainer[]): Application {
+    containers.forEach((nimble) => {
+      const serviceRegistry = nimble.getServices();
       Object.keys(serviceRegistry).forEach((serviceKey) => {
         const serviceMeta = RegisterRoutesFor(
           serviceRegistry[serviceKey],
@@ -103,29 +104,29 @@ export class NimblyApi extends Interceptable<InterceptorCallback> {
 
   public intercept(
     customInterceptors: CustomInterceptors<InterceptorCallback>
-  ): NimblyApi {
+  ): N1mblyApi {
     this.interceptCustom(customInterceptors, "beforeCustomInterceptors");
     return this;
   }
 
   public interceptAfter(
     customInterceptors: CustomInterceptors<InterceptorCallback>
-  ): NimblyApi {
+  ): N1mblyApi {
     this.interceptCustom(customInterceptors, "afterCustomInterceptors");
     return this;
   }
 
-  public interceptAll(callback: InterceptorCallback): NimblyApi {
+  public interceptAll(callback: InterceptorCallback): N1mblyApi {
     this.interceptors.beforeInterceptors.push(callback);
     return this;
   }
 
-  public interceptAllAfter(callback: InterceptorCallback): NimblyApi {
+  public interceptAllAfter(callback: InterceptorCallback): N1mblyApi {
     this.interceptors.afterInterceptors.push(callback);
     return this;
   }
 
-  public withErrors(errors: ErrorRegistry): NimblyApi {
+  public withErrors(errors: ErrorRegistry): N1mblyApi {
     this.errorRegistry = { ...this.errorRegistry, ...errors };
     return this;
   }

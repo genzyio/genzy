@@ -1,4 +1,4 @@
-import { Nimble } from "../../client/src";
+import { N1mblyContainer } from "../../client/src";
 import { Get, Post, Controller } from "../../client/src";
 import { Query } from "../../shared/decorators";
 
@@ -24,7 +24,7 @@ class TestService {
 @Controller("/decorated")
 class DecoratedService {
   @Get("/:id")
-  async test(id: string, @Query('test') test?: string) {}
+  async test(id: string, @Query("test") test?: string) {}
 
   @Post()
   async post(body: any) {}
@@ -35,18 +35,15 @@ class NoviServis {
 }
 
 export type NimblyServices = {
-  testService: TestService,
-  decoratedService: DecoratedService,
-  noviServis: NoviServis
-}
+  testService: TestService;
+  decoratedService: DecoratedService;
+  noviServis: NoviServis;
+};
 
 const origin = "http://localhost:3030/api";
-export const {
-  testService,
-  decoratedService,
-  noviServis
-}: NimblyServices = new Nimble()
-  .addRemoteServices(origin, TestService, DecoratedService, NoviServis)
-  .getAllServices();
+export const { testService, decoratedService, noviServis }: NimblyServices =
+  new N1mblyContainer()
+    .addRemoteServices(origin, TestService, DecoratedService, NoviServis)
+    .getAllServices();
 
-noviServis.getNesto().then(console.log)
+noviServis.getNesto().then(console.log);

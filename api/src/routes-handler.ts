@@ -2,16 +2,15 @@ import { Application, NextFunction, Request, Response } from "express";
 import { ErrorHandler, ErrorRegistry } from "./error-handler";
 import {
   camelToKebabCase,
-  combineNimblyConfigs,
+  combineN1mblyConfigs,
   formParamsOf,
   getHttpMethod,
   getMethodsOfClassInstance,
 } from "../../shared/functions";
 import {
   ComplexType,
-  ComplexTypeReference,
   MetaTypesRegistry,
-  NimblyConfig,
+  N1mblyConfig,
   Param,
   RouteMetaInfo,
   ServiceMetaInfo,
@@ -25,7 +24,7 @@ export function RegisterRoutesFor(
   basePath: string = "/api"
 ): { service: ServiceMetaInfo; types: MetaTypesRegistry } {
   const serviceClassName = instance.constructor.name || instance._class_name_;
-  const meta: NimblyConfig = combineNimblyConfigs(
+  const meta: N1mblyConfig = combineN1mblyConfigs(
     instance?.$nimbly_config ?? {},
     instance?.$nimbly ?? {}
   );

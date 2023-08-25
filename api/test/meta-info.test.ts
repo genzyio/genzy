@@ -1,5 +1,5 @@
-import { Nimble } from "@n1mbly/client";
-import { NimblyApi } from "../src/nimbly-api";
+import { N1mblyContainer } from "@n1mbly/client";
+import { N1mblyApi } from "../src/n1mbly-api";
 import { agent } from "supertest";
 import { RegisterRoutesFor } from "../src/routes-handler";
 import * as express from "express";
@@ -39,12 +39,12 @@ class Test3Service {
   ) {}
 }
 
-describe("NimblyApi Meta Info", () => {
+describe("N1mblyApi Meta Info", () => {
   it("should register meta path", async () => {
     const meta = RegisterRoutesFor(new TestService(), express());
 
-    const nimble = new Nimble().addLocalService(TestService);
-    const app = new NimblyApi().from(nimble);
+    const container = new N1mblyContainer().addLocalService(TestService);
+    const app = new N1mblyApi().buildAppFrom(container);
 
     await agent(app)
       .get("/api/meta")
@@ -79,7 +79,10 @@ describe("NimblyApi Meta Info", () => {
     const pathParams = action.params.filter((p) => p.source === "path");
     const queryParams = action.params.filter((p) => p.source === "query");
 
-    expect(bodyParam?.type).toStrictEqual(exampleType);
+    expect(bodyParam?.type).toStrictEqual({
+      $isArray: false,
+      $typeName: "Example",
+    });
     expect(pathParams.map((p) => p.type)).toHaveLength(2);
     expect(pathParams.map((p) => p.type)).toContainEqual(BASIC_TYPES.string);
     expect(pathParams.map((p) => p.type)).toContainEqual(BASIC_TYPES.boolean);
@@ -93,7 +96,10 @@ describe("NimblyApi Meta Info", () => {
     expect(queryParams.map((p) => p.name)).toHaveLength(1);
     expect(queryParams.map((p) => p.name)).toContainEqual("two");
 
-    expect(action.result).toStrictEqual(exampleType);
+    expect(action.result).toStrictEqual({
+      $isArray: false,
+      $typeName: "Example",
+    });
   });
 
   it("should register meta on a different base path", async () => {
@@ -105,8 +111,8 @@ describe("NimblyApi Meta Info", () => {
       "/api/v1"
     );
 
-    const nimble = new Nimble().addLocalService(TestService);
-    const app = new NimblyApi({ basePath: "/api/v1" }).from(nimble);
+    const container = new N1mblyContainer().addLocalService(TestService);
+    const app = new N1mblyApi({ basePath: "/api/v1" }).buildAppFrom(container);
 
     await agent(app)
       .get("/api/v1/meta")

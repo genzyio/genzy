@@ -6,9 +6,9 @@ import type {
   RouteMetaInfo,
   ServiceMetaInfo,
 } from "../../shared/types";
-import { NimblyInfo } from "./nimbly-api";
+import { N1mblyInfo } from "./n1mbly-api";
 
-export const generateDocsFrom = (meta: MetaInfo, info: NimblyInfo) => {
+export const generateDocsFrom = (meta: MetaInfo, info: N1mblyInfo) => {
   const doc = {
     openapi: "3.0.0",
     info: {
@@ -46,7 +46,7 @@ export const generateDocsFrom = (meta: MetaInfo, info: NimblyInfo) => {
 };
 
 const getPathFrom = (
-  info: NimblyInfo,
+  info: N1mblyInfo,
   serviceMetaInfo: ServiceMetaInfo,
   routeMetaInfo: RouteMetaInfo
 ) => {
@@ -89,7 +89,9 @@ const getBodyDocFrom = (routeMetaInfo: RouteMetaInfo) => {
             required: true,
             content: {
               "application/json": {
-                schema: getSchemaRefFrom(bodyParam.type as ComplexType),
+                schema: bodyParam.type
+                  ? getSchemaRefFrom(bodyParam.type as ComplexTypeReference)
+                  : {},
               },
             },
           },

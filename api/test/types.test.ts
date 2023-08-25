@@ -1,4 +1,4 @@
-import { Nimble } from "@n1mbly/client";
+import { N1mblyContainer } from "@n1mbly/client";
 import { BASIC_TYPES, GenericType } from "../../shared/constants";
 import {
   Controller,
@@ -63,7 +63,7 @@ class Test5Service {
 
 describe("Types", () => {
   it("should be undefined", async () => {
-    const { test1Service } = new Nimble()
+    const { test1Service } = new N1mblyContainer()
       .addLocalService(Test1Service)
       .getAllServices();
 
@@ -71,7 +71,7 @@ describe("Types", () => {
   });
 
   it("should have param string", async () => {
-    const { test2Service } = new Nimble()
+    const { test2Service } = new N1mblyContainer()
       .addLocalService(Test2Service)
       .getAllServices();
 
@@ -118,7 +118,7 @@ describe("Types", () => {
   });
 
   it("should support type decorator in the list addLocalService params", async () => {
-    const { test3Service } = new Nimble()
+    const { test3Service } = new N1mblyContainer()
       .addLocalService(Test3Service)
       .getAllServices();
 
@@ -140,7 +140,7 @@ describe("Types", () => {
   });
 
   it("should support array decorator in the list addLocalService params", async () => {
-    const { test4Service } = new Nimble()
+    const { test4Service } = new N1mblyContainer()
       .addLocalService(Test4Service)
       .getAllServices();
 
@@ -162,7 +162,7 @@ describe("Types", () => {
   });
 
   it("should support root type decorator in @Controller", async () => {
-    const { test5Service } = new Nimble()
+    const { test5Service } = new N1mblyContainer()
       .addLocalService(Test5Service)
       .getAllServices();
 

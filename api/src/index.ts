@@ -1,5 +1,5 @@
 export { Application, Request, Response, NextFunction } from "express";
-export { Nimble } from "@n1mbly/client";
+export { N1mblyContainer } from "@n1mbly/client";
 export {
   Controller,
   Get,
@@ -20,4 +20,4 @@ export {
   ReturnsArrayOf,
 } from "../../shared/decorators";
 export { GenericType } from "../../shared/constants";
-export { NimblyApi } from "./nimbly-api";
+export { N1mblyApi } from "./n1mbly-api";

@@ -1,4 +1,4 @@
-import { GenericType, Nimble, NimblyApi } from "../../api/src";
+import { GenericType, N1mblyContainer, N1mblyApi } from "../../api/src";
 import { Get, Post, Controller } from "../../client/src";
 import {
   arrayOf,
@@ -91,17 +91,17 @@ class NoviServis {
   }
 }
 
-const modul = new Nimble().addLocalServices(
+const modul = new N1mblyContainer().addLocalServices(
   TestService,
   DecoratedService,
   NoviServis,
   ConfigurationService
 );
 
-export const api = new NimblyApi({
+export const api = new N1mblyApi({
   nimblyInfo: {
     version: "0.0.1-alpha1",
     name: "Random Microservice",
     description: "This microservice is used for random stuff.",
   },
-}).from(modul);
+}).buildAppFrom(modul);

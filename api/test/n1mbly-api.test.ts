@@ -1,8 +1,8 @@
 import * as express from "express";
 import * as cors from "cors";
 import { NextFunction, Request, Response } from "express";
-import { Nimble } from "@n1mbly/client";
-import { NimblyApi } from "../src/nimbly-api";
+import { N1mblyContainer } from "@n1mbly/client";
+import { N1mblyApi } from "../src/n1mbly-api";
 import { agent } from "supertest";
 
 const getAllResult = [1, 2, 3];
@@ -71,13 +71,13 @@ class AdditionalService {
   }
 }
 
-describe("NimblyApi", () => {
-  it("should create nimble api", async () => {
-    const nimble = new Nimble().addLocalServices(
+describe("N1mblyApi", () => {
+  it("should create n1mbly api", async () => {
+    const container = new N1mblyContainer().addLocalServices(
       TestService,
       AdditionalService
     );
-    const app = new NimblyApi().from(nimble);
+    const app = new N1mblyApi().buildAppFrom(container);
 
     expect(app).toHaveProperty("listen");
     expect(app).toHaveProperty("use");
@@ -89,10 +89,10 @@ describe("NimblyApi", () => {
   });
 
   it("should register before interceptors for object", async () => {
-    const nimble = new Nimble().addLocalService(TestService);
+    const n1mbly = new N1mblyContainer().addLocalService(TestService);
     const interceptorResult = { result: [{ test: "result" }] };
     const interceptorAddResult = { result: [{ test: "result" }] };
-    const app = new NimblyApi()
+    const app = new N1mblyApi()
       .intercept({
         testService: {
           getAll(req: Request, res: Response, next: NextFunction) {
@@ -107,7 +107,7 @@ describe("NimblyApi", () => {
           },
         },
       })
-      .from(nimble);
+      .buildAppFrom(n1mbly);
 
     await agent(app)
       .get("/api/test-service/get-all")
@@ -120,9 +120,9 @@ describe("NimblyApi", () => {
   });
 
   it("should register after interceptors for object", async () => {
-    const nimble = new Nimble().addLocalService(TestService);
+    const container = new N1mblyContainer().addLocalService(TestService);
 
-    const app = new NimblyApi()
+    const app = new N1mblyApi()
       .interceptAfter({
         testService: {
           getAll(req: Request, res: Response, next: NextFunction) {
@@ -135,7 +135,7 @@ describe("NimblyApi", () => {
           },
         },
       })
-      .from(nimble);
+      .buildAppFrom(container);
 
     await agent(app).get("/api/test-service/get-all").expect(202, getAllResult);
     await agent(app).get("/").expect(404);
@@ -144,12 +144,12 @@ describe("NimblyApi", () => {
   });
 
   it("should register interceptors for interceptor class", async () => {
-    const nimble = new Nimble().addLocalService(TestService);
-    const app = new NimblyApi()
+    const container = new N1mblyContainer().addLocalService(TestService);
+    const app = new N1mblyApi()
       .intercept({
         testService: TestServiceInterceptor as any,
       })
-      .from(nimble);
+      .buildAppFrom(container);
 
     await agent(app).get("/").expect(404);
     await agent(app).get("/api/test-service/get-all").expect(201);
@@ -159,14 +159,14 @@ describe("NimblyApi", () => {
   });
 
   it("should register a global interceptor before function", async () => {
-    const nimble = new Nimble().addLocalService(TestService);
+    const container = new N1mblyContainer().addLocalService(TestService);
     const interceptorResult = { test: "result" };
-    const app = new NimblyApi()
+    const app = new N1mblyApi()
       .interceptAll((req: Request, res: Response, next: NextFunction) => {
         res.status(201);
         res.json(interceptorResult);
       })
-      .from(nimble);
+      .buildAppFrom(container);
 
     await agent(app)
       .get("/api/test-service/get-all")
@@ -175,21 +175,21 @@ describe("NimblyApi", () => {
   });
 
   it("should register a global interceptor after function", async () => {
-    const nimble = new Nimble().addLocalService(TestService);
-    const app = new NimblyApi()
+    const container = new N1mblyContainer().addLocalService(TestService);
+    const app = new N1mblyApi()
       .interceptAllAfter((req: Request, res: Response, next: NextFunction) => {
         res.status(201);
         next();
       })
-      .from(nimble);
+      .buildAppFrom(container);
 
     await agent(app).get("/api/test-service/get-all").expect(201, getAllResult);
     await agent(app).get("/").expect(404);
   });
 
   it("should call after interceptor function last", async () => {
-    const nimble = new Nimble().addLocalService(TestService);
-    const app = new NimblyApi()
+    const container = new N1mblyContainer().addLocalService(TestService);
+    const app = new N1mblyApi()
       .interceptAllAfter((req: Request, res: Response, next: NextFunction) => {
         res.status(201);
         next();
@@ -198,20 +198,20 @@ describe("NimblyApi", () => {
         res.status(202);
         next();
       })
-      .from(nimble);
+      .buildAppFrom(container);
 
     await agent(app).get("/api/test-service/get-all").expect(201, getAllResult);
     await agent(app).get("/").expect(404);
   });
 
   it("should register error mappings", async () => {
-    const nimble = new Nimble().addLocalService(TestService);
-    const app = new NimblyApi()
+    const container = new N1mblyContainer().addLocalService(TestService);
+    const app = new N1mblyApi()
       .withErrors({
         [BadLogicError.name]: 400,
         [InternalServerError.name]: 500,
       })
-      .from(nimble);
+      .buildAppFrom(container);
 
     await agent(app)
       .get("/api/test-service/get-bad-logic-error")
@@ -226,13 +226,13 @@ describe("NimblyApi", () => {
     existingApp.use(express.urlencoded({ extended: true }));
     existingApp.use(express.json());
     existingApp.use(cors({ origin: "*" }));
-    const nimble = new Nimble().addLocalService(TestService);
-    const app = new NimblyApi({ app: existingApp })
+    const container = new N1mblyContainer().addLocalService(TestService);
+    const app = new N1mblyApi({ app: existingApp })
       .withErrors({
         [BadLogicError.name]: 400,
         [InternalServerError.name]: 500,
       })
-      .from(nimble);
+      .buildAppFrom(container);
 
     expect(app).toEqual(existingApp);
   });

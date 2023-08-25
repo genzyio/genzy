@@ -6,10 +6,9 @@ import {
 } from "./constants";
 import {
   Action,
-  NimblyConfig,
+  N1mblyConfig,
   Param,
   ParamSource,
-  PathConfig,
   ServiceMetaInfo,
 } from "./types";
 
@@ -78,17 +77,17 @@ export function extractPathParamsFrom(fullRoutePath: string) {
   return [...fullRoutePath.matchAll(MatchPathParamsRegex)].map((r) => r[0]);
 }
 
-export function combineNimblyConfigs(
-  nimbly: NimblyConfig,
-  nimbly_config: NimblyConfig
-): NimblyConfig {
+export function combineN1mblyConfigs(
+  nimbly: N1mblyConfig,
+  nimbly_config: N1mblyConfig
+): N1mblyConfig {
   return { ...(nimbly_config ?? {}), ...(nimbly ?? {}) };
 }
 
-export function nimblyConfigFrom(
+export function n1mblyConfigFrom(
   serviceMetaInfo: ServiceMetaInfo
-): NimblyConfig {
-  const result: NimblyConfig = {
+): N1mblyConfig {
+  const result: N1mblyConfig = {
     path: serviceMetaInfo.path,
   };
   serviceMetaInfo.actions.forEach((action) => {

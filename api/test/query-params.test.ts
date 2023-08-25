@@ -1,11 +1,11 @@
-import { Nimble } from "@n1mbly/client";
-import { NimblyApi } from "../src/nimbly-api";
+import { N1mblyContainer } from "@n1mbly/client";
+import { N1mblyApi } from "../src/n1mbly-api";
 import { agent } from "supertest";
 import { Get, Query } from "../../shared/decorators";
-import { NimblyConfig } from "../../shared/types";
+import { N1mblyConfig } from "../../shared/types";
 
 class TestService {
-  $nimbly: NimblyConfig = {
+  $nimbly: N1mblyConfig = {
     get: {
       params: [{ name: "test", source: "query" }],
     },
@@ -36,8 +36,8 @@ class TestService {
 
 describe("QueryParams", () => {
   it("should register a path that is able to receive query params", async () => {
-    const nimble = new Nimble().addLocalService(TestService);
-    const app = new NimblyApi().from(nimble);
+    const container = new N1mblyContainer().addLocalService(TestService);
+    const app = new N1mblyApi().buildAppFrom(container);
 
     await agent(app)
       .get("/api/test-service/get?test=123")
@@ -45,15 +45,15 @@ describe("QueryParams", () => {
   });
 
   it("should return undefined for not passed query param", async () => {
-    const nimble = new Nimble().addLocalService(TestService);
-    const app = new NimblyApi().from(nimble);
+    const container = new N1mblyContainer().addLocalService(TestService);
+    const app = new N1mblyApi().buildAppFrom(container);
 
     await agent(app).get("/api/test-service/get").expect(200, {});
   });
 
   it("should register a path that is able to receive multiple query params", async () => {
-    const nimble = new Nimble().addLocalService(TestService);
-    const app = new NimblyApi().from(nimble);
+    const container = new N1mblyContainer().addLocalService(TestService);
+    const app = new N1mblyApi().buildAppFrom(container);
 
     await agent(app)
       .get("/api/test-service/get-multiple?test=asdf&test2=123")
@@ -64,8 +64,8 @@ describe("QueryParams", () => {
   });
 
   it("should register a path that is able to receive query params with Query decorator", async () => {
-    const nimble = new Nimble().addLocalService(TestService);
-    const app = new NimblyApi().from(nimble);
+    const container = new N1mblyContainer().addLocalService(TestService);
+    const app = new N1mblyApi().buildAppFrom(container);
 
     await agent(app)
       .get("/api/test-service/decorated?testing=asdf&another=123")

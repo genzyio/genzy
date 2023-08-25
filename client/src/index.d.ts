@@ -20,23 +20,31 @@ interface Constructor {
   new (...args: any[]);
 }
 
-export class Nimble {
+export class N1mblyContainer {
   constructor();
 
-  public interceptAllCalls(callback: InterceptorCallback): Nimble;
-  public interceptAllResults(callback: InterceptorCallback): Nimble;
+  public interceptAllCalls(callback: InterceptorCallback): N1mblyContainer;
+  public interceptAllResults(callback: InterceptorCallback): N1mblyContainer;
   public interceptCalls(
     customInterceptors: CustomInterceptors<InterceptorCallback>
-  ): Nimble;
+  ): N1mblyContainer;
   public interceptResults(
     customInterceptors: CustomInterceptors<InterceptorCallback>
-  ): Nimble;
+  ): N1mblyContainer;
 
-  public addLocalService(type: Constructor): Nimble;
-  public addLocalServices(...types: Constructor[]): Nimble;
-  public addRemoteService(origin: string, type: Constructor): Nimble;
-  public addRemoteServices(origin: string, ...types: Constructor[]): Nimble;
+  public addAccessToContainer(
+    containerName: string,
+    container: N1mblyContainer
+  ): N1mblyContainer;
+  public addLocalService(type: Constructor): N1mblyContainer;
+  public addLocalServices(...types: Constructor[]): N1mblyContainer;
+  public addRemoteService(origin: string, type: Constructor): N1mblyContainer;
+  public addRemoteServices(
+    origin: string,
+    ...types: Constructor[]
+  ): N1mblyContainer;
 
+  public getServices(): any;
   public getAllServices(): any;
 }
 

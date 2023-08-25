@@ -31,16 +31,17 @@ export class Interceptable<TInterceptorCallback> {
 
   protected interceptCustom(
     customInterceptors: CustomInterceptors<TInterceptorCallback>,
-    customInterceptorsKey: CustomInterceptorKey,
+    customInterceptorsKey: CustomInterceptorKey
   ): void {
     Object.keys(customInterceptors).forEach((classK) => {
       const classKey = upperFirstLetter(classK);
       if (!this.interceptors[customInterceptorsKey][classKey]) {
         this.interceptors[customInterceptorsKey][classKey] = {};
       }
-      const referenceObject = typeof customInterceptors[classK] !== "function"
-        ? customInterceptors[classK]
-        : new (customInterceptors[classK] as any)();
+      const referenceObject =
+        typeof customInterceptors[classK] !== "function"
+          ? customInterceptors[classK]
+          : new (customInterceptors[classK] as any)();
       const methodKeys: string[] =
         typeof customInterceptors[classK] !== "function"
           ? Object.keys(referenceObject)
@@ -50,7 +51,7 @@ export class Interceptable<TInterceptorCallback> {
           this.interceptors[customInterceptorsKey][classKey][methodKey] = [];
         }
         this.interceptors[customInterceptorsKey][classKey][methodKey].push(
-          referenceObject[methodKey],
+          referenceObject[methodKey]
         );
       });
     });
@@ -86,10 +87,10 @@ export type Param = {
   type?: Type;
 };
 
-export type NimblyConfig =
+export type N1mblyConfig =
   | {
-    path?: string;
-  }
+      path?: string;
+    }
   | PathConfig;
 
 export type ComplexType = {

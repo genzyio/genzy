@@ -1,7 +1,7 @@
 export { Application, Request, Response, NextFunction } from "express";
 import { Application, NextFunction } from "express";
-import { Nimble } from "@n1mbly/client";
-export { Nimble } from "@n1mbly/client";
+import { N1mblyContainer } from "@n1mbly/client";
+export { N1mblyContainer } from "@n1mbly/client";
 
 export class GenericType {}
 
@@ -19,7 +19,7 @@ type CustomInterceptors<TInterceptorCallback> = {
 
 type ErrorRegistry = { [key: string]: number };
 
-type NimblyInfo = {
+type N1mblyInfo = {
   version?: string;
   name?: string;
   description?: string;
@@ -30,24 +30,24 @@ interface Constructor {
   new (...args: any[]);
 }
 
-export class NimblyApi {
+export class N1mblyApi {
   constructor();
   constructor(options: {
     app?: Application;
-    nimblyInfo?: NimblyInfo;
+    nimblyInfo?: N1mblyInfo;
     basePath?: string;
   });
 
   public intercept(
     customInterceptors: CustomInterceptors<InterceptorCallback>
-  ): NimblyApi;
+  ): N1mblyApi;
   public interceptAfter(
     customInterceptors: CustomInterceptors<InterceptorCallback>
-  ): NimblyApi;
-  public interceptAll(callback: InterceptorCallback): NimblyApi;
-  public interceptAllAfter(callback: InterceptorCallback): NimblyApi;
-  public withErrors(errors: ErrorRegistry): NimblyApi;
-  public from(...nimbles: Nimble[]): Application;
+  ): N1mblyApi;
+  public interceptAll(callback: InterceptorCallback): N1mblyApi;
+  public interceptAllAfter(callback: InterceptorCallback): N1mblyApi;
+  public withErrors(errors: ErrorRegistry): N1mblyApi;
+  public buildAppFrom(...containers: N1mblyContainer[]): Application;
 }
 
 export function Controller(
