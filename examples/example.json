@@ -1,0 +1,116 @@
+{
+  "services": [
+    {
+      "name": "ExampleService",
+      "actions": [
+        {
+          "httpMethod": "get",
+          "name": "getAll",
+          "path": "",
+          "params": [
+            {
+              "name": "pageNumber",
+              "source": "query",
+              "type": "int"
+            },
+            {
+              "name": "pageSize",
+              "source": "query",
+              "type": "int"
+            }
+          ],
+          "result": {
+            "$typeName": "Example",
+            "$isArray": true
+          }
+        },
+        {
+          "httpMethod": "get",
+          "name": "getById",
+          "path": "/:id",
+          "params": [
+            {
+              "name": "includeDetails",
+              "source": "query",
+              "type": "boolean"
+            },
+            {
+              "name": "id",
+              "source": "path",
+              "type": "string"
+            }
+          ],
+          "result": {
+            "$typeName": "TestClass",
+            "$isArray": false
+          }
+        },
+        {
+          "httpMethod": "post",
+          "name": "add",
+          "path": "",
+          "params": [
+            {
+              "name": "body",
+              "source": "body",
+              "type": {
+                "$typeName": "Example",
+                "$isArray": false
+              }
+            }
+          ],
+          "result": {
+            "$typeName": "Example",
+            "$isArray": false
+          }
+        },
+        {
+          "httpMethod": "put",
+          "name": "update",
+          "path": "/:id",
+          "params": [
+            {
+              "name": "id",
+              "source": "path",
+              "type": "string"
+            },
+            {
+              "name": "body",
+              "source": "body",
+              "type": {
+                "$typeName": "Example",
+                "$isArray": false
+              }
+            }
+          ]
+        },
+        {
+          "httpMethod": "delete",
+          "name": "delete",
+          "path": "/:id",
+          "params": [
+            {
+              "name": "id",
+              "source": "path",
+              "type": "string"
+            }
+          ],
+          "result": {
+            "$typeName": "Example",
+            "$isArray": false
+          }
+        }
+      ],
+      "path": "/examples"
+    }
+  ],
+  "types": {
+    "Example": {
+      "name": "string",
+      "age": "int"
+    },
+    "TestClass": {
+      "test": "int"
+    }
+  }
+}

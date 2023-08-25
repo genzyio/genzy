@@ -1,27 +1,36 @@
-import { Nimble, NimblyApi } from '../../api/src';
-import { Get, Post, Controller } from '../../client/src';
-import { arrayOf, int, Path, Query, Returns, ReturnsArrayOf, string, type } from '../../shared/decorators';
+import { GenericType, Nimble, NimblyApi } from "../../api/src";
+import { Get, Post, Controller } from "../../client/src";
+import {
+  arrayOf,
+  int,
+  Path,
+  Query,
+  Returns,
+  ReturnsArrayOf,
+  string,
+  type,
+} from "../../shared/decorators";
 
 class TestService {
   $nimbly = {
-    rootPath: '/tests',
+    rootPath: "/tests",
     get: {
-      method: 'GET',
-      path: '/:id'
+      method: "GET",
+      path: "/:id",
     },
     update: {
-      method: 'PUT',
-      path: '/:id',
-      body: true
-    }
-  }
+      method: "PUT",
+      path: "/:id",
+      body: true,
+    },
+  };
 
   get(id) {
-    return [1, 2, 3]
+    return [1, 2, 3];
   }
 
   update(id, body) {
-    return [1, 2, 3]
+    return [1, 2, 3];
   }
 }
 
@@ -36,7 +45,7 @@ class Model {
   @arrayOf(Test) tests: Test[];
 }
 
-@Controller('/decorated')
+@Controller("/decorated")
 class DecoratedService {
   private testService: TestService;
 
@@ -44,9 +53,9 @@ class DecoratedService {
     this.testService = testService;
   }
 
-  @Get('/:id')
-  test(@Path('id') @string id: string, @Query('test') @string test?: string) {
-    return { id, arr: this.testService.get(id), test }
+  @Get("/:id")
+  test(@Path("id") @string id: string, @Query("test") @string test?: string) {
+    return { id, arr: this.testService.get(id), test };
   }
 
   @Post()
@@ -56,23 +65,23 @@ class DecoratedService {
   }
 }
 
-@Controller('/configuration')
+@Controller("/configuration", Model)
 class ConfigurationService {
-  @Get()
-  getAll() {
+  @Post()
+  @Returns(GenericType)
+  getAll(@type(GenericType) body: Model) {
     return [
       {
-        id: 'prvi',
+        id: "prvi",
         frequency: 1,
         filter: `function filter(value, status) {
           return true;
         }
         function finalFilter(topic, value, status) {
           return filter(value, status) && topic === "test";
-        }`
-      }
-
-    ]
+        }`,
+      },
+    ];
   }
 }
 
@@ -82,14 +91,17 @@ class NoviServis {
   }
 }
 
-const modul = new Nimble()
-  .addLocalServices(TestService, DecoratedService, NoviServis, ConfigurationService)
+const modul = new Nimble().addLocalServices(
+  TestService,
+  DecoratedService,
+  NoviServis,
+  ConfigurationService
+);
 
 export const api = new NimblyApi({
   nimblyInfo: {
-    version: '0.0.1-alpha1',
-    name: 'Random Microservice',
-    description: 'This microservice is used for random stuff.',
-    basePath: '/api'
-  }
+    version: "0.0.1-alpha1",
+    name: "Random Microservice",
+    description: "This microservice is used for random stuff.",
+  },
 }).from(modul);

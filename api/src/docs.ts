@@ -1,5 +1,6 @@
-import {
+import type {
   ComplexType,
+  ComplexTypeReference,
   MetaInfo,
   Param,
   RouteMetaInfo,
@@ -17,6 +18,9 @@ export const generateDocsFrom = (meta: MetaInfo, info: NimblyInfo) => {
     },
     servers: [{ url: info.basePath }],
     paths: {},
+    components: {
+      schemas: {},
+    },
   };
 
   meta.services.forEach((service) => {
@@ -32,22 +36,26 @@ export const generateDocsFrom = (meta: MetaInfo, info: NimblyInfo) => {
     });
   });
 
-  // TODO: register Swagger / Open API schemas from meta.types
+  Object.keys(meta.types).forEach((typeName) => {
+    doc.components.schemas[typeName] = getSchemaFrom(
+      meta.types[typeName] as ComplexType
+    );
+  });
 
   return doc;
 };
 
 const getPathFrom = (
   info: NimblyInfo,
-  s: ServiceMetaInfo,
-  r: RouteMetaInfo
+  serviceMetaInfo: ServiceMetaInfo,
+  routeMetaInfo: RouteMetaInfo
 ) => {
-  let path = r.path.replace(info.basePath, "");
-  r.params
+  let path = routeMetaInfo.path.replace(info.basePath, "");
+  routeMetaInfo.params
     .filter((p) => p.source === "path")
     .map((p) => p.name)
     .forEach((p) => (path = path.replace(`:${p}`, `{${p}}`)));
-  return `${s.path}${path}`.replace("//", "/");
+  return `${serviceMetaInfo.path}${path}`.replace("//", "/");
 };
 
 const getPathDocFrom = (s: ServiceMetaInfo, r: RouteMetaInfo) => ({
@@ -57,8 +65,8 @@ const getPathDocFrom = (s: ServiceMetaInfo, r: RouteMetaInfo) => ({
   responses: getResponsesDocFrom(r),
 });
 
-const getParametersDocFrom = (r: RouteMetaInfo) => {
-  return r.params
+const getParametersDocFrom = (routeMetaInfo: RouteMetaInfo) => {
+  return routeMetaInfo.params
     .filter((p) => p.source !== "body")
     .map((p) => ({
       name: p.name,
@@ -70,8 +78,10 @@ const getParametersDocFrom = (r: RouteMetaInfo) => {
     }));
 };
 
-const getBodyDocFrom = (r: RouteMetaInfo) => {
-  const bodyParam: Param = r.params.find((p) => p.source === "body");
+const getBodyDocFrom = (routeMetaInfo: RouteMetaInfo) => {
+  const bodyParam: Param = routeMetaInfo.params.find(
+    (p) => p.source === "body"
+  );
   return {
     ...(!!bodyParam
       ? {
@@ -88,16 +98,25 @@ const getBodyDocFrom = (r: RouteMetaInfo) => {
   };
 };
 
-const getResponsesDocFrom = (r: RouteMetaInfo) => ({
-  200: {
-    headers: {},
-    content: {
-      "application/json": {
-        schema: getSchemaFrom(r.result),
+const getResponsesDocFrom = (routeMetaInfo: RouteMetaInfo) => {
+  return {
+    200: {
+      headers: {},
+      content: {
+        "application/json": {
+          schema: routeMetaInfo.result
+            ? getSchemaRefFrom(routeMetaInfo.result)
+            : {},
+        },
       },
     },
-  },
-});
+  };
+};
+
+const getSchemaRefFrom = (type: ComplexTypeReference) => {
+  const objectSchema = { $ref: `#/components/schemas/${type.$typeName}` };
+  return type?.$isArray ? { type: "array", items: objectSchema } : objectSchema;
+};
 
 const getSchemaFrom = (type: ComplexType) => {
   const objectSchema = { type: "object", properties: getPropertiesFrom(type) };

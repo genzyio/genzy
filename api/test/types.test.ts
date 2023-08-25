@@ -1,6 +1,14 @@
 import { Nimble } from "@n1mbly/client";
-import { BASIC_TYPES } from "../../shared/constants";
-import { arrayOf, boolean, int, string, type } from "../../shared/decorators";
+import { BASIC_TYPES, GenericType } from "../../shared/constants";
+import {
+  Controller,
+  Returns,
+  arrayOf,
+  boolean,
+  int,
+  string,
+  type,
+} from "../../shared/decorators";
 
 class Test1Service {
   async get() {}
@@ -38,6 +46,18 @@ class Test4Service {
     @int two: number,
     @boolean three: boolean,
     @arrayOf(Example) body: Example[]
+  ) {}
+}
+
+@Controller("/test-5", Example)
+class Test5Service {
+  @Returns(GenericType)
+  async get(
+    @string one: string,
+    @int two: number,
+    @boolean three: boolean,
+    @arrayOf(GenericType) body: Example[],
+    @type(GenericType) test: Example
   ) {}
 }
 
@@ -137,6 +157,38 @@ describe("Types", () => {
     expect(test4Service.$nimbly_config.get.params[3].type).toStrictEqual({
       ...(new Example() as any).$nimbly_config?.types,
       $isArray: true,
+      $typeName: "Example",
+    });
+  });
+
+  it("should support root type decorator in @Controller", async () => {
+    const { test5Service } = new Nimble()
+      .addLocalService(Test5Service)
+      .getAllServices();
+
+    expect(test5Service.$nimbly_config?.get).not.toBeUndefined();
+    expect(test5Service.$nimbly_config.get.params[0].type).toBe(
+      BASIC_TYPES.string
+    );
+    expect(test5Service.$nimbly_config.get.params[1].type).toBe(
+      BASIC_TYPES.int
+    );
+    expect(test5Service.$nimbly_config.get.params[2].type).toBe(
+      BASIC_TYPES.boolean
+    );
+    expect(test5Service.$nimbly_config.get.params[3].type).toStrictEqual({
+      ...(new Example() as any).$nimbly_config?.types,
+      $isArray: true,
+      $typeName: "Example",
+    });
+    expect(test5Service.$nimbly_config.get.params[4].type).toStrictEqual({
+      ...(new Example() as any).$nimbly_config?.types,
+      $isArray: false,
+      $typeName: "Example",
+    });
+    expect(test5Service.$nimbly_config.get.result).toStrictEqual({
+      ...(new Example() as any).$nimbly_config?.types,
+      $isArray: false,
       $typeName: "Example",
     });
   });

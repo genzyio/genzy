@@ -1,14 +1,15 @@
 import { Application, NextFunction, Request, Response } from "express";
 import { ErrorHandler, ErrorRegistry } from "./error-handler";
 import {
-  getMethodsOfClassInstance,
-  getHttpMethod,
   camelToKebabCase,
   combineNimblyConfigs,
   formParamsOf,
+  getHttpMethod,
+  getMethodsOfClassInstance,
 } from "../../shared/functions";
 import {
   ComplexType,
+  ComplexTypeReference,
   MetaTypesRegistry,
   NimblyConfig,
   Param,
@@ -57,6 +58,8 @@ export function RegisterRoutesFor(
           $isArray,
         };
       }
+      const processedResult: ComplexType | undefined = meta?.[method]?.result;
+
       params
         .filter((param) => param.type && typeof param.type === "object")
         .forEach((param) => {
@@ -75,18 +78,20 @@ export function RegisterRoutesFor(
       if (interceptors) {
         handlers.unshift(...interceptors.beforeInterceptors);
         handlers.push(...interceptors.afterInterceptors);
-        if (interceptors.beforeCustomInterceptors[serviceClassName])
+        if (interceptors.beforeCustomInterceptors[serviceClassName]) {
           handlers.unshift(
             ...(interceptors.beforeCustomInterceptors[serviceClassName][
               method
             ] || [])
           );
-        if (interceptors.afterCustomInterceptors[serviceClassName])
+        }
+        if (interceptors.afterCustomInterceptors[serviceClassName]) {
           handlers.push(
             ...(interceptors.afterCustomInterceptors[serviceClassName][
               method
             ] || [])
           );
+        }
       }
 
       handlers.push((req: Request, res: Response, next: NextFunction) => {
@@ -108,12 +113,12 @@ export function RegisterRoutesFor(
           source,
           type,
         })),
-        ...(result ? { result } : {}),
+        ...(processedResult ? { result: processedResult } : {}),
       };
     }
   );
   return {
-    types: {},
+    types,
     service: {
       name: serviceClassName,
       actions: routes,

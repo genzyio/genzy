@@ -1,5 +1,5 @@
 import { nimblyConfigFrom } from "../../shared/functions";
-import { ServiceMetaInfo } from "../../shared/types";
+import { MetaTypesRegistry, ServiceMetaInfo } from "../../shared/types";
 import { generate as generateUtil } from "./utils";
 
 export function generate(
@@ -7,7 +7,7 @@ export function generate(
   host: string | undefined,
   dirPath: string,
   nunjucks: any,
-  isServer = false
+  isServer = false,
 ) {
   generateUtil(
     meta,
@@ -17,21 +17,24 @@ export function generate(
     "js",
     fileContentFrom,
     indexFileContentFrom,
+    typeFileContentFrom,
     "index",
-    isServer
+    isServer,
   );
 }
 
 export function fileContentFrom(
   service: ServiceMetaInfo,
+  types: MetaTypesRegistry,
   nunjucks: any,
   host: string | undefined,
-  isServer: boolean
+  isServer: boolean,
 ): string {
   return nunjucks.render("service.njk", {
     ...service,
     $nimbly: nimblyConfigFrom(service),
     isServer,
+    types,
   });
 }
 
@@ -39,7 +42,10 @@ export function indexFileContentFrom(
   services: ServiceMetaInfo[],
   host: string | undefined,
   nunjucks: any,
-  isServer: boolean
+  isServer: boolean,
 ): string {
   return nunjucks.render("index.njk", { services, host, isServer });
+}
+
+export function typeFileContentFrom() {
 }

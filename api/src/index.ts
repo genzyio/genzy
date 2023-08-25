@@ -1,6 +1,6 @@
 export { Application, Request, Response, NextFunction } from "express";
+export { Nimble } from "@n1mbly/client";
 export {
-  Nimble,
   Controller,
   Get,
   Post,
@@ -10,8 +10,6 @@ export {
   Query,
   Path,
   Body,
-} from "@n1mbly/client";
-export {
   string,
   boolean,
   int,
@@ -21,4 +19,5 @@ export {
   Returns,
   ReturnsArrayOf,
 } from "../../shared/decorators";
+export { GenericType } from "../../shared/constants";
 export { NimblyApi } from "./nimbly-api";

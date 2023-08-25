@@ -6,10 +6,11 @@ import {
   Path,
   Body,
 } from '@n1mbly/{% if isServer %}api{% else %}client{% endif %}';
-
-{% for schemaName in schemaNames %}
-export class {{ schemaName }} {{schemas[loop.index0] | replace('"', "") | replace(',', ';') | safe}}
+import {
+{% for name, fields in types %}
+  {{name}},
 {% endfor %}
+} from "./types";
 
 {% if path != null %}@Controller('{{ path }}'){% endif %}
 export class {{ name }} {

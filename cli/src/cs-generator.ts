@@ -1,4 +1,4 @@
-import { ServiceMetaInfo } from "../../shared/types";
+import { MetaTypesRegistry, ServiceMetaInfo } from "../../shared/types";
 import {
   adoptParams,
   adoptTypeCS,
@@ -11,7 +11,7 @@ export function generate(
   url: string,
   dirPath: string,
   nunjucks: any,
-  isServer = false
+  isServer = false,
 ) {
   generateUtil(
     meta,
@@ -21,8 +21,9 @@ export function generate(
     "cs",
     fileContentFrom,
     indexFileContentFrom,
+    typeFileContentFrom,
     "Models",
-    isServer
+    isServer,
   );
 }
 
@@ -32,12 +33,14 @@ function capitalizeFirstLetter(string: string) {
 
 export function fileContentFrom(
   service: ServiceMetaInfo,
+  types: MetaTypesRegistry,
   nunjucks: any,
   host: string,
-  isServer: boolean
+  isServer: boolean,
 ): string {
   return nunjucks.render("service.njk", {
     host,
+    types,
     isServer,
     namespaceName: getNamespaceNameFrom(service),
     ...service,
@@ -61,7 +64,7 @@ export function indexFileContentFrom(
   services: ServiceMetaInfo[],
   host: string,
   nunjucks: any,
-  isServer: boolean
+  isServer: boolean,
 ): string {
   const namespaces = [
     ...services.map((service) => {
@@ -88,10 +91,12 @@ export function indexFileContentFrom(
     namespaces,
     services,
     host,
-    isServer
+    isServer,
   });
 }
 
+export function typeFileContentFrom() {
+}
 function getNamespaceNameFrom(service: ServiceMetaInfo): string {
   return `N1mbly.services.${service.name}`;
 }
