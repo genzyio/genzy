@@ -68,7 +68,7 @@ class DecoratedService {
 @Controller("/configuration", Model)
 class ConfigurationService {
   @Post()
-  @ReturnsArrayOf(GenericType)
+  @Returns(GenericType)
   getAll(@type(GenericType) body: Model) {
     return [
       {
