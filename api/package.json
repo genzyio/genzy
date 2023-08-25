@@ -1,6 +1,6 @@
 {
   "name": "@n1mbly/api",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "N1mbly - focused on the domain.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
