@@ -89,7 +89,7 @@ const getBodyDocFrom = (routeMetaInfo: RouteMetaInfo) => {
             required: true,
             content: {
               "application/json": {
-                schema: getSchemaFrom(bodyParam.type as ComplexType),
+                schema: getSchemaRefFrom(bodyParam.type as ComplexType),
               },
             },
           },
