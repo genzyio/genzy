@@ -9,6 +9,7 @@ import {
   CustomInterceptors,
   Interceptable,
   MetaInfo,
+  ServiceMetaInfo,
 } from "../../shared/types";
 import { ErrorRegistry } from "./error-handler";
 import { generateDocsFrom } from "./docs";
@@ -60,19 +61,20 @@ export class N1mblyApi extends Interceptable<InterceptorCallback> {
     containers.forEach((nimble) => {
       const serviceRegistry = nimble.getServices();
       Object.keys(serviceRegistry).forEach((serviceKey) => {
-        const serviceMeta = RegisterRoutesFor(
+        const { service } = RegisterRoutesFor(
           serviceRegistry[serviceKey],
           this.app,
           this.interceptors,
           this.errorRegistry,
           this.nimblyInfo.basePath
         );
+        const { types, ...serviceMeta } = service;
         // register service
-        this.meta.services.push(serviceMeta.service);
+        this.meta.services.push(serviceMeta);
         // register type
         this.meta.types = {
           ...this.meta.types,
-          ...serviceMeta.types,
+          ...types,
           // TODO: handle name conflicts
         };
       });

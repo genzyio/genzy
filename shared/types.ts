@@ -87,11 +87,11 @@ export type Param = {
   type?: Type;
 };
 
-export type N1mblyConfig =
-  | {
-      path?: string;
-    }
-  | PathConfig;
+export type N1mblyConfig = {
+  path?: string;
+  actions: ActionConfig;
+  types?: MetaTypesRegistry;
+};
 
 export type ComplexType = {
   $typeName: string;
@@ -113,7 +113,7 @@ export type Action = Modify<
   }
 >;
 
-export type PathConfig = {
+export type ActionConfig = {
   [key: MethodName]: Action;
 };
 

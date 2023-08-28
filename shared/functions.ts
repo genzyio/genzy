@@ -81,7 +81,17 @@ export function combineN1mblyConfigs(
   nimbly: N1mblyConfig,
   nimbly_config: N1mblyConfig
 ): N1mblyConfig {
-  return { ...(nimbly_config ?? {}), ...(nimbly ?? {}) };
+  return {
+    path: nimbly.path ?? nimbly_config.path,
+    actions: {
+      ...(nimbly_config?.actions ?? {}),
+      ...(nimbly?.actions ?? {}),
+    },
+    types: {
+      ...(nimbly_config?.types ?? {}),
+      ...(nimbly?.types ?? {}),
+    },
+  };
 }
 
 export function n1mblyConfigFrom(
@@ -89,9 +99,10 @@ export function n1mblyConfigFrom(
 ): N1mblyConfig {
   const result: N1mblyConfig = {
     path: serviceMetaInfo.path,
+    actions: {},
   };
   serviceMetaInfo.actions.forEach((action) => {
-    result[action.name] = {
+    result.actions[action.name] = {
       httpMethod: action.httpMethod,
       params: action.params,
       path: action.path,

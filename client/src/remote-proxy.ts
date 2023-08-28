@@ -51,14 +51,14 @@ const remoteCallHandler = {
           const rootPath =
             meta?.path != null ? meta?.path : `/${camelToKebabCase(className)}`;
           const methodPath =
-            meta?.[method]?.path != null
-              ? meta?.[method].path
+            meta?.actions?.[method]?.path != null
+              ? meta?.actions?.[method].path
               : `/${camelToKebabCase(method)}`;
           const httpMethod =
-            meta?.[method]?.httpMethod != null
-              ? meta?.[method].httpMethod.toLowerCase()
+            meta?.actions?.[method]?.httpMethod != null
+              ? meta?.actions?.[method].httpMethod.toLowerCase()
               : getHttpMethod(method);
-          const actionParams = formParamsOf(method, meta?.[method]);
+          const actionParams = formParamsOf(method, meta?.actions?.[method]);
 
           const queryParams = {};
           actionParams.forEach((p: Param, i) => {

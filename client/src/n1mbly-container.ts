@@ -24,6 +24,9 @@ export class N1mblyContainer extends Interceptable<InterceptorCallback> {
   private internalOnlyRegistry: ServiceRegistry;
   private allServicesRegistry: ServiceRegistry;
 
+  private serviceRegisters: (() => void)[] = [];
+  private containerAccessRegisters: (() => void)[] = [];
+
   constructor() {
     super();
     this.internalOnlyRegistry = new ServiceRegistry();
@@ -31,19 +34,35 @@ export class N1mblyContainer extends Interceptable<InterceptorCallback> {
   }
 
   public addLocalService(type: Constructor): N1mblyContainer {
-    return this.add(type);
+    this.serviceRegisters.push(() => {
+      this.add(type);
+    });
+    this.build();
+    return this;
   }
   public addLocalServices(...types: Constructor[]): N1mblyContainer {
-    return this.add(...types);
+    this.serviceRegisters.push(() => {
+      this.add(...types);
+    });
+    this.build();
+    return this;
   }
   public addRemoteService(origin: string, type: Constructor): N1mblyContainer {
-    return this.addRemote(origin, type);
+    this.serviceRegisters.push(() => {
+      this.addRemote(origin, type);
+    });
+    this.build();
+    return this;
   }
   public addRemoteServices(
     origin: string,
     ...types: Constructor[]
   ): N1mblyContainer {
-    return this.addRemote(origin, ...types);
+    this.serviceRegisters.push(() => {
+      this.addRemote(origin, ...types);
+    });
+    this.build();
+    return this;
   }
 
   private add(...types: Constructor[]): N1mblyContainer {
@@ -85,9 +104,12 @@ export class N1mblyContainer extends Interceptable<InterceptorCallback> {
     containerName: string,
     container: N1mblyContainer
   ): N1mblyContainer {
-    this.allServicesRegistry.getAll()[containerName] = {
-      ...container.getServices(),
-    };
+    this.containerAccessRegisters.push(() => {
+      this.allServicesRegistry.getAll()[containerName] = {
+        ...container.getServices(),
+      };
+    });
+    this.build();
     return this;
   }
 
@@ -121,5 +143,15 @@ export class N1mblyContainer extends Interceptable<InterceptorCallback> {
   ): N1mblyContainer {
     this.interceptCustom(customInterceptors, "afterCustomInterceptors");
     return this;
+  }
+
+  private build() {
+    this.internalOnlyRegistry = new ServiceRegistry();
+    this.allServicesRegistry = new ServiceRegistry();
+
+    this.containerAccessRegisters.forEach((cb) => cb());
+    try {
+      this.serviceRegisters.forEach((cb) => cb());
+    } catch (error) {}
   }
 }

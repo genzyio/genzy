@@ -1,12 +1,12 @@
 import axios from "axios";
 import * as fs from "fs";
+import { format } from "prettier";
 import {
   MetaInfo,
   MetaTypesRegistry,
   Param,
   ServiceMetaInfo,
 } from "../../shared/types";
-import { format } from "prettier";
 
 export async function readMetaFromFile(filePath: string) {
   return new Promise((resolve) => {
@@ -14,7 +14,7 @@ export async function readMetaFromFile(filePath: string) {
   });
 }
 
-export function generate(
+export async function generate(
   meta: MetaInfo,
   url: string,
   dirPath: string,
@@ -25,48 +25,57 @@ export function generate(
     types: MetaTypesRegistry,
     nunjucks: any,
     host: string,
-    isServer: boolean,
-  ) => void,
+    isServer: boolean
+  ) => Promise<string>,
   indexFileContentFrom: (
     services: ServiceMetaInfo[],
     host: string,
     nunjucks: any,
-    isServer: boolean,
-  ) => void,
+    isServer: boolean
+  ) => Promise<string>,
   typesFileContentFrom: (
     types: MetaTypesRegistry,
     nunjucks: any,
-    isServer: boolean,
-  ) => void,
+    isServer: boolean
+  ) => Promise<string>,
   indexFileName: string,
-  isServer: boolean,
+  isServer: boolean
 ) {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
   }
-  meta.services.forEach((service) => {
-    writeToFile(
-      dirPath + `/${service.name}.${extension}`,
-      fileContentFrom(service, meta.types, nunjucks, url, isServer),
-    );
-  });
+  await Promise.all(
+    meta.services.map(async (service) => {
+      writeToFile(
+        dirPath + `/${service.name}.${extension}`,
+        await fileContentFrom(service, meta.types, nunjucks, url, isServer)
+      );
+    })
+  );
 
   writeToFile(
     dirPath + `/${indexFileName}.${extension}`,
-    indexFileContentFrom(meta.services, url, nunjucks, isServer),
+    await indexFileContentFrom(meta.services, url, nunjucks, isServer)
   );
-  writeToFile(
-    dirPath + `/types.${extension}`,
-    typesFileContentFrom(meta.types, nunjucks, isServer),
+  const typesContent = await typesFileContentFrom(
+    meta.types,
+    nunjucks,
+    isServer
   );
+  if (typesContent) {
+    writeToFile(dirPath + `/types.${extension}`, typesContent);
+  }
 }
 
-export async function writeToFile(filePath: any, fileContent: any) {
-  const formattedContent = await format(fileContent, {
-    parser: "typescript",
-  });
+export function writeToFile(filePath: string, fileContent: string) {
+  fs.writeFileSync(filePath, fileContent);
+}
 
-  fs.writeFileSync(filePath, formattedContent);
+export async function formatFileContent(fileContent: string): Promise<string> {
+  return await format(fileContent, {
+    parser: "typescript",
+    plugins: ["prettier-plugin-organize-imports"],
+  });
 }
 
 export async function fetchMeta(url: string) {
@@ -77,6 +86,7 @@ export function adoptParams(params: Param[], typeAdopt: (p: any) => string) {
   return params.map((p) => ({
     ...p,
     type: typeAdopt(p.type),
+    typeDecorator: adoptTypeToDecorator(p.type),
   }));
 }
 
@@ -88,6 +98,23 @@ export function adoptTypeJS(type) {
   return type.$typeName + (type.$isArray ? "[]" : "");
 }
 
+export function adoptTypeToDecorator(type) {
+  if (!type) return undefined;
+  if (typeof type === "string") {
+    return `@${type}`;
+  }
+  return type.$isArray
+    ? `@arrayOf(${type.$typeName})`
+    : `@type(${type.$typeName})`;
+}
+
+export function adoptTypeToResultDecorator(type) {
+  if (!type) return undefined;
+  return type.$isArray
+    ? `@ReturnsArrayOf(${type.$typeName})`
+    : `@Returns(${type.$typeName})`;
+}
+
 export function adoptTypeCS(type) {
   if (!type) return "object";
   if (typeof type === "string") return type;
@@ -96,7 +123,7 @@ export function adoptTypeCS(type) {
 
 export function getSchemaInfoFrom(
   service: ServiceMetaInfo,
-  typeAdopt: (p: any) => string,
+  typeAdopt: (p: any) => string
 ) {
   const schemas = [];
   const schemaNames = [];
@@ -121,7 +148,7 @@ export function getAllSubtypesFrom(
   schema: any,
   subtypes: any[],
   subtypeNames: string[],
-  typeAdopt: (p: any) => string,
+  typeAdopt: (p: any) => string
 ) {
   if (!schema || typeof schema !== "object") return typeAdopt(schema);
   const result = {};
@@ -132,7 +159,7 @@ export function getAllSubtypesFrom(
         schema[k],
         subtypes,
         subtypeNames,
-        typeAdopt,
+        typeAdopt
       );
     });
   subtypes.push(result);

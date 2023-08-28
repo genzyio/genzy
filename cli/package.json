@@ -1,6 +1,6 @@
 {
   "name": "@n1mbly/cli",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "N1mbly CLI used for client code generation.",
   "main": "bin/index.js",
   "scripts": {
@@ -22,6 +22,7 @@
     "axios": "^0.27.2",
     "nunjucks": "^3.2.3",
     "prettier": "^3.0.1",
+    "prettier-plugin-organize-imports": "^3.2.3",
     "yargs": "^17.5.1"
   },
   "devDependencies": {

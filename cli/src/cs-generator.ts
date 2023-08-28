@@ -11,7 +11,7 @@ export function generate(
   url: string,
   dirPath: string,
   nunjucks: any,
-  isServer = false,
+  isServer = false
 ) {
   generateUtil(
     meta,
@@ -23,7 +23,7 @@ export function generate(
     indexFileContentFrom,
     typeFileContentFrom,
     "Models",
-    isServer,
+    isServer
   );
 }
 
@@ -31,13 +31,13 @@ function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export function fileContentFrom(
+export async function fileContentFrom(
   service: ServiceMetaInfo,
   types: MetaTypesRegistry,
   nunjucks: any,
   host: string,
-  isServer: boolean,
-): string {
+  isServer: boolean
+): Promise<string> {
   return nunjucks.render("service.njk", {
     host,
     types,
@@ -54,18 +54,18 @@ export function fileContentFrom(
       ...new Set(
         service.actions.map((r) =>
           capitalizeFirstLetter(r.httpMethod.toLowerCase())
-        ),
+        )
       ),
     ],
   });
 }
 
-export function indexFileContentFrom(
+export async function indexFileContentFrom(
   services: ServiceMetaInfo[],
   host: string,
   nunjucks: any,
-  isServer: boolean,
-): string {
+  isServer: boolean
+): Promise<string> {
   const namespaces = [
     ...services.map((service) => {
       const { schemas, schemaNames } = getSchemaInfoFrom(service, adoptTypeCS);
@@ -95,8 +95,11 @@ export function indexFileContentFrom(
   });
 }
 
-export function typeFileContentFrom() {
+export async function typeFileContentFrom() {
+  // TODO: implement
+  return "";
 }
+
 function getNamespaceNameFrom(service: ServiceMetaInfo): string {
   return `N1mbly.services.${service.name}`;
 }

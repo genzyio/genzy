@@ -46,12 +46,15 @@ describe("N1mblyApi Meta Info", () => {
     const container = new N1mblyContainer().addLocalService(TestService);
     const app = new N1mblyApi().buildAppFrom(container);
 
+    const { types, ...serviceMeta } = meta.service;
+
     await agent(app)
       .get("/api/meta")
       .then((res) => {
         expect(res).not.toBeNull();
         expect(res.status).toBe(200);
-        expect(res.body.services).toStrictEqual([meta.service]);
+        expect(res.body.services).toStrictEqual([serviceMeta]);
+
         // TODO: assert that types are registered correctly
       });
   });
@@ -114,12 +117,14 @@ describe("N1mblyApi Meta Info", () => {
     const container = new N1mblyContainer().addLocalService(TestService);
     const app = new N1mblyApi({ basePath: "/api/v1" }).buildAppFrom(container);
 
+    const { types, ...serviceMeta } = meta.service;
+
     await agent(app)
       .get("/api/v1/meta")
       .then((res) => {
         expect(res).not.toBeNull();
         expect(res.status).toBe(200);
-        expect(res.body.services).toStrictEqual([meta.service]);
+        expect(res.body.services).toStrictEqual([serviceMeta]);
         // TODO: assert that types are registered correctly
       });
   });

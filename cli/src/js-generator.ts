@@ -1,13 +1,13 @@
-import { nimblyConfigFrom } from "../../shared/functions";
+import { n1mblyConfigFrom } from "../../shared/functions";
 import { MetaTypesRegistry, ServiceMetaInfo } from "../../shared/types";
-import { generate as generateUtil } from "./utils";
+import { formatFileContent, generate as generateUtil } from "./utils";
 
 export function generate(
   meta: any,
   host: string | undefined,
   dirPath: string,
   nunjucks: any,
-  isServer = false,
+  isServer = false
 ) {
   generateUtil(
     meta,
@@ -19,7 +19,7 @@ export function generate(
     indexFileContentFrom,
     typeFileContentFrom,
     "index",
-    isServer,
+    isServer
   );
 }
 
@@ -28,24 +28,27 @@ export function fileContentFrom(
   types: MetaTypesRegistry,
   nunjucks: any,
   host: string | undefined,
-  isServer: boolean,
-): string {
-  return nunjucks.render("service.njk", {
+  isServer: boolean
+): Promise<string> {
+  const content = nunjucks.render("service.njk", {
     ...service,
-    $nimbly: nimblyConfigFrom(service),
+    $nimbly: { ...n1mblyConfigFrom(service), types },
     isServer,
     types,
   });
+  return formatFileContent(content);
 }
 
 export function indexFileContentFrom(
   services: ServiceMetaInfo[],
   host: string | undefined,
   nunjucks: any,
-  isServer: boolean,
-): string {
-  return nunjucks.render("index.njk", { services, host, isServer });
+  isServer: boolean
+): Promise<string> {
+  const content = nunjucks.render("index.njk", { services, host, isServer });
+  return formatFileContent(content);
 }
 
-export function typeFileContentFrom() {
+export async function typeFileContentFrom() {
+  return "";
 }

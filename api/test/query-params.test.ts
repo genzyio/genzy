@@ -6,14 +6,16 @@ import { N1mblyConfig } from "../../shared/types";
 
 class TestService {
   $nimbly: N1mblyConfig = {
-    get: {
-      params: [{ name: "test", source: "query" }],
-    },
-    getMultiple: {
-      params: [
-        { name: "test", source: "query" },
-        { name: "test2", source: "query" },
-      ],
+    actions: {
+      get: {
+        params: [{ name: "test", source: "query" }],
+      },
+      getMultiple: {
+        params: [
+          { name: "test", source: "query" },
+          { name: "test2", source: "query" },
+        ],
+      },
     },
   };
 

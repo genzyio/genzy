@@ -1,7 +1,9 @@
-import { GenericType, N1mblyContainer, N1mblyApi } from "../../api/src";
-import { Get, Post, Controller } from "../../client/src";
+import { GenericType, N1mblyApi } from "../../api/src";
+import { Get, Post, Controller, N1mblyContainer } from "../../client/src";
 import {
   arrayOf,
+  Body,
+  boolean,
   int,
   Path,
   Query,
@@ -42,7 +44,8 @@ class Test {
 class Model {
   @string name: string;
   @int age: number;
-  @arrayOf(Test) tests: Test[];
+  @boolean isMale: boolean;
+  // @arrayOf(Test) tests: Test[]; // TODO: support this
 }
 
 @Controller("/decorated")
@@ -67,9 +70,15 @@ class DecoratedService {
 
 @Controller("/configuration", Model)
 class ConfigurationService {
+  private noviServis: NoviServis;
+  constructor(services: { novi: { noviServis: NoviServis } }) {
+    console.log(services);
+    this.noviServis = services.novi.noviServis;
+  }
+
   @Post()
   @Returns(GenericType)
-  getAll(@type(GenericType) body: Model) {
+  getAll(@Query("id") @string id: string, @Body(GenericType) body: Model) {
     return [
       {
         id: "prvi",
@@ -83,20 +92,24 @@ class ConfigurationService {
       },
     ];
   }
+
+  @Get("/nesto-from-novi")
+  getNestoFromNoviServis() {
+    return this.noviServis.getNesto();
+  }
 }
 
 class NoviServis {
   async getNesto() {
-    return [1, 2, 3, 4];
+    return { numbers: [1, 2, 3, 4] };
   }
 }
 
-const modul = new N1mblyContainer().addLocalServices(
-  TestService,
-  DecoratedService,
-  NoviServis,
-  ConfigurationService
-);
+const noviModul = new N1mblyContainer().addLocalServices(NoviServis);
+
+const modul = new N1mblyContainer()
+  .addLocalServices(TestService, DecoratedService, ConfigurationService)
+  .addAccessToContainer("novi", noviModul);
 
 export const api = new N1mblyApi({
   nimblyInfo: {
@@ -104,4 +117,4 @@ export const api = new N1mblyApi({
     name: "Random Microservice",
     description: "This microservice is used for random stuff.",
   },
-}).buildAppFrom(modul);
+}).buildAppFrom(modul, noviModul);

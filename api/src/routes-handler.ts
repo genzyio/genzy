@@ -8,7 +8,7 @@ import {
   getMethodsOfClassInstance,
 } from "../../shared/functions";
 import {
-  ComplexType,
+  ComplexTypeReference,
   MetaTypesRegistry,
   N1mblyConfig,
   Param,
@@ -22,7 +22,7 @@ export function RegisterRoutesFor(
   interceptors?: any,
   errorRegistry?: ErrorRegistry,
   basePath: string = "/api"
-): { service: ServiceMetaInfo; types: MetaTypesRegistry } {
+): { service: ServiceMetaInfo & { types: MetaTypesRegistry } } {
   const serviceClassName = instance.constructor.name || instance._class_name_;
   const meta: N1mblyConfig = combineN1mblyConfigs(
     instance?.$nimbly_config ?? {},
@@ -33,43 +33,21 @@ export function RegisterRoutesFor(
       ? (meta?.path as string)
       : `/${camelToKebabCase(serviceClassName)}`;
 
-  const types: MetaTypesRegistry = {};
+  const types: MetaTypesRegistry = meta.types;
 
   const routes: RouteMetaInfo[] = getMethodsOfClassInstance(instance).map(
     (method: string) => {
       const methodPath =
-        meta?.[method]?.path != null
-          ? meta?.[method].path
+        meta?.actions?.[method]?.path != null
+          ? meta?.actions?.[method].path
           : `/${camelToKebabCase(method)}`;
       const httpMethod =
-        meta?.[method]?.httpMethod != null
-          ? meta?.[method].httpMethod.toLowerCase()
+        meta?.actions?.[method]?.httpMethod != null
+          ? meta?.actions?.[method].httpMethod.toLowerCase()
           : getHttpMethod(method);
-      const params = formParamsOf(method, meta?.[method]);
-      const result: ComplexType | undefined = meta?.[method]?.result;
-
-      // extract all complex types
-      if (result) {
-        const { $typeName, $isArray, ...resultProperties } = result;
-        types[$typeName] = resultProperties;
-        meta[method].result = {
-          $typeName,
-          $isArray,
-        };
-      }
-      const processedResult: ComplexType | undefined = meta?.[method]?.result;
-
-      params
-        .filter((param) => param.type && typeof param.type === "object")
-        .forEach((param) => {
-          const complexParamType = param.type as ComplexType;
-          const { $typeName, $isArray, ...paramProperties } = complexParamType;
-          types[$typeName] = paramProperties;
-          param.type = {
-            $typeName,
-            $isArray,
-          };
-        });
+      const params = formParamsOf(method, meta?.actions?.[method]);
+      const result: ComplexTypeReference | undefined =
+        meta?.actions?.[method]?.result;
 
       const handlers = [
         getServiceHandler(instance, method, errorRegistry, params),
@@ -112,16 +90,16 @@ export function RegisterRoutesFor(
           source,
           type,
         })),
-        ...(processedResult ? { result: processedResult } : {}),
+        ...(result ? { result } : {}),
       };
     }
   );
   return {
-    types,
     service: {
       name: serviceClassName,
       actions: routes,
       path: rootPath,
+      types,
     },
   };
 }

@@ -1,7 +1,7 @@
 import { BASIC_TYPES, GenericType } from "./constants";
 import type {
   HTTPMethod,
-  PathConfig,
+  ActionConfig,
   Param,
   ParamSource,
   ComplexTypeReference,
@@ -16,31 +16,29 @@ export function Controller(path: string = "/", rootTypeClass?: new () => any) {
       const rootTypeInstance = new rootTypeClass();
       const rootTypeName =
         rootTypeInstance.constructor.name || rootTypeInstance._class_name_;
-      const rootType = {
-        ...rootTypeInstance.$nimbly_config.types,
-        $typeName: rootTypeName,
+
+      if (!target.prototype.$nimbly_config.types) {
+        target.prototype.$nimbly_config.types = {};
+      }
+      target.prototype.$nimbly_config.types[rootTypeName] = {
+        ...(rootTypeInstance.$nimbly_config?.types ?? {}),
       };
 
-      const pathConfig = target.prototype.$nimbly_config as PathConfig;
-      Object.keys(pathConfig).forEach((methodName) => {
-        const path = pathConfig[methodName];
-        if (path.result && path.result.$typeName === GenericType.name) {
-          path.result = {
-            ...path.result,
-            ...rootType,
-          };
+      const actionConfig = target.prototype.$nimbly_config
+        .actions as ActionConfig;
+      Object.keys(actionConfig).forEach((methodName) => {
+        const action = actionConfig[methodName];
+        if (action.result && action.result.$typeName === GenericType.name) {
+          action.result.$typeName = rootTypeName;
         }
 
-        Object.values(path.params ?? {}).forEach((param) => {
+        Object.values(action.params ?? {}).forEach((param) => {
           if (
             param.type &&
             typeof param.type === "object" &&
             (param.type as ComplexTypeReference).$typeName === GenericType.name
           ) {
-            param.type = {
-              ...(param.type as ComplexTypeReference),
-              ...rootType,
-            };
+            param.type.$typeName = rootTypeName;
           }
         });
       });
@@ -76,31 +74,55 @@ const typeDecorator =
   ) =>
   (target: any, propertyKey?: string | symbol, parameterIndex?: any) => {
     let type = typeParam;
-    if (!target.$nimbly_config) target.$nimbly_config = {};
-    if (typeof type === "function") {
-      const instance = new type();
-      const typeName = instance.constructor.name || instance._class_name_;
-      type = { ...(instance.$nimbly_config?.types ?? {}) };
-      (type as any).$typeName = typeName;
-      (type as any).$isArray = isArray;
+
+    let typeName = "";
+    let typeProps = {};
+
+    const isComplex = typeof type === "function";
+
+    if (!target.$nimbly_config) target.$nimbly_config = { actions: {} };
+    if (isComplex && typeName !== GenericType.name) {
+      const instance = new (type as new () => any)();
+      typeName = instance.constructor.name || instance._class_name_;
+      typeProps = { ...(instance.$nimbly_config?.types ?? {}) };
+
+      (type as any) = {
+        $typeName: typeName,
+        $isArray: isArray,
+      };
     }
     if (!propertyKey) return;
     if (parameterIndex === undefined || typeof parameterIndex !== "number") {
       if (typeKey === "result") {
-        if (!target.$nimbly_config[propertyKey]) {
-          target.$nimbly_config[propertyKey] = {};
+        if (!target.$nimbly_config.actions[propertyKey]) {
+          target.$nimbly_config.actions[propertyKey] = {};
         }
-        target.$nimbly_config[propertyKey].result = type;
+        if (type) {
+          target.$nimbly_config.actions[propertyKey].result = type;
+        }
+
+        if (isComplex && typeName !== GenericType.name) {
+          target.$nimbly_config.types = {
+            ...(target.$nimbly_config.types ?? {}),
+            [typeName]: typeProps,
+          };
+        }
       } else {
+        // if it's a decorator for class prop
         if (!target.$nimbly_config.types) target.$nimbly_config.types = {};
-        target.$nimbly_config.types[propertyKey] = type;
+        target.$nimbly_config.types[propertyKey] = isComplex
+          ? {
+              ...(type as any),
+              ...typeProps,
+            }
+          : type;
       }
     } else {
-      if (!target.$nimbly_config[propertyKey])
-        target.$nimbly_config[propertyKey] = {};
-      if (!target.$nimbly_config[propertyKey].params)
-        target.$nimbly_config[propertyKey].params = [];
-      const params: Param[] = target.$nimbly_config[propertyKey].params;
+      if (!target.$nimbly_config.actions[propertyKey])
+        target.$nimbly_config.actions[propertyKey] = {};
+      if (!target.$nimbly_config.actions[propertyKey].params)
+        target.$nimbly_config.actions[propertyKey].params = [];
+      const params: Param[] = target.$nimbly_config.actions[propertyKey].params;
       const existingIndex = params.findIndex(
         (p: any) => p.index === parameterIndex
       );
@@ -113,6 +135,13 @@ const typeDecorator =
         } as any);
       }
       params.sort((a: any, b: any) => a.index - b.index);
+
+      if (isComplex && typeName !== GenericType.name) {
+        target.$nimbly_config.types = {
+          ...(target.$nimbly_config.types ?? {}),
+          [typeName]: typeProps,
+        };
+      }
     }
   };
 
@@ -130,7 +159,24 @@ export const ReturnsArrayOf = (type: { new (): any }) =>
 
 export const Query = (name: string) => paramDecorator("query", name);
 export const Path = (name: string) => paramDecorator("path", name);
-export const Body = () => paramDecorator("body");
+export const Body = function (type?: {
+  new (): any;
+}): (
+  target: any,
+  propertyKey: string | symbol,
+  parameterIndex: number
+) => void {
+  return (
+    target: any,
+    propertyKey: string | symbol,
+    parameterIndex: number
+  ) => {
+    paramDecorator("body")(target, propertyKey, parameterIndex);
+    if (type) {
+      typeDecorator(type)(target, propertyKey, parameterIndex);
+    }
+  };
+};
 
 function paramDecorator(source: ParamSource, name?: string) {
   return function (
@@ -138,12 +184,12 @@ function paramDecorator(source: ParamSource, name?: string) {
     propertyKey: string | symbol,
     parameterIndex: number
   ) {
-    if (!target.$nimbly_config) target.$nimbly_config = {};
-    if (!target.$nimbly_config[propertyKey])
-      target.$nimbly_config[propertyKey] = {};
-    if (!target.$nimbly_config[propertyKey].params)
-      target.$nimbly_config[propertyKey].params = [];
-    const params: Param[] = target.$nimbly_config[propertyKey].params;
+    if (!target.$nimbly_config) target.$nimbly_config = { actions: {} };
+    if (!target.$nimbly_config.actions[propertyKey])
+      target.$nimbly_config.actions[propertyKey] = {};
+    if (!target.$nimbly_config.actions[propertyKey].params)
+      target.$nimbly_config.actions[propertyKey].params = [];
+    const params: Param[] = target.$nimbly_config.actions[propertyKey].params;
     if (source === "body") {
       const index = params.findIndex((p) => p.source === "body");
       if (index > -1) {
@@ -176,10 +222,10 @@ const pathDecorator = (
   body: boolean = false
 ) =>
   function (target: any, propertyKey: string): void {
-    if (!target.$nimbly_config) target.$nimbly_config = {};
-    if (!target.$nimbly_config[propertyKey])
-      target.$nimbly_config[propertyKey] = {};
-    const existing = target.$nimbly_config[propertyKey];
+    if (!target.$nimbly_config) target.$nimbly_config = { actions: {} };
+    if (!target.$nimbly_config.actions[propertyKey])
+      target.$nimbly_config.actions[propertyKey] = {};
+    const existing = target.$nimbly_config.actions[propertyKey];
     const existingParams = existing.params ?? [];
     if (body) {
       const bodyParam = existingParams.find(
@@ -192,7 +238,7 @@ const pathDecorator = (
         if (!bodyParam.source) bodyParam.source = "body";
       }
     }
-    target.$nimbly_config[propertyKey] = {
+    target.$nimbly_config.actions[propertyKey] = {
       ...existing,
       path: path.replace("//", "/"),
       httpMethod,

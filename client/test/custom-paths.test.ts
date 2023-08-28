@@ -11,17 +11,19 @@ const axios = realAxios as jest.Mocked<typeof realAxios>;
 class TestService {
   $nimbly: N1mblyConfig = {
     path: "/tests",
-    getAll: {
-      httpMethod: "GET",
-      path: "",
-    },
-    differentAdd: {
-      httpMethod: "POST",
-      path: "",
-    },
-    differentUpdate: {
-      httpMethod: "PUT",
-      path: "/:id",
+    actions: {
+      getAll: {
+        httpMethod: "GET",
+        path: "",
+      },
+      differentAdd: {
+        httpMethod: "POST",
+        path: "",
+      },
+      differentUpdate: {
+        httpMethod: "PUT",
+        path: "/:id",
+      },
     },
   };
 

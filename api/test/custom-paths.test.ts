@@ -17,28 +17,30 @@ const getAllResult = [1, 2, 3];
 class TestService {
   $nimbly: N1mblyConfig = {
     path: "/tests",
-    getAll: {
-      httpMethod: "GET",
-      path: "/",
-    },
-    getById: {
-      path: "/:id",
-      params: [
-        { name: "id", source: "path" },
-        { name: "body", source: "body" },
-      ],
-    },
-    differentAddSomething: {
-      httpMethod: "POST",
-      path: "/",
-    },
-    randomUpdate: {
-      httpMethod: "PUT",
-      path: "/random/:entityId",
-      params: [
-        { name: "entityId", source: "path" },
-        { name: "body", source: "body" },
-      ],
+    actions: {
+      getAll: {
+        httpMethod: "GET",
+        path: "/",
+      },
+      getById: {
+        path: "/:id",
+        params: [
+          { name: "id", source: "path" },
+          { name: "body", source: "body" },
+        ],
+      },
+      differentAddSomething: {
+        httpMethod: "POST",
+        path: "/",
+      },
+      randomUpdate: {
+        httpMethod: "PUT",
+        path: "/random/:entityId",
+        params: [
+          { name: "entityId", source: "path" },
+          { name: "body", source: "body" },
+        ],
+      },
     },
   };
 

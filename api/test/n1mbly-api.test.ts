@@ -62,7 +62,11 @@ class TestServiceInterceptor {
 class AdditionalService {
   private readonly testService: TestService;
 
-  constructor({ testService }: { testService: TestService }) {
+  constructor({
+    test: { testService },
+  }: {
+    test: { testService: TestService };
+  }) {
     this.testService = testService;
   }
 
@@ -73,6 +77,24 @@ class AdditionalService {
 
 describe("N1mblyApi", () => {
   it("should create n1mbly api", async () => {
+    const testContainer = new N1mblyContainer().addLocalServices(TestService);
+    const mainContainer = new N1mblyContainer()
+      .addLocalServices(AdditionalService)
+      .addAccessToContainer("test", testContainer);
+
+    const app = new N1mblyApi().buildAppFrom(mainContainer);
+
+    expect(app).toHaveProperty("listen");
+    expect(app).toHaveProperty("use");
+    await agent(app).get("/api/additional-service/get-all").expect(200);
+
+    await agent(app).get("/api/test-service/get-all").expect(404);
+    await agent(app).post("/api/test-service/add-something").expect(404);
+    await agent(app).put("/api/test-service/update-something").expect(404);
+    await agent(app).del("/api/test-service/delete-something").expect(404);
+  });
+
+  it("should not register services that n1mbly container has access to the api", async () => {
     const container = new N1mblyContainer().addLocalServices(
       TestService,
       AdditionalService

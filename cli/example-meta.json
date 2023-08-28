@@ -1,30 +1,36 @@
-[
-  {
-    "name": "TestService",
-    "actions": [
-      {
-        "httpMethod": "get",
-        "name": "getSomething",
-        "path": "/something",
-        "params": [
-          {
-            "name": "test",
-            "source": "query",
-            "type": "string"
-          },
-          {
-            "name": "lala",
-            "source": "path"
+{
+  "services": [
+    {
+      "name": "TestService",
+      "actions": [
+        {
+          "httpMethod": "get",
+          "name": "getSomething",
+          "path": "/something",
+          "params": [
+            {
+              "name": "test",
+              "source": "query",
+              "type": "string"
+            },
+            {
+              "name": "lala",
+              "source": "path"
+            }
+          ],
+          "result": {
+            "$isArray": true,
+            "$typeName": "Test"
           }
-        ],
-        "result": {
-          "lala": "string",
-          "isJaje": "boolean",
-          "$isArray": true,
-          "$typeName": "Test"
         }
-      }
-    ],
-    "path": "/panic"
+      ],
+      "path": "/panic"
+    }
+  ],
+  "types": {
+    "Test": {
+      "lala": "string",
+      "isJaje": "boolean"
+    }
   }
-]
+}
