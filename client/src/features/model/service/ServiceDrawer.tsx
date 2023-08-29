@@ -5,6 +5,7 @@ import { EditFunction } from "./EditFunction";
 import { Button } from "../../../components/button";
 import { Select } from "../../../components/select";
 import { IDENTIFIER_REGEX } from "../../../patterns";
+import { primitiveTypes } from "../class/TypesContext";
 
 type ServiceDrawerProps = {
   service: Service;
@@ -15,8 +16,6 @@ type ServiceDrawerProps = {
 export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, nameExists }) => {
   const [serviceData, setServiceData] = useState(service);
   const [changed, setChanged] = useState(false);
-
-  const types = ["any", "int", "float", "bool", "string", "void", "Model"]; // TODO: Extend with actual models
 
   useEffect(() => {
     setServiceData(service);
@@ -45,7 +44,7 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
       name: nextFunctionName(),
       method: "GET",
       params: [],
-      returnType: types[0],
+      returnType: primitiveTypes[0],
       returnsCollection: false,
       route: "",
       id: `${+new Date()}`,
@@ -64,7 +63,7 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
       name: nextParamName(index),
       isCollection: false,
       source: "QUERY",
-      type: types[0],
+      type: primitiveTypes[0],
       id: `${+new Date()}`,
     });
     updateState({ ...serviceData });
@@ -112,7 +111,6 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
           handleAddParam={() => handleAddParam(index)}
           handleDelete={() => handleDelete(index)}
           handleDeleteParam={handleDeleteParam(index)}
-          types={types}
           update={update}
           updateState={() => updateState({ ...serviceData })}
           key={fun.id}

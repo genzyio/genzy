@@ -12,6 +12,8 @@ import { FunctionCard } from "./FunctionCard";
 import { Button } from "../../../components/button";
 import { Select } from "../../../components/select";
 import { IDENTIFIER_REGEX, ROUTE_REGEX } from "../../../patterns";
+import { useMicroserviceContext } from "../microservices/MicroserviceContext";
+import { useTypesContext } from "../class/TypesContext";
 
 type EditFunctionProps = {
   function: ServiceFunction;
@@ -21,7 +23,6 @@ type EditFunctionProps = {
   handleAddParam: () => void;
   handleDeleteParam: (paramIndex: number) => void;
   handleDelete: () => void;
-  types: string[];
   edit?: boolean;
   nameExists: (name: string) => boolean;
   routeExists: (name: string, method: HTTPMethod) => boolean;
@@ -33,13 +34,15 @@ export const EditFunction: FC<EditFunctionProps> = ({
   updateState,
   update,
   handleAddParam,
-  types,
   handleDelete,
   handleDeleteParam,
   edit = false,
   nameExists,
   routeExists,
 }) => {
+  const { microserviceId } = useMicroserviceContext();
+  const { typesWithVoid: types } = useTypesContext(microserviceId);
+
   const [preview, setPreview] = useState(!edit);
 
   const editRoute = serviceType !== "LOCAL";

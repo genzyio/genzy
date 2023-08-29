@@ -1,9 +1,7 @@
 type ProjectDefinition = {
-  nodes: any[];
-  edges: any[];
-
   microservices: DiagramDefinition;
-  classes: Omit<DiagramDefinition, "edges">;
+  services: Record<string, DiagramDefinition>;
+  classes: Record<string, Omit<DiagramDefinition, "edges">>;
 };
 
 type DiagramDefinition = {

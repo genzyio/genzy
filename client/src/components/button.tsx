@@ -1,8 +1,8 @@
-import { type FC } from "react";
+import { type FC, type MouseEvent } from "react";
 
 type ButtonProps = {
   type?: "submit" | "button";
-  onClick?: () => any;
+  onClick?: (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => any;
   children: React.ReactNode;
   className?: string;
 };

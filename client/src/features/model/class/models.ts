@@ -25,6 +25,7 @@ export type Method = {
 };
 
 export type Class = {
+  microserviceId: string;
   name: string;
   attributes: Attribute[];
   methods: Method[];

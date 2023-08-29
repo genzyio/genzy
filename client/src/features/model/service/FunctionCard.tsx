@@ -2,6 +2,8 @@ import { type FC } from "react";
 import { type ServiceType, type ServiceFunction } from "./models";
 import { useToggle } from "../../../hooks/useToggle";
 import { MethodChip } from "./MethodChip";
+import { useTypesContext } from "../class/TypesContext";
+import { useMicroserviceContext } from "../microservices/MicroserviceContext";
 
 type FunctionCardProps = {
   function: ServiceFunction;
@@ -10,6 +12,9 @@ type FunctionCardProps = {
 };
 
 export const FunctionCard: FC<FunctionCardProps> = ({ function: fun, serviceType, onEdit }) => {
+  const { microserviceId } = useMicroserviceContext();
+  const { getTypeLabel } = useTypesContext(microserviceId);
+
   const [show, toggleShow] = useToggle();
 
   const showRoute = serviceType !== "LOCAL";
@@ -34,7 +39,7 @@ export const FunctionCard: FC<FunctionCardProps> = ({ function: fun, serviceType
           <ul className="ml-4">
             {fun.params.map((param) => (
               <li key={param.id} className="flex items-center w-full">
-                <span className="font-semibold">{param.name}</span>: {param.type}
+                <span className="font-semibold">{param.name}</span>: {getTypeLabel(param.type)}
                 {param.isCollection && "[]"}{" "}
                 {showRoute && (
                   <span className="text-xs italic text-gray-500">({param.source})</span>
@@ -42,7 +47,7 @@ export const FunctionCard: FC<FunctionCardProps> = ({ function: fun, serviceType
               </li>
             ))}
           </ul>
-          Returns: {fun.returnType || "?"}
+          Returns: {getTypeLabel(fun.returnType) || "?"}
         </>
       )}
     </div>

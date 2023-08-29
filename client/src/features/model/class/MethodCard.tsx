@@ -1,20 +1,16 @@
 import { FC } from "react";
 import { Method } from "./models";
+import { useMicroserviceContext } from "../microservices/MicroserviceContext";
+import { useTypesContext } from "./TypesContext";
 
 type MethodCardProps = {
   method: Method;
-  types: any;
   onEdit: () => any;
 };
 
-export const MethodCard: FC<MethodCardProps> = ({ method, types, onEdit }) => {
-  const typeName = (typeValue: string) => {
-    const foundType = types.find((type: any) => type.value === typeValue);
-    if (foundType) {
-      return foundType.label;
-    }
-    return "void";
-  };
+export const MethodCard: FC<MethodCardProps> = ({ method, onEdit }) => {
+  const { microserviceId } = useMicroserviceContext();
+  const { getTypeLabel } = useTypesContext(microserviceId);
 
   return (
     <div className="border border-gray-200 rounded-lg shadow-sm p-2">
@@ -28,11 +24,11 @@ export const MethodCard: FC<MethodCardProps> = ({ method, types, onEdit }) => {
                 p.name +
                 (p.isOptional ? "?" : "") +
                 ": " +
-                typeName(p.type) +
+                getTypeLabel(p.type) +
                 (p.isCollection ? "[]" : "")
             )
             .join(", ")}
-          {")"}: {typeName(method.returnValue)}
+          {")"}: {getTypeLabel(method.returnValue)}
         </div>
         <button
           type="button"

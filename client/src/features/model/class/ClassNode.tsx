@@ -1,5 +1,6 @@
-import { useProjectContext } from "../../projects/contexts/project.context";
 import { type Class } from "./models";
+import { useTypesContext } from "./TypesContext";
+import { useMicroserviceContext } from "../microservices/MicroserviceContext";
 
 interface ClassNodeProps {
   data: Class;
@@ -8,16 +9,8 @@ interface ClassNodeProps {
 }
 
 const ClassNode: React.FC<ClassNodeProps> = ({ data, selected, id }) => {
-  const projectContext = useProjectContext();
-  const typeName = (typeValue: string) => {
-    const foundType = projectContext.projectDefinition.classes.nodes.find(
-      (node) => node.id === typeValue
-    );
-    if (foundType) {
-      return foundType.data.name;
-    }
-    return typeValue;
-  };
+  const { microserviceId } = useMicroserviceContext();
+  const { getTypeLabel } = useTypesContext(microserviceId);
 
   return (
     <div className="p-4 rounded-lg border border-violet-400/80 bg-white flex flex-col gap-y-3">
@@ -26,7 +19,7 @@ const ClassNode: React.FC<ClassNodeProps> = ({ data, selected, id }) => {
         <div key={attribute.id} className="flex w-full p-1 rounded-md border border-gray-400">
           <span>
             {attribute.name}
-            {attribute.isOptional ? "?" : ""}: {typeName(attribute.type)}
+            {attribute.isOptional ? "?" : ""}: {getTypeLabel(attribute.type)}
             {attribute.isCollection ? "[]" : ""}
           </span>
         </div>
@@ -43,11 +36,11 @@ const ClassNode: React.FC<ClassNodeProps> = ({ data, selected, id }) => {
                   p.name +
                   (p.isOptional ? "?" : "") +
                   ": " +
-                  typeName(p.type) +
+                  getTypeLabel(p.type) +
                   (p.isCollection ? "[]" : "")
               )
               .join(", ")}
-            {")"}: {typeName(method.returnValue)}
+            {")"}: {getTypeLabel(method.returnValue)}
           </span>
         </div>
       ))}

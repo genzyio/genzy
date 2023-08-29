@@ -39,6 +39,7 @@ type ServiceFunction = {
 };
 
 type Service = {
+  microserviceId: string;
   name: string;
   functions: ServiceFunction[];
   type: ServiceType;

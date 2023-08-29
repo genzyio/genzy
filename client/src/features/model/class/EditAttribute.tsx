@@ -1,17 +1,18 @@
-import { FC, useState } from "react";
-import { Attribute, DataType } from "./models";
+import { type FC, useState } from "react";
+import { type Attribute, type DataType } from "./models";
 import { AttributeCard } from "./AttributeCard";
 import { IDENTIFIER_REGEX } from "../../../patterns";
 import { TextField } from "../../../components/text-field";
 import { Select } from "../../../components/select";
 import { Checkbox } from "../../../components/checkbox";
+import { useMicroserviceContext } from "../microservices/MicroserviceContext";
+import { useTypesContext } from "./TypesContext";
 
 type EditAttributeProps = {
   attribute: Attribute;
   onSave: (attribute: Attribute) => any;
   onDelete: () => any;
   nameExists: (name: string) => boolean;
-  types: any;
 };
 
 export const EditAttribute: FC<EditAttributeProps> = ({
@@ -19,15 +20,17 @@ export const EditAttribute: FC<EditAttributeProps> = ({
   onSave,
   onDelete,
   nameExists,
-  types,
 }) => {
+  const { microserviceId } = useMicroserviceContext();
+  const { types } = useTypesContext(microserviceId);
+
   const [preview, setPreview] = useState(true);
   const [attribute, setAttribute] = useState(initialAttribute);
 
   if (preview)
     return (
       <div className="py-2">
-        <AttributeCard attribute={attribute} types={types} onEdit={() => setPreview(false)} />
+        <AttributeCard attribute={attribute} onEdit={() => setPreview(false)} />
       </div>
     );
 

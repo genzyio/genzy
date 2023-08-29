@@ -1,57 +1,88 @@
-import { type FC, createRef } from "react";
-import { Diagram } from "../../model/Diagram";
+import { type FC, useState } from "react";
 import { useProjectContext } from "../contexts/project.context";
-import { saveProjectScreenshot } from "../api/project-screenshots.actions";
-import { Button } from "../../../components/button";
-import { useAction } from "../../../hooks/useAction";
-import { type ProjectDefinition } from "../models/project-definition.models";
-import { saveProjectDefinition } from "../api/project-definition.actions";
 import { EmptyDiagram } from "../../model/EmptyDiagram";
-import { useNotifications } from "../../../hooks/useNotifications";
-import { extractErrorMessage } from "../../../utils/errors";
 import { ServiceDiagram } from "../../model/service/ServiceDiagram";
 import { MicroservicesDiagram } from "../../model/microservices/MicroservicesDiagram";
 import { ClassDiagram } from "../../model/class/ClassDiagram";
+import { Tabs } from "../../../components/tabs";
+import { Tab, type TabProps } from "../../../components/tab";
+import { type NodeProps } from "reactflow";
+import { ProjectToolbar } from "./project-toolbar";
+import { TypesContextProvider } from "../../model/class/TypesContext";
+import { MicroserviceContextProvider } from "../../model/microservices/MicroserviceContext";
+import { MicroserviceNodeContextProvider } from "../../model/microservices/MicroserviceNodeContext";
 
-// NOTE: Everything done with forwardRef is temporal solution
+const MicroserviceDiagramWrapper: FC = () => {
+  const { projectDefinition } = useProjectContext();
+  const microserviceDiagram = projectDefinition.microservices;
+
+  return (
+    <MicroservicesDiagram nodes={microserviceDiagram.nodes} edges={microserviceDiagram.edges} />
+  );
+};
+
+const ClassDiagramWrapper: FC<{ microserviceId: string }> = ({ microserviceId }) => {
+  const { projectDefinition } = useProjectContext();
+  const classDiagram = projectDefinition.classes[microserviceId];
+
+  return <ClassDiagram microserviceId={microserviceId} nodes={classDiagram.nodes} />;
+};
+
+const ServiceDiagramWrapper: FC<{ microserviceId: string }> = ({ microserviceId }) => {
+  const { projectDefinition } = useProjectContext();
+  const serviceDiagram = projectDefinition.services[microserviceId];
+
+  return (
+    <ServiceDiagram
+      microserviceId={microserviceId}
+      nodes={serviceDiagram.nodes}
+      edges={serviceDiagram.edges}
+    />
+  );
+};
+
 export const Project: FC = () => {
-  const notificator = useNotifications();
-  const {
-    project,
-    projectDefinition: initialProjectDefinition,
-    closeProject,
-  } = useProjectContext();
+  const { project, projectDefinition: initialProjectDefinition } = useProjectContext();
 
-  const diagramRef = createRef<any>();
-  const microservicesDiagramRef = createRef<any>();
-  const classDiagramRef = createRef<any>();
+  const [tabs, setTabs] = useState<TabProps[]>([]);
 
-  const saveProjectDefinitionAction = useAction<ProjectDefinition>(
-    saveProjectDefinition(project.name),
-    {
-      onSuccess: () => {
-        notificator.success("Project is saved.");
-        saveProjectScreenshot(project.name);
-      },
-      onError: (error) => {
-        notificator.error(extractErrorMessage(error));
-      },
-    }
-  );
+  const findMicroserviceName = (microserviceId: string): string => {
+    const microserviceNodes = initialProjectDefinition?.microservices?.nodes ?? [];
+    const microserviceNode = microserviceNodes.find(
+      (node: NodeProps) => node.id === microserviceId
+    );
 
-  const saveAndCloseProjectDefinitionAction = useAction<ProjectDefinition>(
-    saveProjectDefinition(project.name),
-    {
-      onSuccess: () => {
-        notificator.success("Project is saved.");
-        saveProjectScreenshot(project.name);
-        closeProject();
-      },
-      onError: (error) => {
-        notificator.error(extractErrorMessage(error));
-      },
-    }
-  );
+    return microserviceNode?.data?.name ?? "";
+  };
+
+  const addTab = (tab: TabProps) => {
+    const tabAlreadyOpened = tabs.find((openedTab) => openedTab.title === tab.title);
+    if (tabAlreadyOpened) return;
+
+    setTabs([...tabs, tab]);
+  };
+
+  const addServiceDiagram = (microserviceId: string) => {
+    const microserviceName = findMicroserviceName(microserviceId);
+    if (!microserviceName) return;
+
+    const tab = {
+      title: `${microserviceName} - Services`,
+      children: <ServiceDiagramWrapper microserviceId={microserviceId} />,
+    };
+    addTab(tab);
+  };
+
+  const addModelDiagram = (microserviceId: string) => {
+    const microserviceName = findMicroserviceName(microserviceId);
+    if (!microserviceName) return;
+
+    const tab = {
+      title: `${microserviceName} - Models`,
+      children: <ClassDiagramWrapper microserviceId={microserviceId} />,
+    };
+    addTab(tab);
+  };
 
   if (!project.name) {
     return <EmptyDiagram />;
@@ -59,39 +90,36 @@ export const Project: FC = () => {
 
   return (
     <>
-      <div className="flex gap-x-2">
-        <Button
-          onClick={() =>
-            saveProjectDefinitionAction({
-              ...diagramRef.current?.getState(),
-              microservices: microservicesDiagramRef.current?.getState(),
-              classes: classDiagramRef.current?.getState(),
-            })
-          }
-        >
-          Save
-        </Button>
-        <Button
-          onClick={() =>
-            saveAndCloseProjectDefinitionAction({
-              ...diagramRef.current?.getState(),
-              microservices: microservicesDiagramRef.current?.getState(),
-              classes: classDiagramRef.current?.getState(),
-            })
-          }
-        >
-          Save And Close
-        </Button>
-        <Button onClick={closeProject}>Close</Button>
-      </div>
+      <MicroserviceNodeContextProvider
+        onModelsClick={addModelDiagram}
+        onServicesClick={addServiceDiagram}
+      >
+        <MicroserviceContextProvider>
+          <TypesContextProvider>
+            <ProjectToolbar />
 
-      {/* <Diagram ref={diagramRef} {...initialProjectDefinition} /> */}
-      {/* <ServiceDiagram ref={diagramRef} {...initialProjectDefinition} /> */}
-      {/* <MicroservicesDiagram
-        ref={microservicesDiagramRef}
-        {...initialProjectDefinition.microservices}
-      /> */}
-      <ClassDiagram ref={classDiagramRef} {...initialProjectDefinition.classes}/>
+            <Tabs>
+              <Tab title="Microservices">
+                <MicroserviceDiagramWrapper />
+              </Tab>
+
+              {tabs.map((t) => {
+                return (
+                  <Tab
+                    key={t.title}
+                    title={t.title}
+                    onClose={({ index }) =>
+                      setTabs((tabs) => tabs.filter((_, i) => i + 1 !== index))
+                    }
+                  >
+                    {t.children}
+                  </Tab>
+                );
+              })}
+            </Tabs>
+          </TypesContextProvider>
+        </MicroserviceContextProvider>
+      </MicroserviceNodeContextProvider>
     </>
   );
 };

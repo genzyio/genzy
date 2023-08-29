@@ -1,27 +1,23 @@
-import { FC } from "react";
-import { Attribute } from "./models";
+import { type FC } from "react";
+import { type Attribute } from "./models";
+import { useMicroserviceContext } from "../microservices/MicroserviceContext";
+import { useTypesContext } from "./TypesContext";
 
 type AttributeCardProps = {
   attribute: Attribute;
-  types: any;
   onEdit: () => any;
 };
 
-export const AttributeCard: FC<AttributeCardProps> = ({ attribute, onEdit, types }) => {
-  const typeName = (typeValue: string) => {
-    const foundType = types.find((type) => type.value === typeValue);
-    if (foundType) {
-      return foundType.label;
-    }
-    return null;
-  };
+export const AttributeCard: FC<AttributeCardProps> = ({ attribute, onEdit }) => {
+  const { microserviceId } = useMicroserviceContext();
+  const { getTypeLabel } = useTypesContext(microserviceId);
 
   return (
     <div className="border border-gray-200 rounded-lg shadow-sm p-2">
       <div key={attribute.id} className="flex items-center w-full">
         <div className="text-gray-500 font-thin flex-1">
           {attribute.name}
-          {attribute.isOptional ? "?" : <></>} : {typeName(attribute.type)}
+          {attribute.isOptional ? "?" : <></>} : {getTypeLabel(attribute.type)}
           {attribute.isCollection ? "[]" : <></>}
         </div>
         <button

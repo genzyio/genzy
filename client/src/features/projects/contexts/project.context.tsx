@@ -7,6 +7,9 @@ import { useProjectDefinition } from "../hooks/useProjectDefinition";
 type ProjectContextValues = {
   project: Project;
   projectDefinition: ProjectDefinition;
+
+  addMicroservice: (microserviceId: string) => any;
+
   loadProject: (projectName: string) => any;
   closeProject: () => any;
 };
@@ -14,16 +17,16 @@ type ProjectContextValues = {
 const initialProjectContextValues: ProjectContextValues = {
   project: { name: "", path: "", createdAt: "" },
   projectDefinition: {
-    nodes: [],
-    edges: [],
     microservices: {
       nodes: [],
       edges: [],
     },
-    classes: {
-      nodes: [],
-    },
+    services: {},
+    classes: {},
   },
+
+  addMicroservice: () => {},
+
   loadProject: () => {},
   closeProject: () => {},
 };
@@ -39,6 +42,11 @@ export const ProjectContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const { projectDefinition, isFetching: isFetchedProjectDefinition } =
     useProjectDefinition(projectName);
 
+  const addMicroservice = (microserviceId) => {
+    projectDefinition.services[microserviceId] = { nodes: [], edges: [] };
+    projectDefinition.classes[microserviceId] = { nodes: [] };
+  };
+
   if (isFetchingProject || isFetchedProjectDefinition) {
     return <></>;
   }
@@ -49,6 +57,9 @@ export const ProjectContextProvider: FC<PropsWithChildren> = ({ children }) => {
       value={{
         project,
         projectDefinition,
+
+        addMicroservice,
+
         loadProject: setProjectName,
         closeProject: () => setProjectName(""),
       }}

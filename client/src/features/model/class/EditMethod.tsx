@@ -1,18 +1,19 @@
-import { FC, useState } from "react";
-import { Method, Parameter } from "./models";
+import { type FC, useState } from "react";
+import { type Method, type Parameter } from "./models";
 import { MethodCard } from "./MethodCard";
 import { IDENTIFIER_REGEX } from "../../../patterns";
 import { TextField } from "../../../components/text-field";
 import { Select } from "../../../components/select";
 import { Checkbox } from "../../../components/checkbox";
 import { EditParameters } from "./EditParameters";
+import { useTypesContext } from "./TypesContext";
+import { useMicroserviceContext } from "../microservices/MicroserviceContext";
 
 type EditMethodProps = {
   method: Method;
   onSave: (method: Method) => any;
   onDelete: () => any;
   nameExists: (name: string) => boolean;
-  types: any;
 };
 
 export const EditMethod: FC<EditMethodProps> = ({
@@ -20,8 +21,10 @@ export const EditMethod: FC<EditMethodProps> = ({
   onSave,
   onDelete,
   nameExists,
-  types,
 }) => {
+  const { microserviceId } = useMicroserviceContext();
+  const { typesWithVoid: types } = useTypesContext(microserviceId);
+
   const [preview, setPreview] = useState(true);
   const [method, setMethod] = useState(initialMethod);
   const [parameters, setParameters] = useState(initialMethod.parameters);
@@ -29,7 +32,7 @@ export const EditMethod: FC<EditMethodProps> = ({
   if (preview)
     return (
       <div className="py-2">
-        <MethodCard method={method} types={types} onEdit={() => setPreview(false)} />
+        <MethodCard method={method} onEdit={() => setPreview(false)} />
       </div>
     );
 

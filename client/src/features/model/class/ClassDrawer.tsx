@@ -6,19 +6,17 @@ import { IDENTIFIER_REGEX } from "../../../patterns";
 import { Button } from "../../../components/button";
 import { EditAttribute } from "./EditAttribute";
 import { EditMethod } from "./EditMethod";
-//Mozda bolje u context types
+
 type ClassDrawerProps = {
   class: Class;
   onClassUpdate: (classObject: Class) => any;
   nameExists: (name: string) => boolean;
-  types: any;
 };
 
 export const ClassDrawer: FC<ClassDrawerProps> = ({
   class: initialClass,
   onClassUpdate,
   nameExists,
-  types,
 }) => {
   const [className, setClassName] = useState(initialClass.name);
   const [attributes, setAttributes] = useState([...initialClass.attributes]);
@@ -79,7 +77,12 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
   };
 
   const handleSave = () => {
-    onClassUpdate({ name: className, attributes, methods });
+    onClassUpdate({
+      microserviceId: initialClass.microserviceId,
+      name: className,
+      attributes,
+      methods,
+    });
   };
 
   return (
@@ -106,7 +109,6 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
             nameExists={(newAttrName) =>
               attributes.some((attribute, i) => i !== index && attribute.name === newAttrName)
             }
-            types={types}
           />
         ))}
         {methods.map((method, index) => (
@@ -122,7 +124,6 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
               nameExists={(newAttrName) =>
                 methods.some((method, i) => i !== index && method.name === newAttrName)
               }
-              types={[...types, { label: "void", value: "void" }]}
             />
           </>
         ))}

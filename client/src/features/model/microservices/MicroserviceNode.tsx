@@ -1,14 +1,20 @@
 import { type FC } from "react";
 import { Handle, Position } from "reactflow";
 import { type Microservice } from "./models";
+import { Button } from "../../../components/button";
+import { useMicroserviceNodeContext } from "./MicroserviceNodeContext";
 
 type MicroserviceNodeProps = {
-  data: Microservice;
-  selected: boolean;
   id: string;
+  data: Microservice;
 };
 
-export const MicroserviceNode: FC<MicroserviceNodeProps> = ({ data: microservice, selected }) => {
+export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
+  id: microserviceId,
+  data: microservice,
+}) => {
+  const { onServicesClick, onModelsClick } = useMicroserviceNodeContext();
+
   return (
     <div className={`p-4 rounded-lg border-2 bg-green-50 border-green-300`}>
       <Handle
@@ -29,6 +35,16 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({ data: microservice
           <span>{service.name}</span>
         </div>
       ))}
+
+      <div className="mt-3 flex gap-x-2">
+        <Button type="button" onClick={() => onServicesClick(microserviceId)}>
+          Services
+        </Button>
+        <Button type="button" onClick={() => onModelsClick(microserviceId)}>
+          Models
+        </Button>
+      </div>
+
       <Handle
         type="source"
         position={Position.Bottom}

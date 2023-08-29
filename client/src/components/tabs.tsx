@@ -1,21 +1,41 @@
 import { type TabProps } from "./tab";
-import { type FC, type PropsWithChildren, useMemo, useState } from "react";
+import { type FC, type PropsWithChildren, useMemo, useState, ReactNode } from "react";
+import { XMark } from "./icons/x-mark";
+import { flatten } from "../utils/object";
 
 export const Tabs: FC<PropsWithChildren> = ({ children }) => {
   const [activeTab, setActiveTab] = useState(0);
 
   const tabs = useMemo(
-    () => children.filter((child: any) => child.type.name === "Tab"),
+    () =>
+      flatten(children as any[]).filter((child: any) => {
+        return child.type.name === "Tab";
+      }),
     [children]
   );
 
+  const onTabChange = ({ onChange, title }: TabProps, index: number) => {
+    setActiveTab(index);
+    onChange && onChange({ title, index });
+  };
+
+  const onTabClose = ({ onClose, title }: TabProps, index: number) => {
+    if (index === activeTab) {
+      setActiveTab(index - 1);
+    }
+    onClose({ title, index });
+  };
+
   return (
     <>
-      <div className="mb-4 border-b border-gray-200 dark:border-gray-700">
+      <div
+        key={`navigation_${tabs?.length}`}
+        className="mb-4 border-b border-gray-200 dark:border-gray-700"
+      >
         <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
           {tabs?.map((tab: { props: TabProps }, i: number) => {
             return (
-              <li key={tab.props.title} className="mr-2" onClick={() => setActiveTab(i)}>
+              <li key={tab.props.title} className="mr-2" onClick={() => onTabChange(tab.props, i)}>
                 <a
                   href="#"
                   className={
@@ -26,6 +46,17 @@ export const Tabs: FC<PropsWithChildren> = ({ children }) => {
                 >
                   {tab.props.icon || <></>}
                   {tab.props.title}
+                  {tab.props.onClose && (
+                    <span
+                      className="ml-1 self-start hover:text-gray-900 dark:hover:text-gray-900"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onTabClose(tab.props, i);
+                      }}
+                    >
+                      <XMark />
+                    </span>
+                  )}
                 </a>
               </li>
             );
@@ -33,8 +64,8 @@ export const Tabs: FC<PropsWithChildren> = ({ children }) => {
         </ul>
       </div>
 
-      <div key={activeTab} role="tabpanel">
-        {children[activeTab]}
+      <div key={`view_${activeTab}`} className="w-full h-full" role="tabpanel">
+        {tabs[activeTab]}
       </div>
     </>
   );
