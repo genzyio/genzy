@@ -13,7 +13,17 @@ type ProjectContextValues = {
 
 const initialProjectContextValues: ProjectContextValues = {
   project: { name: "", path: "", createdAt: "" },
-  projectDefinition: { nodes: [], edges: [] },
+  projectDefinition: {
+    nodes: [],
+    edges: [],
+    microservices: {
+      nodes: [],
+      edges: [],
+    },
+    classes: {
+      nodes: [],
+    },
+  },
   loadProject: () => {},
   closeProject: () => {},
 };

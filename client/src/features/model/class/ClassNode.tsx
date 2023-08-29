@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { Handle, Position } from "reactflow";
-import { Class } from "./models";
+import { useProjectContext } from "../../projects/contexts/project.context";
+import { type Class } from "./models";
 
 interface ClassNodeProps {
   data: Class;
@@ -9,73 +8,49 @@ interface ClassNodeProps {
 }
 
 const ClassNode: React.FC<ClassNodeProps> = ({ data, selected, id }) => {
-  const [classData, setClassData] = useState(data);
-
-  const handleAttributeChange = (index: number, field: "name" | "type", value: string) => {
-    classData.attributes[index][field] = value;
-    setClassData({ ...classData });
-  };
-
-  const handleAddAttribute = () => {
-    setClassData({
-      ...classData,
-      attributes: [
-        ...classData.attributes,
-        { name: "", type: "String", isCollection: false, id: `${+new Date()}` },
-      ],
-    });
+  const projectContext = useProjectContext();
+  const typeName = (typeValue: string) => {
+    const foundType = projectContext.projectDefinition.classes.nodes.find(
+      (node) => node.id === typeValue
+    );
+    if (foundType) {
+      return foundType.data.name;
+    }
+    return typeValue;
   };
 
   return (
-    <div className="p-4 rounded-lg border border-gray-400/80 bg-white flex flex-col gap-y-3">
-      <Handle
-        type="target"
-        position={Position.Top}
-        style={{
-          background: "#555",
-          width: "1rem",
-          height: "1rem",
-          top: -10,
-        }}
-        isConnectable={true}
-      />
-      <input
-        className="border px-2 py-1 w-full text-center rounded-md"
-        value={classData.name}
-        onChange={(e) => setClassData({ ...classData, name: e.target.value })}
-      />
-      {classData.attributes.map((attribute, index) => (
-        <div key={attribute.id} className="flex items-center w-full">
-          <input
-            className="border w-auto"
-            value={attribute.name}
-            onChange={(e) => handleAttributeChange(index, "name", e.target.value)}
-            placeholder="Attribute Name"
-          />
-          <select
-            className="border"
-            value={attribute.type}
-            onChange={(e) => handleAttributeChange(index, "type", e.target.value)}
-          >
-            <option value="String">String</option>
-            <option value="Number">Number</option>
-            <option value="Boolean">Boolean</option>
-            <option value="Handle">Handle</option>
-          </select>
-          {attribute.type === "Handle" && (
-            <Handle
-              type="source"
-              position={Position.Right}
-              isConnectable={true}
-              id={attribute.id}
-              style={{ top: index * 23 + 35 }}
-            />
-          )}
+    <div className="p-4 rounded-lg border border-violet-400/80 bg-white flex flex-col gap-y-3">
+      <h2 className="w-full text-center text-xl my-2">{data.name}</h2>
+      {data.attributes.map((attribute) => (
+        <div key={attribute.id} className="flex w-full p-1 rounded-md border border-gray-400">
+          <span>
+            {attribute.name}
+            {attribute.isOptional ? "?" : ""}: {typeName(attribute.type)}
+            {attribute.isCollection ? "[]" : ""}
+          </span>
         </div>
       ))}
-      <button className="bg-gray-700 text-white" onClick={handleAddAttribute}>
-        +
-      </button>
+      {data.methods.length > 0 ? <hr></hr> : <></>}
+      {data.methods.map((method) => (
+        <div key={method.id} className="flex w-full p-1 rounded-md border border-gray-400">
+          <span>
+            {method.name}
+            {"("}
+            {method.parameters
+              .map(
+                (p) =>
+                  p.name +
+                  (p.isOptional ? "?" : "") +
+                  ": " +
+                  typeName(p.type) +
+                  (p.isCollection ? "[]" : "")
+              )
+              .join(", ")}
+            {")"}: {typeName(method.returnValue)}
+          </span>
+        </div>
+      ))}
     </div>
   );
 };

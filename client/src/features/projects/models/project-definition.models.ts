@@ -3,6 +3,7 @@ type ProjectDefinition = {
   edges: any[];
 
   microservices: DiagramDefinition;
+  classes: Omit<DiagramDefinition, "edges">;
 };
 
 type DiagramDefinition = {

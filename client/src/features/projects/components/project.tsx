@@ -11,6 +11,7 @@ import { useNotifications } from "../../../hooks/useNotifications";
 import { extractErrorMessage } from "../../../utils/errors";
 import { ServiceDiagram } from "../../model/service/ServiceDiagram";
 import { MicroservicesDiagram } from "../../model/microservices/MicroservicesDiagram";
+import { ClassDiagram } from "../../model/class/ClassDiagram";
 
 // NOTE: Everything done with forwardRef is temporal solution
 export const Project: FC = () => {
@@ -23,6 +24,7 @@ export const Project: FC = () => {
 
   const diagramRef = createRef<any>();
   const microservicesDiagramRef = createRef<any>();
+  const classDiagramRef = createRef<any>();
 
   const saveProjectDefinitionAction = useAction<ProjectDefinition>(
     saveProjectDefinition(project.name),
@@ -63,6 +65,7 @@ export const Project: FC = () => {
             saveProjectDefinitionAction({
               ...diagramRef.current?.getState(),
               microservices: microservicesDiagramRef.current?.getState(),
+              classes: classDiagramRef.current?.getState(),
             })
           }
         >
@@ -73,6 +76,7 @@ export const Project: FC = () => {
             saveAndCloseProjectDefinitionAction({
               ...diagramRef.current?.getState(),
               microservices: microservicesDiagramRef.current?.getState(),
+              classes: classDiagramRef.current?.getState(),
             })
           }
         >
@@ -82,11 +86,12 @@ export const Project: FC = () => {
       </div>
 
       {/* <Diagram ref={diagramRef} {...initialProjectDefinition} /> */}
-      <ServiceDiagram ref={diagramRef} {...initialProjectDefinition} />
-      <MicroservicesDiagram
+      {/* <ServiceDiagram ref={diagramRef} {...initialProjectDefinition} /> */}
+      {/* <MicroservicesDiagram
         ref={microservicesDiagramRef}
         {...initialProjectDefinition.microservices}
-      />
+      /> */}
+      <ClassDiagram ref={classDiagramRef} {...initialProjectDefinition.classes}/>
     </>
   );
 };
