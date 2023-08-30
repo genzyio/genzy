@@ -11,7 +11,7 @@ import { useTypesContext } from "./TypesContext";
 type EditAttributeProps = {
   attribute: Attribute;
   onSave: (attribute: Attribute) => any;
-  onDelete: () => any;
+  onDelete: (id: string) => any;
   nameExists: (name: string) => boolean;
 };
 
@@ -116,7 +116,14 @@ export const EditAttribute: FC<EditAttributeProps> = ({
             Cancel
           </button>
         </div>
-        <button type="button" onClick={onDelete} className="text-red-500 p-1">
+        <button
+          type="button"
+          onClick={() => {
+            setPreview(true);
+            onDelete(attribute.id);
+          }}
+          className="text-red-500 p-1"
+        >
           Delete
         </button>
       </div>

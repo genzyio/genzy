@@ -12,7 +12,7 @@ import { useMicroserviceContext } from "../microservices/MicroserviceContext";
 type EditMethodProps = {
   method: Method;
   onSave: (method: Method) => any;
-  onDelete: () => any;
+  onDelete: (id: string) => any;
   nameExists: (name: string) => boolean;
 };
 
@@ -117,7 +117,7 @@ export const EditMethod: FC<EditMethodProps> = ({
             onChange={(collection) => {
               setMethod((prevMethod) => ({
                 ...prevMethod,
-                isCollection: collection,
+                returnsCollection: collection,
               }));
             }}
           />
@@ -167,7 +167,14 @@ export const EditMethod: FC<EditMethodProps> = ({
             Cancel
           </button>
         </div>
-        <button type="button" onClick={onDelete} className="text-red-500 p-1">
+        <button
+          type="button"
+          onClick={() => {
+            setPreview(true);
+            onDelete(method.id);
+          }}
+          className="text-red-500 p-1"
+        >
           Delete
         </button>
       </div>

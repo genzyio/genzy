@@ -53,6 +53,11 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
     setAttributes(newAttributes);
   };
 
+  const handleDeleteAttribute = (id: string) => {
+    const updatedAttributes = attributes.filter((a) => a.id !== id);
+    setAttributes(updatedAttributes);
+  };
+
   const handleAddMethod = () => {
     const newMethod = {
       id: `${+new Date()}`,
@@ -74,6 +79,11 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
       return m;
     });
     setMethods(newMethods);
+  };
+
+  const handleDeleteMethod = (id: string) => {
+    const updatedMethods = methods.filter((m) => m.id !== id);
+    setMethods(updatedMethods);
   };
 
   const handleSave = () => {
@@ -105,7 +115,9 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
             onSave={(attribute) => {
               handleUpdateAttribute(attribute.id, attribute);
             }}
-            onDelete={() => {}}
+            onDelete={(id) => {
+              handleDeleteAttribute(id);
+            }}
             nameExists={(newAttrName) =>
               attributes.some((attribute, i) => i !== index && attribute.name === newAttrName)
             }
@@ -120,7 +132,9 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
               onSave={(method) => {
                 handleUpdateMethod(method.id, method);
               }}
-              onDelete={() => {}}
+              onDelete={(id) => {
+                handleDeleteMethod(id);
+              }}
               nameExists={(newAttrName) =>
                 methods.some((method, i) => i !== index && method.name === newAttrName)
               }

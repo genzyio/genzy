@@ -41,6 +41,7 @@ const ClassNode: React.FC<ClassNodeProps> = ({ data, selected, id }) => {
               )
               .join(", ")}
             {")"}: {getTypeLabel(method.returnValue)}
+            {method.returnsCollection ? "[]" : ""}
           </span>
         </div>
       ))}

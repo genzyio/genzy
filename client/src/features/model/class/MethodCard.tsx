@@ -29,6 +29,7 @@ export const MethodCard: FC<MethodCardProps> = ({ method, onEdit }) => {
             )
             .join(", ")}
           {")"}: {getTypeLabel(method.returnValue)}
+          {method.returnsCollection ? "[]" : ""}
         </div>
         <button
           type="button"
