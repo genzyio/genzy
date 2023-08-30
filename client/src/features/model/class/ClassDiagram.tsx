@@ -11,14 +11,11 @@ import {
 } from "reactflow";
 import { Class } from "./models";
 import { useSequenceGenerator } from "../../../hooks/useStringSequence";
-import ClassNode from "./ClassNode";
 import { Drawer } from "../../../components/drawer";
 import { ClassDrawer } from "./ClassDrawer";
 import { useProjectContext } from "../../projects/contexts/project.context";
 import { useTypesContext } from "./TypesContext";
-import { useMicroserviceContext } from "../microservices/MicroserviceContext";
-
-const nodeTypes = { classNode: ClassNode };
+import nodeTypes from "../common/nodeTypes";
 
 type DiagramProps = {
   microserviceId: string;
@@ -32,7 +29,6 @@ export const ClassDiagram: FC<DiagramProps> = ({
   viewport: initialViewport,
 }) => {
   const { projectDefinition } = useProjectContext();
-  const { setMicroserviceId } = useMicroserviceContext();
   const { updateTypes } = useTypesContext(microserviceId);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Class>(initialNodes || []);
@@ -55,12 +51,6 @@ export const ClassDiagram: FC<DiagramProps> = ({
       projectDefinition.classes[microserviceId].viewport = { ...viewport };
     }, []),
   });
-
-  useEffect(() => {
-    setMicroserviceId(microserviceId);
-
-    return () => setMicroserviceId("");
-  }, []);
 
   const handleClassUpdate = (classObject: Class) => {
     setNodes((nodes) =>

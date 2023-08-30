@@ -16,20 +16,18 @@ import ReactFlow, {
   useOnViewportChange,
 } from "reactflow";
 import { Communication, type Microservice } from "./models";
-import { MicroserviceNode } from "./MicroserviceNode";
 import { Drawer } from "../../../components/drawer";
 import { MicroserviceDrawer } from "./MicroserviceDrawer";
 import { useSequenceGenerator } from "../../../hooks/useStringSequence";
 import { CommunicationDrawer } from "./CommunicationDrawer";
 import { useProjectContext } from "../../projects/contexts/project.context";
+import nodeTypes from "../common/nodeTypes";
 
 type DiagramProps = {
   nodes?: any[];
   edges?: any[];
   viewport: any;
 };
-
-const nodeTypes = { microserviceNode: MicroserviceNode };
 
 let updateValidation = false;
 

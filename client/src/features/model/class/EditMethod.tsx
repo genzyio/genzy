@@ -123,18 +123,20 @@ export const EditMethod: FC<EditMethodProps> = ({
           />
         </div>
       )}
-      <div className="mt-4">
-        <Checkbox
-          checked={method.isOptional}
-          label="Is optional"
-          onChange={(optional) => {
-            setMethod((prevMethod) => ({
-              ...prevMethod,
-              isOptional: optional,
-            }));
-          }}
-        />
-      </div>
+      {method.returnValue !== "void" && (
+        <div className="mt-4">
+          <Checkbox
+            checked={method.isOptional}
+            label="Is optional"
+            onChange={(optional) => {
+              setMethod((prevMethod) => ({
+                ...prevMethod,
+                isOptional: optional,
+              }));
+            }}
+          />
+        </div>
+      )}
 
       <EditParameters
         parameters={parameters}

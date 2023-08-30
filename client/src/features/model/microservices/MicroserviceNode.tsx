@@ -1,13 +1,11 @@
 import { type FC } from "react";
-import { Handle, Position } from "reactflow";
+import { type NodeProps } from "reactflow";
 import { type Microservice } from "./models";
 import { Button } from "../../../components/button";
 import { useMicroserviceNodeContext } from "./MicroserviceNodeContext";
+import { ConnectableNodeWrapper } from "../common/ConnectableNodeWrapper";
 
-type MicroserviceNodeProps = {
-  id: string;
-  data: Microservice;
-};
+type MicroserviceNodeProps = NodeProps<Microservice>;
 
 export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
   id: microserviceId,
@@ -17,45 +15,23 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
 
   return (
     <div className={`p-4 rounded-lg border-2 bg-green-50 border-green-300`}>
-      <Handle
-        type="source"
-        id="top"
-        position={Position.Top}
-        style={{
-          background: "#555",
-          width: "1rem",
-          height: "1rem",
-          top: -10,
-        }}
-      />
+      <ConnectableNodeWrapper>
+        <h2 className="w-full text-center text-xl my-2">{microservice.name}</h2>
+        {microservice.services.map((service) => (
+          <div key={service.id} className="flex w-full p-1 rounded-md border border-gray-400">
+            <span>{service.name}</span>
+          </div>
+        ))}
 
-      <h2 className="w-full text-center text-xl my-2">{microservice.name}</h2>
-      {microservice.services.map((service) => (
-        <div key={service.id} className="flex w-full p-1 rounded-md border border-gray-400">
-          <span>{service.name}</span>
+        <div className="mt-3 flex gap-x-2">
+          <Button type="button" onClick={() => onServicesClick(microserviceId)}>
+            Services
+          </Button>
+          <Button type="button" onClick={() => onModelsClick(microserviceId)}>
+            Models
+          </Button>
         </div>
-      ))}
-
-      <div className="mt-3 flex gap-x-2">
-        <Button type="button" onClick={() => onServicesClick(microserviceId)}>
-          Services
-        </Button>
-        <Button type="button" onClick={() => onModelsClick(microserviceId)}>
-          Models
-        </Button>
-      </div>
-
-      <Handle
-        type="source"
-        id="bottom"
-        position={Position.Bottom}
-        style={{
-          background: "#555",
-          width: "1rem",
-          height: "1rem",
-          bottom: -10,
-        }}
-      />
+      </ConnectableNodeWrapper>
     </div>
   );
 };

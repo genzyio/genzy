@@ -1,52 +1,28 @@
+import { type FC } from "react";
+import { type NodeProps } from "reactflow";
 import { type Class } from "./models";
-import { useTypesContext } from "./TypesContext";
-import { useMicroserviceContext } from "../microservices/MicroserviceContext";
+import { AttributePreview } from "./AttributePreview";
+import { MethodPreview } from "./MethodPreview";
 
-interface ClassNodeProps {
-  data: Class;
-  selected: boolean;
-  id: string;
-}
+type ClassNodeProps = NodeProps<Class>;
 
-const ClassNode: React.FC<ClassNodeProps> = ({ data, selected, id }) => {
-  const { microserviceId } = useMicroserviceContext();
-  const { getTypeLabel } = useTypesContext(microserviceId);
+export const ClassNode: FC<ClassNodeProps> = ({ data }) => {
+  const { name, attributes, methods } = data;
 
   return (
     <div className="p-4 rounded-lg border border-violet-400/80 bg-white flex flex-col gap-y-3">
-      <h2 className="w-full text-center text-xl my-2">{data.name}</h2>
-      {data.attributes.map((attribute) => (
+      <h2 className="w-full text-center text-xl my-2">{name}</h2>
+      {attributes.map((attribute) => (
         <div key={attribute.id} className="flex w-full p-1 rounded-md border border-gray-400">
-          <span>
-            {attribute.name}
-            {attribute.isOptional ? "?" : ""}: {getTypeLabel(attribute.type)}
-            {attribute.isCollection ? "[]" : ""}
-          </span>
+          <AttributePreview attribute={attribute} />
         </div>
       ))}
-      {data.methods.length > 0 ? <hr></hr> : <></>}
-      {data.methods.map((method) => (
+      {methods.length > 0 ? <hr></hr> : <></>}
+      {methods.map((method) => (
         <div key={method.id} className="flex w-full p-1 rounded-md border border-gray-400">
-          <span>
-            {method.name}
-            {"("}
-            {method.parameters
-              .map(
-                (p) =>
-                  p.name +
-                  (p.isOptional ? "?" : "") +
-                  ": " +
-                  getTypeLabel(p.type) +
-                  (p.isCollection ? "[]" : "")
-              )
-              .join(", ")}
-            {")"}: {getTypeLabel(method.returnValue)}
-            {method.returnsCollection ? "[]" : ""}
-          </span>
+          <MethodPreview method={method} />
         </div>
       ))}
     </div>
   );
 };
-
-export default ClassNode;

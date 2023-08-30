@@ -123,23 +123,21 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
             }
           />
         ))}
+        {methods.length > 0 && <hr />}
         {methods.map((method, index) => (
-          <>
-            <hr />
-            <EditMethod
-              key={method.id}
-              method={method}
-              onSave={(method) => {
-                handleUpdateMethod(method.id, method);
-              }}
-              onDelete={(id) => {
-                handleDeleteMethod(id);
-              }}
-              nameExists={(newAttrName) =>
-                methods.some((method, i) => i !== index && method.name === newAttrName)
-              }
-            />
-          </>
+          <EditMethod
+            key={method.id}
+            method={method}
+            onSave={(method) => {
+              handleUpdateMethod(method.id, method);
+            }}
+            onDelete={(id) => {
+              handleDeleteMethod(id);
+            }}
+            nameExists={(newAttrName) =>
+              methods.some((method, i) => i !== index && method.name === newAttrName)
+            }
+          />
         ))}
         <div className="flex">
           <Button type="button" onClick={handleAddAttribute} className="text-sm mt-3 mr-1">

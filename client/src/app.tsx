@@ -3,7 +3,7 @@ import { Modal } from "./components/modal";
 import { Tabs } from "./components/tabs";
 import { Tab } from "./components/tab";
 import { ProjectsList } from "./features/projects/components/projects-list/projects-list";
-import { Project } from "./features/projects/components/project";
+import { Project } from "./features/projects/components/project-workspace/project";
 import { CreateProjectForm } from "./features/projects/components/create/create-project-form";
 import { RecentlyOpenedList } from "./features/projects/components/recently-opened/recently-opened-list";
 import { useProjectContext } from "./features/projects/contexts/project.context";

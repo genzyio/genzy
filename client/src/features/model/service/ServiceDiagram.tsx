@@ -19,12 +19,8 @@ import "reactflow/dist/style.css";
 import { type Service } from "./models";
 import { Drawer } from "../../../components/drawer";
 import { ServiceDrawer } from "./ServiceDrawer";
-import { ServiceNode } from "./ServiceNode";
 import { useProjectContext } from "../../projects/contexts/project.context";
-import { useMicroserviceContext } from "../microservices/MicroserviceContext";
-import { useTypesContext } from "../class/TypesContext";
-
-const nodeTypes = { serviceNode: ServiceNode };
+import nodeTypes from "../common/nodeTypes";
 
 type DiagramProps = {
   microserviceId: string;
@@ -42,8 +38,6 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   viewport: initialViewport,
 }) => {
   const { projectDefinition } = useProjectContext();
-  const { setMicroserviceId } = useMicroserviceContext();
-  const { types, updateTypes } = useTypesContext(microserviceId);
 
   const [isDrawerOpen, setDrawerOpen] = useState(false);
 
@@ -65,17 +59,6 @@ export const ServiceDiagram: FC<DiagramProps> = ({
       projectDefinition.services[microserviceId].viewport = { ...viewport };
     }, []),
   });
-
-  useEffect(() => {
-    if (types.length) return;
-    updateTypes(projectDefinition.classes[microserviceId]?.nodes ?? []);
-  }, []);
-
-  useEffect(() => {
-    setMicroserviceId(microserviceId);
-
-    return () => setMicroserviceId("");
-  }, []);
 
   const isValidConnection = (connection: Connection) => {
     const selfConnecting = connection.source === connection.target;
