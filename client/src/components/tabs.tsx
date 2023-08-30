@@ -64,7 +64,7 @@ export const Tabs: FC<PropsWithChildren> = ({ children }) => {
         </ul>
       </div>
 
-      <div key={`view_${activeTab}`} className="w-full h-full" role="tabpanel">
+      <div key={`view_${activeTab}`} className="h-full w-full" role="tabpanel">
         {tabs[activeTab]}
       </div>
     </>

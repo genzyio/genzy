@@ -16,6 +16,7 @@ import { ClassDrawer } from "./ClassDrawer";
 import { useProjectContext } from "../../projects/contexts/project.context";
 import { useTypesContext } from "./TypesContext";
 import nodeTypes from "../common/nodeTypes";
+import { ConfirmationModal } from "../../../components/confirmation-modal";
 
 type DiagramProps = {
   microserviceId: string;
@@ -37,6 +38,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
   const [selectedClass, setSelectedClass] = useState<Node<Class, string>>();
 
   const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     projectDefinition.classes[microserviceId] = {
@@ -63,11 +65,69 @@ export const ClassDiagram: FC<DiagramProps> = ({
     );
   };
 
+  const onHandleClassDelete = () => {
+    setDrawerOpen(false);
+    setModalOpen(true);
+  };
+
+  const handleClassDelete = () => {
+    const deletedClassId = selectedClass.id;
+    const classDiagram = projectDefinition.classes[microserviceId];
+    const serviceDiagram = projectDefinition.services[microserviceId];
+
+    classDiagram.nodes?.forEach((node) => {
+      const methods = node.data.methods;
+      methods.forEach((method) => {
+        if (method.returnValue === deletedClassId) {
+          method.returnValue = "any";
+        }
+
+        method.parameters.forEach((parameter) => {
+          if (parameter.type === deletedClassId) {
+            parameter.type = "any";
+          }
+        });
+      });
+
+      const attributes = node.data.attributes;
+      attributes.forEach((attribute) => {
+        if (attribute.type === deletedClassId) {
+          attribute.type = "any";
+        }
+      });
+    });
+
+    serviceDiagram.nodes.forEach((node) => {
+      const functions = node.data.functions;
+      functions.forEach((_function) => {
+        if (_function.returnType === deletedClassId) {
+          _function.returnType = "any";
+        }
+        _function.params.forEach((param) => {
+          if (param.type === deletedClassId) {
+            param.type = "any";
+          }
+        });
+      });
+    });
+
+    setNodes((ns) => ns.filter((n) => n.id !== deletedClassId));
+
+    setDrawerOpen(false);
+    setModalOpen(false);
+    setSelectedClass(undefined);
+  };
+
+  const onCancelClassDelete = () => {
+    setDrawerOpen(true);
+    setModalOpen(false);
+  };
+
   return (
     <>
       <div className="h-full w-full">
-        <div className="relative left-1/2 -translate-x-1/2 top-3 z-10 p-3 rounded-lg border border-gray-200 w-[20%]">
-          <div className="flex justify-between gap-x-3">
+        <div className="relative left-1/2 -translate-x-1/ top-3 z-10 p-3 rounded-lg border border-gray-200 w-[15%]">
+          <div className="flex justify-center gap-x-3">
             <button
               className="hover:opacity-60"
               onClick={() =>
@@ -87,10 +147,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
                 ])
               }
             >
-              Add node
-            </button>
-            <button className="hover:opacity-60" onClick={() => console.log(nodes)}>
-              Log
+              Add class
             </button>
           </div>
         </div>
@@ -112,6 +169,18 @@ export const ClassDiagram: FC<DiagramProps> = ({
         </ReactFlow>
       </div>
 
+      <ConfirmationModal
+        title={`Delete ${selectedClass?.data.name}`}
+        isOpen={isModalOpen}
+        onYes={handleClassDelete}
+        onClose={onCancelClassDelete}
+      >
+        <span>
+          Are you sure that you want to delete {selectedClass?.data.name}? By removing{" "}
+          {selectedClass?.data.name}, all refferences to it will be updated to type any.
+        </span>
+      </ConfirmationModal>
+
       <Drawer
         open={isDrawerOpen}
         onClose={() => {
@@ -125,6 +194,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
             key={selectedClass.id}
             class={selectedClass.data}
             onClassUpdate={handleClassUpdate}
+            onClassDelete={onHandleClassDelete}
             nameExists={(name) =>
               nodes.some((n) => n.id !== selectedClass.id && n.data.name === name)
             }

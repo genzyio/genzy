@@ -99,7 +99,7 @@ export const EditAttribute: FC<EditAttributeProps> = ({
         <div className="flex gap-x-2">
           <button
             disabled={!isValid}
-            className={!isValid && "text-gray-600"}
+            className={!isValid ? "text-gray-600" : ""}
             onClick={() => {
               setPreview(true);
               onSave(attribute);

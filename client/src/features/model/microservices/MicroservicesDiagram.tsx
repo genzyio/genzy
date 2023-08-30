@@ -22,6 +22,8 @@ import { useSequenceGenerator } from "../../../hooks/useStringSequence";
 import { CommunicationDrawer } from "./CommunicationDrawer";
 import { useProjectContext } from "../../projects/contexts/project.context";
 import nodeTypes from "../common/nodeTypes";
+import { findArrayDiff } from "../../../utils/diff";
+import { ConfirmationModal } from "../../../components/confirmation-modal";
 
 type DiagramProps = {
   nodes?: any[];
@@ -44,6 +46,11 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
 
   const [selectedMicroservice, setSelectedMicroservice] = useState<Node<Microservice, string>>();
   const [selectedCommunication, setSelectedCommunication] = useState<Edge<Communication>>();
+  const targetedMicroservice = nodes.find((node) => node.id === selectedCommunication?.target)?.data
+    ?.name;
+
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const possibleServicesForCommunication = useMemo(() => {
     if (!selectedCommunication) return [];
@@ -52,8 +59,6 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
 
     return destinationMicroservice?.data.services ?? [];
   }, [selectedCommunication]);
-
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     projectDefinition.microservices = {
@@ -129,6 +134,42 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   };
 
   const handleMicroserviceUpdate = (microservice: Microservice) => {
+    const {
+      new: newServices,
+      existing: existingServices,
+      removed: removedServices,
+    } = findArrayDiff(selectedMicroservice.data.services, microservice.services, (s) => s.id);
+    const serviceDiagram = projectDefinition.services[selectedMicroservice.id];
+
+    existingServices.forEach((existingService) => {
+      const existingServiceNode = serviceDiagram.nodes.find(
+        (node) => node.id == existingService.id
+      );
+      existingServiceNode.data.name = existingService.name;
+    });
+
+    newServices.forEach((newService) => {
+      serviceDiagram.nodes.push({
+        id: newService.id,
+        position: { x: 0, y: 0 },
+        data: {
+          microserviceId: selectedMicroservice.id,
+          name: newService.name,
+          functions: [],
+          type: "CONTROLLER",
+        },
+        type: "serviceNode",
+      });
+    });
+
+    // OVDE SE BRISE CVOR
+    serviceDiagram.nodes = serviceDiagram.nodes.filter((service) =>
+      removedServices.every((removedService) => removedService.id !== service.id)
+    );
+
+    // TODO: OBRISATI LINIJE, REMOTE PROXI I REMOTE PROXY LINIJE
+    // BRISANJE MIKROSERVISA JE KAO DA SAM OBRISAO SVE REMOTE PROXY SERVISE I LINIJE?
+
     setNodes((nodes) =>
       nodes.map((node) => {
         if (node.id === selectedMicroservice.id) {
@@ -137,9 +178,39 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
         return node;
       })
     );
+    selectedMicroservice.data = microservice;
   };
 
   const handleCommunicationUpdate = (communication: Communication) => {
+    const { new: newServices, removed: removedServices } = findArrayDiff(
+      selectedCommunication.data.services,
+      communication.services
+    );
+    const communicationEdge = edges.find((edge) => edge.id === selectedCommunication.id);
+    const serviceDiagram = projectDefinition.services[communicationEdge.source];
+
+    newServices.forEach((newService) => {
+      serviceDiagram.nodes.push({
+        id: newService,
+        position: { x: 0, y: 0 },
+        data: {
+          microserviceId: communicationEdge.target,
+          name: "",
+          functions: [],
+          type: "REMOTE_PROXY",
+        },
+        type: "remoteProxyNode",
+      });
+    });
+
+    serviceDiagram.nodes = serviceDiagram.nodes.filter((service) =>
+      removedServices.every((removedServiceId) => removedServiceId !== service.id)
+    );
+
+    serviceDiagram.edges = serviceDiagram.edges.filter((edge) => {
+      return removedServices.every((removedServicesId) => removedServicesId !== edge.target);
+    });
+
     setEdges((edges) =>
       edges.map((edge) => {
         if (edge.id === selectedCommunication.id) {
@@ -148,18 +219,46 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
         return edge;
       })
     );
+
+    selectedCommunication.data = communication;
+  };
+
+  const onHandleCommunicationDelete = () => {
+    setDrawerOpen(false);
+    setModalOpen(true);
+  };
+
+  const handleCommunicationDelete = () => {
+    const serviceDiagram = projectDefinition.services[selectedCommunication.source];
+    const removedServices = selectedCommunication.data.services;
+
+    serviceDiagram.nodes = serviceDiagram.nodes.filter((service) =>
+      removedServices.every((removedServiceId) => removedServiceId !== service.id)
+    );
+
+    serviceDiagram.edges = serviceDiagram.edges.filter((edge) => {
+      return removedServices.every((removedServicesId) => removedServicesId !== edge.target);
+    });
+
+    setEdges((edges) => edges.filter((edge) => edge.id !== selectedCommunication.id));
+
+    setDrawerOpen(false);
+    setModalOpen(false);
+    setSelectedCommunication(undefined);
+  };
+
+  const onCancelCommunicationDelete = () => {
+    setDrawerOpen(true);
+    setModalOpen(false);
   };
 
   return (
     <>
       <div className="h-full w-full">
-        <div className="relative left-1/2 -translate-x-1/2 top-3 z-10 p-3 rounded-lg border border-gray-200 w-[20%]">
-          <div className="flex justify-between gap-x-3">
+        <div className="relative left-1/2 -translate-x-1/2 top-3 z-10 p-3 rounded-lg border border-gray-200 w-[15%]">
+          <div className="flex justify-center gap-x-3">
             <button className="hover:opacity-60" onClick={handleMicroserviceAdd}>
               Add microservice
-            </button>
-            <button className="hover:opacity-60" onClick={() => console.log(nodes, edges)}>
-              Log
             </button>
           </div>
         </div>
@@ -193,6 +292,18 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
         </ReactFlow>
       </div>
 
+      <ConfirmationModal
+        title={`Stop communication with ${targetedMicroservice}`}
+        isOpen={isModalOpen}
+        onYes={handleCommunicationDelete}
+        onClose={onCancelCommunicationDelete}
+      >
+        <span>
+          Are you sure that you want to stop communication with {targetedMicroservice}. By stopping
+          communication, all remote proxies to this microservice will be removed.
+        </span>
+      </ConfirmationModal>
+
       <Drawer
         open={isDrawerOpen}
         onClose={() => {
@@ -218,6 +329,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
             key={selectedCommunication.id}
             communication={selectedCommunication.data}
             onCommunicationUpdate={handleCommunicationUpdate}
+            onCommunicationDelete={onHandleCommunicationDelete}
             possibleServices={possibleServicesForCommunication}
           />
         )}

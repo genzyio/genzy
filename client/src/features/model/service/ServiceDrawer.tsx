@@ -86,6 +86,7 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
       <div className="flex mb-5 w-full">
         <span className="w-2/3">
           <TextField
+            disabled={true}
             value={serviceData.name}
             onChange={(v) => updateState({ ...serviceData, name: v })}
             onBlur={update}

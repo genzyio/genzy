@@ -47,7 +47,7 @@ export const EditService: FC<EditFunctionProps> = ({
         <div className="flex gap-x-2">
           <button
             disabled={!isValid}
-            className={!isValid && "text-gray-600"}
+            className={!isValid ? "text-gray-600" : ""}
             onClick={() => {
               setPreview(true);
               onSave(serviceName);

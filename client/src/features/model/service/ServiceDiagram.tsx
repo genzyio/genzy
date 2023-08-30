@@ -64,6 +64,10 @@ export const ServiceDiagram: FC<DiagramProps> = ({
     const selfConnecting = connection.source === connection.target;
     if (selfConnecting) return false;
 
+    const connectingFromRemoteProxy =
+      nodes.find((node) => node.id === connection.source).data.type === "REMOTE_PROXY";
+    if (connectingFromRemoteProxy) return;
+
     // TODO: check circular dependencies
     const alreadyConnected = edges.some(
       (edge) => edge.target === connection.target && edge.source === connection.source
@@ -118,34 +122,6 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   return (
     <>
       <div className="h-full w-full">
-        <div className="fixed left-1/2 -translate-x-1/2 top-3 z-10 p-3 rounded-lg border border-gray-200">
-          <div className="flex justify-between gap-x-3">
-            <button
-              className="hover:opacity-60"
-              onClick={() =>
-                setNodes((ns) => [
-                  ...ns,
-                  {
-                    id: `${+new Date()}`,
-                    position: { x: 0, y: 0 },
-                    data: {
-                      microserviceId,
-                      name: nextName(),
-                      functions: [],
-                      type: "CONTROLLER",
-                    },
-                    type: "serviceNode",
-                  },
-                ])
-              }
-            >
-              Add node
-            </button>
-            <button className="hover:opacity-60" onClick={() => console.log(nodes, edges)}>
-              Log
-            </button>
-          </div>
-        </div>
         <ReactFlow
           className="validationflow"
           nodes={nodes}
@@ -160,6 +136,7 @@ export const ServiceDiagram: FC<DiagramProps> = ({
           nodeTypes={nodeTypes}
           onNodeClick={() => {}}
           onNodeDoubleClick={(_e, node) => {
+            if (node.data.type === "REMOTE_PROXY") return;
             setSelected(node);
             setDrawerOpen(true);
           }}

@@ -10,12 +10,14 @@ import { EditMethod } from "./EditMethod";
 type ClassDrawerProps = {
   class: Class;
   onClassUpdate: (classObject: Class) => any;
+  onClassDelete: () => any;
   nameExists: (name: string) => boolean;
 };
 
 export const ClassDrawer: FC<ClassDrawerProps> = ({
   class: initialClass,
   onClassUpdate,
+  onClassDelete,
   nameExists,
 }) => {
   const [className, setClassName] = useState(initialClass.name);
@@ -95,6 +97,8 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
     });
   };
 
+  const handleDelete = onClassDelete;
+
   return (
     <>
       <div className="mx-4">
@@ -139,16 +143,24 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
             }
           />
         ))}
-        <div className="flex">
-          <Button type="button" onClick={handleAddAttribute} className="text-sm mt-3 mr-1">
-            New attribute
-          </Button>
-          <Button type="button" onClick={handleAddMethod} className="text-sm mt-3 mr-3">
-            New method
-          </Button>
-          <Button type="button" onClick={handleSave} className="text-sm mt-3 justify-end">
-            Save
-          </Button>
+        <div className="flex text-sm mt-3 space-x-3">
+          <div className="flex-1 space-x-1">
+            <Button type="button" onClick={handleAddAttribute}>
+              New attribute
+            </Button>
+            <Button type="button" onClick={handleAddMethod}>
+              New method
+            </Button>
+          </div>
+
+          <div className="space-x-1">
+            <Button type="button" onClick={handleSave}>
+              Save
+            </Button>
+            <Button type="button" onClick={handleDelete}>
+              Delete
+            </Button>
+          </div>
         </div>
       </div>
     </>

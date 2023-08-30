@@ -34,7 +34,7 @@ export const Drawer: FC<
     >
       <div
         className={
-          `border-l w-full ${large ? "md:max-w-4xl" : "sm:w-4/5 md:w-3/5 lg:w-2/5 xl:max-w-lg"} ${
+          `border-l w-full ${large ? "md:max-w-4xl" : "sm:w-4/5 md:w-3/5 lg:w-3/5 xl:max-w-xl"} ${
             side === "left" ? "left-0" : "right-0"
           } absolute bg-white h-full shadow-xl delay-400 duration-500 ease-in-out transition-all transform` +
           (isOpen ? "translate-x-0" : "translate-x-full")
@@ -51,8 +51,7 @@ export const Drawer: FC<
               className="bg-white rounded-md text-blue-900 hover:text-blue-500"
               onClick={() => handleClose()}
             >
-              <span className="sr-only">Close</span>
-              X
+              <span className="sr-only">Close</span>X
             </button>
           </div>
           {children}

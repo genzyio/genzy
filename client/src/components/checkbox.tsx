@@ -14,7 +14,7 @@ export const Checkbox: FC<CheckboxProps> = ({ label, checked, onChange }) => {
           <input
             name={label}
             type="checkbox"
-            checked={checked}
+            checked={checked || false}
             onChange={(e) => onChange(e.target.checked)}
           />
         </div>
