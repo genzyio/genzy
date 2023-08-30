@@ -1,5 +1,14 @@
-import { type FC, useEffect, useState } from "react";
-import { Background, Controls, MiniMap, Node, ReactFlow, useNodesState } from "reactflow";
+import { type FC, useEffect, useState, useCallback } from "react";
+import {
+  Background,
+  Controls,
+  MiniMap,
+  ReactFlow,
+  type Node,
+  type Viewport,
+  useNodesState,
+  useOnViewportChange,
+} from "reactflow";
 import { Class } from "./models";
 import { useSequenceGenerator } from "../../../hooks/useStringSequence";
 import ClassNode from "./ClassNode";
@@ -14,9 +23,14 @@ const nodeTypes = { classNode: ClassNode };
 type DiagramProps = {
   microserviceId: string;
   nodes?: any[];
+  viewport: any;
 };
 
-export const ClassDiagram: FC<DiagramProps> = ({ microserviceId, nodes: initialNodes }) => {
+export const ClassDiagram: FC<DiagramProps> = ({
+  microserviceId,
+  nodes: initialNodes,
+  viewport: initialViewport,
+}) => {
   const { projectDefinition } = useProjectContext();
   const { setMicroserviceId } = useMicroserviceContext();
   const { updateTypes } = useTypesContext(microserviceId);
@@ -29,9 +43,18 @@ export const ClassDiagram: FC<DiagramProps> = ({ microserviceId, nodes: initialN
   const [isDrawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
-    projectDefinition.classes[microserviceId] = { nodes };
+    projectDefinition.classes[microserviceId] = {
+      ...projectDefinition.classes[microserviceId],
+      nodes,
+    };
     updateTypes(nodes);
   }, [nodes]);
+
+  useOnViewportChange({
+    onEnd: useCallback((viewport: Viewport) => {
+      projectDefinition.classes[microserviceId].viewport = { ...viewport };
+    }, []),
+  });
 
   useEffect(() => {
     setMicroserviceId(microserviceId);
@@ -82,6 +105,7 @@ export const ClassDiagram: FC<DiagramProps> = ({ microserviceId, nodes: initialN
           </div>
         </div>
         <ReactFlow
+          className="validationflow"
           nodes={nodes}
           onNodesChange={onNodesChange}
           nodeTypes={nodeTypes}
@@ -89,6 +113,7 @@ export const ClassDiagram: FC<DiagramProps> = ({ microserviceId, nodes: initialN
             setSelectedClass(node);
             setDrawerOpen(true);
           }}
+          defaultViewport={initialViewport}
           proOptions={{ account: "paid-sponsor", hideAttribution: true }}
         >
           <MiniMap zoomable pannable />

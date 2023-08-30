@@ -20,6 +20,7 @@ const initialProjectContextValues: ProjectContextValues = {
     microservices: {
       nodes: [],
       edges: [],
+      viewport: {},
     },
     services: {},
     classes: {},
@@ -35,6 +36,8 @@ const ProjectContext = createContext<ProjectContextValues | null>(null);
 
 export const useProjectContext = () => useContext(ProjectContext);
 
+export const defaultViewport = { x: 0, y: 0, zoom: 1 };
+
 export const ProjectContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [projectName, setProjectName] = useState(initialProjectContextValues.project.name);
 
@@ -42,9 +45,13 @@ export const ProjectContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const { projectDefinition, isFetching: isFetchedProjectDefinition } =
     useProjectDefinition(projectName);
 
-  const addMicroservice = (microserviceId) => {
-    projectDefinition.services[microserviceId] = { nodes: [], edges: [] };
-    projectDefinition.classes[microserviceId] = { nodes: [] };
+  const addMicroservice = (microserviceId: string) => {
+    projectDefinition.services[microserviceId] = {
+      nodes: [],
+      edges: [],
+      viewport: defaultViewport,
+    };
+    projectDefinition.classes[microserviceId] = { nodes: [], viewport: defaultViewport };
   };
 
   if (isFetchingProject || isFetchedProjectDefinition) {

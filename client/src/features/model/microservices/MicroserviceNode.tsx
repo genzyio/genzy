@@ -18,7 +18,8 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
   return (
     <div className={`p-4 rounded-lg border-2 bg-green-50 border-green-300`}>
       <Handle
-        type="target"
+        type="source"
+        id="top"
         position={Position.Top}
         style={{
           background: "#555",
@@ -26,7 +27,6 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
           height: "1rem",
           top: -10,
         }}
-        isConnectable={true}
       />
 
       <h2 className="w-full text-center text-xl my-2">{microservice.name}</h2>
@@ -47,6 +47,7 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
 
       <Handle
         type="source"
+        id="bottom"
         position={Position.Bottom}
         style={{
           background: "#555",
@@ -54,7 +55,6 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
           height: "1rem",
           bottom: -10,
         }}
-        isConnectable={true}
       />
     </div>
   );

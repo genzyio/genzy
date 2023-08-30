@@ -1,0 +1,7 @@
+.validationflow .react-flow__handle-connecting {
+  background: #fff600;
+}
+
+.validationflow .react-flow__handle-valid {
+  background: #333 !important;
+}

@@ -20,7 +20,8 @@ export const ServiceNode: FC<ServiceNodeProps> = ({ data: service, selected }) =
   return (
     <div className={`p-4 rounded-lg border-2 ${colors[service.type]}`}>
       <Handle
-        type="target"
+        type="source"
+        id="top"
         position={Position.Top}
         style={{
           background: "#555",
@@ -44,6 +45,7 @@ export const ServiceNode: FC<ServiceNodeProps> = ({ data: service, selected }) =
       ))}
       <Handle
         type="source"
+        id="bottom"
         position={Position.Bottom}
         style={{
           background: "#555",

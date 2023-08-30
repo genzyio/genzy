@@ -8,7 +8,12 @@ import ReactFlow, {
   Background,
   MiniMap,
   type Node,
+  type Edge,
+  type Viewport,
   MarkerType,
+  useOnViewportChange,
+  ConnectionMode,
+  updateEdge,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { type Service } from "./models";
@@ -25,12 +30,16 @@ type DiagramProps = {
   microserviceId: string;
   nodes?: any[];
   edges?: any[];
+  viewport: any;
 };
+
+let updateValidation = false;
 
 export const ServiceDiagram: FC<DiagramProps> = ({
   microserviceId,
   nodes: initialNodes,
   edges: initialEdges,
+  viewport: initialViewport,
 }) => {
   const { projectDefinition } = useProjectContext();
   const { setMicroserviceId } = useMicroserviceContext();
@@ -44,8 +53,18 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   const [selected, setSelected] = useState<Node<Service, string>>();
 
   useEffect(() => {
-    projectDefinition.services[microserviceId] = { nodes, edges };
+    projectDefinition.services[microserviceId] = {
+      ...projectDefinition.services[microserviceId],
+      nodes,
+      edges,
+    };
   }, [nodes, edges]);
+
+  useOnViewportChange({
+    onEnd: useCallback((viewport: Viewport) => {
+      projectDefinition.services[microserviceId].viewport = { ...viewport };
+    }, []),
+  });
 
   useEffect(() => {
     if (types.length) return;
@@ -58,7 +77,19 @@ export const ServiceDiagram: FC<DiagramProps> = ({
     return () => setMicroserviceId("");
   }, []);
 
-  // TODO: check circular dependencies
+  const isValidConnection = (connection: Connection) => {
+    const selfConnecting = connection.source === connection.target;
+    if (selfConnecting) return false;
+
+    // TODO: check circular dependencies
+    const alreadyConnected = edges.some(
+      (edge) => edge.target === connection.target && edge.source === connection.source
+    );
+    if (alreadyConnected && !updateValidation) return false;
+
+    return true;
+  };
+
   const onConnect = useCallback(
     (params: Connection) =>
       setEdges((eds) =>
@@ -77,6 +108,14 @@ export const ServiceDiagram: FC<DiagramProps> = ({
       ),
     [setEdges]
   );
+
+  const onEdgeUpdate = useCallback((oldEdge: Edge, newConnection: Connection) => {
+    const changingSource = oldEdge.source !== newConnection.source;
+    const changingTarget = oldEdge.target !== newConnection.target;
+    if (changingSource || changingTarget) return;
+
+    setEdges((eds) => updateEdge(oldEdge, newConnection, eds));
+  }, []);
 
   const nextName = () => {
     let i = 1;
@@ -125,17 +164,24 @@ export const ServiceDiagram: FC<DiagramProps> = ({
           </div>
         </div>
         <ReactFlow
+          className="validationflow"
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          isValidConnection={isValidConnection}
           onConnect={onConnect}
+          onEdgeUpdateStart={() => (updateValidation = true)}
+          onEdgeUpdateEnd={() => (updateValidation = false)}
+          onEdgeUpdate={onEdgeUpdate}
           nodeTypes={nodeTypes}
           onNodeClick={() => {}}
           onNodeDoubleClick={(_e, node) => {
             setSelected(node);
             setDrawerOpen(true);
           }}
+          connectionMode={ConnectionMode.Loose}
+          defaultViewport={initialViewport}
           proOptions={{ account: "paid-sponsor", hideAttribution: true }}
         >
           <MiniMap zoomable pannable />

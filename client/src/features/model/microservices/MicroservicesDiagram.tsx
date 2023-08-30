@@ -10,6 +10,10 @@ import ReactFlow, {
   useNodesState,
   type Node,
   type Edge,
+  type Viewport,
+  ConnectionMode,
+  updateEdge,
+  useOnViewportChange,
 } from "reactflow";
 import { Communication, type Microservice } from "./models";
 import { MicroserviceNode } from "./MicroserviceNode";
@@ -22,13 +26,17 @@ import { useProjectContext } from "../../projects/contexts/project.context";
 type DiagramProps = {
   nodes?: any[];
   edges?: any[];
+  viewport: any;
 };
 
 const nodeTypes = { microserviceNode: MicroserviceNode };
 
+let updateValidation = false;
+
 export const MicroservicesDiagram: FC<DiagramProps> = ({
   nodes: initialNodes,
   edges: initialEdges,
+  viewport: initialViewport,
 }) => {
   const { projectDefinition, addMicroservice } = useProjectContext();
 
@@ -50,10 +58,31 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   const [isDrawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
-    projectDefinition.microservices = { nodes, edges };
+    projectDefinition.microservices = {
+      ...projectDefinition.microservices,
+      nodes,
+      edges,
+    };
   }, [nodes, edges]);
 
-  // TODO: check circular dependencies
+  useOnViewportChange({
+    onEnd: useCallback((viewport: Viewport) => {
+      projectDefinition.microservices.viewport = { ...viewport };
+    }, []),
+  });
+
+  const isValidConnection = (connection: Connection) => {
+    const selfConnecting = connection.source === connection.target;
+    if (selfConnecting) return false;
+
+    const alreadyConnected = edges.some(
+      (edge) => edge.target === connection.target && edge.source === connection.source
+    );
+    if (alreadyConnected && !updateValidation) return false;
+
+    return true;
+  };
+
   const onConnect = useCallback(
     (params: Connection) =>
       setEdges((eds) =>
@@ -75,6 +104,14 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
       ),
     [setEdges]
   );
+
+  const onEdgeUpdate = useCallback((oldEdge: Edge, newConnection: Connection) => {
+    const changingSource = oldEdge.source !== newConnection.source;
+    const changingTarget = oldEdge.target !== newConnection.target;
+    if (changingSource || changingTarget) return;
+
+    setEdges((eds) => updateEdge(oldEdge, newConnection, eds));
+  }, []);
 
   const handleMicroserviceAdd = () => {
     const microserviceId = `${+new Date()}`;
@@ -129,11 +166,16 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
           </div>
         </div>
         <ReactFlow
+          className="validationflow"
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          isValidConnection={isValidConnection}
           onConnect={onConnect}
+          onEdgeUpdateStart={() => (updateValidation = true)}
+          onEdgeUpdateEnd={() => (updateValidation = false)}
+          onEdgeUpdate={onEdgeUpdate}
           nodeTypes={nodeTypes}
           onNodeDoubleClick={(_, node) => {
             setSelectedMicroservice(node);
@@ -143,6 +185,8 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
             setSelectedCommunication(edge);
             setDrawerOpen(true);
           }}
+          connectionMode={ConnectionMode.Loose}
+          defaultViewport={initialViewport}
           proOptions={{ account: "paid-sponsor", hideAttribution: true }}
         >
           <MiniMap zoomable pannable />

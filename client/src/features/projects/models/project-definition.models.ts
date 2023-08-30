@@ -7,6 +7,7 @@ type ProjectDefinition = {
 type DiagramDefinition = {
   nodes: any[];
   edges: any[];
+  viewport: any;
 };
 
 export type { ProjectDefinition, DiagramDefinition };

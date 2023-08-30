@@ -8,7 +8,10 @@ export const ProjectDeleted = Symbol.for("ProjectDeleted");
 
 eventEmitter.on(ProjectCreated, (project: Project) => {
   fs.mkdirSync(project.path);
-  fs.writeFileSync(path.join(project.path, "project.json"), "{\n}");
+  fs.writeFileSync(
+    path.join(project.path, "project.json"),
+    JSON.stringify({ microservices: { nodes: [], edges: [], viewport: {} }, services: {}, classes: {} })
+  );
 });
 
 eventEmitter.on(ProjectDeleted, ({ project, deletePhysically }: { project: Project; deletePhysically: boolean }) => {
