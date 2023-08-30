@@ -1,10 +1,11 @@
 import { BASIC_TYPES, GenericType } from "./constants";
 import type {
-  HTTPMethod,
   ActionConfig,
+  ComplexTypeReference,
+  HTTPMethod,
   Param,
   ParamSource,
-  ComplexTypeReference,
+  Type,
 } from "./types";
 
 export function Controller(path: string = "/", rootTypeClass?: new () => any) {
@@ -14,8 +15,8 @@ export function Controller(path: string = "/", rootTypeClass?: new () => any) {
 
     if (rootTypeClass) {
       const rootTypeInstance = new rootTypeClass();
-      const rootTypeName =
-        rootTypeInstance.constructor.name || rootTypeInstance._class_name_;
+      const rootTypeName = rootTypeInstance.constructor.name ||
+        rootTypeInstance._class_name_;
 
       if (!target.prototype.$nimbly_config.types) {
         target.prototype.$nimbly_config.types = {};
@@ -66,75 +67,40 @@ export function Patch(path: string = "") {
   return pathDecorator(path, "PATCH", true);
 }
 
-const typeDecorator =
-  (
-    typeParam: string | { new (): any },
-    typeKey: "result" | "type" = "type",
-    isArray: boolean = false
-  ) =>
-  (target: any, propertyKey?: string | symbol, parameterIndex?: any) => {
-    let type = typeParam;
+const typeDecorator = (
+  typeParam: string | { new (): any },
+  typeKey: "result" | "type" = "type",
+  isArray: boolean = false,
+  isOptional: boolean = false,
+) =>
+(target: any, propertyKey?: string | symbol, parameterIndex?: any) => {
+  let type = typeParam;
 
-    let typeName = "";
-    let typeProps = {};
+  let typeName = "";
+  let typeProps = {};
 
-    const isComplex = typeof type === "function";
+  const isComplex = typeof type === "function";
 
-    if (!target.$nimbly_config) target.$nimbly_config = { actions: {} };
-    if (isComplex && typeName !== GenericType.name) {
-      const instance = new (type as new () => any)();
-      typeName = instance.constructor.name || instance._class_name_;
-      typeProps = { ...(instance.$nimbly_config?.types ?? {}) };
+  if (!target.$nimbly_config) target.$nimbly_config = { actions: {} };
+  if (isComplex && typeName !== GenericType.name) {
+    const instance = new (type as new () => any)();
+    typeName = instance.constructor.name || instance._class_name_;
+    typeProps = { ...(instance.$nimbly_config?.types ?? {}) };
 
-      (type as any) = {
-        $typeName: typeName,
-        $isArray: isArray,
-      };
-    }
-    if (!propertyKey) return;
-    if (parameterIndex === undefined || typeof parameterIndex !== "number") {
-      if (typeKey === "result") {
-        if (!target.$nimbly_config.actions[propertyKey]) {
-          target.$nimbly_config.actions[propertyKey] = {};
-        }
-        if (type) {
-          target.$nimbly_config.actions[propertyKey].result = type;
-        }
-
-        if (isComplex && typeName !== GenericType.name) {
-          target.$nimbly_config.types = {
-            ...(target.$nimbly_config.types ?? {}),
-            [typeName]: typeProps,
-          };
-        }
-      } else {
-        // if it's a decorator for class prop
-        if (!target.$nimbly_config.types) target.$nimbly_config.types = {};
-        target.$nimbly_config.types[propertyKey] = isComplex
-          ? {
-              ...(type as any),
-              ...typeProps,
-            }
-          : type;
-      }
-    } else {
-      if (!target.$nimbly_config.actions[propertyKey])
+    (type as any) = {
+      $typeName: typeName,
+      $isArray: isArray,
+    };
+  }
+  if (!propertyKey) return;
+  if (parameterIndex === undefined || typeof parameterIndex !== "number") {
+    if (typeKey === "result") {
+      if (!target.$nimbly_config.actions[propertyKey]) {
         target.$nimbly_config.actions[propertyKey] = {};
-      if (!target.$nimbly_config.actions[propertyKey].params)
-        target.$nimbly_config.actions[propertyKey].params = [];
-      const params: Param[] = target.$nimbly_config.actions[propertyKey].params;
-      const existingIndex = params.findIndex(
-        (p: any) => p.index === parameterIndex
-      );
-      if (existingIndex !== -1) {
-        params[existingIndex] = { ...params[existingIndex], type: type as any };
-      } else {
-        params.splice(parameterIndex, 0, {
-          type,
-          index: parameterIndex,
-        } as any);
       }
-      params.sort((a: any, b: any) => a.index - b.index);
+      if (type) {
+        target.$nimbly_config.actions[propertyKey].result = type;
+      }
 
       if (isComplex && typeName !== GenericType.name) {
         target.$nimbly_config.types = {
@@ -142,16 +108,62 @@ const typeDecorator =
           [typeName]: typeProps,
         };
       }
+    } else {
+      // if it's a decorator for class prop
+      if (!target.$nimbly_config.types) {
+        target.$nimbly_config.types = { $optionalProperties: [] };
+      }
+      if (isOptional) {
+        target.$nimbly_config.types["$optionalProperties"].push(propertyKey);
+      }
+      target.$nimbly_config.types[propertyKey] = isComplex
+        ? {
+          ...(type as any),
+          ...typeProps,
+        }
+        : type;
     }
-  };
+  } else {
+    if (!target.$nimbly_config.actions[propertyKey]) {
+      target.$nimbly_config.actions[propertyKey] = {};
+    }
+    if (!target.$nimbly_config.actions[propertyKey].params) {
+      target.$nimbly_config.actions[propertyKey].params = [];
+    }
+    const params: Param[] = target.$nimbly_config.actions[propertyKey].params;
+    const existingIndex = params.findIndex(
+      (p: any) => p.index === parameterIndex,
+    );
+    if (existingIndex !== -1) {
+      params[existingIndex] = { ...params[existingIndex], type: type as any };
+    } else {
+      params.splice(parameterIndex, 0, {
+        type,
+        index: parameterIndex,
+      } as any);
+    }
+    params.sort((a: any, b: any) => a.index - b.index);
+
+    if (isComplex && typeName !== GenericType.name) {
+      target.$nimbly_config.types = {
+        ...(target.$nimbly_config.types ?? {}),
+        [typeName]: typeProps,
+      };
+    }
+  }
+};
 
 export const string = typeDecorator(BASIC_TYPES.string);
 export const boolean = typeDecorator(BASIC_TYPES.boolean);
 export const int = typeDecorator(BASIC_TYPES.int);
 export const float = typeDecorator(BASIC_TYPES.float);
 export const type = (type: { new (): any }) => typeDecorator(type);
+
 export const arrayOf = (type: { new (): any }) =>
   typeDecorator(type, "type", true);
+
+export const optional_test = (optional?: boolean) =>
+  typeDecorator(BASIC_TYPES.string, "type", false, optional);
 
 export const Returns = (type: { new (): any }) => typeDecorator(type, "result");
 export const ReturnsArrayOf = (type: { new (): any }) =>
@@ -164,12 +176,12 @@ export const Body = function (type?: {
 }): (
   target: any,
   propertyKey: string | symbol,
-  parameterIndex: number
+  parameterIndex: number,
 ) => void {
   return (
     target: any,
     propertyKey: string | symbol,
-    parameterIndex: number
+    parameterIndex: number,
   ) => {
     paramDecorator("body")(target, propertyKey, parameterIndex);
     if (type) {
@@ -182,13 +194,15 @@ function paramDecorator(source: ParamSource, name?: string) {
   return function (
     target: any,
     propertyKey: string | symbol,
-    parameterIndex: number
+    parameterIndex: number,
   ) {
     if (!target.$nimbly_config) target.$nimbly_config = { actions: {} };
-    if (!target.$nimbly_config.actions[propertyKey])
+    if (!target.$nimbly_config.actions[propertyKey]) {
       target.$nimbly_config.actions[propertyKey] = {};
-    if (!target.$nimbly_config.actions[propertyKey].params)
+    }
+    if (!target.$nimbly_config.actions[propertyKey].params) {
       target.$nimbly_config.actions[propertyKey].params = [];
+    }
     const params: Param[] = target.$nimbly_config.actions[propertyKey].params;
     if (source === "body") {
       const index = params.findIndex((p) => p.source === "body");
@@ -197,7 +211,7 @@ function paramDecorator(source: ParamSource, name?: string) {
       }
     }
     const existingIndex = params.findIndex(
-      (p: any) => p.index === parameterIndex
+      (p: any) => p.index === parameterIndex,
     );
     if (existingIndex !== -1) {
       params[existingIndex] = {
@@ -219,17 +233,18 @@ function paramDecorator(source: ParamSource, name?: string) {
 const pathDecorator = (
   path: string,
   httpMethod: HTTPMethod,
-  body: boolean = false
+  body: boolean = false,
 ) =>
   function (target: any, propertyKey: string): void {
     if (!target.$nimbly_config) target.$nimbly_config = { actions: {} };
-    if (!target.$nimbly_config.actions[propertyKey])
+    if (!target.$nimbly_config.actions[propertyKey]) {
       target.$nimbly_config.actions[propertyKey] = {};
+    }
     const existing = target.$nimbly_config.actions[propertyKey];
     const existingParams = existing.params ?? [];
     if (body) {
       const bodyParam = existingParams.find(
-        (p) => p.source === "body" || typeof p.type === "object"
+        (p) => p.source === "body" || typeof p.type === "object",
       );
       if (!bodyParam) {
         existingParams.push({ name: "body", source: "body" });
