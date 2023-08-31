@@ -27,24 +27,29 @@ export const FunctionCard: FC<FunctionCardProps> = ({
   const showRoute = serviceType !== "LOCAL";
 
   return (
-    <div className="flex items-center w-full cursor-pointer" onClick={toggleShow}>
-      <div className="flex flex-1">
-        <span className="w-1/6 mr-3">{showRoute && <MethodChip method={fun.method} />}</span>
-        <span className="text-lg">{showRoute ? fun.route : fun.name}</span>
+    <div>
+      <div className="flex items-center w-full cursor-pointer" onClick={toggleShow}>
+        <div className="flex flex-1">
+          {showRoute && (
+            <span className="w-1/6 mr-3">
+              <MethodChip method={fun.method} />
+            </span>
+          )}
+          <span className="text-lg">{showRoute ? fun.route : fun.name}</span>
+        </div>
+        <div className="space-x-1">
+          {onEdit && (
+            <OperationalButton color="indigo-700" border="left" onClick={onEdit}>
+              Edit
+            </OperationalButton>
+          )}
+          {onDelete && (
+            <OperationalButton color="red-500" border="right" onClick={onDelete}>
+              Delete
+            </OperationalButton>
+          )}
+        </div>
       </div>
-      <div className="space-x-1">
-        {onEdit && (
-          <OperationalButton color="indigo-700" border="left" onClick={onEdit}>
-            Edit
-          </OperationalButton>
-        )}
-        {onDelete && (
-          <OperationalButton color="red-500" border="right" onClick={onDelete}>
-            Delete
-          </OperationalButton>
-        )}
-      </div>
-
       {show && (
         <>
           <div>{showRoute && "Name: " + fun.name}</div>

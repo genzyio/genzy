@@ -145,19 +145,19 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
         ))}
         <div className="flex text-sm mt-3 space-x-3">
           <div className="flex-1 space-x-1">
-            <Button type="button" onClick={handleAddAttribute}>
+            <Button type="button" className="text-sm mt-3" onClick={handleAddAttribute}>
               New attribute
             </Button>
-            <Button type="button" onClick={handleAddMethod}>
+            <Button type="button" className="text-sm mt-3" onClick={handleAddMethod}>
               New method
             </Button>
           </div>
 
           <div className="space-x-1">
-            <Button type="button" onClick={handleSave}>
+            <Button type="button" className="text-sm mt-3" onClick={handleSave}>
               Save
             </Button>
-            <Button type="button" onClick={handleDelete}>
+            <Button type="button" className="text-sm mt-3" onClick={handleDelete}>
               Delete
             </Button>
           </div>

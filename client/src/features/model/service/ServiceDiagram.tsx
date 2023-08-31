@@ -10,7 +10,6 @@ import ReactFlow, {
   type Node,
   type Edge,
   type Viewport,
-  MarkerType,
   useOnViewportChange,
   ConnectionMode,
   updateEdge,
@@ -21,6 +20,7 @@ import { Drawer } from "../../../components/drawer";
 import { ServiceDrawer } from "./ServiceDrawer";
 import { useProjectContext } from "../../projects/contexts/project.context";
 import nodeTypes from "../common/constants/nodeTypes";
+import { createServiceEdge } from "../common/utils/edgeFactories";
 
 type DiagramProps = {
   microserviceId: string;
@@ -78,21 +78,7 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   };
 
   const onConnect = useCallback(
-    (params: Connection) =>
-      setEdges((eds) =>
-        addEdge(
-          {
-            ...params,
-            type: "smoothstep",
-            markerEnd: {
-              type: MarkerType.ArrowClosed,
-              width: 30,
-              height: 30,
-            },
-          },
-          eds
-        )
-      ),
+    (params: Connection) => setEdges((eds) => addEdge(createServiceEdge(params), eds)),
     [setEdges]
   );
 

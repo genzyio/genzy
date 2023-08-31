@@ -1,5 +1,5 @@
 import { useState, type FC } from "react";
-import { type Microservice } from "./models";
+import { type Service, type Microservice } from "./models";
 import { TextField } from "../../../components/text-field";
 import { Button } from "../../../components/button";
 import { IDENTIFIER_REGEX } from "../../../patterns";
@@ -9,12 +9,14 @@ import { useSequenceGenerator } from "../../../hooks/useStringSequence";
 type MicroserviceDrawerProps = {
   microservice: Microservice;
   onMicroserviceUpdate: (microservice: Microservice) => any;
+  onMicroserviceDelete: () => any;
   nameExists: (name: string) => boolean;
 };
 
 export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
   microservice: initialMicroservice,
   onMicroserviceUpdate,
+  onMicroserviceDelete,
   nameExists,
 }) => {
   const [microserviceName, setMicroserviceName] = useState(initialMicroservice.name);
@@ -23,27 +25,29 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
   const nextName = useSequenceGenerator(services, (service) => service.name, "Service");
 
   const handleAddService = () => {
-    const newService = {
+    const newService: Service = {
       id: `${+new Date()}`,
       name: nextName(),
+      type: "CONTROLLER",
     };
     const newServices = [...services, newService];
     setServices(newServices);
   };
 
-  const handleUpdateService = (id: string, newServiceName: string) => {
+  const handleUpdateService = (updatedService: Service) => {
     const newServices = services.map((service) => {
-      if (service.id === id)
+      if (service.id === updatedService.id)
         return {
           ...service,
-          name: newServiceName,
+          name: updatedService.name,
+          type: updatedService.type,
         };
       return service;
     });
     setServices(newServices);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDeleteService = (id: string) => {
     const newServices = services.filter((s) => s.id !== id);
     setServices(newServices);
   };
@@ -51,6 +55,8 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
   const handleSave = () => {
     onMicroserviceUpdate({ name: microserviceName, services });
   };
+
+  const handleDelete = onMicroserviceDelete;
 
   return (
     <div className="mx-4">
@@ -69,10 +75,10 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
         <EditService
           key={service.id}
           service={service}
-          onSave={(serviceName) => {
-            handleUpdateService(service.id, serviceName);
+          onSave={(serviceName, serviceType) => {
+            handleUpdateService({ id: service.id, name: serviceName, type: serviceType });
           }}
-          onDelete={() => handleDelete(service.id)}
+          onDelete={() => handleDeleteService(service.id)}
           nameExists={(newServiceName) =>
             services.some((service, i) => i !== index && service.name === newServiceName)
           }
@@ -83,9 +89,14 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
           New service
         </Button>
 
-        <Button type="button" onClick={handleSave} className="text-sm mt-3">
-          Save
-        </Button>
+        <div className="space-x-1">
+          <Button type="button" className="text-sm mt-3" onClick={handleSave}>
+            Save
+          </Button>
+          <Button type="button" className="text-sm mt-3" onClick={handleDelete}>
+            Delete
+          </Button>
+        </div>
       </div>
     </div>
   );

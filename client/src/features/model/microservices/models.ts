@@ -6,6 +6,7 @@ type Microservice = {
 type Service = {
   id: string;
   name: string;
+  type: "LOCAL" | "CONTROLLER";
 };
 
 type Communication = {

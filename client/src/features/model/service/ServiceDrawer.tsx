@@ -1,17 +1,25 @@
 import { useState, type FC, useEffect } from "react";
-import { type Service, type ServiceType, SERVICE_TYPE } from "./models";
+import { type Service, type ServiceType, SERVICE_TYPE_DISPLAY_NAME } from "./models";
 import { TextField } from "../../../components/text-field";
 import { EditFunction } from "./EditFunction";
 import { Button } from "../../../components/button";
 import { Select } from "../../../components/select";
 import { IDENTIFIER_REGEX } from "../../../patterns";
 import { primitiveTypes } from "../class/TypesContext";
+import { useSequenceGenerator } from "../../../hooks/useStringSequence";
 
 type ServiceDrawerProps = {
   service: Service;
   updateService: (service: Service) => void;
   nameExists: (name: string) => boolean;
 };
+
+const serviceTypeOptions = Object.entries(SERVICE_TYPE_DISPLAY_NAME)
+  .filter(([value, _]) => value !== "REMOTE_PROXY")
+  .map(([value, label]) => ({
+    value,
+    label,
+  }));
 
 export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, nameExists }) => {
   const [serviceData, setServiceData] = useState(service);
@@ -33,11 +41,8 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
     setChanged(false);
   };
 
-  const nextFunctionName = () => {
-    let i = 1;
-    while (service.functions.find((f) => f.name === `function${i}`)) i++;
-    return `function${i}`;
-  };
+  const nextFunctionName = useSequenceGenerator(service.functions, (f) => f.name, "function");
+  const nextApiPath = useSequenceGenerator(service.functions, (f) => f.route, "/api/route");
 
   const handleAddFunction = () => {
     serviceData.functions.push({
@@ -46,7 +51,7 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
       params: [],
       returnType: primitiveTypes[0],
       returnsCollection: false,
-      route: "",
+      route: nextApiPath(),
       id: `${+new Date()}`,
     });
     updateState({ ...serviceData });
@@ -98,9 +103,10 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
         </span>
         <span className="w-1/3">
           <Select
+            disabled={true}
             value={serviceData.type}
             onChange={(v) => updateState({ ...serviceData, type: v as ServiceType })}
-            options={Object.keys(SERVICE_TYPE)}
+            options={serviceTypeOptions}
             onBlur={update}
           />
         </span>

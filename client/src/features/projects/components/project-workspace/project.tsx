@@ -1,7 +1,7 @@
 import { type FC, useState, useCallback } from "react";
 import { useProjectContext } from "../../contexts/project.context";
 import { EmptyDiagram } from "../../../model/EmptyDiagram";
-import { Tabs } from "../../../../components/tabs";
+import { Tabs, type TabsInstance } from "../../../../components/tabs";
 import { Tab, type TabProps } from "../../../../components/tab";
 import { type Node, ReactFlowProvider } from "reactflow";
 import { type Microservice } from "../../../model/microservices/models";
@@ -18,6 +18,7 @@ import "../../../model/common/styles/validation_styles.css";
 export const Project: FC = () => {
   const { isOpened, projectDefinition: initialProjectDefinition } = useProjectContext();
 
+  const [tabsInstance, setTabsInstance] = useState<TabsInstance | null>(null);
   const [tabs, setTabs] = useState<TabProps[]>([]);
 
   const findMicroserviceName = useCallback(
@@ -37,9 +38,11 @@ export const Project: FC = () => {
       const tabAlreadyOpened = tabs.find((openedTab) => openedTab.title === tab.title);
       if (tabAlreadyOpened) return;
 
-      setTabs([...tabs, tab]);
+      const newTabs = [...tabs, tab];
+      setTabs(newTabs);
+      tabsInstance?.setActiveTab(newTabs.length);
     },
-    [tabs, setTabs]
+    [tabsInstance, tabs, setTabs]
   );
 
   const addServiceDiagram = useCallback(
@@ -70,6 +73,14 @@ export const Project: FC = () => {
     [findMicroserviceName, addTab]
   );
 
+  const removeTabsForMicroservice = useCallback(
+    (microserviceName: string) => {
+      const newTabs = tabs.filter((tab) => !tab.title.startsWith(`${microserviceName} - `));
+      setTabs(newTabs);
+    },
+    [tabs, setTabs]
+  );
+
   if (!isOpened) {
     return <EmptyDiagram />;
   }
@@ -85,9 +96,9 @@ export const Project: FC = () => {
             <TypesContextProvider>
               <ProjectToolbar />
 
-              <Tabs>
+              <Tabs onInit={setTabsInstance}>
                 <Tab title="Microservices">
-                  <MicroserviceDiagramWrapper />
+                  <MicroserviceDiagramWrapper onMicroserviceDeleted={removeTabsForMicroservice} />
                 </Tab>
 
                 {tabs.map((t) => {

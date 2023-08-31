@@ -1,9 +1,19 @@
 import { type TabProps } from "./tab";
-import { type FC, type PropsWithChildren, useMemo, useState, ReactNode } from "react";
+import { type FC, type PropsWithChildren, useMemo, useState, useEffect } from "react";
 import { XMark } from "./icons/x-mark";
 import { flatten } from "../utils/object";
 
-export const Tabs: FC<PropsWithChildren> = ({ children }) => {
+export type TabsInstance = {
+  activeTab: number;
+  tabsCount: number;
+  setActiveTab: (tab: number) => any;
+};
+
+type TabsProps = PropsWithChildren & {
+  onInit?: (tabsInstance: TabsInstance) => any;
+};
+
+export const Tabs: FC<TabsProps> = ({ onInit, children }) => {
   const [activeTab, setActiveTab] = useState(0);
 
   const tabs = useMemo(
@@ -25,6 +35,17 @@ export const Tabs: FC<PropsWithChildren> = ({ children }) => {
     }
     onClose({ title, index });
   };
+
+  useEffect(() => {
+    onInit && onInit(tabsInstance);
+  }, []);
+
+  const tabsInstance: TabsInstance = {} as TabsInstance;
+  useEffect(() => {
+    tabsInstance.activeTab = activeTab;
+    tabsInstance.setActiveTab = setActiveTab;
+    tabsInstance.tabsCount = tabs.length;
+  }, [activeTab, setActiveTab, tabs]);
 
   return (
     <>
