@@ -20,7 +20,7 @@ import { type Service } from "./models";
 import { Drawer } from "../../../components/drawer";
 import { ServiceDrawer } from "./ServiceDrawer";
 import { useProjectContext } from "../../projects/contexts/project.context";
-import nodeTypes from "../common/nodeTypes";
+import nodeTypes from "../common/constants/nodeTypes";
 
 type DiagramProps = {
   microserviceId: string;

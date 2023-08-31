@@ -8,6 +8,7 @@ import { Checkbox } from "../../../components/checkbox";
 import { EditParameters } from "./EditParameters";
 import { useTypesContext } from "./TypesContext";
 import { useMicroserviceContext } from "../microservices/MicroserviceContext";
+import { RoundCard } from "../common/components/RoundCard";
 
 type EditMethodProps = {
   method: Method;
@@ -31,9 +32,16 @@ export const EditMethod: FC<EditMethodProps> = ({
 
   if (preview)
     return (
-      <div className="py-2">
-        <MethodCard method={method} onEdit={() => setPreview(false)} />
-      </div>
+      <RoundCard className="py-2">
+        <MethodCard
+          method={method}
+          onEdit={() => setPreview(false)}
+          onDelete={() => {
+            setPreview(true);
+            onDelete(method.id);
+          }}
+        />
+      </RoundCard>
     );
 
   const isIdentifier = IDENTIFIER_REGEX.test(method.name);
@@ -77,7 +85,7 @@ export const EditMethod: FC<EditMethodProps> = ({
   };
 
   return (
-    <div className="flex flex-col mt-5 shadow-m">
+    <RoundCard className="py-2">
       <div className="flex">
         <div className="mr-4">
           <TextField
@@ -146,40 +154,28 @@ export const EditMethod: FC<EditMethodProps> = ({
         types={types.filter((type: any) => type.label !== "void")}
       />
 
-      <div className="flex justify-between mt-5">
-        <div className="flex gap-x-2">
-          <button
-            disabled={!isValid}
-            className={!isValid ? "text-gray-600" : ""}
-            onClick={() => {
-              setPreview(true);
-              onSave({
-                ...method,
-              });
-            }}
-          >
-            Save
-          </button>
-          <button
-            onClick={() => {
-              setPreview(true);
-              setMethod(method);
-            }}
-          >
-            Cancel
-          </button>
-        </div>
+      <div className="flex justify-end space-x-2 mt-5">
         <button
-          type="button"
+          disabled={!isValid}
+          className={!isValid ? "text-gray-600" : ""}
           onClick={() => {
             setPreview(true);
-            onDelete(method.id);
+            onSave({
+              ...method,
+            });
           }}
-          className="text-red-500 p-1"
         >
-          Delete
+          Save
+        </button>
+        <button
+          onClick={() => {
+            setPreview(true);
+            setMethod(method);
+          }}
+        >
+          Cancel
         </button>
       </div>
-    </div>
+    </RoundCard>
   );
 };

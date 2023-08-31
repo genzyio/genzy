@@ -10,7 +10,11 @@ eventEmitter.on(ProjectCreated, (project: Project) => {
   fs.mkdirSync(project.path);
   fs.writeFileSync(
     path.join(project.path, "project.json"),
-    JSON.stringify({ microservices: { nodes: [], edges: [], viewport: {} }, services: {}, classes: {} })
+    JSON.stringify({
+      microservices: { nodes: [], edges: [], viewport: { x: 0, y: 0, zoom: 1 } },
+      services: {},
+      classes: {},
+    })
   );
 });
 

@@ -3,6 +3,7 @@ import { type Service } from "./models";
 import { TextField } from "../../../components/text-field";
 import { ServiceCardCard } from "./ServiceCard";
 import { IDENTIFIER_REGEX } from "../../../patterns";
+import { RoundCard } from "../common/components/RoundCard";
 
 type EditFunctionProps = {
   service: Service;
@@ -22,9 +23,13 @@ export const EditService: FC<EditFunctionProps> = ({
 
   if (preview)
     return (
-      <div className="py-2">
-        <ServiceCardCard serviceName={serviceName} onEdit={() => setPreview(false)} />
-      </div>
+      <RoundCard className="py-2">
+        <ServiceCardCard
+          serviceName={serviceName}
+          onEdit={() => setPreview(false)}
+          onDelete={onDelete}
+        />
+      </RoundCard>
     );
 
   const isIdentifier = IDENTIFIER_REGEX.test(serviceName);
@@ -33,7 +38,7 @@ export const EditService: FC<EditFunctionProps> = ({
   const isValid = isIdentifier && hasUniqueName;
 
   return (
-    <div className="border p-2 my-2">
+    <RoundCard className="py-2">
       <div>
         <TextField
           value={serviceName}
@@ -43,32 +48,26 @@ export const EditService: FC<EditFunctionProps> = ({
         />
       </div>
 
-      <div className="flex justify-between mt-5">
-        <div className="flex gap-x-2">
-          <button
-            disabled={!isValid}
-            className={!isValid ? "text-gray-600" : ""}
-            onClick={() => {
-              setPreview(true);
-              onSave(serviceName);
-            }}
-          >
-            Save
-          </button>
-          <button
-            onClick={() => {
-              setPreview(true);
-              setServiceName(initialService.name);
-            }}
-          >
-            Cancel
-          </button>
-        </div>
-
-        <button type="button" onClick={onDelete} className="text-red-500 p-1">
-          Delete
+      <div className="flex justify-end space-x-2 mt-5">
+        <button
+          disabled={!isValid}
+          className={!isValid ? "text-gray-600" : ""}
+          onClick={() => {
+            setPreview(true);
+            onSave(serviceName);
+          }}
+        >
+          Save
+        </button>
+        <button
+          onClick={() => {
+            setPreview(true);
+            setServiceName(initialService.name);
+          }}
+        >
+          Cancel
         </button>
       </div>
-    </div>
+    </RoundCard>
   );
 };

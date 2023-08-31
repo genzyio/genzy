@@ -1,6 +1,6 @@
 import { type FC, type MouseEvent } from "react";
 
-type ButtonProps = {
+export type ButtonProps = {
   type?: "submit" | "button";
   onClick?: (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => any;
   children: React.ReactNode;

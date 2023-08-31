@@ -4,14 +4,21 @@ import { useToggle } from "../../../hooks/useToggle";
 import { MethodChip } from "./MethodChip";
 import { useTypesContext } from "../class/TypesContext";
 import { useMicroserviceContext } from "../microservices/MicroserviceContext";
+import { OperationalButton } from "../common/components/OperationalButton";
 
 type FunctionCardProps = {
   function: ServiceFunction;
   serviceType: ServiceType;
   onEdit?: () => void;
+  onDelete?: () => void;
 };
 
-export const FunctionCard: FC<FunctionCardProps> = ({ function: fun, serviceType, onEdit }) => {
+export const FunctionCard: FC<FunctionCardProps> = ({
+  function: fun,
+  serviceType,
+  onEdit,
+  onDelete,
+}) => {
   const { microserviceId } = useMicroserviceContext();
   const { getTypeLabel } = useTypesContext(microserviceId);
 
@@ -20,15 +27,21 @@ export const FunctionCard: FC<FunctionCardProps> = ({ function: fun, serviceType
   const showRoute = serviceType !== "LOCAL";
 
   return (
-    <div className="border p-2">
-      <div key={fun.id} className="flex items-center w-full cursor-pointer" onClick={toggleShow}>
+    <div className="flex items-center w-full cursor-pointer" onClick={toggleShow}>
+      <div className="flex flex-1">
         <span className="w-1/6 mr-3">{showRoute && <MethodChip method={fun.method} />}</span>
-
-        <span className="text-lg w-3/4">{showRoute ? fun.route : fun.name}</span>
+        <span className="text-lg">{showRoute ? fun.route : fun.name}</span>
+      </div>
+      <div className="space-x-1">
         {onEdit && (
-          <button onClick={onEdit} className="w-1/12">
+          <OperationalButton color="indigo-700" border="left" onClick={onEdit}>
             Edit
-          </button>
+          </OperationalButton>
+        )}
+        {onDelete && (
+          <OperationalButton color="red-500" border="right" onClick={onDelete}>
+            Delete
+          </OperationalButton>
         )}
       </div>
 

@@ -23,7 +23,7 @@ export function useProject(projectName: string, dependencies: any[] = []) {
   );
 
   return {
-    project: (data?.data ?? []) as Project,
+    project: (data?.data ?? {}) as Project,
     isFetching,
   };
 }

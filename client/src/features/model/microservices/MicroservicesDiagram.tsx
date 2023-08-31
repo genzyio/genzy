@@ -21,7 +21,7 @@ import { MicroserviceDrawer } from "./MicroserviceDrawer";
 import { useSequenceGenerator } from "../../../hooks/useStringSequence";
 import { CommunicationDrawer } from "./CommunicationDrawer";
 import { useProjectContext } from "../../projects/contexts/project.context";
-import nodeTypes from "../common/nodeTypes";
+import nodeTypes from "../common/constants/nodeTypes";
 import { findArrayDiff } from "../../../utils/diff";
 import { ConfirmationModal } from "../../../components/confirmation-modal";
 
@@ -141,6 +141,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
     } = findArrayDiff(selectedMicroservice.data.services, microservice.services, (s) => s.id);
     const serviceDiagram = projectDefinition.services[selectedMicroservice.id];
 
+    // NAME CHANGE
     existingServices.forEach((existingService) => {
       const existingServiceNode = serviceDiagram.nodes.find(
         (node) => node.id == existingService.id
@@ -148,6 +149,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
       existingServiceNode.data.name = existingService.name;
     });
 
+    // NEW SERVICES
     newServices.forEach((newService) => {
       serviceDiagram.nodes.push({
         id: newService.id,
@@ -162,14 +164,41 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
       });
     });
 
-    // OVDE SE BRISE CVOR
+    // DELETE SERVICES FROM CURRENT MS DIAGRAM
     serviceDiagram.nodes = serviceDiagram.nodes.filter((service) =>
       removedServices.every((removedService) => removedService.id !== service.id)
     );
 
-    // TODO: OBRISATI LINIJE, REMOTE PROXI I REMOTE PROXY LINIJE
-    // BRISANJE MIKROSERVISA JE KAO DA SAM OBRISAO SVE REMOTE PROXY SERVISE I LINIJE?
+    // DELETE SERVICE EDGES FROM CURRENT MS DIAGRAM
+    serviceDiagram.edges = serviceDiagram.edges.filter((edge) => {
+      return removedServices.every(
+        (removedService) => removedService.id !== edge.target && removedService.id !== edge.source
+      );
+    });
 
+    // DELETE REMOTE PROXIES, LINES AND UPDATE COMMUNICATION
+    const dependentCommunication = edges.filter((edge) => edge.target === selectedMicroservice.id);
+    dependentCommunication.forEach((communication) => {
+      communication.data.services = communication.data.services.filter((service) => {
+        return removedServices.every((removedService) => removedService.id !== service);
+      });
+    });
+
+    const dependentMicroservices = dependentCommunication.map((edge) => edge.source);
+    dependentMicroservices.forEach((microserviceId) => {
+      const dependentServiceDiagram = projectDefinition.services[microserviceId];
+      dependentServiceDiagram.nodes = dependentServiceDiagram.nodes.filter((service) =>
+        removedServices.every((removedService) => removedService.id !== service.id)
+      );
+
+      dependentServiceDiagram.edges = dependentServiceDiagram.edges.filter((edge) => {
+        return removedServices.every((removedService) => removedService.id !== edge.target);
+      });
+    });
+    // BRISANJE MIKROSERVISA JE KAO DA SAM OBRISAO SVE REMOTE PROXY SERVISE I LINIJE?
+    // MOZDA ZAPRAVO IMA VISE SMISLA KAO DA SAM OBRISAO SVE KOMUNIKACIJE?
+
+    // NODE UPDATE
     setNodes((nodes) =>
       nodes.map((node) => {
         if (node.id === selectedMicroservice.id) {
@@ -255,7 +284,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   return (
     <>
       <div className="h-full w-full">
-        <div className="relative left-1/2 -translate-x-1/2 top-3 z-10 p-3 rounded-lg border border-gray-200 w-[15%]">
+        <div className="absolute left-1/2 -translate-x-1/2 top-3 z-10 p-1 rounded-lg border border-gray-200 w-[12%]">
           <div className="flex justify-center gap-x-3">
             <button className="hover:opacity-60" onClick={handleMicroserviceAdd}>
               Add microservice

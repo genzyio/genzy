@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Modal } from "./components/modal";
 import { Tabs } from "./components/tabs";
 import { Tab } from "./components/tab";
@@ -9,53 +9,46 @@ import { RecentlyOpenedList } from "./features/projects/components/recently-open
 import { useProjectContext } from "./features/projects/contexts/project.context";
 
 export function App() {
-  const [openProject, setOpenProject] = useState(false);
-  const [createProject, setCreateProject] = useState(false);
+  const { isOpened, loadProject } = useProjectContext();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const toggleOpenProject = useCallback(() => setOpenProject((open) => !open), [setOpenProject]);
-  const toggleCreateProject = useCallback(
-    () => setCreateProject((open) => !open),
-    [setCreateProject]
-  );
-
-  const { loadProject } = useProjectContext();
+  const toggleModal = useCallback(() => setIsModalOpen((open) => !open), [setIsModalOpen]);
 
   const onCreatedProject = (projectName: string) => {
-    toggleCreateProject();
+    toggleModal();
     loadProject(projectName);
   };
+
+  useEffect(() => {
+    if (isOpened) return;
+    toggleModal();
+  }, [isOpened]);
 
   return (
     <>
       <div className="h-full w-full">
-        Above and GN1mblyeyond!
+        {!isOpened && <div className="mt-2 text-2xl text-center">Above and GN1mblyeyond!</div>}
         <>
-          <Modal title="Create Project" isOpen={createProject} onClose={toggleCreateProject}>
-            <CreateProjectForm onSaved={onCreatedProject} onClosed={toggleCreateProject} />
-          </Modal>
-
-          <Modal
-            title="Open Project"
-            isLarge={true}
-            isOpen={openProject}
-            onClose={toggleOpenProject}
-          >
+          <Modal title="Projects" isLarge={true} isOpen={isModalOpen} onClose={() => {}}>
             <Tabs>
-              <Tab title="Recently Opened">
+              <Tab className="mt-4" title="Recently Opened">
                 <RecentlyOpenedList />
               </Tab>
-              <Tab title="All Projects">
+              <Tab className="mt-4" title="All Projects">
                 <ProjectsList />
+              </Tab>
+              <Tab className="mt-4" title="Create Project">
+                <CreateProjectForm
+                  onSaved={onCreatedProject}
+                  onCancel={() => console.log("MOVE TO OPEN PROJECTS")}
+                />
               </Tab>
             </Tabs>
           </Modal>
-
-          <div className="flex gap-x-2">
-            <p onClick={toggleCreateProject}>Create Project</p>
-            <p onClick={toggleOpenProject}>Open Project</p>
-          </div>
         </>
-        <Project />
+        <div className="w-full h-[90%]">
+          <Project />
+        </div>
       </div>
     </>
   );

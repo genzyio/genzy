@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.border-red-500 {
+  border-color: #f56565;
+}
+
+.text-indigo-700 {
+  color: rgb(79 70 229);
+}
+
+.border-indigo-700 {
+  border-color: rgb(79 70 229);
+}

@@ -3,7 +3,7 @@ import { type NodeProps } from "reactflow";
 import { type Microservice } from "./models";
 import { Button } from "../../../components/button";
 import { useMicroserviceNodeContext } from "./MicroserviceNodeContext";
-import { ConnectableNodeWrapper } from "../common/ConnectableNodeWrapper";
+import { ConnectableNodeWrapper } from "../common/components/ConnectableNodeWrapper";
 
 type MicroserviceNodeProps = NodeProps<Microservice>;
 
@@ -14,7 +14,7 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
   const { onServicesClick, onModelsClick } = useMicroserviceNodeContext();
 
   return (
-    <div className={`p-4 rounded-lg border-2 bg-green-50 border-green-300`}>
+    <div className={`p-4 rounded-lg border-2 bg-green-50 border-green-300 flex flex-col gap-y-2`}>
       <ConnectableNodeWrapper>
         <h2 className="w-full text-center text-xl my-2">{microservice.name}</h2>
         {microservice.services.map((service) => (

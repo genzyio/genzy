@@ -6,6 +6,7 @@ import { useProjectDefinition } from "../hooks/useProjectDefinition";
 
 type ProjectContextValues = {
   project: Project;
+  isOpened: boolean;
   projectDefinition: ProjectDefinition;
 
   addMicroservice: (microserviceId: string) => any;
@@ -16,6 +17,7 @@ type ProjectContextValues = {
 
 const initialProjectContextValues: ProjectContextValues = {
   project: { name: "", path: "", createdAt: "" },
+  isOpened: false,
   projectDefinition: {
     microservices: {
       nodes: [],
@@ -40,6 +42,7 @@ export const defaultViewport = { x: 0, y: 0, zoom: 1 };
 
 export const ProjectContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [projectName, setProjectName] = useState(initialProjectContextValues.project.name);
+  const isOpened = !!projectName;
 
   const { project, isFetching: isFetchingProject } = useProject(projectName);
   const { projectDefinition, isFetching: isFetchedProjectDefinition } =
@@ -63,6 +66,7 @@ export const ProjectContextProvider: FC<PropsWithChildren> = ({ children }) => {
       key={project?.name ?? ""}
       value={{
         project,
+        isOpened,
         projectDefinition,
 
         addMicroservice,

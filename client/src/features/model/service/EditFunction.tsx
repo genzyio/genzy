@@ -14,6 +14,7 @@ import { Select } from "../../../components/select";
 import { IDENTIFIER_REGEX, ROUTE_REGEX } from "../../../patterns";
 import { useMicroserviceContext } from "../microservices/MicroserviceContext";
 import { useTypesContext } from "../class/TypesContext";
+import { RoundCard } from "../common/components/RoundCard";
 
 type EditFunctionProps = {
   function: ServiceFunction;
@@ -49,12 +50,18 @@ export const EditFunction: FC<EditFunctionProps> = ({
 
   if (preview)
     return (
-      <div className="py-2">
-        <FunctionCard function={fun} onEdit={() => setPreview(false)} serviceType={serviceType} />
-      </div>
+      <RoundCard className="py-2">
+        <FunctionCard
+          function={fun}
+          serviceType={serviceType}
+          onEdit={() => setPreview(false)}
+          onDelete={handleDelete}
+        />
+      </RoundCard>
     );
+
   return (
-    <div className="border p-2 my-2">
+    <RoundCard className="py-2">
       {editRoute && (
         <TextField
           value={fun.route}
@@ -171,7 +178,7 @@ export const EditFunction: FC<EditFunctionProps> = ({
           Add param
         </Button>
       </div>
-      <div className="flex justify-between mt-2">
+      <div className="flex justify-end mt-2">
         <button
           onClick={() => {
             setPreview(true);
@@ -180,10 +187,7 @@ export const EditFunction: FC<EditFunctionProps> = ({
         >
           Save
         </button>
-        <button onClick={handleDelete} className="text-red-500 p-1">
-          Delete
-        </button>
       </div>
-    </div>
+    </RoundCard>
   );
 };

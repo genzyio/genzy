@@ -3,7 +3,8 @@ import { useProjectContext } from "../../contexts/project.context";
 import { EmptyDiagram } from "../../../model/EmptyDiagram";
 import { Tabs } from "../../../../components/tabs";
 import { Tab, type TabProps } from "../../../../components/tab";
-import { ReactFlowProvider, type NodeProps } from "reactflow";
+import { type Node, ReactFlowProvider } from "reactflow";
+import { type Microservice } from "../../../model/microservices/models";
 import { ProjectToolbar } from "./project-toolbar";
 import { TypesContextProvider } from "../../../model/class/TypesContext";
 import { MicroserviceContextProvider } from "../../../model/microservices/MicroserviceContext";
@@ -12,10 +13,10 @@ import { MicroserviceDiagramWrapper } from "./wrappers/MicroserviceDiagramWrappe
 import { ClassDiagramWrapper } from "./wrappers/ClassDiagramWrapper";
 import { ServiceDiagramWrapper } from "./wrappers/ServiceDiagramWrapper";
 
-import "../../../model/common/validation_styles.css";
+import "../../../model/common/styles/validation_styles.css";
 
 export const Project: FC = () => {
-  const { project, projectDefinition: initialProjectDefinition } = useProjectContext();
+  const { isOpened, projectDefinition: initialProjectDefinition } = useProjectContext();
 
   const [tabs, setTabs] = useState<TabProps[]>([]);
 
@@ -23,7 +24,7 @@ export const Project: FC = () => {
     (microserviceId: string): string => {
       const microserviceNodes = initialProjectDefinition?.microservices?.nodes ?? [];
       const microserviceNode = microserviceNodes.find(
-        (node: NodeProps) => node.id === microserviceId
+        (node: Node<Microservice>) => node.id === microserviceId
       );
 
       return microserviceNode?.data?.name ?? "";
@@ -69,7 +70,7 @@ export const Project: FC = () => {
     [findMicroserviceName, addTab]
   );
 
-  if (!project.name) {
+  if (!isOpened) {
     return <EmptyDiagram />;
   }
 

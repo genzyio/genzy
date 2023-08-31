@@ -2,7 +2,7 @@ import { type FC } from "react";
 import { type NodeProps } from "reactflow";
 import { type Service } from "./models";
 import { MethodChip } from "./MethodChip";
-import { ConnectableNodeWrapper } from "../common/ConnectableNodeWrapper";
+import { ConnectableNodeWrapper } from "../common/components/ConnectableNodeWrapper";
 
 const colors = {
   LOCAL: "bg-green-50 border-green-300",
@@ -16,7 +16,7 @@ export const ServiceNode: FC<ServiceNodeProps> = ({ data: service }) => {
   const showRoute = service.type !== "LOCAL";
 
   return (
-    <div className={`p-4 rounded-lg border-2 ${colors[service.type]}`}>
+    <div className={`p-4 rounded-lg border-2 ${colors[service.type]} flex flex-col gap-y-2`}>
       <ConnectableNodeWrapper>
         <p className="text-xs text-gray-500">{service.type}</p>
         <h2 className="w-full text-center text-xl my-2">{service.name}</h2>

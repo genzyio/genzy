@@ -7,6 +7,7 @@ import { Select } from "../../../components/select";
 import { Checkbox } from "../../../components/checkbox";
 import { useMicroserviceContext } from "../microservices/MicroserviceContext";
 import { useTypesContext } from "./TypesContext";
+import { RoundCard } from "../common/components/RoundCard";
 
 type EditAttributeProps = {
   attribute: Attribute;
@@ -29,9 +30,16 @@ export const EditAttribute: FC<EditAttributeProps> = ({
 
   if (preview)
     return (
-      <div className="py-2">
-        <AttributeCard attribute={attribute} onEdit={() => setPreview(false)} />
-      </div>
+      <RoundCard className="py-2">
+        <AttributeCard
+          attribute={attribute}
+          onEdit={() => setPreview(false)}
+          onDelete={() => {
+            setPreview(true);
+            onDelete(attribute.id);
+          }}
+        />
+      </RoundCard>
     );
 
   const isIdentifier = IDENTIFIER_REGEX.test(attribute.name);
@@ -40,7 +48,7 @@ export const EditAttribute: FC<EditAttributeProps> = ({
   const isValid = isIdentifier && hasUniqueName;
 
   return (
-    <div className="flex flex-col mt-5 shadow-sm">
+    <RoundCard className="py-2">
       <div className="flex">
         <div className="mr-4">
           <TextField
@@ -95,38 +103,26 @@ export const EditAttribute: FC<EditAttributeProps> = ({
           }}
         />
       </div>
-      <div className="flex justify-between mt-5">
-        <div className="flex gap-x-2">
-          <button
-            disabled={!isValid}
-            className={!isValid ? "text-gray-600" : ""}
-            onClick={() => {
-              setPreview(true);
-              onSave(attribute);
-            }}
-          >
-            Save
-          </button>
-          <button
-            onClick={() => {
-              setPreview(true);
-              setAttribute(initialAttribute);
-            }}
-          >
-            Cancel
-          </button>
-        </div>
+      <div className="flex justify-end space-x-2 mt-5">
         <button
-          type="button"
+          disabled={!isValid}
+          className={!isValid ? "text-gray-600" : ""}
           onClick={() => {
             setPreview(true);
-            onDelete(attribute.id);
+            onSave(attribute);
           }}
-          className="text-red-500 p-1"
         >
-          Delete
+          Save
+        </button>
+        <button
+          onClick={() => {
+            setPreview(true);
+            setAttribute(initialAttribute);
+          }}
+        >
+          Cancel
         </button>
       </div>
-    </div>
+    </RoundCard>
   );
 };

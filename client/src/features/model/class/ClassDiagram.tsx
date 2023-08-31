@@ -15,7 +15,7 @@ import { Drawer } from "../../../components/drawer";
 import { ClassDrawer } from "./ClassDrawer";
 import { useProjectContext } from "../../projects/contexts/project.context";
 import { useTypesContext } from "./TypesContext";
-import nodeTypes from "../common/nodeTypes";
+import nodeTypes from "../common/constants/nodeTypes";
 import { ConfirmationModal } from "../../../components/confirmation-modal";
 
 type DiagramProps = {
@@ -126,7 +126,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
   return (
     <>
       <div className="h-full w-full">
-        <div className="relative left-1/2 -translate-x-1/ top-3 z-10 p-3 rounded-lg border border-gray-200 w-[15%]">
+        <div className="absolute left-1/2 -translate-x-1/2 top-3 z-10 p-1 rounded-lg border border-gray-200 w-[12%]">
           <div className="flex justify-center gap-x-3">
             <button
               className="hover:opacity-60"
