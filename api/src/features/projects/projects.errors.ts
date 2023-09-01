@@ -19,4 +19,11 @@ function projectAlreadyExists(projectName: string) {
   };
 }
 
-export { projectDoesNotExistError, pathNotFound, projectAlreadyExists };
+function projectJsonDoesNotExist(projectName: string) {
+  return {
+    error: "ProjectJsonDoesNotExist",
+    message: `Project '${projectName}' does not contain file project.json.`,
+  };
+}
+
+export { projectDoesNotExistError, pathNotFound, projectAlreadyExists, projectJsonDoesNotExist };

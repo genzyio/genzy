@@ -1,4 +1,4 @@
-import { type FC, useState } from "react";
+import { type FC, useState, useCallback } from "react";
 import { type Method, type Parameter } from "./models";
 import { MethodCard } from "./MethodCard";
 import { IDENTIFIER_REGEX } from "../../../patterns";
@@ -30,6 +30,14 @@ export const EditMethod: FC<EditMethodProps> = ({
   const [method, setMethod] = useState(initialMethod);
   const [parameters, setParameters] = useState(initialMethod.parameters);
 
+  const hasDuplicateParamName = useCallback(() => {
+    return new Set(parameters.map((p) => p.name)).size !== parameters.length;
+  }, [parameters]);
+
+  const areIdentifiers = useCallback(() => {
+    return parameters.every((parameter) => IDENTIFIER_REGEX.test(parameter.name));
+  }, [parameters]);
+
   if (preview)
     return (
       <RoundCard className="py-2">
@@ -47,7 +55,7 @@ export const EditMethod: FC<EditMethodProps> = ({
   const isIdentifier = IDENTIFIER_REGEX.test(method.name);
   const hasUniqueName = !nameExists(method.name);
 
-  const isValid = isIdentifier && hasUniqueName;
+  const isValid = isIdentifier && hasUniqueName && !hasDuplicateParamName() && areIdentifiers();
 
   const handleAddParameter = () => {
     const newParameter = {

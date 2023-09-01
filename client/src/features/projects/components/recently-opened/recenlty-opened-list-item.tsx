@@ -14,7 +14,10 @@ export const RecentlyOpenedListItem: FC<RecentlyOpenedListItemProps> = ({
   onViewProject,
 }) => {
   return (
-    <li key={recentlyOpenedProject.path} className="flex justify-between gap-x-6 py-5">
+    <li
+      key={recentlyOpenedProject.path}
+      className="flex justify-between gap-x-6 py-5 hover:bg-gray-100 rounded-lg p-1"
+    >
       <div className="flex min-w-0 gap-x-4">
         <img
           className="h-14 w-14 flex-none rounded-full bg-gray-50 border border-black-100"
@@ -22,7 +25,10 @@ export const RecentlyOpenedListItem: FC<RecentlyOpenedListItemProps> = ({
           alt=""
         />
         <div className="min-w-0 flex-auto">
-          <p className="text-sm font-semibold leading-6 text-gray-900">
+          <p
+            className="text-sm font-semibold leading-6 text-gray-900 cursor-pointer"
+            onClick={onViewProject}
+          >
             {recentlyOpenedProject.name}
           </p>
           {!!recentlyOpenedProject.openedAt ? (

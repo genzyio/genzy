@@ -7,6 +7,7 @@ import { Project } from "./features/projects/components/project-workspace/projec
 import { CreateProjectForm } from "./features/projects/components/create/create-project-form";
 import { RecentlyOpenedList } from "./features/projects/components/recently-opened/recently-opened-list";
 import { useProjectContext } from "./features/projects/contexts/project.context";
+import { ImportProjectForm } from "./features/projects/components/import/import-project-form";
 
 export function App() {
   const { isOpened, loadProject } = useProjectContext();
@@ -39,6 +40,12 @@ export function App() {
               </Tab>
               <Tab className="mt-4" title="Create Project">
                 <CreateProjectForm
+                  onSaved={onCreatedProject}
+                  onCancel={() => console.log("MOVE TO OPEN PROJECTS")}
+                />
+              </Tab>
+              <Tab className="mt-4" title="Import Project">
+                <ImportProjectForm
                   onSaved={onCreatedProject}
                   onCancel={() => console.log("MOVE TO OPEN PROJECTS")}
                 />

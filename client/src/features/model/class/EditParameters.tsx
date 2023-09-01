@@ -1,8 +1,9 @@
-import { type FC } from "react";
+import { useCallback, type FC } from "react";
 import { TextField } from "../../../components/text-field";
 import { Select } from "../../../components/select";
 import { Parameter } from "./models";
 import { Checkbox } from "../../../components/checkbox";
+import { IDENTIFIER_REGEX } from "../../../patterns";
 
 type EditParametersProps = {
   parameters: Parameter[];
@@ -19,6 +20,17 @@ export const EditParameters: FC<EditParametersProps> = ({
   onDeleteParameter,
   types,
 }) => {
+  const isIdentifier = useCallback((paramName: string) => {
+    return IDENTIFIER_REGEX.test(paramName);
+  }, []);
+
+  const hasUniqueName = useCallback(
+    (paramName: string) => {
+      return parameters.filter((p) => p.name === paramName).length === 1;
+    },
+    [parameters]
+  );
+
   return (
     <div>
       {parameters.map((param, index) => (
@@ -29,6 +41,10 @@ export const EditParameters: FC<EditParametersProps> = ({
                 value={param.name}
                 onChange={(name) => onParameterChange(index, { ...param, name })}
                 label={`Param ${index + 1} name`}
+                error={
+                  (!isIdentifier(param.name) && "Must be an identifier") ||
+                  (!hasUniqueName(param.name) && "Already exists.")
+                }
               />
             </div>
 

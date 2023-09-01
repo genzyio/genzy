@@ -11,4 +11,6 @@ type Project = {
 
 type CreateProject = Omit<Project, "id" | "createdAt"> & {};
 
-export type { Project, ProjectId, CreateProject };
+type ImportProject = Pick<Project, "path"> & {};
+
+export type { Project, ProjectId, CreateProject, ImportProject };

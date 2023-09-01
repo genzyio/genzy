@@ -1,5 +1,5 @@
 import axios from "axios";
-import { type CreateProject } from "./project.contracts";
+import { type ImportProject, type CreateProject } from "./project.contracts";
 
 function getProjects() {
   return axios.get(`/projects`);
@@ -13,4 +13,8 @@ function createProject(project: CreateProject) {
   return axios.post(`/projects`, project);
 }
 
-export { getProjects, getProject, createProject };
+function importProject(project: ImportProject) {
+  return axios.post(`/projects/import`, project);
+}
+
+export { getProjects, getProject, createProject, importProject };
