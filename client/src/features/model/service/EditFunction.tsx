@@ -63,20 +63,33 @@ export const EditFunction: FC<EditFunctionProps> = ({
   return (
     <RoundCard className="py-2">
       {editRoute && (
-        <TextField
-          value={fun.route}
-          onChange={(v) => {
-            fun.route = v;
-            updateState();
-          }}
-          label="Route"
-          error={
-            (!ROUTE_REGEX.test(fun.route) && "Must be a valid route") ||
-            (routeExists(fun.route, fun.method) && "Already exists")
-          }
-        />
+        <div className="flex w-full mb-2">
+          <Select
+            value={fun.method}
+            onChange={(v) => {
+              fun.method = v as HTTPMethod;
+              updateState();
+            }}
+            options={Object.keys(HTTP_METHOD)}
+            label="Method"
+          />
+          <div className="flex-1">
+            <TextField
+              value={fun.route}
+              onChange={(v) => {
+                fun.route = v;
+                updateState();
+              }}
+              label="Route"
+              error={
+                (!ROUTE_REGEX.test(fun.route) && "Must be a valid route") ||
+                (routeExists(fun.route, fun.method) && "Already exists")
+              }
+            />
+          </div>
+        </div>
       )}
-      <div key={fun.id} className="flex items-center w-full">
+      <div key={fun.id} className="flex items-center w-full mb-2">
         <TextField
           value={fun.name}
           onChange={(v) => {
@@ -89,17 +102,7 @@ export const EditFunction: FC<EditFunctionProps> = ({
             (nameExists(fun.name) && "Already exists")
           }
         />
-        {editRoute && (
-          <Select
-            value={fun.method}
-            onChange={(v) => {
-              fun.method = v as HTTPMethod;
-              updateState();
-            }}
-            options={Object.keys(HTTP_METHOD)}
-            label="Method"
-          />
-        )}
+
         <Select
           value={fun.returnType}
           onChange={(v) => {

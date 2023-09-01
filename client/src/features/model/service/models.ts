@@ -18,6 +18,13 @@ export const SERVICE_TYPE = {
   REMOTE_PROXY: "RP",
   CONTROLLER: "C",
 } as const;
+
+export const SERVICE_TYPE_DISPLAY_NAME = {
+  LOCAL: "Local Service",
+  REMOTE_PROXY: "Remote Proxy",
+  CONTROLLER: "Controller",
+} as const;
+
 type ServiceType = keyof typeof SERVICE_TYPE;
 
 type Parameter = {

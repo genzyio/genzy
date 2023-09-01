@@ -46,10 +46,10 @@ export const CommunicationDrawer: FC<CommunicationDrawerProps> = ({
         }) ?? <></>}
 
         <div className="flex space-x-1 justify-end text-sm mt-3">
-          <Button type="button" onClick={handleSave}>
+          <Button type="button" className="text-sm mt-3" onClick={handleSave}>
             Save
           </Button>
-          <Button type="button" onClick={handleDelete}>
+          <Button type="button" className="text-sm mt-3" onClick={handleDelete}>
             Delete
           </Button>
         </div>

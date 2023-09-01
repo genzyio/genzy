@@ -3,7 +3,13 @@ import { defaultViewport, useProjectContext } from "../../../contexts/project.co
 import { useMicroserviceContext } from "../../../../model/microservices/MicroserviceContext";
 import { MicroservicesDiagram } from "../../../../model/microservices/MicroservicesDiagram";
 
-export const MicroserviceDiagramWrapper: FC = () => {
+type MicroserviceDiagramWrapperProps = {
+  onMicroserviceDeleted: (microserviceName: string) => any;
+};
+
+export const MicroserviceDiagramWrapper: FC<MicroserviceDiagramWrapperProps> = ({
+  onMicroserviceDeleted,
+}) => {
   const { projectDefinition } = useProjectContext();
   const microserviceDiagram = projectDefinition.microservices;
 
@@ -18,6 +24,7 @@ export const MicroserviceDiagramWrapper: FC = () => {
       nodes={microserviceDiagram.nodes}
       edges={microserviceDiagram.edges}
       viewport={microserviceDiagram.viewport || defaultViewport}
+      onMicroserviceDeleted={onMicroserviceDeleted}
     />
   );
 };

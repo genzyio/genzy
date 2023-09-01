@@ -4,10 +4,19 @@ import { TextField } from "../../../components/text-field";
 import { ServiceCardCard } from "./ServiceCard";
 import { IDENTIFIER_REGEX } from "../../../patterns";
 import { RoundCard } from "../common/components/RoundCard";
+import { Select } from "../../../components/select";
+import { SERVICE_TYPE_DISPLAY_NAME } from "../service/models";
+
+const serviceTypeOptions = Object.entries(SERVICE_TYPE_DISPLAY_NAME)
+  .filter(([value, _]) => value !== "REMOTE_PROXY")
+  .map(([value, label]) => ({
+    value,
+    label,
+  }));
 
 type EditFunctionProps = {
   service: Service;
-  onSave: (serviceName: string) => any;
+  onSave: (serviceName: string, serviceType: "LOCAL" | "CONTROLLER") => any;
   onDelete: () => any;
   nameExists: (name: string) => boolean;
 };
@@ -20,12 +29,13 @@ export const EditService: FC<EditFunctionProps> = ({
 }) => {
   const [preview, setPreview] = useState(true);
   const [serviceName, setServiceName] = useState(initialService.name);
+  const [serviceType, setServiceType] = useState(initialService.type);
 
   if (preview)
     return (
       <RoundCard className="py-2">
         <ServiceCardCard
-          serviceName={serviceName}
+          service={initialService}
           onEdit={() => setPreview(false)}
           onDelete={onDelete}
         />
@@ -39,12 +49,18 @@ export const EditService: FC<EditFunctionProps> = ({
 
   return (
     <RoundCard className="py-2">
-      <div>
+      <div className="space-y-2">
         <TextField
+          label="Service Name"
           value={serviceName}
           onChange={setServiceName}
-          label="Service Name"
           error={(!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")}
+        />
+        <Select
+          label="Service Type"
+          value={serviceType}
+          onChange={(value: any) => setServiceType(value)}
+          options={serviceTypeOptions}
         />
       </div>
 
@@ -54,7 +70,7 @@ export const EditService: FC<EditFunctionProps> = ({
           className={!isValid ? "text-gray-600" : ""}
           onClick={() => {
             setPreview(true);
-            onSave(serviceName);
+            onSave(serviceName, serviceType);
           }}
         >
           Save
@@ -63,6 +79,7 @@ export const EditService: FC<EditFunctionProps> = ({
           onClick={() => {
             setPreview(true);
             setServiceName(initialService.name);
+            setServiceType(initialService.type);
           }}
         >
           Cancel

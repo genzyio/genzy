@@ -17,6 +17,7 @@ import { useProjectContext } from "../../projects/contexts/project.context";
 import { useTypesContext } from "./TypesContext";
 import nodeTypes from "../common/constants/nodeTypes";
 import { ConfirmationModal } from "../../../components/confirmation-modal";
+import { createClassNode } from "../common/utils/nodeFactories";
 
 type DiagramProps = {
   microserviceId: string;
@@ -54,6 +55,11 @@ export const ClassDiagram: FC<DiagramProps> = ({
     }, []),
   });
 
+  const handleClassAdd = () => {
+    const newClassNode = createClassNode({ microserviceId, name: nextName() });
+    setNodes((ns) => [...ns, newClassNode]);
+  };
+
   const handleClassUpdate = (classObject: Class) => {
     setNodes((nodes) =>
       nodes.map((node) => {
@@ -63,6 +69,9 @@ export const ClassDiagram: FC<DiagramProps> = ({
         return node;
       })
     );
+
+    setDrawerOpen(false);
+    setSelectedClass(undefined);
   };
 
   const onHandleClassDelete = () => {
@@ -128,25 +137,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
       <div className="h-full w-full">
         <div className="absolute left-1/2 -translate-x-1/2 top-3 z-10 p-1 rounded-lg border border-gray-200 w-[12%]">
           <div className="flex justify-center gap-x-3">
-            <button
-              className="hover:opacity-60"
-              onClick={() =>
-                setNodes((ns) => [
-                  ...ns,
-                  {
-                    id: `${+new Date()}`,
-                    position: { x: 0, y: 0 },
-                    data: {
-                      microserviceId,
-                      name: nextName(),
-                      methods: [],
-                      attributes: [],
-                    },
-                    type: "classNode",
-                  },
-                ])
-              }
-            >
+            <button className="hover:opacity-60" onClick={handleClassAdd}>
               Add class
             </button>
           </div>
