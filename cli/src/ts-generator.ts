@@ -12,7 +12,7 @@ export function generate(
   url: string,
   dirPath: string,
   nunjucks: any,
-  isServer = false
+  isServer = false,
 ) {
   generateUtil(
     meta,
@@ -24,7 +24,7 @@ export function generate(
     indexFileContentFrom,
     typeFileContentFrom,
     "index",
-    isServer
+    isServer,
   );
 }
 
@@ -37,7 +37,7 @@ export function fileContentFrom(
   types: MetaTypesRegistry,
   nunjucks: any,
   host: string | undefined,
-  isServer: boolean
+  isServer: boolean,
 ): Promise<string> {
   const content = nunjucks.render("service.njk", {
     ...service,
@@ -54,7 +54,7 @@ export function fileContentFrom(
       ...new Set(
         service.actions.map((r) =>
           capitalizeFirstLetter(r.httpMethod.toLowerCase())
-        )
+        ),
       ),
     ],
   });
@@ -66,7 +66,7 @@ export function indexFileContentFrom(
   services: ServiceMetaInfo[],
   host: string | undefined,
   nunjucks: any,
-  isServer: boolean
+  isServer: boolean,
 ): Promise<string> {
   const content = nunjucks.render("index.njk", { services, host, isServer });
   return formatFileContent(content);
@@ -75,7 +75,7 @@ export function indexFileContentFrom(
 export function typeFileContentFrom(
   types: MetaTypesRegistry,
   nunjucks: any,
-  isServer: boolean
+  isServer: boolean,
 ): Promise<string> {
   const content = nunjucks.render("types.njk", { types, isServer });
   return formatFileContent(content);

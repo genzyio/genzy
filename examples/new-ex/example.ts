@@ -5,7 +5,6 @@ import {
   Delete,
   Get,
   int,
-  optional_test,
   Path,
   Post,
   Put,
@@ -17,16 +16,14 @@ import {
 } from "../../shared/decorators";
 
 class Example {
-  @string
+  @string(true)
   name: string;
-  @int
+  @int()
   age: number;
-  @optional_test(true)
   pera: number;
 }
 
 class TestClass {
-  @optional_test(true)
   pera: number;
 }
 
@@ -35,16 +32,16 @@ export class ExampleService {
   @Get()
   @ReturnsArrayOf(Example)
   async getAll(
-    @Query("pageNumber") @int pageNumber: number,
-    @Query("pageSize") @int pageSize: number,
+    @Query("pageNumber") @int() pageNumber: number,
+    @Query("pageSize") @int() pageSize: number,
   ): Promise<Example[]> {
     return [];
   }
   @Get()
   @ReturnsArrayOf(TestClass)
   async getAllTest(
-    @Query("pageNumber") @int pageNumber: number,
-    @Query("pageSize") @int pageSize: number,
+    @Query("pageNumber") @int() pageNumber: number,
+    @Query("pageSize") @int() pageSize: number,
   ): Promise<TestClass[]> {
     return [];
   }

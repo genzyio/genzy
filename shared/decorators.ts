@@ -111,17 +111,18 @@ const typeDecorator = (
     } else {
       // if it's a decorator for class prop
       if (!target.$nimbly_config.types) {
-        target.$nimbly_config.types = { $optionalProperties: [] };
+        target.$nimbly_config.types = {};
+        //       target.$nimbly_config.types = { $optionalProperties: [] };
       }
-      if (isOptional) {
-        target.$nimbly_config.types["$optionalProperties"].push(propertyKey);
-      }
+      // if (isOptional) {
+      //   target.$nimbly_config.types["$optionalProperties"].push(propertyKey);
+      // }
       target.$nimbly_config.types[propertyKey] = isComplex
         ? {
           ...(type as any),
           ...typeProps,
         }
-        : type;
+        : { type: type, $isOptional: isOptional };
     }
   } else {
     if (!target.$nimbly_config.actions[propertyKey]) {
@@ -152,18 +153,22 @@ const typeDecorator = (
     }
   }
 };
+export const string = (optional?: boolean) =>
+  typeDecorator(BASIC_TYPES.string, "type", false, optional);
 
-export const string = typeDecorator(BASIC_TYPES.string);
-export const boolean = typeDecorator(BASIC_TYPES.boolean);
-export const int = typeDecorator(BASIC_TYPES.int);
-export const float = typeDecorator(BASIC_TYPES.float);
+export const boolean = (optional?: boolean) =>
+  typeDecorator(BASIC_TYPES.boolean, "type", false, optional);
+
+export const int = (optional?: boolean) =>
+  typeDecorator(BASIC_TYPES.int, "type", false, optional);
+
+export const float = (optional?: boolean) =>
+  typeDecorator(BASIC_TYPES.float, "type", false, optional);
+
 export const type = (type: { new (): any }) => typeDecorator(type);
 
 export const arrayOf = (type: { new (): any }) =>
   typeDecorator(type, "type", true);
-
-export const optional_test = (optional?: boolean) =>
-  typeDecorator(BASIC_TYPES.string, "type", false, optional);
 
 export const Returns = (type: { new (): any }) => typeDecorator(type, "result");
 export const ReturnsArrayOf = (type: { new (): any }) =>

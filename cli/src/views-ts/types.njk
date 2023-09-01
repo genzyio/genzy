@@ -5,8 +5,10 @@ import {
 
 {% for name, fields in types %} export class {{name}}
   {
-  {% for field_name, type in fields %}@{{type}} {{field_name}}:
-    {% if type == "int" or type == "float" %}number{% else %}{{type}}{% endif %};
+  {% for field_name, props in fields %}
+    {% if isServer %}@{{props.type}}({% if props.$isOptional %}true{% endif %}){% endif %}
+    {{field_name}}{% if props.$isOptional %}?{% endif %}:
+  {% if props.type == "int" or props.type == "float" %}number{% else %}{{props.type}}{% endif %} {% if props.$isOptional %}| undefined{% endif %};
   {% endfor %}
   }
 {% endfor %}
