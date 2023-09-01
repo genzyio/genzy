@@ -18,7 +18,7 @@ import "reactflow/dist/style.css";
 import { type Service } from "./models";
 import { Drawer } from "../../../components/drawer";
 import { ServiceDrawer } from "./ServiceDrawer";
-import { useProjectContext } from "../../projects/contexts/project.context";
+import { useProjectDefinitionContext } from "../../projects/contexts/project-definition.context";
 import nodeTypes from "../common/constants/nodeTypes";
 import { createServiceEdge } from "../common/utils/edgeFactories";
 
@@ -37,7 +37,7 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   edges: initialEdges,
   viewport: initialViewport,
 }) => {
-  const { projectDefinition } = useProjectContext();
+  const { projectDefinition } = useProjectDefinitionContext();
 
   const [isDrawerOpen, setDrawerOpen] = useState(false);
 

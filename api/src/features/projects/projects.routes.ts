@@ -11,7 +11,7 @@ import {
   projectDoesNotExistError,
   projectJsonDoesNotExist,
 } from "./projects.errors";
-import { trimSpecialCharactersFromEnd } from "../../core/utils/string";
+import { trimCharactersFromEnd } from "../../core/utils/string";
 
 const projectRouters = Router();
 
@@ -61,7 +61,7 @@ projectRouters.post("/projects", async (req: Request, res: Response) => {
 projectRouters.post("/projects/import", async (req: Request, res: Response) => {
   const project: ImportProject = req.body;
 
-  const projectPath = trimSpecialCharactersFromEnd(project.path);
+  const projectPath = trimCharactersFromEnd(project.path, path.sep);
   const projectName = projectPath.split(path.sep).pop() || "";
 
   const createProject: CreateProject = {
@@ -70,20 +70,20 @@ projectRouters.post("/projects/import", async (req: Request, res: Response) => {
   };
 
   if (!fs.existsSync(path.join(project.path, "project.json"))) {
-    return res.status(404).send(pathNotFound(project.path));
+    return res.status(404).send(projectJsonDoesNotExist(project.path));
   }
 
   const existingProject = await projectsRepo.getByName(createProject.name);
   if (existingProject) {
-    return res.status(409).send(projectJsonDoesNotExist(createProject.name));
+    return res.status(409).send(projectAlreadyExists(createProject.name));
   }
 
   await projectsRepo
     .add(createProject)
     .then((_) => {
-      console.log(`${createProject.name} is created.`);
+      console.log(`${createProject.name} is imported.`);
     })
-    .catch((error) => console.log(`${createProject.name} not crated due to: ${error.message}`));
+    .catch((error) => console.log(`${createProject.name} not imported due to: ${error.message}`));
 
   return res.status(201).send(createProject);
 });

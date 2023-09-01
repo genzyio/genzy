@@ -3,10 +3,14 @@ import { type Microservice, type Communication } from "../../model/microservices
 import { type Service } from "../../model/service/models";
 import { type Class } from "../../model/class/models";
 
+type MicroserviceDiagram = DiagramDefinition<Node<Microservice>, Edge<Communication>>;
+type ServiceDiagram = DiagramDefinition<Node<Service>, Edge<any>>;
+type ClassDiagram = Omit<DiagramDefinition<Node<Class>>, "edges">;
+
 type ProjectDefinition = {
-  microservices: DiagramDefinition<Node<Microservice>, Edge<Communication>>;
-  services: Record<string, DiagramDefinition<Node<Service>>>;
-  classes: Record<string, Omit<DiagramDefinition<Node<Class>>, "edges">>;
+  microservices: MicroserviceDiagram;
+  services: Record<string, ServiceDiagram>;
+  classes: Record<string, ClassDiagram>;
 };
 
 type DiagramDefinition<NT = any, ET = any> = {
@@ -15,4 +19,10 @@ type DiagramDefinition<NT = any, ET = any> = {
   viewport: any;
 };
 
-export type { ProjectDefinition, DiagramDefinition };
+export type {
+  ProjectDefinition,
+  MicroserviceDiagram,
+  ServiceDiagram,
+  ClassDiagram,
+  DiagramDefinition,
+};

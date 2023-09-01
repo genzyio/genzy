@@ -19,10 +19,10 @@ function projectAlreadyExists(projectName: string) {
   };
 }
 
-function projectJsonDoesNotExist(projectName: string) {
+function projectJsonDoesNotExist(projectPath: string) {
   return {
     error: "ProjectJsonDoesNotExist",
-    message: `Project '${projectName}' does not contain file project.json.`,
+    message: `Path '${projectPath}' does not contain file project.json.`,
   };
 }
 

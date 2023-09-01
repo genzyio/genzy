@@ -2,6 +2,7 @@ import { type FC } from "react";
 import { Button } from "../../../../components/button";
 import { useNotifications } from "../../../../hooks/useNotifications";
 import { useProjectContext } from "../../contexts/project.context";
+import { useProjectDefinitionContext } from "../../contexts/project-definition.context";
 import { useAction } from "../../../../hooks/useAction";
 import { type ProjectDefinition } from "../../models/project-definition.models";
 import { saveProjectDefinition } from "../../api/project-definition.actions";
@@ -10,11 +11,8 @@ import { extractErrorMessage } from "../../../../utils/errors";
 
 export const ProjectToolbar: FC = () => {
   const notificator = useNotifications();
-  const {
-    project,
-    projectDefinition: initialProjectDefinition,
-    closeProject,
-  } = useProjectContext();
+  const { project, closeProject } = useProjectContext();
+  const { projectDefinition: initialProjectDefinition } = useProjectDefinitionContext();
 
   const saveProjectDefinitionAction = useAction<ProjectDefinition>(
     saveProjectDefinition(project.name),

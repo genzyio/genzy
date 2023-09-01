@@ -1,5 +1,6 @@
 import { type FC, useState, useCallback } from "react";
 import { useProjectContext } from "../../contexts/project.context";
+import { useProjectDefinitionContext } from "../../contexts/project-definition.context";
 import { EmptyDiagram } from "../../../model/EmptyDiagram";
 import { Tabs, type TabsInstance } from "../../../../components/tabs";
 import { Tab, type TabProps } from "../../../../components/tab";
@@ -16,7 +17,8 @@ import { ServiceDiagramWrapper } from "./wrappers/ServiceDiagramWrapper";
 import "../../../model/common/styles/validation_styles.css";
 
 export const Project: FC = () => {
-  const { isOpened, projectDefinition: initialProjectDefinition } = useProjectContext();
+  const { isOpened } = useProjectContext();
+  const { projectDefinition: initialProjectDefinition } = useProjectDefinitionContext();
 
   const [tabsInstance, setTabsInstance] = useState<TabsInstance | null>(null);
   const [tabs, setTabs] = useState<TabProps[]>([]);

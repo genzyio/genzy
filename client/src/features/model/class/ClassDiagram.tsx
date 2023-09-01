@@ -13,7 +13,8 @@ import { Class } from "./models";
 import { useSequenceGenerator } from "../../../hooks/useStringSequence";
 import { Drawer } from "../../../components/drawer";
 import { ClassDrawer } from "./ClassDrawer";
-import { useProjectContext } from "../../projects/contexts/project.context";
+import { useProjectDefinitionContext } from "../../projects/contexts/project-definition.context";
+import { projectDefinitionActions } from "../../projects/contexts/project-definition.dispatcher";
 import { useTypesContext } from "./TypesContext";
 import nodeTypes from "../common/constants/nodeTypes";
 import { ConfirmationModal } from "../../../components/confirmation-modal";
@@ -30,7 +31,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
   nodes: initialNodes,
   viewport: initialViewport,
 }) => {
-  const { projectDefinition } = useProjectContext();
+  const { projectDefinition, dispatcher } = useProjectDefinitionContext();
   const { updateTypes } = useTypesContext(microserviceId);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Class>(initialNodes || []);
@@ -81,45 +82,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
 
   const handleClassDelete = () => {
     const deletedClassId = selectedClass.id;
-    const classDiagram = projectDefinition.classes[microserviceId];
-    const serviceDiagram = projectDefinition.services[microserviceId];
-
-    classDiagram.nodes?.forEach((node) => {
-      const methods = node.data.methods;
-      methods.forEach((method) => {
-        if (method.returnValue === deletedClassId) {
-          method.returnValue = "any";
-        }
-
-        method.parameters.forEach((parameter) => {
-          if (parameter.type === deletedClassId) {
-            parameter.type = "any";
-          }
-        });
-      });
-
-      const attributes = node.data.attributes;
-      attributes.forEach((attribute) => {
-        if (attribute.type === deletedClassId) {
-          attribute.type = "any";
-        }
-      });
-    });
-
-    serviceDiagram.nodes.forEach((node) => {
-      const functions = node.data.functions;
-      functions.forEach((_function) => {
-        if (_function.returnType === deletedClassId) {
-          _function.returnType = "any";
-        }
-        _function.params.forEach((param) => {
-          if (param.type === deletedClassId) {
-            param.type = "any";
-          }
-        });
-      });
-    });
-
+    dispatcher(projectDefinitionActions.deleteClass, { microserviceId, classId: deletedClassId });
     setNodes((ns) => ns.filter((n) => n.id !== deletedClassId));
 
     setDrawerOpen(false);

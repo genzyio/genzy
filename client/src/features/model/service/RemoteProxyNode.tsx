@@ -3,12 +3,12 @@ import { type NodeProps } from "reactflow";
 import { SERVICE_TYPE_DISPLAY_NAME, type Service } from "./models";
 import { MethodChip } from "./MethodChip";
 import { ConnectableNodeWrapper } from "../common/components/ConnectableNodeWrapper";
-import { useProjectContext } from "../../projects/contexts/project.context";
+import { useProjectDefinitionContext } from "../../projects/contexts/project-definition.context";
 
 type RemoteProxyNodeProps = NodeProps<Service>;
 
 export const RemoteProxyNode: FC<RemoteProxyNodeProps> = ({ id: serviceId, data: service }) => {
-  const { projectDefinition } = useProjectContext();
+  const { projectDefinition } = useProjectDefinitionContext();
   const serviceDiagram = projectDefinition.services[service.microserviceId];
   const realService = serviceDiagram.nodes.find((node) => node.id === serviceId).data;
 
