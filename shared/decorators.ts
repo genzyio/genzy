@@ -119,6 +119,7 @@ const typeDecorator = (
       // }
       target.$nimbly_config.types[propertyKey] = isComplex
         ? {
+          $isOptional: isOptional,
           ...(type as any),
           ...typeProps,
         }
