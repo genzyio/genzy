@@ -8,8 +8,8 @@ import { RegisterRoutesFor } from "./routes-handler";
 import {
   CustomInterceptors,
   Interceptable,
-  MetaInfo,
-  ServiceMetaInfo,
+  type MetaInfo,
+  type N1mblyInfo,
 } from "../../shared/types";
 import { ErrorRegistry } from "./error-handler";
 import { generateDocsFrom } from "./docs";
@@ -20,17 +20,10 @@ type InterceptorCallback = (
   next: NextFunction
 ) => any;
 
-export type N1mblyInfo = {
-  version?: string;
-  name?: string;
-  description?: string;
-  basePath?: string;
-};
-
 export class N1mblyApi extends Interceptable<InterceptorCallback> {
   private app: Application;
   private errorRegistry: ErrorRegistry = {};
-  private nimblyInfo?: N1mblyInfo;
+  private n1mblyInfo?: N1mblyInfo;
   private meta: MetaInfo = {
     services: [],
     types: {},
@@ -38,15 +31,15 @@ export class N1mblyApi extends Interceptable<InterceptorCallback> {
 
   constructor({
     app,
-    nimblyInfo,
+    n1mblyInfo,
     basePath = "/api",
   }: {
     app?: Application;
-    nimblyInfo?: Omit<N1mblyInfo, "basePath">;
+    n1mblyInfo?: Omit<N1mblyInfo, "basePath">;
     basePath?: string;
   } = {}) {
     super();
-    this.nimblyInfo = !!nimblyInfo ? { basePath, ...nimblyInfo } : { basePath };
+    this.n1mblyInfo = !!n1mblyInfo ? { basePath, ...n1mblyInfo } : { basePath };
     if (!app) {
       this.app = express();
       this.app.use(express.urlencoded({ extended: true }));
@@ -55,6 +48,7 @@ export class N1mblyApi extends Interceptable<InterceptorCallback> {
     } else {
       this.app = app;
     }
+    this.meta.n1mblyInfo = this.n1mblyInfo;
   }
 
   public buildAppFrom(...containers: N1mblyContainer[]): Application {
@@ -66,7 +60,7 @@ export class N1mblyApi extends Interceptable<InterceptorCallback> {
           this.app,
           this.interceptors,
           this.errorRegistry,
-          this.nimblyInfo.basePath
+          this.n1mblyInfo.basePath
         );
         const { types, ...serviceMeta } = service;
         // register service
@@ -80,17 +74,17 @@ export class N1mblyApi extends Interceptable<InterceptorCallback> {
       });
     });
 
-    this.app.get(`${this.nimblyInfo.basePath}/meta`, (_, res) => {
+    this.app.get(`${this.n1mblyInfo.basePath}/meta`, (_, res) => {
       res.status(200).send(this.meta);
     });
 
     const options = {
       explorer: true,
       swaggerOptions: {
-        url: `${this.nimblyInfo.basePath}/swagger.json`,
+        url: `${this.n1mblyInfo.basePath}/swagger.json`,
       },
     };
-    const swaggerDocument = generateDocsFrom(this.meta, this.nimblyInfo);
+    const swaggerDocument = generateDocsFrom(this.meta, this.n1mblyInfo);
     this.app.get(options.swaggerOptions.url, (req, res) =>
       res.json(swaggerDocument)
     );

@@ -2,11 +2,11 @@ import type {
   ComplexType,
   ComplexTypeReference,
   MetaInfo,
+  N1mblyInfo,
   Param,
   RouteMetaInfo,
   ServiceMetaInfo,
 } from "../../shared/types";
-import { N1mblyInfo } from "./n1mbly-api";
 
 export const generateDocsFrom = (meta: MetaInfo, info: N1mblyInfo) => {
   const doc = {

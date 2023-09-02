@@ -34,7 +34,7 @@ export class N1mblyApi {
   constructor();
   constructor(options: {
     app?: Application;
-    nimblyInfo?: N1mblyInfo;
+    n1mblyInfo?: N1mblyInfo;
     basePath?: string;
   });
 

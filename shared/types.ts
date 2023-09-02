@@ -58,11 +58,19 @@ export class Interceptable<TInterceptorCallback> {
   }
 }
 
+export type N1mblyInfo = {
+  version?: string;
+  name?: string;
+  description?: string;
+  basePath?: string;
+};
+
 export type Modify<T, R> = Omit<T, keyof R> & R;
 
 export type MetaInfo = {
   services: ServiceMetaInfo[];
   types: MetaTypesRegistry;
+  n1mblyInfo?: N1mblyInfo;
 };
 
 export type MetaTypesRegistry = Record<string, ComplexTypeProperties>;
