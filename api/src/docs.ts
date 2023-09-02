@@ -74,7 +74,7 @@ const getParametersDocFrom = (routeMetaInfo: RouteMetaInfo) => {
       schema: {
         type: mapTypeToOpenAPIType(p.type as string),
       },
-      required: true,
+      required: !p.optional,
     }));
 };
 
@@ -121,16 +121,21 @@ const getSchemaRefFrom = (type: ComplexTypeReference) => {
 };
 
 const getSchemaFrom = (type: ComplexType) => {
-  const objectSchema = { type: "object", properties: getPropertiesFrom(type) };
+  const { properties, required } = getPropertiesFrom(type);
+  const objectSchema = {
+    required,
+    type: "object",
+    properties,
+  };
   return type?.$isArray ? { type: "array", items: objectSchema } : objectSchema;
 };
 
 const getPropertiesFrom = (type: ComplexType) => {
-  return modifyPropertiesOf(type, (key: string, type: any) =>
-    typeof type[key] === "object"
-      ? getSchemaFrom(type[key] as any)
-      : { type: mapTypeToOpenAPIType(type[key]) }
-  );
+  return modifyPropertiesOf(type, (key: string, type: any) => {
+    return typeof type[key].type === "object"
+      ? getSchemaFrom(type[key].type as any)
+      : { type: mapTypeToOpenAPIType(type[key].type) };
+  });
 };
 
 const modifyPropertiesOf = (
@@ -138,12 +143,16 @@ const modifyPropertiesOf = (
   gen: (key: string, type: any) => any
 ) => {
   const properties = {};
+  const required = [];
   Object.keys(type ?? {})
     .filter((key) => !key.startsWith("$"))
     .forEach((key) => {
       properties[key] = gen(key, type);
+      if (type[key].$isOptional === false) {
+        required.push(key);
+      }
     });
-  return properties;
+  return { properties, required };
 };
 
 const mapTypeToOpenAPIType = (type: string) =>

@@ -46,4 +46,4 @@ export const { testService, decoratedService, noviServis }: NimblyServices =
     .addRemoteServices(origin, TestService, DecoratedService, NoviServis)
     .getAllServices();
 
-noviServis.getNesto().then(console.log);
+// noviServis.getNesto().then(console.log);

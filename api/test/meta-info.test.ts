@@ -22,9 +22,9 @@ class TestService {
 }
 
 class Example {
-  @string test: string;
-  @boolean bool: boolean;
-  @int num: number;
+  @string() test: string;
+  @boolean() bool: boolean;
+  @int() num: number;
 }
 
 @Controller("/")
@@ -32,9 +32,9 @@ class Test3Service {
   @Post("/:one/:three")
   @Returns(Example)
   async get(
-    @Path("one") @string one: string,
-    @Query("two") @int two: number,
-    @Path("three") @boolean three: boolean,
+    @Path("one") @string() one: string,
+    @Query("two") @int() two: number,
+    @Path("three") @boolean() three: boolean,
     @Body() @type(Example) body: Example
   ) {}
 }
@@ -65,6 +65,7 @@ describe("N1mblyApi Meta Info", () => {
     const exampleType = {
       ...(new Example() as any).$nimbly_config.types,
       $isArray: false,
+      $isOptional: false,
       $typeName: "Example",
     };
 
@@ -84,6 +85,7 @@ describe("N1mblyApi Meta Info", () => {
 
     expect(bodyParam?.type).toStrictEqual({
       $isArray: false,
+      $isOptional: false,
       $typeName: "Example",
     });
     expect(pathParams.map((p) => p.type)).toHaveLength(2);
@@ -101,6 +103,7 @@ describe("N1mblyApi Meta Info", () => {
 
     expect(action.result).toStrictEqual({
       $isArray: false,
+      $isOptional: false,
       $typeName: "Example",
     });
   });

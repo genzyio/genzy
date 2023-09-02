@@ -38,17 +38,17 @@ import {
 //   }
 // }
 
-// class Test {
-//   @string test: string;
-//   @int asdf: number;
-// }
+class Test {
+  @string() test: string;
+  @int() asdf: number;
+}
 
-// class Model {
-//   @string name: string;
-//   @int age: number;
-//   @boolean isMale: boolean;
-//   // @arrayOf(Test) tests: Test[]; // TODO: support this
-// }
+class Model {
+  @string() name: string;
+  @int({ optional: true }) age: number;
+  @boolean() isMale: boolean;
+  // @arrayOf(Test) tests: Test[]; // TODO: support this
+}
 
 // @Controller("/decorated")
 // class DecoratedService {
@@ -58,10 +58,13 @@ import {
 //     this.testService = testService;
 //   }
 
-//   @Get("/:id")
-//   test(@Path("id") @string id: string, @Query("test") @string test?: string) {
-//     return { id, arr: this.testService.get(id), test };
-//   }
+  @Get("/:id")
+  test(
+    @Path("id", { type: "string" }) id: string,
+    @Query("test", { type: "int" }) test?: string
+  ) {
+    return { id, arr: this.testService.get(id), test };
+  }
 
 //   @Post()
 //   @ReturnsArrayOf(Model)
@@ -70,30 +73,32 @@ import {
 //   }
 // }
 
-// @Controller("/configuration", Model)
-// class ConfigurationService {
-//   private noviServis: NoviServis;
-//   constructor(services: { novi: { noviServis: NoviServis } }) {
-//     console.log(services);
-//     this.noviServis = services.novi.noviServis;
-//   }
+@Controller("/configuration", Model)
+class ConfigurationService {
+  private noviServis: NoviServis;
+  constructor(services: { novi: { noviServis: NoviServis } }) {
+    this.noviServis = services.novi.noviServis;
+  }
 
-//   @Post()
-//   @Returns(GenericType)
-//   getAll(@Query("id") @string id: string, @Body(GenericType) body: Model) {
-//     return [
-//       {
-//         id: "prvi",
-//         frequency: 1,
-//         filter: `function filter(value, status) {
-//           return true;
-//         }
-//         function finalFilter(topic, value, status) {
-//           return filter(value, status) && topic === "test";
-//         }`,
-//       },
-//     ];
-//   }
+  @Post()
+  @Returns(GenericType)
+  getAll(
+    @Query("id") @string() id: string,
+    @Body({ type: GenericType }) body: Model
+  ) {
+    return [
+      {
+        id: "prvi",
+        frequency: 1,
+        filter: `function filter(value, status) {
+          return true;
+        }
+        function finalFilter(topic, value, status) {
+          return filter(value, status) && topic === "test";
+        }`,
+      },
+    ];
+  }
 
 //   @Get("/nesto-from-novi")
 //   getNestoFromNoviServis() {

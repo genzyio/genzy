@@ -15,36 +15,40 @@ class Test1Service {
 }
 
 class Test2Service {
-  async get(@string one: string, @int two: number, @boolean three: boolean) {}
+  async get(
+    @string() one: string,
+    @int() two: number,
+    @boolean() three: boolean
+  ) {}
 }
 
 class Example {
-  @string test: string;
-  @boolean bool: boolean;
-  @int num: number;
+  @string() test: string;
+  @boolean() bool: boolean;
+  @int() num: number;
 }
 
 class Model {
-  @string test: string;
-  @boolean bool: boolean;
-  @int num: number;
+  @string() test: string;
+  @boolean() bool: boolean;
+  @int() num: number;
   @type(Example) type: Example;
 }
 
 class Test3Service {
   async get(
-    @string one: string,
-    @int two: number,
-    @boolean three: boolean,
+    @string() one: string,
+    @int() two: number,
+    @boolean() three: boolean,
     @type(Example) body: Example
   ) {}
 }
 
 class Test4Service {
   async get(
-    @string one: string,
-    @int two: number,
-    @boolean three: boolean,
+    @string() one: string,
+    @int() two: number,
+    @boolean() three: boolean,
     @arrayOf(Example) body: Example[]
   ) {}
 }
@@ -53,9 +57,9 @@ class Test4Service {
 class Test5Service {
   @Returns(GenericType)
   async get(
-    @string one: string,
-    @int two: number,
-    @boolean three: boolean,
+    @string() one: string,
+    @int() two: number,
+    @boolean() three: boolean,
     @arrayOf(GenericType) body: Example[],
     @type(GenericType) test: Example
   ) {}
@@ -91,9 +95,18 @@ describe("Types", () => {
     const model: any = new Model();
 
     expect(model.$nimbly_config?.types).not.toBe(undefined);
-    expect(model.$nimbly_config?.types.test).toBe(BASIC_TYPES.string);
-    expect(model.$nimbly_config?.types.bool).toBe(BASIC_TYPES.boolean);
-    expect(model.$nimbly_config?.types.num).toBe(BASIC_TYPES.int);
+    expect(model.$nimbly_config?.types.test).toStrictEqual({
+      type: BASIC_TYPES.string,
+      $isOptional: false,
+    });
+    expect(model.$nimbly_config?.types.bool).toStrictEqual({
+      type: BASIC_TYPES.boolean,
+      $isOptional: false,
+    });
+    expect(model.$nimbly_config?.types.num).toStrictEqual({
+      type: BASIC_TYPES.int,
+      $isOptional: false,
+    });
   });
 
   it("should add meta info with @type", async () => {
@@ -113,6 +126,7 @@ describe("Types", () => {
     expect(model.$nimbly_config?.types.type).toStrictEqual({
       ...example.$nimbly_config.types,
       $isArray: false,
+      $isOptional: false,
       $typeName: "Example",
     });
   });
@@ -136,6 +150,7 @@ describe("Types", () => {
       test3Service.$nimbly_config.actions.get.params[3].type
     ).toStrictEqual({
       $isArray: false,
+      $isOptional: false,
       $typeName: "Example",
     });
     expect(test3Service.$nimbly_config.types.Example).toStrictEqual({
@@ -162,6 +177,7 @@ describe("Types", () => {
       test4Service.$nimbly_config.actions.get.params[3].type
     ).toStrictEqual({
       $isArray: true,
+      $isOptional: false,
       $typeName: "Example",
     });
     expect(test4Service.$nimbly_config.types.Example).toStrictEqual({
@@ -188,16 +204,19 @@ describe("Types", () => {
       test5Service.$nimbly_config.actions.get.params[3].type
     ).toStrictEqual({
       $isArray: true,
+      $isOptional: false,
       $typeName: "Example",
     });
     expect(
       test5Service.$nimbly_config.actions.get.params[4].type
     ).toStrictEqual({
       $isArray: false,
+      $isOptional: false,
       $typeName: "Example",
     });
     expect(test5Service.$nimbly_config.actions.get.result).toStrictEqual({
       $isArray: false,
+      $isOptional: false,
       $typeName: "Example",
     });
     expect(test5Service.$nimbly_config.types.Example).toStrictEqual({

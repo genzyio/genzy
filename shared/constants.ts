@@ -1,3 +1,5 @@
+import { ParamDecoratorOptions, TypeDecoratorOptions } from "./types";
+
 export class GenericType {}
 
 export const BUILT_IN_METHODS = [
@@ -49,4 +51,12 @@ export const BASIC_TYPES = {
   boolean: "boolean",
   int: "int",
   float: "float",
+};
+
+export const defaultTypeOptions: TypeDecoratorOptions = {
+  optional: false,
+};
+
+export const defaultParamOptions: ParamDecoratorOptions = {
+  optional: false,
 };

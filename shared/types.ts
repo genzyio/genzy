@@ -93,6 +93,7 @@ export type Param = {
   source: ParamSource;
   name: string;
   type?: Type;
+  optional?: boolean;
 };
 
 export type N1mblyConfig = {
@@ -104,8 +105,9 @@ export type N1mblyConfig = {
 export type ComplexType = {
   $typeName: string;
   $isArray: boolean;
+  $isOptional: boolean;
 } & {
-  [key: ParamName]: Type;
+  [key: ParamName]: { type: Type; $isOptional: boolean };
 };
 
 export type ComplexTypeProperties = Omit<ComplexType, "$typeName" | "$isArray">;
@@ -127,11 +129,15 @@ export type ActionConfig = {
 
 export type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 export type ParamSource = "query" | "path" | "body";
-export type Type =
-  | "boolean"
-  | "string"
-  | "int"
-  | "float"
-  | ComplexTypeReference;
+export type Type = BasicType | ComplexTypeReference;
 export type MethodName = string;
 export type ParamName = string;
+export type BasicType = "boolean" | "string" | "int" | "float";
+
+export type TypeDecoratorOptions = {
+  optional?: boolean;
+};
+
+export type ParamDecoratorOptions = TypeDecoratorOptions & {
+  type?: BasicType;
+};

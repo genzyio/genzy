@@ -85,10 +85,11 @@ export function RegisterRoutesFor(
         httpMethod,
         name: method,
         path: methodPath,
-        params: params.map(({ name, source, type }) => ({
+        params: params.map(({ name, source, type, optional }) => ({
           name,
           source,
           type,
+          optional,
         })),
         ...(result ? { result } : {}),
       };
