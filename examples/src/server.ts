@@ -52,7 +52,7 @@ class User {
 }
 
 @Controller("/auth")
-class AuthService {
+class AuthController {
   @Get("/")
   @Returns(User)
   async getLoggedInUser(): Promise<User> {
@@ -106,7 +106,7 @@ class CrudController {
 }
 
 @Controller("/users", User)
-class UserCrudService extends CrudController {}
+class UserCrudController extends CrudController {}
 
 class Pera {
   @string() username: string;
@@ -115,7 +115,7 @@ class Pera {
 }
 
 @Controller("/peras", Pera)
-class PeraCrudService extends CrudController {
+class PeraCrudController extends CrudController {
   findOne(id: string) {
     return {
       id,
@@ -125,9 +125,9 @@ class PeraCrudService extends CrudController {
 }
 
 const modul = new N1mblyContainer().addLocalServices(
-  AuthService,
-  PeraCrudService,
-  UserCrudService
+  AuthController,
+  PeraCrudController,
+  UserCrudController
 );
 
 export const api = new N1mblyApi({

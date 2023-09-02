@@ -1,6 +1,10 @@
 import { n1mblyConfigFrom } from "../../shared/functions";
 import { MetaTypesRegistry, ServiceMetaInfo } from "../../shared/types";
-import { formatFileContent, generate as generateUtil } from "./utils";
+import {
+  controllerToServiceName,
+  formatFileContent,
+  generate as generateUtil,
+} from "./utils";
 
 export function generate(
   meta: any,
@@ -10,27 +14,20 @@ export function generate(
   isServer = false
 ) {
   generateUtil(
-    meta,
-    host,
-    dirPath,
     nunjucks,
-    "js",
-    fileContentFrom,
-    indexFileContentFrom,
-    typeFileContentFrom,
-    "index",
-    isServer
+    { meta, dirPath, isServer, extension: "js" },
+    { controllerFileContentFrom, indexFileContentFrom, serviceFileContentFrom }
   );
 }
 
-export function fileContentFrom(
+function controllerFileContentFrom(
   service: ServiceMetaInfo,
   types: MetaTypesRegistry,
   nunjucks: any,
   host: string | undefined,
   isServer: boolean
 ): Promise<string> {
-  const content = nunjucks.render("service.njk", {
+  const content = nunjucks.render("controller.njk", {
     ...service,
     $nimbly: { ...n1mblyConfigFrom(service), types },
     isServer,
@@ -39,7 +36,24 @@ export function fileContentFrom(
   return formatFileContent(content);
 }
 
-export function indexFileContentFrom(
+function serviceFileContentFrom(
+  service: ServiceMetaInfo,
+  types: MetaTypesRegistry,
+  nunjucks: any,
+  isServer: boolean
+): Promise<string> {
+  const content = nunjucks.render("service.njk", {
+    ...service,
+    name: controllerToServiceName(service.name),
+    controllerName: service.name,
+    $nimbly: { ...n1mblyConfigFrom(service), types },
+    isServer,
+    types,
+  });
+  return formatFileContent(content);
+}
+
+function indexFileContentFrom(
   services: ServiceMetaInfo[],
   host: string | undefined,
   nunjucks: any,
@@ -47,8 +61,4 @@ export function indexFileContentFrom(
 ): Promise<string> {
   const content = nunjucks.render("index.njk", { services, host, isServer });
   return formatFileContent(content);
-}
-
-export async function typeFileContentFrom() {
-  return "";
 }

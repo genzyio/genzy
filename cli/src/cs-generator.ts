@@ -14,16 +14,9 @@ export function generate(
   isServer = false
 ) {
   generateUtil(
-    meta,
-    url,
-    dirPath,
     nunjucks,
-    "cs",
-    fileContentFrom,
-    indexFileContentFrom,
-    typeFileContentFrom,
-    "Models",
-    isServer
+    { meta, url, dirPath, indexFileName: "Models", isServer, extension: "cs" },
+    { controllerFileContentFrom, indexFileContentFrom }
   );
 }
 
@@ -31,7 +24,7 @@ function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export async function fileContentFrom(
+async function controllerFileContentFrom(
   service: ServiceMetaInfo,
   types: MetaTypesRegistry,
   nunjucks: any,
@@ -60,7 +53,7 @@ export async function fileContentFrom(
   });
 }
 
-export async function indexFileContentFrom(
+async function indexFileContentFrom(
   services: ServiceMetaInfo[],
   host: string,
   nunjucks: any,
@@ -93,11 +86,6 @@ export async function indexFileContentFrom(
     host,
     isServer,
   });
-}
-
-export async function typeFileContentFrom() {
-  // TODO: implement
-  return "";
 }
 
 function getNamespaceNameFrom(service: ServiceMetaInfo): string {

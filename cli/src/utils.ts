@@ -15,32 +15,50 @@ export async function readMetaFromFile(filePath: string) {
 }
 
 export async function generate(
-  meta: MetaInfo,
-  url: string,
-  dirPath: string,
   nunjucks: any,
-  extension: "ts" | "js" | "cs",
-  fileContentFrom: (
-    service: ServiceMetaInfo,
-    types: MetaTypesRegistry,
-    nunjucks: any,
-    host: string,
-    isServer: boolean
-  ) => Promise<string>,
-  indexFileContentFrom: (
-    services: ServiceMetaInfo[],
-    host: string,
-    nunjucks: any,
-    isServer: boolean
-  ) => Promise<string>,
-  typesFileContentFrom: (
-    types: MetaTypesRegistry,
-    nunjucks: any,
-    isServer: boolean
-  ) => Promise<string>,
-  indexFileName: string,
-  isServer: boolean
+  params: {
+    meta: MetaInfo;
+    url?: string;
+    dirPath: string;
+    isServer: boolean;
+    indexFileName?: string;
+    extension: "ts" | "js" | "cs";
+  },
+  contentHandlers: {
+    controllerFileContentFrom: (
+      service: ServiceMetaInfo,
+      types: MetaTypesRegistry,
+      nunjucks: any,
+      host: string,
+      isServer: boolean
+    ) => Promise<string>;
+    serviceFileContentFrom?: (
+      service: ServiceMetaInfo,
+      types: MetaTypesRegistry,
+      nunjucks: any,
+      isServer: boolean
+    ) => Promise<string>;
+    indexFileContentFrom: (
+      services: ServiceMetaInfo[],
+      host: string,
+      nunjucks: any,
+      isServer: boolean
+    ) => Promise<string>;
+    typesFileContentFrom?: (
+      types: MetaTypesRegistry,
+      nunjucks: any,
+      isServer: boolean
+    ) => Promise<string>;
+  }
 ) {
+  const {
+    dirPath,
+    meta,
+    indexFileName = "index",
+    extension,
+    isServer,
+    url,
+  } = params;
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
   }
@@ -48,21 +66,43 @@ export async function generate(
     meta.services.map(async (service) => {
       writeToFile(
         dirPath + `/${service.name}.${extension}`,
-        await fileContentFrom(service, meta.types, nunjucks, url, isServer)
+        await contentHandlers.controllerFileContentFrom(
+          service,
+          meta.types,
+          nunjucks,
+          url,
+          isServer
+        )
       );
+      if (contentHandlers.serviceFileContentFrom) {
+        writeToFile(
+          dirPath + `/${controllerToServiceName(service.name)}.${extension}`,
+          await contentHandlers.serviceFileContentFrom(
+            service,
+            meta.types,
+            nunjucks,
+            isServer
+          )
+        );
+      }
     })
   );
 
   writeToFile(
     dirPath + `/${indexFileName}.${extension}`,
-    await indexFileContentFrom(meta.services, url, nunjucks, isServer)
+    await contentHandlers.indexFileContentFrom(
+      meta.services,
+      url,
+      nunjucks,
+      isServer
+    )
   );
-  const typesContent = await typesFileContentFrom(
-    meta.types,
-    nunjucks,
-    isServer
-  );
-  if (typesContent) {
+  if (contentHandlers.typesFileContentFrom) {
+    const typesContent = await contentHandlers.typesFileContentFrom(
+      meta.types,
+      nunjucks,
+      isServer
+    );
     writeToFile(dirPath + `/types.${extension}`, typesContent);
   }
 }
@@ -169,4 +209,9 @@ export function getAllSubtypesFrom(
 
 export function getSetFrom(list: any[]): any[] {
   return [...new Set(list)].filter((s) => !!s);
+}
+
+export function controllerToServiceName(controllerName: string): string {
+  const name = controllerName.replace("Controller", "Service");
+  return `${name}${name.endsWith("Service") ? "" : "Service"}`;
 }
