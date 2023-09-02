@@ -50,6 +50,25 @@ export class N1mblyApi {
   public buildAppFrom(...containers: N1mblyContainer[]): Application;
 }
 
+type BasicType = "boolean" | "string" | "int" | "float";
+
+type TypeDecoratorOptions = {
+  optional?: boolean;
+};
+
+type ParamDecoratorOptions = TypeDecoratorOptions & {
+  type?: BasicType;
+};
+
+type BodyDecoratorOptions = {
+  type?:
+    | BasicType
+    | {
+        new (): any;
+      };
+  optional?: boolean;
+};
+
 export function Controller(
   rootPath: string,
   type?: Constructor
@@ -63,44 +82,40 @@ export function Delete(
 export function Patch(
   path?: string
 ): (target: any, propertyKey: string) => void;
+
 export function Query(
-  name: string
+  name: string,
+  options?: ParamDecoratorOptions
 ): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
 export function Path(
-  name: string
+  name: string,
+  options?: Omit<ParamDecoratorOptions, "optional">
 ): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
-export function Body(): (
-  target: any,
-  propertyKey?: string | symbol,
-  parameterIndex?: any
-) => void;
+
+export function Body(
+  options?: BodyDecoratorOptions
+): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
 
 export function string(
-  target: any,
-  propertyKey?: string | symbol,
-  parameterIndex?: any
-): void;
+  options?: TypeDecoratorOptions
+): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
 export function boolean(
-  target: any,
-  propertyKey?: string | symbol,
-  parameterIndex?: any
-): void;
+  options?: TypeDecoratorOptions
+): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
 export function int(
-  target: any,
-  propertyKey?: string | symbol,
-  parameterIndex?: any
-): void;
+  options?: TypeDecoratorOptions
+): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
 export function float(
-  target: any,
-  propertyKey?: string | symbol,
-  parameterIndex?: any
-): void;
+  options?: TypeDecoratorOptions
+): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
+
 export function type(
   type: Constructor
 ): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
 export function arrayOf(
   type: Constructor
 ): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
+
 export function Returns(
   type: Constructor
 ): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;

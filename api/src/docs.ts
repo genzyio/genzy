@@ -132,6 +132,9 @@ const getSchemaFrom = (type: ComplexType) => {
 
 const getPropertiesFrom = (type: ComplexType) => {
   return modifyPropertiesOf(type, (key: string, type: any) => {
+    if (type[key].$typeName) {
+      return getSchemaRefFrom(type[key]);
+    }
     return typeof type[key].type === "object"
       ? getSchemaFrom(type[key].type as any)
       : { type: mapTypeToOpenAPIType(type[key].type) };

@@ -105,7 +105,6 @@ export type N1mblyConfig = {
 export type ComplexType = {
   $typeName: string;
   $isArray: boolean;
-  $isOptional: boolean;
 } & {
   [key: ParamName]: { type: Type; $isOptional: boolean };
 };
@@ -140,4 +139,13 @@ export type TypeDecoratorOptions = {
 
 export type ParamDecoratorOptions = TypeDecoratorOptions & {
   type?: BasicType;
+};
+
+export type BodyDecoratorOptions = {
+  type?:
+    | BasicType
+    | {
+        new (): any;
+      };
+  optional?: boolean;
 };

@@ -126,7 +126,6 @@ describe("Types", () => {
     expect(model.$nimbly_config?.types.type).toStrictEqual({
       ...example.$nimbly_config.types,
       $isArray: false,
-      $isOptional: false,
       $typeName: "Example",
     });
   });
@@ -150,7 +149,6 @@ describe("Types", () => {
       test3Service.$nimbly_config.actions.get.params[3].type
     ).toStrictEqual({
       $isArray: false,
-      $isOptional: false,
       $typeName: "Example",
     });
     expect(test3Service.$nimbly_config.types.Example).toStrictEqual({
@@ -177,7 +175,6 @@ describe("Types", () => {
       test4Service.$nimbly_config.actions.get.params[3].type
     ).toStrictEqual({
       $isArray: true,
-      $isOptional: false,
       $typeName: "Example",
     });
     expect(test4Service.$nimbly_config.types.Example).toStrictEqual({
@@ -204,19 +201,16 @@ describe("Types", () => {
       test5Service.$nimbly_config.actions.get.params[3].type
     ).toStrictEqual({
       $isArray: true,
-      $isOptional: false,
       $typeName: "Example",
     });
     expect(
       test5Service.$nimbly_config.actions.get.params[4].type
     ).toStrictEqual({
       $isArray: false,
-      $isOptional: false,
       $typeName: "Example",
     });
     expect(test5Service.$nimbly_config.actions.get.result).toStrictEqual({
       $isArray: false,
-      $isOptional: false,
       $typeName: "Example",
     });
     expect(test5Service.$nimbly_config.types.Example).toStrictEqual({

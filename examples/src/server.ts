@@ -1,6 +1,6 @@
-import { GenericType, N1mblyApi } from "../../api/src";
-import { Get, Post, Controller, N1mblyContainer } from "../../client/src";
 import {
+  GenericType,
+  N1mblyApi,
   arrayOf,
   Body,
   boolean,
@@ -13,98 +13,8 @@ import {
   ReturnsArrayOf,
   string,
   type,
-} from "../../shared/decorators";
-
-// class TestService {
-//   $nimbly = {
-//     rootPath: "/tests",
-//     get: {
-//       method: "GET",
-//       path: "/:id",
-//     },
-//     update: {
-//       method: "PUT",
-//       path: "/:id",
-//       body: true,
-//     },
-//   };
-
-//   get(id) {
-//     return [1, 2, 3];
-//   }
-
-//   update(id, body) {
-//     return [1, 2, 3];
-//   }
-// }
-
-class Test {
-  @string() test: string;
-  @int() asdf: number;
-}
-
-class Model {
-  @string() name: string;
-  @int({ optional: true }) age: number;
-  @boolean() isMale: boolean;
-  // @arrayOf(Test) tests: Test[]; // TODO: support this
-}
-
-// @Controller("/decorated")
-// class DecoratedService {
-//   private testService: TestService;
-
-//   constructor({ testService }: { testService: TestService }) {
-//     this.testService = testService;
-//   }
-
-  @Get("/:id")
-  test(
-    @Path("id", { type: "string" }) id: string,
-    @Query("test", { type: "int" }) test?: string
-  ) {
-    return { id, arr: this.testService.get(id), test };
-  }
-
-//   @Post()
-//   @ReturnsArrayOf(Model)
-//   post(@type(Model) body: Model) {
-//     return body;
-//   }
-// }
-
-@Controller("/configuration", Model)
-class ConfigurationService {
-  private noviServis: NoviServis;
-  constructor(services: { novi: { noviServis: NoviServis } }) {
-    this.noviServis = services.novi.noviServis;
-  }
-
-  @Post()
-  @Returns(GenericType)
-  getAll(
-    @Query("id") @string() id: string,
-    @Body({ type: GenericType }) body: Model
-  ) {
-    return [
-      {
-        id: "prvi",
-        frequency: 1,
-        filter: `function filter(value, status) {
-          return true;
-        }
-        function finalFilter(topic, value, status) {
-          return filter(value, status) && topic === "test";
-        }`,
-      },
-    ];
-  }
-
-//   @Get("/nesto-from-novi")
-//   getNestoFromNoviServis() {
-//     return this.noviServis.getNesto();
-//   }
-// }
+} from "../../api/src";
+import { Get, Post, Controller, N1mblyContainer } from "../../client/src";
 
 class NoviServis {
   async getNesto() {
@@ -114,39 +24,48 @@ class NoviServis {
 
 const noviModul = new N1mblyContainer().addLocalServices(NoviServis);
 
-// const modul = new N1mblyContainer()
-//   .addLocalServices(TestService, DecoratedService, ConfigurationService)
-//   .addAccessToContainer("novi", noviModul);
-
-// export const api = new N1mblyApi({
-//   n1mblyInfo: {
-//     version: "0.0.1-alpha1",
-//     name: "Random Microservice",
-//     description: "This microservice is used for random stuff.",
-//   },
-// }).buildAppFrom(modul, noviModul);
-
-class User {
-  @string username: string;
-  @string password: string;
-  @int age: number;
+class Peraa {
+  @string() hello: string;
 }
 
-@Controller("/user")
-class UserService {
+class Test {
+  @string() username: string;
+  @string() password: string;
+
+  @arrayOf(Peraa)
+  peraas: Peraa[];
+}
+
+class Account {
+  @string() username: string;
+  @string() password: string;
+
+  @arrayOf(Test) tests: Test[];
+}
+
+class User {
+  @string() name: string;
+  @string() surname: string;
+  @int({ optional: true }) age?: number;
+
+  @type(Account, { optional: true }) account?: Account;
+}
+
+@Controller("/auth")
+class AuthService {
   @Get("/")
   @Returns(User)
   async getLoggedInUser(): Promise<User> {
     return {
-      username: "pera",
-      password: "nikola me zovu",
+      name: "pera",
+      surname: "nikola me zovu",
       age: 10,
     };
   }
 
   @Post("/login")
   @Returns(User)
-  async logIn(@Body(User) user: User): Promise<User> {
+  async logIn(@Body({ type: User }) user: User): Promise<User> {
     return user;
   }
 }
@@ -154,7 +73,7 @@ class UserService {
 class CrudController {
   @Get("/:id")
   @Returns(GenericType)
-  findOne(@string @Path("id") id: string) {
+  findOne(@Path("id", { type: "string" }) id: string) {
     return null;
   }
 
@@ -166,22 +85,22 @@ class CrudController {
 
   @Post("/")
   @Returns(GenericType)
-  create(@Body() @type(GenericType) entity: any) {
+  create(@Body({ type: GenericType }) entity: any) {
     return null;
   }
 
   @Put("/:id")
   @Returns(GenericType)
   update(
-    @string @Path("id") id: string,
-    @Body() @type(GenericType) entity: any
+    @Path("id", { type: "string" }) id: string,
+    @Body({ type: GenericType }) entity: any
   ) {
     return null;
   }
 
   @Delete("/:id")
   @Returns(GenericType)
-  delete(@string @Path("id") id: string) {
+  delete(@Path("id", { type: "string" }) id: string) {
     return null;
   }
 }
@@ -190,9 +109,9 @@ class CrudController {
 class UserCrudService extends CrudController {}
 
 class Pera {
-  @string username: string;
-  @string password: string;
-  @boolean car: boolean;
+  @string() username: string;
+  @string() password: string;
+  @boolean() car: boolean;
 }
 
 @Controller("/peras", Pera)
@@ -206,9 +125,9 @@ class PeraCrudService extends CrudController {
 }
 
 const modul = new N1mblyContainer().addLocalServices(
-  UserService,
-  // UserCrudService,
-  PeraCrudService
+  AuthService,
+  PeraCrudService,
+  UserCrudService
 );
 
 export const api = new N1mblyApi({

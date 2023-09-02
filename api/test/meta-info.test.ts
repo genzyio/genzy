@@ -62,13 +62,6 @@ describe("N1mblyApi Meta Info", () => {
   it("should register meta path with all types and params", async () => {
     const serviceMeta = RegisterRoutesFor(new Test3Service(), express());
 
-    const exampleType = {
-      ...(new Example() as any).$nimbly_config.types,
-      $isArray: false,
-      $isOptional: false,
-      $typeName: "Example",
-    };
-
     // TODO: assert that types are registered correctly
 
     expect(serviceMeta.service.actions).toHaveLength(1);
@@ -85,7 +78,6 @@ describe("N1mblyApi Meta Info", () => {
 
     expect(bodyParam?.type).toStrictEqual({
       $isArray: false,
-      $isOptional: false,
       $typeName: "Example",
     });
     expect(pathParams.map((p) => p.type)).toHaveLength(2);
@@ -103,7 +95,6 @@ describe("N1mblyApi Meta Info", () => {
 
     expect(action.result).toStrictEqual({
       $isArray: false,
-      $isOptional: false,
       $typeName: "Example",
     });
   });

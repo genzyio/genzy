@@ -6,9 +6,17 @@ import {
 {% for name, fields in types %} export class {{name}}
   {
   {% for field_name, props in fields %}
-    {% if isServer %}@{{props.type}}({% if props.$isOptional %}true{% endif %}){% endif %}
-    {{field_name}}{% if props.$isOptional %}?{% endif %}:
-  {% if props.type == "int" or props.type == "float" %}number{% else %}{{props.type}}{% endif %} {% if props.$isOptional %}| undefined{% endif %};
+    {% if isServer %}
+      {% if props.$typeName %}
+        {% if props.$isArray %}@arrayOf({{props.$typeName}})
+        {% else %}@type({{props.$typeName}})
+        {% endif %}
+      {% else %}
+        @{{props.type}}({% if props.$isOptional %}{% raw %}{{% endraw %} optional: true {% raw %}}{% endraw %}{% endif %})
+      {% endif %}
+    {% endif %}
+    {{field_name}}{% if props.$isOptional %}?{% endif %}: {% if props.type == "int" or props.type == "float" %}number{% else %}{{props.type or props.$typeName}}{% if props.$isArray %}[]{% endif %}{% endif %};
   {% endfor %}
   }
+
 {% endfor %}
