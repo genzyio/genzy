@@ -12,6 +12,11 @@ const addServiceHandler: HandlerType<{
   microserviceId: string;
   service: Service;
 }> = (projectDefinition: ProjectDefinition, { microserviceId, service }) => {
+  const microserviceNode = projectDefinition.microservices.nodes.find(
+    (node) => node.id === microserviceId
+  );
+  microserviceNode.data.services.push(service);
+
   const serviceDiagram = projectDefinition.services[microserviceId];
   const newServiceNode = createServiceNode({
     serviceId: service.id,
@@ -76,6 +81,13 @@ const updateServiceHandler: HandlerType<{
   microserviceId: string;
   service: Service;
 }> = (projectDefinition: ProjectDefinition, { microserviceId, service }) => {
+  const microserviceNode = projectDefinition.microservices.nodes.find(
+    (node) => node.id === microserviceId
+  );
+  const serviceData = microserviceNode.data.services.find((s) => s.id === service.id);
+  serviceData.name = service.name;
+  serviceData.type = service.type;
+
   const serviceDiagram = projectDefinition.services[microserviceId];
   const serviceNode = serviceDiagram.nodes.find((node) => node.id == service.id);
 

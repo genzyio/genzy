@@ -1,14 +1,14 @@
 import { useMemo, type FC } from "react";
 import { useRecentlyOpenedProjects } from "../../hooks/useRecenltyOpenedProjects";
-import { useProjectContext } from "../../contexts/project.context";
 import { RecentlyOpenedListItem } from "./recenlty-opened-list-item";
 import { useAction } from "../../../../hooks/useAction";
 import { modifyRecentlyOpened } from "../../api/recently-opened.actions";
 import { type RecentlyOpenedProject } from "../../models/recently-opened.models";
+import { useProjectNavigation } from "../../hooks/useProjectNavigation";
 
 export const RecentlyOpenedList: FC = () => {
   const { recentlyOpenedProjects } = useRecentlyOpenedProjects();
-  const { loadProject } = useProjectContext();
+  const { openProject } = useProjectNavigation();
 
   const hasRecentProjects = useMemo(() => {
     return recentlyOpenedProjects.some((project) => !!project.openedAt);
@@ -34,7 +34,7 @@ export const RecentlyOpenedList: FC = () => {
             key={project.name}
             recentlyOpenedProject={project}
             onViewProject={() => {
-              loadProject(project.name);
+              openProject(project.name);
               modifyRecentlyOpenedAction(project.name);
             }}
           />

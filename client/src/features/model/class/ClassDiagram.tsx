@@ -1,4 +1,4 @@
-import { type FC, useEffect, useState, useCallback } from "react";
+import { type FC, useEffect, useState, useCallback, useMemo } from "react";
 import {
   Background,
   Controls,
@@ -8,6 +8,7 @@ import {
   type Viewport,
   useNodesState,
   useOnViewportChange,
+  NodeProps,
 } from "reactflow";
 import { Class } from "./models";
 import { useSequenceGenerator } from "../../../hooks/useStringSequence";
@@ -19,6 +20,8 @@ import { useTypesContext } from "./TypesContext";
 import nodeTypes from "../common/constants/nodeTypes";
 import { ConfirmationModal } from "../../../components/confirmation-modal";
 import { createClassNode } from "../common/utils/nodeFactories";
+import { ClassNode } from "./ClassNode";
+import { RemovableNode } from "../common/components/RemovableNode";
 
 type DiagramProps = {
   microserviceId: string;
@@ -56,10 +59,14 @@ export const ClassDiagram: FC<DiagramProps> = ({
     }, []),
   });
 
+  // Handle Class add
+
   const handleClassAdd = () => {
     const newClassNode = createClassNode({ microserviceId, name: nextName() });
     setNodes((ns) => [...ns, newClassNode]);
   };
+
+  // Handle Class update
 
   const handleClassUpdate = (classObject: Class) => {
     setNodes((nodes) =>
@@ -75,25 +82,42 @@ export const ClassDiagram: FC<DiagramProps> = ({
     setSelectedClass(undefined);
   };
 
-  const onHandleClassDelete = () => {
-    setDrawerOpen(false);
-    setModalOpen(true);
-  };
+  // Handle Class delete
 
   const handleClassDelete = () => {
     const deletedClassId = selectedClass.id;
     dispatcher(projectDefinitionActions.deleteClass, { microserviceId, classId: deletedClassId });
     setNodes((ns) => ns.filter((n) => n.id !== deletedClassId));
 
-    setDrawerOpen(false);
     setModalOpen(false);
     setSelectedClass(undefined);
   };
 
   const onCancelClassDelete = () => {
-    setDrawerOpen(true);
     setModalOpen(false);
+    setSelectedClass(undefined);
   };
+
+  const RemovableClassNodeWrapper = useCallback(
+    (props: NodeProps<Class>) => {
+      const onRemove = (_, id: string) => {
+        const node = projectDefinition.classes[microserviceId].nodes.find((node) => node.id === id);
+        setSelectedClass(node);
+        setModalOpen(true);
+      };
+
+      return <RemovableNode onRemove={onRemove} element={ClassNode} {...props} />;
+    },
+    [microserviceId, setSelectedClass, setModalOpen]
+  );
+
+  const localNodeTypes = useMemo(
+    () => ({
+      ...nodeTypes,
+      classNode: RemovableClassNodeWrapper,
+    }),
+    [RemovableClassNodeWrapper]
+  );
 
   return (
     <>
@@ -109,12 +133,13 @@ export const ClassDiagram: FC<DiagramProps> = ({
           className="validationflow"
           nodes={nodes}
           onNodesChange={onNodesChange}
-          nodeTypes={nodeTypes}
+          nodeTypes={localNodeTypes}
           onNodeDoubleClick={(_, node) => {
             setSelectedClass(node);
             setDrawerOpen(true);
           }}
           defaultViewport={initialViewport}
+          deleteKeyCode={""}
           proOptions={{ account: "paid-sponsor", hideAttribution: true }}
         >
           <MiniMap zoomable pannable />
@@ -148,7 +173,6 @@ export const ClassDiagram: FC<DiagramProps> = ({
             key={selectedClass.id}
             class={selectedClass.data}
             onClassUpdate={handleClassUpdate}
-            onClassDelete={onHandleClassDelete}
             nameExists={(name) =>
               nodes.some((n) => n.id !== selectedClass.id && n.data.name === name)
             }

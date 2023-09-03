@@ -1,4 +1,4 @@
-import { type FC, useCallback, useEffect, useState } from "react";
+import { type FC, useCallback, useEffect, useState, useMemo } from "react";
 import ReactFlow, {
   useNodesState,
   useEdgesState,
@@ -8,7 +8,9 @@ import ReactFlow, {
   Background,
   MiniMap,
   type Node,
+  type NodeProps,
   type Edge,
+  type EdgeProps,
   type Viewport,
   useOnViewportChange,
   ConnectionMode,
@@ -21,6 +23,11 @@ import { ServiceDrawer } from "./ServiceDrawer";
 import { useProjectDefinitionContext } from "../../projects/contexts/project-definition.context";
 import nodeTypes from "../common/constants/nodeTypes";
 import { createServiceEdge } from "../common/utils/edgeFactories";
+import { projectDefinitionActions } from "../../projects/contexts/project-definition.dispatcher";
+import { ConfirmationModal } from "../../../components/confirmation-modal";
+import { RemovableEdge } from "../common/components/RemovableEdge";
+import { ServiceNode } from "./ServiceNode";
+import { RemovableNode } from "../common/components/RemovableNode";
 
 type DiagramProps = {
   microserviceId: string;
@@ -37,9 +44,10 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   edges: initialEdges,
   viewport: initialViewport,
 }) => {
-  const { projectDefinition } = useProjectDefinitionContext();
+  const { projectDefinition, dispatcher } = useProjectDefinitionContext();
 
   const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Service>(initialNodes || []);
   const [edges, setEdges, onEdgesChange] = useEdgesState<{}>(initialEdges || []);
@@ -96,7 +104,31 @@ export const ServiceDiagram: FC<DiagramProps> = ({
     return `Service${i}`;
   };
 
-  const handleUpdate = (service: Service) => {
+  // Handle Service add
+
+  const handleServiceAdd = () => {
+    const serviceNode = dispatcher(projectDefinitionActions.addService, {
+      microserviceId,
+      service: {
+        id: `${+new Date()}`,
+        name: nextName(),
+        type: "CONTROLLER",
+      },
+    });
+    setNodes((nds) => [...nds, serviceNode]);
+  };
+
+  // Handle Service update
+
+  const handleServiceUpdate = (service: Service) => {
+    dispatcher(projectDefinitionActions.updateService, {
+      microserviceId,
+      service: {
+        id: selected.id,
+        ...service,
+      },
+    });
+
     setNodes((ns) =>
       ns.map((n) => {
         if (n.id === selected.id) n.data = service;
@@ -105,9 +137,83 @@ export const ServiceDiagram: FC<DiagramProps> = ({
     );
   };
 
+  // Handle Service delete
+
+  const handleServiceDelete = () => {
+    const removedServiceId = selected.id;
+
+    dispatcher(projectDefinitionActions.updateMicroservice, {
+      microserviceId: microserviceId,
+      newServices: [],
+      existingServices: [],
+      removedServices: [{ id: removedServiceId }],
+    });
+
+    setNodes((ns) => ns.filter((n) => n.id !== removedServiceId));
+    setEdges((edgs) =>
+      edgs.filter((edge) => removedServiceId !== edge.target && removedServiceId !== edge.source)
+    );
+
+    setIsModalOpen(false);
+    setSelected(undefined);
+  };
+
+  const onCancelServiceDelete = () => {
+    setIsModalOpen(false);
+    setSelected(undefined);
+  };
+
+  const RemovableServiceNodeWrapper = useCallback(
+    (props: NodeProps<Service>) => {
+      const onRemove = (_, id: string) => {
+        const node = projectDefinition.services[microserviceId].nodes.find(
+          (node) => node.id === id
+        );
+        setSelected(node);
+        setIsModalOpen(true);
+      };
+
+      return <RemovableNode onRemove={onRemove} element={ServiceNode} {...props} />;
+    },
+    [microserviceId, setSelected, setIsModalOpen]
+  );
+
+  const localNodeTypes = useMemo(
+    () => ({
+      ...nodeTypes,
+      serviceNode: RemovableServiceNodeWrapper,
+    }),
+    [RemovableServiceNodeWrapper]
+  );
+
+  const RemovableEdgeWrapper = useCallback(
+    (props: EdgeProps) => {
+      const onRemove = (_, id: string) => {
+        setEdges((edges) => edges.filter((edge) => edge.id !== id));
+      };
+
+      return <RemovableEdge onRemove={onRemove} {...props} />;
+    },
+    [setEdges]
+  );
+
+  const edgeTypes = useMemo(
+    () => ({
+      removableEdge: RemovableEdgeWrapper,
+    }),
+    [RemovableEdgeWrapper]
+  );
+
   return (
     <>
       <div className="h-full w-full">
+        <div className="absolute left-1/2 -translate-x-1/2 top-3 z-10 p-1 rounded-lg border border-gray-200 w-[12%]">
+          <div className="flex justify-center gap-x-3">
+            <button className="hover:opacity-60" onClick={handleServiceAdd}>
+              Add service
+            </button>
+          </div>
+        </div>
         <ReactFlow
           className="validationflow"
           nodes={nodes}
@@ -119,7 +225,8 @@ export const ServiceDiagram: FC<DiagramProps> = ({
           onEdgeUpdateStart={() => (updateValidation = true)}
           onEdgeUpdateEnd={() => (updateValidation = false)}
           onEdgeUpdate={onEdgeUpdate}
-          nodeTypes={nodeTypes}
+          nodeTypes={localNodeTypes}
+          edgeTypes={edgeTypes}
           onNodeClick={() => {}}
           onNodeDoubleClick={(_e, node) => {
             if (node.data.type === "REMOTE_PROXY") return;
@@ -128,6 +235,7 @@ export const ServiceDiagram: FC<DiagramProps> = ({
           }}
           connectionMode={ConnectionMode.Loose}
           defaultViewport={initialViewport}
+          deleteKeyCode={""}
           proOptions={{ account: "paid-sponsor", hideAttribution: true }}
         >
           <MiniMap zoomable pannable />
@@ -136,11 +244,23 @@ export const ServiceDiagram: FC<DiagramProps> = ({
         </ReactFlow>
       </div>
 
+      <ConfirmationModal
+        title={`Delete ${selected?.data?.name}`}
+        isOpen={isModalOpen}
+        onYes={handleServiceDelete}
+        onClose={onCancelServiceDelete}
+      >
+        <span>
+          Are you sure that you want to delete {selected?.data?.name}. By deleting{" "}
+          {selected?.data?.name}, all references will be removed.
+        </span>
+      </ConfirmationModal>
+
       <Drawer open={isDrawerOpen} onClose={() => setDrawerOpen(false)} title={"GN1mbly"}>
         {selected && (
           <ServiceDrawer
             service={selected.data}
-            updateService={handleUpdate}
+            updateService={handleServiceUpdate}
             nameExists={(name) => nodes.some((n) => n.id !== selected.id && n.data.name === name)}
           />
         )}

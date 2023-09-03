@@ -10,7 +10,7 @@ function createMicroserviceEdge(params: CreateMicroserviceEdgeParams): any {
     data: {
       services: [],
     },
-    type: "smoothstep",
+    type: "removableEdge",
     markerEnd: {
       type: MarkerType.ArrowClosed,
       width: 30,
@@ -29,7 +29,7 @@ function createServiceEdge(params: CreateServiceEdgeParams): any {
     data: {
       services: [],
     },
-    type: "smoothstep",
+    type: "removableEdge",
     markerEnd: {
       type: MarkerType.ArrowClosed,
       width: 30,

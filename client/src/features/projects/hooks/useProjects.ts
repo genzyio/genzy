@@ -14,7 +14,7 @@ export function useProjects(dependencies: any[] = []) {
 }
 
 export function useProject(projectName: string, dependencies: any[] = []) {
-  const { data, isFetching } = useQuery(
+  const { data, isFetching, isError } = useQuery(
     [`projects/${projectName}`, ...dependencies],
     () => getProject(projectName),
     {
@@ -25,5 +25,6 @@ export function useProject(projectName: string, dependencies: any[] = []) {
   return {
     project: (data?.data ?? {}) as Project,
     isFetching,
+    isError,
   };
 }
