@@ -51,8 +51,10 @@ function update(projectName: string): Promise<void> {
 
 function remove(projectName: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    dbConnection.run(`DELETE FROM RecentlyOpened WHERE projectId = ?`, [projectName], (error) =>
-      error ? reject(error) : resolve()
+    dbConnection.run(
+      `DELETE FROM RecentlyOpened WHERE projectId = (SELECT id from Projects WHERE name = ?)`,
+      [projectName],
+      (error) => (error ? reject(error) : resolve())
     );
   });
 }

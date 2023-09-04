@@ -24,7 +24,7 @@ recentlyOpenedRouters.post("/projects/:name/recently-opened", async (req: Reques
 
   const existingProject = await projectsRepo.getByName(projectName);
   if (!existingProject) {
-    return res.status(404).send(projectDoesNotExistError);
+    return res.status(404).send(projectDoesNotExistError(projectName));
   }
 
   const recentlyOpened: CreateRecentlyOpened = {
@@ -41,7 +41,7 @@ recentlyOpenedRouters.delete("/projects/:name/recently-opened", async (req: Requ
 
   const existingRecentlyOpened = await recentlyOpenedRepo.getByName(projectName);
   if (!existingRecentlyOpened) {
-    return res.status(404).send(recentlyOpenedDoesNotExistError);
+    return res.status(404).send(recentlyOpenedDoesNotExistError(projectName));
   }
 
   await recentlyOpenedRepo.remove(projectName);

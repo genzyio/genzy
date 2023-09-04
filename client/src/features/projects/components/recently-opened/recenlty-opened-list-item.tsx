@@ -4,14 +4,18 @@ import { getProjectScreenshotUrl } from "../../api/project-screenshots.actions";
 import moment = require("moment");
 import { Button } from "../../../../components/button";
 
+import { XMark } from "../../../../components/icons/x-mark";
+
 type RecentlyOpenedListItemProps = {
   recentlyOpenedProject: RecentlyOpenedProject;
   onViewProject: () => any;
+  onRemoveProject: () => any;
 };
 
 export const RecentlyOpenedListItem: FC<RecentlyOpenedListItemProps> = ({
   recentlyOpenedProject,
   onViewProject,
+  onRemoveProject,
 }) => {
   return (
     <li
@@ -43,7 +47,22 @@ export const RecentlyOpenedListItem: FC<RecentlyOpenedListItemProps> = ({
         </div>
       </div>
       <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
-        <Button onClick={onViewProject}>View Project</Button>
+        {/* <div>
+          <Button
+            className="text-sm font-semibold leading-6 text-gray-900 mb-1"
+            onClick={onViewProject}
+          >
+            View Project
+          </Button>
+        </div> */}
+        <div>
+          <Button
+            className="text-sm font-semibold leading-6 text-gray-900"
+            onClick={onRemoveProject}
+          >
+            <XMark />
+          </Button>
+        </div>
       </div>
     </li>
   );
