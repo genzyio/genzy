@@ -17,4 +17,8 @@ function importProject(project: ImportProject) {
   return axios.post(`/projects/import`, project);
 }
 
-export { getProjects, getProject, createProject, importProject };
+function deleteProject({ projectName, physical }: { projectName: string; physical: boolean }) {
+  return axios.delete(`/projects/${projectName}?physical=${physical}`);
+}
+
+export { getProjects, getProject, createProject, importProject, deleteProject };

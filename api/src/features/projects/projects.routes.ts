@@ -90,7 +90,7 @@ projectRouters.post("/projects/import", async (req: Request, res: Response) => {
 
 projectRouters.delete("/projects/:name", async (req: Request, res: Response) => {
   const projectName = req.params.name || "";
-  const deletePhysically = req.query.physical || false;
+  const deletePhysically = req.query.physical === "true";
 
   const existingProject = await projectsRepo.getByName(projectName);
   if (!existingProject) {
