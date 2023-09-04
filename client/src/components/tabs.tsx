@@ -15,6 +15,7 @@ type TabsProps = PropsWithChildren & {
 
 export const Tabs: FC<TabsProps> = ({ onInit, children }) => {
   const [activeTab, setActiveTab] = useState(0);
+  const [nextActiveTab, setNextActiveTab] = useState(-1);
 
   const tabs = useMemo(
     () =>
@@ -24,16 +25,14 @@ export const Tabs: FC<TabsProps> = ({ onInit, children }) => {
     [children]
   );
 
-  const onTabChange = ({ onChange, title }: TabProps, index: number) => {
+  const onTabChange = ({ id, onChange }: TabProps, index: number) => {
     setActiveTab(index);
-    onChange && onChange({ title, index });
+    onChange && onChange({ id, index });
   };
 
-  const onTabClose = ({ onClose, title }: TabProps, index: number) => {
-    if (index === activeTab) {
-      setActiveTab(index - 1);
-    }
-    onClose({ title, index });
+  const onTabClose = ({ onClose, id }: TabProps, index: number) => {
+    if (activeTab >= index) setNextActiveTab(activeTab - 1);
+    onClose({ id, index });
   };
 
   useEffect(() => {
@@ -43,9 +42,18 @@ export const Tabs: FC<TabsProps> = ({ onInit, children }) => {
   const tabsInstance: TabsInstance = {} as TabsInstance;
   useEffect(() => {
     tabsInstance.activeTab = activeTab;
-    tabsInstance.setActiveTab = setActiveTab;
+    tabsInstance.setActiveTab = setNextActiveTab;
     tabsInstance.tabsCount = tabs.length;
-  }, [activeTab, setActiveTab, tabs]);
+  }, [activeTab, setNextActiveTab, tabs]);
+
+  useEffect(() => {
+    if (nextActiveTab === -1) return;
+
+    const nextTab = tabs[nextActiveTab].props;
+    onTabChange(nextTab, nextActiveTab);
+
+    setNextActiveTab(-1);
+  }, [nextActiveTab]);
 
   return (
     <>
@@ -56,7 +64,11 @@ export const Tabs: FC<TabsProps> = ({ onInit, children }) => {
         <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
           {tabs?.map((tab: { props: TabProps }, i: number) => {
             return (
-              <li key={tab.props.title} className="mr-2" onClick={() => onTabChange(tab.props, i)}>
+              <li
+                key={tab.props.id || tab.props.title}
+                className="mr-2"
+                onClick={() => onTabChange(tab.props, i)}
+              >
                 <p
                   className={
                     i === activeTab

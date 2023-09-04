@@ -1,14 +1,16 @@
 import { type FC, type PropsWithChildren } from "react";
 
 export type TabProps = PropsWithChildren & {
+  id?: string;
   title: string;
   className?: string;
   icon?: React.ReactElement;
-  onChange?: (params: { title: string; index: number }) => void;
-  onClose?: (params: { title: string; index: number }) => void;
+  onChange?: (params: { id: string; index: number }) => void;
+  onClose?: (params: { id: string; index: number }) => void;
 };
 
 export const Tab: FC<TabProps> = ({
+  id = undefined,
   title,
   className = undefined,
   icon = undefined,

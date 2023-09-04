@@ -36,7 +36,7 @@ type DiagramProps = {
   nodes?: any[];
   edges?: any[];
   viewport: any;
-  onMicroserviceDeleted: (microserviceName: string) => any;
+  onMicroserviceDeleted: (microserviceId: string) => any;
 };
 
 let updateValidation = false;
@@ -162,7 +162,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
       )
     );
 
-    onMicroserviceDeleted(selectedMicroservice.data.name);
+    onMicroserviceDeleted(selectedMicroservice.id);
 
     setIsDeleteMicroserviceModalOpen(false);
     setSelectedMicroservice(undefined);
