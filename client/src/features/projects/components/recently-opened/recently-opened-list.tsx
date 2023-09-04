@@ -41,7 +41,8 @@ export const RecentlyOpenedList: FC = () => {
 
   const deleteRecentlyOpenedAction = useAction<string>(deleteRecentlyOpened, {
     onSuccess: () => {
-      queryClient.invalidateQueries();
+      notificator.success("You have successfully remove project from recently opened.");
+      queryClient.invalidateQueries({ queryKey: [`projects/recently-opened`] });
     },
     onError: (error) => {
       notificator.error(extractErrorMessage(error));
@@ -54,7 +55,8 @@ export const RecentlyOpenedList: FC = () => {
     {
       onSuccess: () => {
         closeDeleteModal();
-        queryClient.invalidateQueries();
+        notificator.success("You have successfully deleted project.");
+        queryClient.invalidateQueries({ queryKey: [`projects/recently-opened`] });
       },
       onError: (error) => {
         notificator.error(extractErrorMessage(error));
@@ -112,7 +114,7 @@ export const RecentlyOpenedList: FC = () => {
 
       {hasOtherProjects && (
         <>
-          <p className="font-bold">Other</p>
+          <p className="font-bold mt-2">Other</p>
           {renderProjectList(
             recentlyOpenedProjects,
             (project: RecentlyOpenedProject) => !project.openedAt,

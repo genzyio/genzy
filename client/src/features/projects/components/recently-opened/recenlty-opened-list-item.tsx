@@ -46,7 +46,7 @@ export const RecentlyOpenedListItem: FC<RecentlyOpenedListItemProps> = ({
           )}
         </div>
       </div>
-      <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
+      <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end justify-center mr-2">
         {/* <div>
           <Button
             className="text-sm font-semibold leading-6 text-gray-900 mb-1"
