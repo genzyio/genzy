@@ -72,6 +72,13 @@ const updateMicroserviceHandler: HandlerType<{
       serviceIds: removedServiceIds,
     });
   });
+
+  const microserviceNode = projectDefinition.microservices.nodes.find(
+    (node) => node.id === microserviceId
+  );
+  microserviceNode.data.services = microserviceNode.data.services.filter((service) =>
+    removedServices.every((removedService) => removedService.id !== service.id)
+  );
 };
 
 // Delete

@@ -91,7 +91,6 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
       <div className="flex mb-5 w-full">
         <span className="w-2/3">
           <TextField
-            disabled={true}
             value={serviceData.name}
             onChange={(v) => updateState({ ...serviceData, name: v })}
             onBlur={update}
@@ -103,7 +102,6 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
         </span>
         <span className="w-1/3">
           <Select
-            disabled={true}
             value={serviceData.type}
             onChange={(v) => updateState({ ...serviceData, type: v as ServiceType })}
             options={serviceTypeOptions}
@@ -131,9 +129,12 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
           }
         />
       ))}
-      <Button onClick={handleAddFunction} className="text-sm mt-3">
-        New function
-      </Button>
+
+      <div className="flex justify-between">
+        <Button onClick={handleAddFunction} className="text-sm mt-3">
+          New function
+        </Button>
+      </div>
     </div>
   );
 };

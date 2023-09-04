@@ -10,14 +10,12 @@ import { EditMethod } from "./EditMethod";
 type ClassDrawerProps = {
   class: Class;
   onClassUpdate: (classObject: Class) => any;
-  onClassDelete: () => any;
   nameExists: (name: string) => boolean;
 };
 
 export const ClassDrawer: FC<ClassDrawerProps> = ({
   class: initialClass,
   onClassUpdate,
-  onClassDelete,
   nameExists,
 }) => {
   const [className, setClassName] = useState(initialClass.name);
@@ -97,8 +95,6 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
     });
   };
 
-  const handleDelete = onClassDelete;
-
   return (
     <>
       <div className="mx-4">
@@ -156,9 +152,6 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
           <div className="space-x-1">
             <Button type="button" className="text-sm mt-3" onClick={handleSave}>
               Save
-            </Button>
-            <Button type="button" className="text-sm mt-3" onClick={handleDelete}>
-              Delete
             </Button>
           </div>
         </div>

@@ -9,14 +9,12 @@ import { useSequenceGenerator } from "../../../hooks/useStringSequence";
 type MicroserviceDrawerProps = {
   microservice: Microservice;
   onMicroserviceUpdate: (microservice: Microservice) => any;
-  onMicroserviceDelete: () => any;
   nameExists: (name: string) => boolean;
 };
 
 export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
   microservice: initialMicroservice,
   onMicroserviceUpdate,
-  onMicroserviceDelete,
   nameExists,
 }) => {
   const [microserviceName, setMicroserviceName] = useState(initialMicroservice.name);
@@ -56,8 +54,6 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
     onMicroserviceUpdate({ name: microserviceName, services });
   };
 
-  const handleDelete = onMicroserviceDelete;
-
   return (
     <div className="mx-4">
       <div className="flex mb-5 w-full">
@@ -92,9 +88,6 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
         <div className="space-x-1">
           <Button type="button" className="text-sm mt-3" onClick={handleSave}>
             Save
-          </Button>
-          <Button type="button" className="text-sm mt-3" onClick={handleDelete}>
-            Delete
           </Button>
         </div>
       </div>

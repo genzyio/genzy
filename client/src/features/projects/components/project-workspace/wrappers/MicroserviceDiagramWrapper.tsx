@@ -5,7 +5,7 @@ import { MicroservicesDiagram } from "../../../../model/microservices/Microservi
 import { defaultViewport } from "../../../contexts/project-definition-handlers/microservice-handlers";
 
 type MicroserviceDiagramWrapperProps = {
-  onMicroserviceDeleted: (microserviceName: string) => any;
+  onMicroserviceDeleted: (microserviceId: string) => any;
 };
 
 export const MicroserviceDiagramWrapper: FC<MicroserviceDiagramWrapperProps> = ({

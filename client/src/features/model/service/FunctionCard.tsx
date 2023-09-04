@@ -65,7 +65,8 @@ export const FunctionCard: FC<FunctionCardProps> = ({
               </li>
             ))}
           </ul>
-          Returns: {getTypeLabel(fun.returnType) || "?"}
+          Returns: {fun.returnType || "?"}
+          {fun.returnsCollection && "[]"}
         </>
       )}
     </div>

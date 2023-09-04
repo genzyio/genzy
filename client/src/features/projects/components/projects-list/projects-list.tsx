@@ -1,13 +1,13 @@
 import { type FC } from "react";
 import { useProjects } from "../../hooks/useProjects";
 import { ProjectListItem } from "./project-list-item";
-import { useProjectContext } from "../../contexts/project.context";
 import { modifyRecentlyOpened } from "../../api/recently-opened.actions";
 import { useAction } from "../../../../hooks/useAction";
+import { useProjectNavigation } from "../../hooks/useProjectNavigation";
 
 export const ProjectsList: FC = () => {
   const { projects } = useProjects();
-  const { loadProject } = useProjectContext();
+  const { openProject } = useProjectNavigation();
 
   const modifyRecentlyOpenedAction = useAction<string>(modifyRecentlyOpened, {
     onSuccess: () => {},
@@ -22,7 +22,7 @@ export const ProjectsList: FC = () => {
             key={project.path}
             project={project}
             onViewProject={() => {
-              loadProject(project.name);
+              openProject(project.name);
               modifyRecentlyOpenedAction(project.name);
             }}
           />

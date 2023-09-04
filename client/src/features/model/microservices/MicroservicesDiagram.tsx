@@ -13,6 +13,8 @@ import ReactFlow, {
   ConnectionMode,
   updateEdge,
   useOnViewportChange,
+  type EdgeProps,
+  type NodeProps,
 } from "reactflow";
 import { Communication, type Microservice } from "./models";
 import { Drawer } from "../../../components/drawer";
@@ -26,12 +28,15 @@ import { findArrayDiff } from "../../../utils/diff";
 import { ConfirmationModal } from "../../../components/confirmation-modal";
 import { createMicroserviceNode } from "../common/utils/nodeFactories";
 import { createMicroserviceEdge } from "../common/utils/edgeFactories";
+import { RemovableEdge } from "../common/components/RemovableEdge";
+import { RemovableNode } from "../common/components/RemovableNode";
+import { MicroserviceNode } from "./MicroserviceNode";
 
 type DiagramProps = {
   nodes?: any[];
   edges?: any[];
   viewport: any;
-  onMicroserviceDeleted: (microserviceName: string) => any;
+  onMicroserviceDeleted: (microserviceId: string) => any;
 };
 
 let updateValidation = false;
@@ -143,11 +148,6 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   };
 
   // Handle Microservice Delete
-  const onHandleMicroserviceDelete = () => {
-    setDrawerOpen(false);
-    setIsDeleteMicroserviceModalOpen(true);
-  };
-
   const handleMicroserviceDelete = () => {
     const removedMicroserviceId = selectedMicroservice.id;
 
@@ -162,17 +162,37 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
       )
     );
 
-    onMicroserviceDeleted(selectedMicroservice.data.name);
+    onMicroserviceDeleted(selectedMicroservice.id);
 
-    setDrawerOpen(false);
     setIsDeleteMicroserviceModalOpen(false);
     setSelectedMicroservice(undefined);
   };
 
   const onCancelMicroserviceDelete = () => {
-    setDrawerOpen(true);
     setIsDeleteMicroserviceModalOpen(false);
+    setSelectedMicroservice(undefined);
   };
+
+  const RemovableMicroserviceNodeWrapper = useCallback(
+    (props: NodeProps<Microservice>) => {
+      const onRemove = (_, id: string) => {
+        const node = projectDefinition.microservices.nodes.find((node) => node.id === id);
+        setSelectedMicroservice(node);
+        setIsDeleteMicroserviceModalOpen(true);
+      };
+
+      return <RemovableNode onRemove={onRemove} element={MicroserviceNode} {...props} />;
+    },
+    [setSelectedMicroservice, setIsDeleteMicroserviceModalOpen]
+  );
+
+  const localNodeTypes = useMemo(
+    () => ({
+      ...nodeTypes,
+      microserviceNode: RemovableMicroserviceNodeWrapper,
+    }),
+    [RemovableMicroserviceNodeWrapper]
+  );
 
   // Handle Communication Update
   const handleCommunicationUpdate = (communication: Communication) => {
@@ -201,11 +221,6 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   };
 
   // Handle Communication Delete
-  const onHandleCommunicationDelete = () => {
-    setDrawerOpen(false);
-    setIsDeleteCommunicationModalOpen(true);
-  };
-
   const handleCommunicationDelete = () => {
     dispatcher(projectDefinitionActions.removeCommunication, {
       communicationId: selectedCommunication.id,
@@ -213,15 +228,34 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
 
     setEdges((edges) => edges.filter((edge) => edge.id !== selectedCommunication.id));
 
-    setDrawerOpen(false);
     setIsDeleteCommunicationModalOpen(false);
     setSelectedCommunication(undefined);
   };
 
   const onCancelCommunicationDelete = () => {
-    setDrawerOpen(true);
     setIsDeleteCommunicationModalOpen(false);
+    setSelectedCommunication(undefined);
   };
+
+  const RemovableEdgeWrapper = useCallback(
+    (props: EdgeProps) => {
+      const onRemove = (_, id: string) => {
+        const edge = projectDefinition.microservices.edges.find((edge) => edge.id === id);
+        setSelectedCommunication(edge);
+        setIsDeleteCommunicationModalOpen(true);
+      };
+
+      return <RemovableEdge onRemove={onRemove} {...props} />;
+    },
+    [setSelectedCommunication, setIsDeleteCommunicationModalOpen]
+  );
+
+  const edgeTypes = useMemo(
+    () => ({
+      removableEdge: RemovableEdgeWrapper,
+    }),
+    [RemovableEdgeWrapper]
+  );
 
   return (
     <>
@@ -244,7 +278,8 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
           onEdgeUpdateStart={() => (updateValidation = true)}
           onEdgeUpdateEnd={() => (updateValidation = false)}
           onEdgeUpdate={onEdgeUpdate}
-          nodeTypes={nodeTypes}
+          nodeTypes={localNodeTypes}
+          edgeTypes={edgeTypes}
           onNodeDoubleClick={(_, node) => {
             setSelectedMicroservice(node);
             setDrawerOpen(true);
@@ -255,6 +290,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
           }}
           connectionMode={ConnectionMode.Loose}
           defaultViewport={initialViewport}
+          deleteKeyCode={""}
           proOptions={{ account: "paid-sponsor", hideAttribution: true }}
         >
           <MiniMap zoomable pannable />
@@ -301,7 +337,6 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
             key={selectedMicroservice.id}
             microservice={selectedMicroservice.data}
             onMicroserviceUpdate={handleMicroserviceUpdate}
-            onMicroserviceDelete={onHandleMicroserviceDelete}
             nameExists={(name) =>
               nodes.some((n) => n.id !== selectedMicroservice.id && n.data.name === name)
             }
@@ -313,7 +348,6 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
             key={selectedCommunication.id}
             communication={selectedCommunication.data}
             onCommunicationUpdate={handleCommunicationUpdate}
-            onCommunicationDelete={onHandleCommunicationDelete}
             possibleServices={possibleServicesForCommunication}
           />
         )}

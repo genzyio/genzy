@@ -1,4 +1,4 @@
-import { type FC, useState, useCallback } from "react";
+import { type FC, useState, useCallback, useEffect } from "react";
 import { useProjectContext } from "../../contexts/project.context";
 import { useProjectDefinitionContext } from "../../contexts/project-definition.context";
 import { EmptyDiagram } from "../../../model/EmptyDiagram";
@@ -13,15 +13,28 @@ import { MicroserviceNodeContextProvider } from "../../../model/microservices/Mi
 import { MicroserviceDiagramWrapper } from "./wrappers/MicroserviceDiagramWrapper";
 import { ClassDiagramWrapper } from "./wrappers/ClassDiagramWrapper";
 import { ServiceDiagramWrapper } from "./wrappers/ServiceDiagramWrapper";
+import { useSearchParams } from "react-router-dom";
 
 import "../../../model/common/styles/validation_styles.css";
 
+const useTabPreferences = (projectName: string) => {
+  const localStorageKey = `${projectName}/tabs`;
+
+  return {
+    get: (): string[] => JSON.parse(localStorage.getItem(localStorageKey) || "[]"),
+    store: (tabs: TabProps[]): void =>
+      localStorage.setItem(localStorageKey, JSON.stringify(tabs.map((tab) => tab.id))),
+  };
+};
+
 export const Project: FC = () => {
-  const { isOpened } = useProjectContext();
+  const { isOpened, project } = useProjectContext();
   const { projectDefinition: initialProjectDefinition } = useProjectDefinitionContext();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [tabsInstance, setTabsInstance] = useState<TabsInstance | null>(null);
   const [tabs, setTabs] = useState<TabProps[]>([]);
+  const tabPreferences = useTabPreferences(project.name);
 
   const findMicroserviceName = useCallback(
     (microserviceId: string): string => {
@@ -36,52 +49,80 @@ export const Project: FC = () => {
   );
 
   const addTab = useCallback(
-    (tab: TabProps) => {
-      const tabAlreadyOpened = tabs.find((openedTab) => openedTab.title === tab.title);
-      if (tabAlreadyOpened) return;
+    (tab: TabProps, inFocus: boolean = true) => {
+      const existingTabIndex = tabs.findIndex((openedTab) => openedTab.id === tab.id);
+      if (existingTabIndex >= 0) {
+        tabsInstance?.setActiveTab(existingTabIndex + 1);
+        return;
+      }
 
-      const newTabs = [...tabs, tab];
-      setTabs(newTabs);
-      tabsInstance?.setActiveTab(newTabs.length);
+      setTabs((tabs) => {
+        const newTabs = [...tabs, tab];
+        inFocus && tabsInstance?.setActiveTab(newTabs.length);
+        return newTabs;
+      });
     },
     [tabsInstance, tabs, setTabs]
   );
 
   const addServiceDiagram = useCallback(
-    (microserviceId: string) => {
+    (microserviceId: string, inFocus: boolean = true) => {
       const microserviceName = findMicroserviceName(microserviceId);
       if (!microserviceName) return;
 
       const tab = {
+        id: `${microserviceId}/services`,
         title: `${microserviceName} - Services`,
         children: <ServiceDiagramWrapper microserviceId={microserviceId} />,
       };
-      addTab(tab);
+      addTab(tab, inFocus);
     },
     [findMicroserviceName, addTab]
   );
 
   const addModelDiagram = useCallback(
-    (microserviceId: string) => {
+    (microserviceId: string, inFocus: boolean = true) => {
       const microserviceName = findMicroserviceName(microserviceId);
       if (!microserviceName) return;
 
       const tab = {
+        id: `${microserviceId}/models`,
         title: `${microserviceName} - Models`,
         children: <ClassDiagramWrapper microserviceId={microserviceId} />,
       };
-      addTab(tab);
+      addTab(tab, inFocus);
     },
     [findMicroserviceName, addTab]
   );
 
   const removeTabsForMicroservice = useCallback(
-    (microserviceName: string) => {
-      const newTabs = tabs.filter((tab) => !tab.title.startsWith(`${microserviceName} - `));
+    (microserviceId: string) => {
+      const newTabs = tabs.filter((tab) => !tab.id.startsWith(`${microserviceId}/`));
       setTabs(newTabs);
     },
     [tabs, setTabs]
   );
+
+  useEffect(() => {
+    if (!tabsInstance) return;
+
+    tabPreferences.get().forEach((initialTab: string, i) => {
+      if (!initialTab || !initialTab.includes("/")) return;
+
+      const [microserviceId, type] = initialTab.split("/");
+      if (type === "services") addServiceDiagram(microserviceId, false);
+      if (type === "models") addModelDiagram(microserviceId, false);
+    });
+
+    const activeTab = searchParams.get("activeTab");
+    const activeTabIndex = tabPreferences.get().findIndex((tab) => tab === activeTab);
+    tabsInstance?.setActiveTab(activeTabIndex + 1);
+  }, [tabsInstance]);
+
+  useEffect(() => {
+    if (!tabsInstance) return;
+    tabPreferences.store(tabs);
+  }, [tabs]);
 
   if (!isOpened) {
     return <EmptyDiagram />;
@@ -99,18 +140,18 @@ export const Project: FC = () => {
               <ProjectToolbar />
 
               <Tabs onInit={setTabsInstance}>
-                <Tab title="Microservices">
+                <Tab title="Microservices" onChange={() => setSearchParams({})}>
                   <MicroserviceDiagramWrapper onMicroserviceDeleted={removeTabsForMicroservice} />
                 </Tab>
 
                 {tabs.map((t) => {
                   return (
                     <Tab
+                      id={t.id}
                       key={t.title}
                       title={t.title}
-                      onClose={({ index }) =>
-                        setTabs((tabs) => tabs.filter((_, i) => i + 1 !== index))
-                      }
+                      onChange={({ id }) => setSearchParams({ activeTab: id })}
+                      onClose={({ id }) => setTabs((tabs) => tabs.filter((tab) => tab.id !== id))}
                     >
                       {t.children}
                     </Tab>

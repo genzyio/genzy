@@ -15,6 +15,7 @@ type TabsProps = PropsWithChildren & {
 
 export const Tabs: FC<TabsProps> = ({ onInit, children }) => {
   const [activeTab, setActiveTab] = useState(0);
+  const [nextActiveTab, setNextActiveTab] = useState(-1);
 
   const tabs = useMemo(
     () =>
@@ -24,16 +25,14 @@ export const Tabs: FC<TabsProps> = ({ onInit, children }) => {
     [children]
   );
 
-  const onTabChange = ({ onChange, title }: TabProps, index: number) => {
+  const onTabChange = ({ id, onChange }: TabProps, index: number) => {
     setActiveTab(index);
-    onChange && onChange({ title, index });
+    onChange && onChange({ id, index });
   };
 
-  const onTabClose = ({ onClose, title }: TabProps, index: number) => {
-    if (index === activeTab) {
-      setActiveTab(index - 1);
-    }
-    onClose({ title, index });
+  const onTabClose = ({ onClose, id }: TabProps, index: number) => {
+    if (activeTab >= index) setNextActiveTab(activeTab - 1);
+    onClose({ id, index });
   };
 
   useEffect(() => {
@@ -43,9 +42,18 @@ export const Tabs: FC<TabsProps> = ({ onInit, children }) => {
   const tabsInstance: TabsInstance = {} as TabsInstance;
   useEffect(() => {
     tabsInstance.activeTab = activeTab;
-    tabsInstance.setActiveTab = setActiveTab;
+    tabsInstance.setActiveTab = setNextActiveTab;
     tabsInstance.tabsCount = tabs.length;
-  }, [activeTab, setActiveTab, tabs]);
+  }, [activeTab, setNextActiveTab, tabs]);
+
+  useEffect(() => {
+    if (nextActiveTab === -1) return;
+
+    const nextTab = tabs[nextActiveTab].props;
+    onTabChange(nextTab, nextActiveTab);
+
+    setNextActiveTab(-1);
+  }, [nextActiveTab]);
 
   return (
     <>
@@ -56,13 +64,16 @@ export const Tabs: FC<TabsProps> = ({ onInit, children }) => {
         <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
           {tabs?.map((tab: { props: TabProps }, i: number) => {
             return (
-              <li key={tab.props.title} className="mr-2" onClick={() => onTabChange(tab.props, i)}>
-                <a
-                  href="#"
+              <li
+                key={tab.props.id || tab.props.title}
+                className="mr-2"
+                onClick={() => onTabChange(tab.props, i)}
+              >
+                <p
                   className={
                     i === activeTab
-                      ? "inline-flex items-center justify-center p-4 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500 group"
-                      : "inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group"
+                      ? "inline-flex items-center justify-center p-4 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500 group cursor-pointer"
+                      : "inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group cursor-pointer"
                   }
                 >
                   {tab.props.icon || <></>}
@@ -78,7 +89,7 @@ export const Tabs: FC<TabsProps> = ({ onInit, children }) => {
                       <XMark />
                     </span>
                   )}
-                </a>
+                </p>
               </li>
             );
           }) ?? []}
@@ -91,9 +102,3 @@ export const Tabs: FC<TabsProps> = ({ onInit, children }) => {
     </>
   );
 };
-
-{
-  /* <a className="inline-block p-4 text-gray-400 rounded-t-lg cursor-not-allowed dark:text-gray-500">
-  Disabled
-</a> */
-}

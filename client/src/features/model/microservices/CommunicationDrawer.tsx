@@ -7,14 +7,12 @@ type CommunicationDrawerProps = {
   communication: Communication;
   possibleServices: Service[];
   onCommunicationUpdate: (communication: Communication) => any;
-  onCommunicationDelete: () => any;
 };
 
 export const CommunicationDrawer: FC<CommunicationDrawerProps> = ({
   communication,
   possibleServices,
   onCommunicationUpdate,
-  onCommunicationDelete,
 }) => {
   const [selectedServices, setSelectedService] = useState(communication.services);
 
@@ -28,8 +26,6 @@ export const CommunicationDrawer: FC<CommunicationDrawerProps> = ({
   const handleSave = () => {
     onCommunicationUpdate({ services: selectedServices });
   };
-
-  const handleDelete = onCommunicationDelete;
 
   return (
     <>
@@ -48,9 +44,6 @@ export const CommunicationDrawer: FC<CommunicationDrawerProps> = ({
         <div className="flex space-x-1 justify-end text-sm mt-3">
           <Button type="button" className="text-sm mt-3" onClick={handleSave}>
             Save
-          </Button>
-          <Button type="button" className="text-sm mt-3" onClick={handleDelete}>
-            Delete
           </Button>
         </div>
       </div>

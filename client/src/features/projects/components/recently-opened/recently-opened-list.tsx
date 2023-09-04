@@ -1,6 +1,5 @@
 import { useMemo, type FC, useState } from "react";
 import { useRecentlyOpenedProjects } from "../../hooks/useRecenltyOpenedProjects";
-import { useProjectContext } from "../../contexts/project.context";
 import { RecentlyOpenedListItem } from "./recenlty-opened-list-item";
 import { useAction } from "../../../../hooks/useAction";
 import { deleteRecentlyOpened, modifyRecentlyOpened } from "../../api/recently-opened.actions";
@@ -12,10 +11,11 @@ import { useNotifications } from "../../../../hooks/useNotifications";
 import { extractErrorMessage } from "../../../../utils/errors";
 import { deleteProject } from "../../api/project.actions";
 import { useQueryClient } from "react-query";
+import { useProjectNavigation } from "../../hooks/useProjectNavigation";
 
 export const RecentlyOpenedList: FC = () => {
   const { recentlyOpenedProjects } = useRecentlyOpenedProjects();
-  const { loadProject } = useProjectContext();
+  const { openProject } = useProjectNavigation();
 
   const hasRecentProjects = useMemo(() => {
     return recentlyOpenedProjects.some((project) => !!project.openedAt);
@@ -85,7 +85,7 @@ export const RecentlyOpenedList: FC = () => {
             key={project.name}
             recentlyOpenedProject={project}
             onViewProject={() => {
-              loadProject(project.name);
+              openProject(project.name);
               modifyRecentlyOpenedAction(project.name);
             }}
             onRemoveProject={() => {

@@ -8,10 +8,12 @@ import { type ProjectDefinition } from "../../models/project-definition.models";
 import { saveProjectDefinition } from "../../api/project-definition.actions";
 import { saveProjectScreenshot } from "../../api/project-screenshots.actions";
 import { extractErrorMessage } from "../../../../utils/errors";
+import { useProjectNavigation } from "../../hooks/useProjectNavigation";
 
 export const ProjectToolbar: FC = () => {
   const notificator = useNotifications();
-  const { project, closeProject } = useProjectContext();
+  const { project } = useProjectContext();
+  const { closeProject } = useProjectNavigation();
   const { projectDefinition: initialProjectDefinition } = useProjectDefinitionContext();
 
   const saveProjectDefinitionAction = useAction<ProjectDefinition>(
