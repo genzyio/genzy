@@ -5,13 +5,11 @@ import { Project } from "./features/projects/components/project-workspace/projec
 export function ProjectWorkspace() {
   return (
     <div className="h-full w-full">
-      <div className="w-full h-[90%]">
-        <ProjectContextProvider>
-          <ProjectDefinitionContextProvider>
-            <Project />
-          </ProjectDefinitionContextProvider>
-        </ProjectContextProvider>
-      </div>
+      <ProjectContextProvider>
+        <ProjectDefinitionContextProvider>
+          <Project />
+        </ProjectDefinitionContextProvider>
+      </ProjectContextProvider>
     </div>
   );
 }

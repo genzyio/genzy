@@ -22,6 +22,8 @@ import { ConfirmationModal } from "../../../components/confirmation-modal";
 import { createClassNode } from "../common/utils/nodeFactories";
 import { ClassNode } from "./ClassNode";
 import { RemovableNode } from "../common/components/RemovableNode";
+import { Button } from "../../../components/button";
+import { createPortal } from "react-dom";
 
 type DiagramProps = {
   microserviceId: string;
@@ -119,16 +121,25 @@ export const ClassDiagram: FC<DiagramProps> = ({
     [RemovableClassNodeWrapper]
   );
 
+  const elem = document.getElementById("toolbar-actions");
+
+  const portal = useMemo(() => {
+    if (elem) {
+      return createPortal(
+        <div className="flex justify-center gap-x-3">
+          <Button className="hover:opacity-60 text-xs px-1 py-1" onClick={handleClassAdd}>
+            Add model
+          </Button>
+        </div>,
+        elem
+      );
+    }
+  }, [elem]);
+
   return (
     <>
+      {portal}
       <div className="h-full w-full">
-        <div className="absolute left-1/2 -translate-x-1/2 top-3 z-10 p-1 rounded-lg border border-gray-200 w-[12%]">
-          <div className="flex justify-center gap-x-3">
-            <button className="hover:opacity-60" onClick={handleClassAdd}>
-              Add class
-            </button>
-          </div>
-        </div>
         <ReactFlow
           className="validationflow"
           nodes={nodes}

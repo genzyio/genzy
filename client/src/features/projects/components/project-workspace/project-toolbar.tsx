@@ -44,19 +44,28 @@ export const ProjectToolbar: FC = () => {
   );
 
   return (
-    <div className="flex gap-x-2">
+    <div className="flex items-center gap-x-2 fixed left-2 top-12 py-2 px-4 border rounded-md border-gray-100 z-10">
       <Button
         onClick={() => {
           saveProjectDefinitionAction(initialProjectDefinition);
         }}
+        className="text-xs px-1 py-1"
       >
         Save
       </Button>
-      <Button onClick={() => saveAndCloseProjectDefinitionAction(initialProjectDefinition)}>
+      <Button
+        onClick={() => saveAndCloseProjectDefinitionAction(initialProjectDefinition)}
+        className="text-xs px-1 py-1"
+      >
         Save And Close
       </Button>
+      <Button onClick={closeProject} className="text-xs px-1 py-1">
+        Close
+      </Button>
 
-      <Button onClick={closeProject}>Close</Button>
+      <div className="border-r h-6 border-gray-300 mx-2"></div>
+
+      <div id="toolbar-actions"></div>
     </div>
   );
 };

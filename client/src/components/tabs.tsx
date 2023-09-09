@@ -11,9 +11,16 @@ export type TabsInstance = {
 
 type TabsProps = PropsWithChildren & {
   onInit?: (tabsInstance: TabsInstance) => any;
+  navigationContainerClassName?: string;
+  contentContainerClassName?: string;
 };
 
-export const Tabs: FC<TabsProps> = ({ onInit, children }) => {
+export const Tabs: FC<TabsProps> = ({
+  onInit,
+  navigationContainerClassName = "",
+  contentContainerClassName = "",
+  children,
+}) => {
   const [activeTab, setActiveTab] = useState(0);
   const [nextActiveTab, setNextActiveTab] = useState(-1);
 
@@ -55,50 +62,54 @@ export const Tabs: FC<TabsProps> = ({ onInit, children }) => {
     setNextActiveTab(-1);
   }, [nextActiveTab]);
 
-  return (
-    <>
-      <div
-        key={`navigation_${tabs?.length}`}
-        className="border-b border-gray-200 dark:border-gray-700"
-      >
-        <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
-          {tabs?.map((tab: { props: TabProps }, i: number) => {
-            return (
-              <li
-                key={tab.props.id || tab.props.title}
-                className="mr-2"
-                onClick={() => onTabChange(tab.props, i)}
+  const navigation = (
+    <div key={`navigation_${tabs?.length}`} className={navigationContainerClassName}>
+      <ul className="flex flex-wrap gap-x-1 -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+        {tabs?.map((tab: { props: TabProps }, i: number) => {
+          return (
+            <li key={tab.props.id || tab.props.title} onClick={() => onTabChange(tab.props, i)}>
+              <p
+                className={`inline-flex items-center justify-center px-2 py-2 group cursor-pointer rounded-t-lg ${
+                  i === activeTab
+                    ? "text-blue-600 border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500"
+                    : "border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                }`}
               >
-                <p
-                  className={
-                    i === activeTab
-                      ? "inline-flex items-center justify-center p-4 text-blue-600 border-b-2 border-blue-600 rounded-t-lg active dark:text-blue-500 dark:border-blue-500 group cursor-pointer"
-                      : "inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 group cursor-pointer"
-                  }
-                >
-                  {tab.props.icon || <></>}
-                  {tab.props.title}
-                  {tab.props.onClose && (
-                    <span
-                      className="ml-1 self-start hover:text-gray-900 dark:hover:text-gray-900"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onTabClose(tab.props, i);
-                      }}
-                    >
-                      <XMark />
-                    </span>
-                  )}
-                </p>
-              </li>
-            );
-          }) ?? []}
-        </ul>
-      </div>
+                {tab.props.icon || <></>}
+                {tab.props.title}
+                {tab.props.onClose && (
+                  <span
+                    className="px-2 hover:text-gray-900 dark:hover:text-gray-900"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onTabClose(tab.props, i);
+                    }}
+                  >
+                    <XMark />
+                  </span>
+                )}
+              </p>
+            </li>
+          );
+        }) ?? []}
+      </ul>
+    </div>
+  );
 
-      <div key={`view_${activeTab}`} className="h-full w-full" role="tabpanel">
-        {tabs[activeTab]}
-      </div>
-    </>
+  const content = (
+    <div
+      key={`view_${activeTab}`}
+      className={contentContainerClassName + " h-full w-full"}
+      role="tabpanel"
+    >
+      {tabs[activeTab]}
+    </div>
+  );
+
+  return (
+    <div className="h-full w-full flex flex-col">
+      <div className="w-full">{navigation}</div>
+      <div className="grow">{content}</div>
+    </div>
   );
 };

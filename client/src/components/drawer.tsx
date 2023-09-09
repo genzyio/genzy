@@ -1,4 +1,5 @@
 import { type FC, type PropsWithChildren, useState } from "react";
+import { XMark } from "./icons/x-mark";
 
 export const Drawer: FC<
   {
@@ -51,7 +52,7 @@ export const Drawer: FC<
               className="bg-white rounded-md text-blue-900 hover:text-blue-500"
               onClick={() => handleClose()}
             >
-              <span className="sr-only">Close</span>X
+              <XMark className="h-6 w-6" />
             </button>
           </div>
           {children}

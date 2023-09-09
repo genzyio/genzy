@@ -139,7 +139,10 @@ export const Project: FC = () => {
             <TypesContextProvider>
               <ProjectToolbar />
 
-              <Tabs onInit={setTabsInstance}>
+              <Tabs
+                onInit={setTabsInstance}
+                navigationContainerClassName="border-b border-gray-100" // "fixed bottom-0 left-10 w-screen z-10"
+              >
                 <Tab title="Microservices" onChange={() => setSearchParams({})}>
                   <MicroserviceDiagramWrapper onMicroserviceDeleted={removeTabsForMicroservice} />
                 </Tab>
