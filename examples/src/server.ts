@@ -16,6 +16,100 @@ import {
 } from "../../api/src";
 import { Get, Post, Controller, N1mblyContainer } from "../../client/src";
 
+// import pg from "pg"; // v2.1.0
+// jos 3 npr
+
+// v3.4.6
+
+// gn1mbly paket
+// expose API za registrovanje plugina
+
+// generisan kod paket (mikroservis proj)
+// u njega treba install pg-adapter
+// ovaj nema gn1mbly instaliran
+
+// class PgAdapter {
+//   constructor(
+//     private host: string,
+//     private port: string,
+//     private username: string,
+//     private password: string
+//   ) {}
+
+//   register({ register }) {
+
+//   }
+
+//   onInit() {
+//     // connect to db
+//     // using host, port, username, password
+//     pg.init();
+//   }
+
+//   onDestroy() {
+//     // disconnect
+//     // cleanup
+//   }
+
+//   // API
+//   getInstance() {
+//     // custom logic ...
+//   }
+
+//   // Simplified API
+//   runQuery(sql: string) {
+//     // exec sql
+//   }
+// }
+
+// class PgAdapterPlus {
+//   constructor(
+//     private host: string,
+//     private port: string,
+//     private username: string,
+//     private password: string
+//   ) {}
+
+//   register({ register }) {
+
+//   }
+
+//   onInit() {
+//     // connect to db
+//     // using host, port, username, password
+//     pg.init();
+//   }
+
+//   onDestroy() {
+//     // disconnect
+//     // cleanup
+//   }
+
+//   // API
+//   getInstance() {
+//     // custom logic ...
+//   }
+
+//   // Simplified API
+//   runQuery(sql: string) {
+//     // exec sql
+//   }
+// }
+
+// class PgAdapterPlugin implements N1mblyPlugin {
+//   register() {
+//     // implement registration logic
+//     // support register before and after all
+//   }
+// }
+
+// // mikroservis
+// n1mbly.register(PgAdapterPlugin, {
+//   configure(n1mbly) {
+//     //
+//   }
+// })
+
 class NoviServis {
   async getNesto() {
     return { numbers: [1, 2, 3, 4] };
@@ -116,6 +210,10 @@ class Pera {
 
 @Controller("/peras", Pera)
 class PeraCrudController extends CrudController {
+  constructor(private isCar: boolean) {
+    super();
+  }
+
   findOne(id: string) {
     return {
       id,
