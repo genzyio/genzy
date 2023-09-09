@@ -8,7 +8,7 @@ using N1mbly.Common;
 using N1mbly.Models;
 using N1mbly.Models.Interfaces;
 
-using {{ namespaceName }}.Models;
+using Models;
 
 namespace {{ namespaceName }}
 {
@@ -20,7 +20,7 @@ namespace {{ namespaceName }}
     {
       var result = await _remoteProxy.RemoteCallHandler(
         HttpMethod.{{ action.httpMethod }},
-        "{{host}}" + "{% if path != null %}{{ path }}{% endif %}",
+        "{{url}}" + "{% if path != null %}{{ path }}{% endif %}",
         "{{ action.path }}",
         new List<Argument>
         {

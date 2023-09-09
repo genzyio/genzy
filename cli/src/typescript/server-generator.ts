@@ -1,4 +1,8 @@
-import { MetaTypesRegistry, ServiceMetaInfo } from "../../shared/types";
+import {
+  MetaInfo,
+  MetaTypesRegistry,
+  ServiceMetaInfo,
+} from "../../../shared/types";
 import {
   adoptParams,
   adoptTypeJS,
@@ -6,18 +10,20 @@ import {
   controllerToServiceName,
   formatFileContent,
   generate as generateUtil,
-} from "./utils";
+} from "../utils";
 
-export function generate(
-  meta: any,
-  url: string,
-  dirPath: string,
-  nunjucks: any,
-  isServer = false
-) {
+export function generate({
+  meta,
+  dirPath,
+  nunjucks,
+}: {
+  meta: MetaInfo;
+  dirPath: string;
+  nunjucks: any;
+}) {
   generateUtil(
     nunjucks,
-    { meta, url, dirPath, isServer, extension: "ts" },
+    { meta, dirPath, extension: "ts" },
     {
       controllerFileContentFrom,
       serviceFileContentFrom,
@@ -31,16 +37,17 @@ function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function controllerFileContentFrom(
-  service: ServiceMetaInfo,
-  types: MetaTypesRegistry,
-  nunjucks: any,
-  host: string | undefined,
-  isServer: boolean
-): Promise<string> {
+function controllerFileContentFrom({
+  service,
+  types,
+  nunjucks,
+}: {
+  service: ServiceMetaInfo;
+  types: MetaTypesRegistry;
+  nunjucks: any;
+}): Promise<string> {
   const content = nunjucks.render("controller.njk", {
     ...service,
-    isServer,
     types,
     actions: service.actions.map((r) => ({
       ...r,
@@ -61,17 +68,19 @@ function controllerFileContentFrom(
   return formatFileContent(content);
 }
 
-function serviceFileContentFrom(
-  service: ServiceMetaInfo,
-  types: MetaTypesRegistry,
-  nunjucks: any,
-  isServer: boolean
-): Promise<string> {
+function serviceFileContentFrom({
+  service,
+  types,
+  nunjucks,
+}: {
+  service: ServiceMetaInfo;
+  types: MetaTypesRegistry;
+  nunjucks: any;
+}): Promise<string> {
   const content = nunjucks.render("service.njk", {
     ...service,
     name: controllerToServiceName(service.name),
     controllerName: service.name,
-    isServer,
     types,
     actions: service.actions.map((r) => ({
       ...r,
@@ -91,21 +100,24 @@ function serviceFileContentFrom(
   return formatFileContent(content);
 }
 
-function indexFileContentFrom(
-  services: ServiceMetaInfo[],
-  host: string | undefined,
-  nunjucks: any,
-  isServer: boolean
-): Promise<string> {
-  const content = nunjucks.render("index.njk", { services, host, isServer });
+function indexFileContentFrom({
+  services,
+  nunjucks,
+}: {
+  services: ServiceMetaInfo[];
+  nunjucks: any;
+}): Promise<string> {
+  const content = nunjucks.render("index.njk", { services });
   return formatFileContent(content);
 }
 
-function typesFileContentFrom(
-  types: MetaTypesRegistry,
-  nunjucks: any,
-  isServer: boolean
-): Promise<string> {
-  const content = nunjucks.render("types.njk", { types, isServer });
+function typesFileContentFrom({
+  types,
+  nunjucks,
+}: {
+  types: MetaTypesRegistry;
+  nunjucks: any;
+}): Promise<string> {
+  const content = nunjucks.render("types.njk", { types });
   return formatFileContent(content);
 }

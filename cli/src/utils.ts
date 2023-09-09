@@ -8,7 +8,7 @@ import {
   ServiceMetaInfo,
 } from "../../shared/types";
 
-export async function readMetaFromFile(filePath: string) {
+export async function readMetaFromFile(filePath: string): Promise<MetaInfo> {
   return new Promise((resolve) => {
     resolve(JSON.parse(fs.readFileSync(filePath, "utf8")));
   });
@@ -20,43 +20,39 @@ export async function generate(
     meta: MetaInfo;
     url?: string;
     dirPath: string;
-    isServer: boolean;
     indexFileName?: string;
+    typesFileName?: string;
     extension: "ts" | "js" | "cs";
   },
   contentHandlers: {
-    controllerFileContentFrom: (
-      service: ServiceMetaInfo,
-      types: MetaTypesRegistry,
-      nunjucks: any,
-      host: string,
-      isServer: boolean
-    ) => Promise<string>;
-    serviceFileContentFrom?: (
-      service: ServiceMetaInfo,
-      types: MetaTypesRegistry,
-      nunjucks: any,
-      isServer: boolean
-    ) => Promise<string>;
-    indexFileContentFrom: (
-      services: ServiceMetaInfo[],
-      host: string,
-      nunjucks: any,
-      isServer: boolean
-    ) => Promise<string>;
-    typesFileContentFrom?: (
-      types: MetaTypesRegistry,
-      nunjucks: any,
-      isServer: boolean
-    ) => Promise<string>;
+    controllerFileContentFrom?: (params: {
+      service: ServiceMetaInfo;
+      types: MetaTypesRegistry;
+      nunjucks: any;
+      url: string;
+    }) => Promise<string>;
+    serviceFileContentFrom?: (params: {
+      service: ServiceMetaInfo;
+      types: MetaTypesRegistry;
+      nunjucks: any;
+    }) => Promise<string>;
+    indexFileContentFrom?: (params: {
+      services: ServiceMetaInfo[];
+      url: string;
+      nunjucks: any;
+    }) => Promise<string>;
+    typesFileContentFrom?: (params: {
+      types: MetaTypesRegistry;
+      nunjucks: any;
+    }) => Promise<string>;
   }
 ) {
   const {
     dirPath,
     meta,
     indexFileName = "index",
+    typesFileName = "types",
     extension,
-    isServer,
     url,
   } = params;
   if (!fs.existsSync(dirPath)) {
@@ -64,46 +60,46 @@ export async function generate(
   }
   await Promise.all(
     meta.services.map(async (service) => {
-      writeToFile(
-        dirPath + `/${service.name}.${extension}`,
-        await contentHandlers.controllerFileContentFrom(
-          service,
-          meta.types,
-          nunjucks,
-          url,
-          isServer
-        )
-      );
+      if (contentHandlers.controllerFileContentFrom) {
+        writeToFile(
+          dirPath + `/${service.name}.${extension}`,
+          await contentHandlers.controllerFileContentFrom({
+            service,
+            types: meta.types,
+            nunjucks,
+            url,
+          })
+        );
+      }
       if (contentHandlers.serviceFileContentFrom) {
         writeToFile(
           dirPath + `/${controllerToServiceName(service.name)}.${extension}`,
-          await contentHandlers.serviceFileContentFrom(
+          await contentHandlers.serviceFileContentFrom({
             service,
-            meta.types,
+            types: meta.types,
             nunjucks,
-            isServer
-          )
+          })
         );
       }
     })
   );
 
-  writeToFile(
-    dirPath + `/${indexFileName}.${extension}`,
-    await contentHandlers.indexFileContentFrom(
-      meta.services,
-      url,
-      nunjucks,
-      isServer
-    )
-  );
-  if (contentHandlers.typesFileContentFrom) {
-    const typesContent = await contentHandlers.typesFileContentFrom(
-      meta.types,
-      nunjucks,
-      isServer
+  if (contentHandlers.indexFileContentFrom) {
+    writeToFile(
+      dirPath + `/${indexFileName}.${extension}`,
+      await contentHandlers.indexFileContentFrom({
+        services: meta.services,
+        url,
+        nunjucks,
+      })
     );
-    writeToFile(dirPath + `/types.${extension}`, typesContent);
+  }
+  if (contentHandlers.typesFileContentFrom) {
+    const typesContent = await contentHandlers.typesFileContentFrom({
+      types: meta.types,
+      nunjucks,
+    });
+    writeToFile(dirPath + `/${typesFileName}.${extension}`, typesContent);
   }
 }
 
@@ -118,7 +114,7 @@ export async function formatFileContent(fileContent: string): Promise<string> {
   });
 }
 
-export async function fetchMeta(url: string) {
+export async function fetchMeta(url: string): Promise<MetaInfo> {
   return (await axios.get(`${url}/meta`)).data;
 }
 
@@ -141,7 +137,7 @@ export function adoptTypeJS(type) {
 export function adoptTypeToDecorator(type) {
   if (!type) return undefined;
   if (typeof type === "string") {
-    return `@${type}`;
+    return `@${type}()`;
   }
   return type.$isArray
     ? `@arrayOf(${type.$typeName})`
@@ -157,58 +153,10 @@ export function adoptTypeToResultDecorator(type) {
 
 export function adoptTypeCS(type) {
   if (!type) return "object";
-  if (typeof type === "string") return type;
-  return type.$typeName + (type.$isArray ? "[]" : "");
-}
-
-export function getSchemaInfoFrom(
-  service: ServiceMetaInfo,
-  typeAdopt: (p: any) => string
-) {
-  const schemas = [];
-  const schemaNames = [];
-  service.actions.forEach((action) => {
-    action.params
-      .filter((p) => typeof p.type !== "string")
-      .forEach((p) =>
-        getAllSubtypesFrom(p.type, schemas, schemaNames, typeAdopt)
-      );
-    action.result &&
-      getAllSubtypesFrom(action.result, schemas, schemaNames, typeAdopt);
-  });
-  return {
-    schemas: getSetFrom(schemas).map((schema) =>
-      JSON.stringify(schema, (k, v) => (k.startsWith("$") ? undefined : v), 2)
-    ),
-    schemaNames: getSetFrom(schemaNames),
-  };
-}
-
-export function getAllSubtypesFrom(
-  schema: any,
-  subtypes: any[],
-  subtypeNames: string[],
-  typeAdopt: (p: any) => string
-) {
-  if (!schema || typeof schema !== "object") return typeAdopt(schema);
-  const result = {};
-  Object.keys(schema)
-    .filter((k) => !k.startsWith("$"))
-    .forEach((k) => {
-      result[k] = getAllSubtypesFrom(
-        schema[k],
-        subtypes,
-        subtypeNames,
-        typeAdopt
-      );
-    });
-  subtypes.push(result);
-  subtypeNames.push(schema.$typeName);
-  return typeAdopt(schema);
-}
-
-export function getSetFrom(list: any[]): any[] {
-  return [...new Set(list)].filter((s) => !!s);
+  if (typeof type === "string") {
+    return type === "boolean" ? "bool" : type;
+  }
+  return type.$typeName;
 }
 
 export function controllerToServiceName(controllerName: string): string {

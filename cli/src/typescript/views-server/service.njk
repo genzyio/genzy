@@ -10,7 +10,7 @@ import {
 
 export class {{ name }} extends {{ controllerName }} {
 {% for action in actions %} {{ methods }}
-  {% if action.resultType and isServer %}{{ action.resultDecorator }}{% endif %}
+  {% if action.resultType %}{{ action.resultDecorator }}{% endif %}
   async {{ action.name }}({% for param in action.params %}{{ param.name }}: {{ param.type }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{{ action.resultType }}> {
     // @ts-ignore
     return null;

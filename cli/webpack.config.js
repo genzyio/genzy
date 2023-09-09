@@ -1,7 +1,7 @@
-const webpack = require('webpack');
+const webpack = require("webpack");
 const path = require("path");
 const { ESBuildMinifyPlugin } = require("esbuild-loader");
-const CopyPlugin = require('copy-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 
 const { NODE_ENV = "production" } = process.env;
 module.exports = {
@@ -40,18 +40,26 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         {
-          from: path.resolve(__dirname, "src/views-js/"),
-          to: "views-js/",
+          from: path.resolve(__dirname, "src/javascript/views-client/"),
+          to: "javascript/views-client/",
         },
         {
-          from: path.resolve(__dirname, "src/views-ts/"),
-          to: "views-ts/",
+          from: path.resolve(__dirname, "src/typescript/views-client/"),
+          to: "typescript/views-client/",
         },
         {
-          from: path.resolve(__dirname, "src/views-cs/"),
-          to: "views-cs/",
+          from: path.resolve(__dirname, "src/csharp/views-client/"),
+          to: "csharp/views-client/",
+        },
+        {
+          from: path.resolve(__dirname, "src/javascript/views-server/"),
+          to: "javascript/views-server/",
+        },
+        {
+          from: path.resolve(__dirname, "src/typescript/views-server/"),
+          to: "typescript/views-server/",
         },
       ],
     }),
-  ]
+  ],
 };

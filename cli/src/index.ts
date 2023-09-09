@@ -1,11 +1,17 @@
 "use strict";
 import * as yargs from "yargs";
 import * as nunjucks from "nunjucks";
-import { generate as generateJS } from "./js-generator";
-import { generate as generateTS } from "./ts-generator";
-import { generate as generateCS } from "./cs-generator";
 import * as path from "path";
 import { fetchMeta, readMetaFromFile } from "./utils";
+import { langToClientViewsDir, langToServerViewsDir } from "./constants";
+
+import { generate as generateJS } from "./javascript/client-generator";
+import { generate as generateTS } from "./typescript/client-generator";
+import { generate as generateCS } from "./csharp/client-generator";
+
+import { generate as generateServerJS } from "./javascript/server-generator";
+import { generate as generateServerTS } from "./typescript/server-generator";
+
 const options = yargs
   .usage("Usage: -l <language> -h <host> -o <out_dir> -f -server")
   .option("l", {
@@ -41,9 +47,15 @@ const options = yargs
   }).argv as any;
 
 const env = nunjucks.configure(
-  path.resolve(__dirname, "./views-" + options.language),
+  path.resolve(
+    __dirname,
+    (options.isServer ? langToServerViewsDir : langToClientViewsDir)[
+      options.language
+    ]
+  ),
   { autoescape: true }
 );
+
 env.addFilter(
   "capitalizeFirstLetter",
   function (val, cb) {
@@ -68,10 +80,28 @@ async function main() {
 
   switch (options.language) {
     case "js":
-      generateJS(meta, options.host, options.outDir, env, options.isServer);
+      if (options.isServer) {
+        generateServerJS({ meta, dirPath: options.outDir, nunjucks: env });
+      } else {
+        generateJS({
+          meta,
+          url: options.host,
+          dirPath: options.outDir,
+          nunjucks: env,
+        });
+      }
       break;
     case "ts":
-      generateTS(meta, options.host, options.outDir, env, options.isServer);
+      if (options.isServer) {
+        generateServerTS({ meta, dirPath: options.outDir, nunjucks: env });
+      } else {
+        generateTS({
+          meta,
+          url: options.host,
+          dirPath: options.outDir,
+          nunjucks: env,
+        });
+      }
       break;
     case "cs":
       if (options.isServer) {
@@ -79,13 +109,12 @@ async function main() {
           "There is no support for generating CS server code yet!"
         );
       }
-      generateCS(
+      generateCS({
         meta,
-        options.host ?? "http://localhost:3000/api",
-        options.outDir,
-        env,
-        options.isServer
-      );
+        url: options.host,
+        dirPath: options.outDir,
+        nunjucks: env,
+      });
       break;
     default:
       break;
