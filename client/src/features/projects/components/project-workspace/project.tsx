@@ -50,13 +50,13 @@ export const Project: FC = () => {
 
   const addTab = useCallback(
     (tab: TabProps, inFocus: boolean = true) => {
-      const existingTabIndex = tabs.findIndex((openedTab) => openedTab.id === tab.id);
-      if (existingTabIndex >= 0) {
-        tabsInstance?.setActiveTab(existingTabIndex + 1);
-        return;
-      }
-
       setTabs((tabs) => {
+        const existingTabIndex = tabs.findIndex((openedTab) => openedTab.id === tab.id);
+        if (existingTabIndex >= 0) {
+          tabsInstance?.setActiveTab(existingTabIndex + 1);
+          return tabs;
+        }
+
         const newTabs = [...tabs, tab];
         inFocus && tabsInstance?.setActiveTab(newTabs.length);
         return newTabs;
@@ -105,8 +105,10 @@ export const Project: FC = () => {
 
   useEffect(() => {
     if (!tabsInstance) return;
+    const activeTab = searchParams.get("activeTab");
+    const initialTabs = activeTab ? [...tabPreferences.get(), activeTab] : tabPreferences.get();
 
-    tabPreferences.get().forEach((initialTab: string, i) => {
+    initialTabs.forEach((initialTab: string) => {
       if (!initialTab || !initialTab.includes("/")) return;
 
       const [microserviceId, type] = initialTab.split("/");
@@ -114,8 +116,7 @@ export const Project: FC = () => {
       if (type === "models") addModelDiagram(microserviceId, false);
     });
 
-    const activeTab = searchParams.get("activeTab");
-    const activeTabIndex = tabPreferences.get().findIndex((tab) => tab === activeTab);
+    const activeTabIndex = initialTabs.findIndex((tab) => tab === activeTab);
     tabsInstance?.setActiveTab(activeTabIndex + 1);
   }, [tabsInstance]);
 
@@ -141,7 +142,8 @@ export const Project: FC = () => {
 
               <Tabs
                 onInit={setTabsInstance}
-                navigationContainerClassName="border-b border-gray-100" // "fixed bottom-0 left-10 w-screen z-10"
+                invert={true}
+                navigationContainerClassName="border-b border-gray-100"
               >
                 <Tab title="Microservices" onChange={() => setSearchParams({})}>
                   <MicroserviceDiagramWrapper onMicroserviceDeleted={removeTabsForMicroservice} />

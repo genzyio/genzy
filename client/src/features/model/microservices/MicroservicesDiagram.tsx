@@ -260,7 +260,6 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   );
 
   const elem = document.getElementById("toolbar-actions");
-
   const portal = useMemo(() => {
     if (elem) {
       return createPortal(
@@ -272,7 +271,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
         elem
       );
     }
-  }, [elem]);
+  }, [elem, handleMicroserviceAdd]);
 
   return (
     <>

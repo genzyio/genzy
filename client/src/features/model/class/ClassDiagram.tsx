@@ -24,11 +24,16 @@ import { ClassNode } from "./ClassNode";
 import { RemovableNode } from "../common/components/RemovableNode";
 import { Button } from "../../../components/button";
 import { createPortal } from "react-dom";
+import { RemovableEdge } from "../common/components/RemovableEdge";
 
 type DiagramProps = {
   microserviceId: string;
   nodes?: any[];
   viewport: any;
+};
+
+const edgeTypes = {
+  removableEdge: RemovableEdge,
 };
 
 export const ClassDiagram: FC<DiagramProps> = ({
@@ -134,7 +139,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
         elem
       );
     }
-  }, [elem]);
+  }, [elem, handleClassAdd]);
 
   return (
     <>
@@ -145,6 +150,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
           nodes={nodes}
           onNodesChange={onNodesChange}
           nodeTypes={localNodeTypes}
+          edgeTypes={edgeTypes}
           onNodeDoubleClick={(_, node) => {
             setSelectedClass(node);
             setDrawerOpen(true);

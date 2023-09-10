@@ -71,8 +71,8 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
         <EditService
           key={service.id}
           service={service}
-          onSave={(serviceName, serviceType) => {
-            handleUpdateService({ id: service.id, name: serviceName, type: serviceType });
+          onChange={(changedService) => {
+            handleUpdateService({ id: service.id, ...changedService });
           }}
           onDelete={() => handleDeleteService(service.id)}
           nameExists={(newServiceName) =>

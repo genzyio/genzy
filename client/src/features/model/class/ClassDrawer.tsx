@@ -112,7 +112,7 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
           <EditAttribute
             key={attribute.id}
             attribute={attribute}
-            onSave={(attribute) => {
+            onChange={(attribute) => {
               handleUpdateAttribute(attribute.id, attribute);
             }}
             onDelete={(id) => {
@@ -128,7 +128,7 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
           <EditMethod
             key={method.id}
             method={method}
-            onSave={(method) => {
+            onChange={(method) => {
               handleUpdateMethod(method.id, method);
             }}
             onDelete={(id) => {

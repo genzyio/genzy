@@ -11,12 +11,14 @@ export type TabsInstance = {
 
 type TabsProps = PropsWithChildren & {
   onInit?: (tabsInstance: TabsInstance) => any;
+  invert?: boolean;
   navigationContainerClassName?: string;
   contentContainerClassName?: string;
 };
 
 export const Tabs: FC<TabsProps> = ({
   onInit,
+  invert = false,
   navigationContainerClassName = "",
   contentContainerClassName = "",
   children,
@@ -56,9 +58,10 @@ export const Tabs: FC<TabsProps> = ({
   useEffect(() => {
     if (nextActiveTab === -1) return;
 
-    const nextTab = tabs[nextActiveTab].props;
-    onTabChange(nextTab, nextActiveTab);
-
+    const nextTab = tabs[nextActiveTab]?.props;
+    if (nextTab) {
+      onTabChange(nextTab, nextActiveTab);
+    }
     setNextActiveTab(-1);
   }, [nextActiveTab]);
 
@@ -107,7 +110,7 @@ export const Tabs: FC<TabsProps> = ({
   );
 
   return (
-    <div className="h-full w-full flex flex-col">
+    <div className={`h-full w-full flex flex-col ${invert ? "flex-col-reverse" : ""}`}>
       <div className="w-full">{navigation}</div>
       <div className="grow">{content}</div>
     </div>

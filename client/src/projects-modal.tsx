@@ -4,16 +4,14 @@ import { Tab } from "./components/tab";
 import { RecentlyOpenedList } from "./features/projects/components/recently-opened/recently-opened-list";
 import { CreateProjectForm } from "./features/projects/components/create/create-project-form";
 import { ImportProjectForm } from "./features/projects/components/import/import-project-form";
-import { ProjectsList } from "./features/projects/components/projects-list/projects-list";
 import { EmptyDiagram } from "./features/model/EmptyDiagram";
 import { useProjectNavigation } from "./features/projects/hooks/useProjectNavigation";
+import { useRefresh } from "./features/projects/hooks/useRefresh";
 
 export function ProjectsModal() {
   const { openProject } = useProjectNavigation();
-
-  const onCreatedProject = (projectName: string) => {
-    openProject(projectName);
-  };
+  const { key: createKey, refresh: createRefresh } = useRefresh("create");
+  const { key: importKey, refresh: importRefresh } = useRefresh("import");
 
   return (
     <>
@@ -24,23 +22,14 @@ export function ProjectsModal() {
 
         <Modal title="Projects" isLarge={true} isOpen={true} onClose={() => {}}>
           <Tabs>
-            <Tab className="mt-4" title="Recently Opened">
+            <Tab className="mt-4" title="All">
               <RecentlyOpenedList />
             </Tab>
-            <Tab className="mt-4" title="All Projects">
-              <ProjectsList />
+            <Tab className="mt-4" title="Create">
+              <CreateProjectForm key={createKey} onSaved={openProject} onCancel={createRefresh} />
             </Tab>
-            <Tab className="mt-4" title="Create Project">
-              <CreateProjectForm
-                onSaved={onCreatedProject}
-                onCancel={() => console.log("MOVE TO OPEN PROJECTS")}
-              />
-            </Tab>
-            <Tab className="mt-4" title="Import Project">
-              <ImportProjectForm
-                onSaved={onCreatedProject}
-                onCancel={() => console.log("MOVE TO OPEN PROJECTS")}
-              />
+            <Tab className="mt-4" title="Import">
+              <ImportProjectForm key={importKey} onSaved={openProject} onCancel={importRefresh} />
             </Tab>
           </Tabs>
         </Modal>

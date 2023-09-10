@@ -3,6 +3,7 @@
     "experimentalDecorators": true,
     "jsxImportSource": "react",
     "jsx": "react-jsx",
-    "lib": ["es6", "es2017", "dom"]
+    "lib": ["es6", "es2017", "dom"],
+    "esModuleInterop": true
   }
 }

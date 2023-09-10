@@ -39,7 +39,7 @@ function createServiceNode({
 }: CreateServiceNodeParams): Node<Service> {
   return {
     id: serviceId,
-    position: { x: 0, y: 0 },
+    position: { x: 25, y: 25 },
     data: {
       microserviceId,
       name,
@@ -61,7 +61,7 @@ function createRemoteProxyNode({
 }: CreateRemoteProxyNodeParams): Node<Service> {
   return {
     id: serviceId,
-    position: { x: 0, y: 0 },
+    position: { x: 25, y: 25 },
     data: {
       microserviceId: microserviceId,
       name: "",
@@ -83,7 +83,7 @@ function createClassNode({ microserviceId, name }: CreateClassNodeParams): Node<
   const classId = `${+new Date()}`;
   return {
     id: classId,
-    position: { x: 0, y: 0 },
+    position: { x: 25, y: 25 },
     data: {
       microserviceId,
       name,

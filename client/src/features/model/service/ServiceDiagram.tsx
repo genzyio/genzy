@@ -137,6 +137,9 @@ export const ServiceDiagram: FC<DiagramProps> = ({
         return n;
       })
     );
+
+    setDrawerOpen(false);
+    setSelected(undefined);
   };
 
   // Handle Service delete
@@ -219,7 +222,7 @@ export const ServiceDiagram: FC<DiagramProps> = ({
         elem
       );
     }
-  }, [elem]);
+  }, [elem, handleServiceAdd]);
 
   return (
     <>
@@ -267,9 +270,17 @@ export const ServiceDiagram: FC<DiagramProps> = ({
         </span>
       </ConfirmationModal>
 
-      <Drawer open={isDrawerOpen} onClose={() => setDrawerOpen(false)} title={"GN1mbly"}>
+      <Drawer
+        open={isDrawerOpen}
+        onClose={() => {
+          setDrawerOpen(false);
+          setSelected(undefined);
+        }}
+        title={"GN1mbly"}
+      >
         {selected && (
           <ServiceDrawer
+            key={selected.id}
             service={selected.data}
             updateService={handleServiceUpdate}
             nameExists={(name) => nodes.some((n) => n.id !== selected.id && n.data.name === name)}

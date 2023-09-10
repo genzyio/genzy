@@ -7,6 +7,7 @@ import { Select } from "../../../components/select";
 import { IDENTIFIER_REGEX } from "../../../patterns";
 import { primitiveTypes } from "../class/TypesContext";
 import { useSequenceGenerator } from "../../../hooks/useStringSequence";
+import cloneDeep from "lodash.clonedeep";
 
 type ServiceDrawerProps = {
   service: Service;
@@ -22,11 +23,11 @@ const serviceTypeOptions = Object.entries(SERVICE_TYPE_DISPLAY_NAME)
   }));
 
 export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, nameExists }) => {
-  const [serviceData, setServiceData] = useState(service);
+  const [serviceData, setServiceData] = useState(cloneDeep(service));
   const [changed, setChanged] = useState(false);
 
   useEffect(() => {
-    setServiceData(service);
+    setServiceData(cloneDeep(service));
     setChanged(false);
   }, [service]);
 
@@ -35,14 +36,14 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
     setChanged(true);
   };
 
-  const update = () => {
+  const handleSave = () => {
     if (!changed) return;
     updateService(serviceData);
     setChanged(false);
   };
 
-  const nextFunctionName = useSequenceGenerator(service.functions, (f) => f.name, "function");
-  const nextApiPath = useSequenceGenerator(service.functions, (f) => f.route, "/api/route");
+  const nextFunctionName = useSequenceGenerator(serviceData.functions, (f) => f.name, "function");
+  const nextApiPath = useSequenceGenerator(serviceData.functions, (f) => f.route, "/api/route");
 
   const handleAddFunction = () => {
     serviceData.functions.push({
@@ -59,7 +60,7 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
 
   const nextParamName = (index: number) => {
     let i = 1;
-    while (service.functions[index].params.find((p) => p.name === `p${i}`)) i++;
+    while (serviceData.functions[index].params.find((p) => p.name === `p${i}`)) i++;
     return `p${i}`;
   };
 
@@ -77,13 +78,11 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
   const handleDeleteParam = (index: number) => (paramIndex: number) => {
     serviceData.functions[index].params.splice(paramIndex, 1);
     updateState({ ...serviceData });
-    update();
   };
 
   const handleDelete = (index: number) => {
     serviceData.functions.splice(index, 1);
     updateState({ ...serviceData });
-    update();
   };
 
   return (
@@ -93,7 +92,6 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
           <TextField
             value={serviceData.name}
             onChange={(v) => updateState({ ...serviceData, name: v })}
-            onBlur={update}
             error={
               (!IDENTIFIER_REGEX.test(serviceData.name) && "Must be an identifier") ||
               (nameExists(serviceData.name) && "Already exists")
@@ -105,7 +103,6 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
             value={serviceData.type}
             onChange={(v) => updateState({ ...serviceData, type: v as ServiceType })}
             options={serviceTypeOptions}
-            onBlur={update}
           />
         </span>
       </div>
@@ -116,7 +113,6 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
           handleAddParam={() => handleAddParam(index)}
           handleDelete={() => handleDelete(index)}
           handleDeleteParam={handleDeleteParam(index)}
-          update={update}
           updateState={() => updateState({ ...serviceData })}
           key={fun.id}
           nameExists={(name) =>
@@ -131,9 +127,15 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
       ))}
 
       <div className="flex justify-between">
-        <Button onClick={handleAddFunction} className="text-sm mt-3">
+        <Button type="button" onClick={handleAddFunction} className="text-sm mt-3">
           New function
         </Button>
+
+        <div className="space-x-1">
+          <Button type="button" className="text-sm mt-3" onClick={handleSave}>
+            Save
+          </Button>
+        </div>
       </div>
     </div>
   );

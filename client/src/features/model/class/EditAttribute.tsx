@@ -8,17 +8,19 @@ import { Checkbox } from "../../../components/checkbox";
 import { useMicroserviceContext } from "../microservices/MicroserviceContext";
 import { useTypesContext } from "./TypesContext";
 import { RoundCard } from "../common/components/RoundCard";
+import { ClosableWrapper } from "../common/components/ClosableWrapper";
+import cloneDeep from "lodash.clonedeep";
 
 type EditAttributeProps = {
   attribute: Attribute;
-  onSave: (attribute: Attribute) => any;
+  onChange: (attribute: Attribute) => any;
   onDelete: (id: string) => any;
   nameExists: (name: string) => boolean;
 };
 
 export const EditAttribute: FC<EditAttributeProps> = ({
-  attribute: initialAttribute,
-  onSave,
+  attribute,
+  onChange,
   onDelete,
   nameExists,
 }) => {
@@ -26,7 +28,12 @@ export const EditAttribute: FC<EditAttributeProps> = ({
   const { types } = useTypesContext(microserviceId);
 
   const [preview, setPreview] = useState(true);
-  const [attribute, setAttribute] = useState(initialAttribute);
+  const [initialAttribute, setInitialAttribute] = useState(cloneDeep(attribute));
+
+  const changeAttributeName = (name: string) => onChange({ ...attribute, name });
+  const changeAttributeType = (type: DataType) => onChange({ ...attribute, type });
+  const changeIsOptional = (isOptional: boolean) => onChange({ ...attribute, isOptional });
+  const changeIsCollection = (isCollection: boolean) => onChange({ ...attribute, isCollection });
 
   if (preview)
     return (
@@ -49,80 +56,54 @@ export const EditAttribute: FC<EditAttributeProps> = ({
 
   return (
     <RoundCard className="py-2">
-      <div className="flex">
-        <div className="mr-4">
-          <TextField
-            value={attribute.name}
-            onChange={(name) => {
-              setAttribute((prevAttribute) => ({
-                ...prevAttribute,
-                name,
-              }));
-            }}
-            label="Attribute Name"
-            error={
-              (!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")
-            }
+      <ClosableWrapper
+        hidden={!isValid}
+        onClick={() => {
+          setPreview(true);
+          setInitialAttribute(cloneDeep(attribute));
+        }}
+      >
+        <div className="flex">
+          <div className="mr-4">
+            <TextField
+              value={attribute.name}
+              onChange={changeAttributeName}
+              label="Attribute Name"
+              error={
+                (!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")
+              }
+            />
+          </div>
+          <div>
+            <Select
+              value={attribute.type}
+              onChange={changeAttributeType}
+              options={types}
+              label="Attribute Type"
+            />
+          </div>
+        </div>
+        <div className="mt-4">
+          <Checkbox checked={attribute.isOptional} label="Optional" onChange={changeIsOptional} />
+        </div>
+        <div className="mt-4">
+          <Checkbox
+            checked={attribute.isCollection}
+            label="Collection"
+            onChange={changeIsCollection}
           />
         </div>
-        <div>
-          <Select
-            value={attribute.type}
-            onChange={(type) => {
-              setAttribute((prevAttribute) => ({
-                ...prevAttribute,
-                type: type as DataType,
-              }));
+        <div className="flex justify-end space-x-2 mt-5">
+          <button
+            onClick={() => {
+              setPreview(true);
+              onChange(initialAttribute);
             }}
-            options={types}
-            label="Attribute Type"
-          />
+          >
+            Cancel
+          </button>
         </div>
-      </div>
-      <div className="mt-4">
-        <Checkbox
-          checked={attribute.isOptional}
-          label="Optional"
-          onChange={(optional) => {
-            setAttribute((prevAttribute) => ({
-              ...prevAttribute,
-              isOptional: optional,
-            }));
-          }}
-        />
-      </div>
-      <div className="mt-4">
-        <Checkbox
-          checked={attribute.isCollection}
-          label="Collection"
-          onChange={(collection) => {
-            setAttribute((prevAttribute) => ({
-              ...prevAttribute,
-              isCollection: collection,
-            }));
-          }}
-        />
-      </div>
-      <div className="flex justify-end space-x-2 mt-5">
-        <button
-          disabled={!isValid}
-          className={!isValid ? "text-gray-600" : ""}
-          onClick={() => {
-            setPreview(true);
-            onSave(attribute);
-          }}
-        >
-          Save
-        </button>
-        <button
-          onClick={() => {
-            setPreview(true);
-            setAttribute(initialAttribute);
-          }}
-        >
-          Cancel
-        </button>
-      </div>
+      </ClosableWrapper>
     </RoundCard>
   );
 };
