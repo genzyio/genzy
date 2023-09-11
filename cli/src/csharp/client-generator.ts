@@ -1,4 +1,5 @@
-import {
+import type { Environment } from "nunjucks";
+import type {
   MetaInfo,
   MetaTypesRegistry,
   ServiceMetaInfo,
@@ -14,7 +15,7 @@ export function generate({
   meta: MetaInfo;
   url: string;
   dirPath: string;
-  nunjucks: any;
+  nunjucks: Environment;
 }) {
   generateUtil(
     nunjucks,
@@ -35,7 +36,7 @@ async function controllerFileContentFrom({
 }: {
   service: ServiceMetaInfo;
   types: MetaTypesRegistry;
-  nunjucks: any;
+  nunjucks: Environment;
   url: string;
 }): Promise<string> {
   return nunjucks.render("service.njk", {
@@ -59,12 +60,12 @@ async function controllerFileContentFrom({
   });
 }
 
-function typesFileContentFrom({
+async function typesFileContentFrom({
   types,
   nunjucks,
 }: {
   types: MetaTypesRegistry;
-  nunjucks: any;
+  nunjucks: Environment;
 }): Promise<string> {
   const typesCopy = JSON.parse(JSON.stringify(types));
   Object.keys(typesCopy).forEach((type) => {

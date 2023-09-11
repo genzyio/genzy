@@ -1,7 +1,8 @@
+import type { Environment } from "nunjucks";
 import axios from "axios";
 import * as fs from "fs";
 import { format } from "prettier";
-import {
+import type {
   MetaInfo,
   MetaTypesRegistry,
   Param,
@@ -15,7 +16,7 @@ export async function readMetaFromFile(filePath: string): Promise<MetaInfo> {
 }
 
 export async function generate(
-  nunjucks: any,
+  nunjucks: Environment,
   params: {
     meta: MetaInfo;
     url?: string;
@@ -28,22 +29,22 @@ export async function generate(
     controllerFileContentFrom?: (params: {
       service: ServiceMetaInfo;
       types: MetaTypesRegistry;
-      nunjucks: any;
+      nunjucks: Environment;
       url: string;
     }) => Promise<string>;
     serviceFileContentFrom?: (params: {
       service: ServiceMetaInfo;
       types: MetaTypesRegistry;
-      nunjucks: any;
+      nunjucks: Environment;
     }) => Promise<string>;
     indexFileContentFrom?: (params: {
       services: ServiceMetaInfo[];
       url: string;
-      nunjucks: any;
+      nunjucks: Environment;
     }) => Promise<string>;
     typesFileContentFrom?: (params: {
       types: MetaTypesRegistry;
-      nunjucks: any;
+      nunjucks: Environment;
     }) => Promise<string>;
   }
 ) {

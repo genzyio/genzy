@@ -1,4 +1,9 @@
-import { MetaInfo, MetaTypesRegistry, ServiceMetaInfo } from "../../../shared/types";
+import type { Environment } from "nunjucks";
+import {
+  MetaInfo,
+  MetaTypesRegistry,
+  ServiceMetaInfo,
+} from "../../../shared/types";
 import {
   adoptParams,
   adoptTypeJS,
@@ -17,7 +22,7 @@ export function generate({
   meta: MetaInfo;
   url: string;
   dirPath: string;
-  nunjucks: any;
+  nunjucks: Environment;
 }) {
   generateUtil(
     nunjucks,
@@ -41,7 +46,7 @@ function controllerFileContentFrom({
 }: {
   service: ServiceMetaInfo;
   types: MetaTypesRegistry;
-  nunjucks: any;
+  nunjucks: Environment;
 }): Promise<string> {
   const content = nunjucks.render("controller.njk", {
     ...service,
@@ -72,7 +77,7 @@ function indexFileContentFrom({
 }: {
   services: ServiceMetaInfo[];
   url: string | undefined;
-  nunjucks: any;
+  nunjucks: Environment;
 }): Promise<string> {
   const content = nunjucks.render("index.njk", { services, url });
   return formatFileContent(content);
@@ -83,7 +88,7 @@ function typesFileContentFrom({
   nunjucks,
 }: {
   types: MetaTypesRegistry;
-  nunjucks: any;
+  nunjucks: Environment;
 }): Promise<string> {
   const content = nunjucks.render("types.njk", { types });
   return formatFileContent(content);
