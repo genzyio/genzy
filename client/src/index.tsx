@@ -5,7 +5,7 @@ import { API_URL } from "./url";
 import axios from "axios";
 
 import "react-toastify/dist/ReactToastify.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ProjectsModal } from "./projects-modal";
 import { ProjectWorkspace } from "./project-workspace";
 
@@ -33,19 +33,28 @@ const queryClient = new QueryClient({
 axios.defaults.baseURL = API_URL;
 axios.defaults.withCredentials = false;
 
+const router = createBrowserRouter([
+  {
+    path: "/projects/:projectName",
+    element: <ProjectWorkspace />,
+  },
+  {
+    path: "/",
+    element: <ProjectsModal />,
+  },
+  {
+    path: "*",
+    element: <ProjectsModal />,
+  },
+]);
+
 const container = document.getElementById("app");
 const root = createRoot(container);
 root.render(
   <>
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <Routes>
-          <Route path="/projects/:projectName" element={<ProjectWorkspace />} />
-          <Route path="/" element={<ProjectsModal />} />
-          <Route path="*" element={<ProjectsModal />} />
-        </Routes>
-      </QueryClientProvider>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
 
     <ToastContainer {...toastrOptions} />
   </>

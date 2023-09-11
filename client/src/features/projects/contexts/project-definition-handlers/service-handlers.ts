@@ -1,6 +1,7 @@
 import { type ProjectDefinition } from "../../models/project-definition.models";
 import { type HandlerType } from "./types";
 import { type Service } from "../../../model/microservices/models";
+import { type ServiceFunction } from "../../../model/service/models";
 import {
   createRemoteProxyNode,
   createServiceNode,
@@ -80,7 +81,8 @@ const addRemoteProxiesHandler: HandlerType<{
 const updateServiceHandler: HandlerType<{
   microserviceId: string;
   service: Service;
-}> = (projectDefinition: ProjectDefinition, { microserviceId, service }) => {
+  functions?: ServiceFunction[];
+}> = (projectDefinition: ProjectDefinition, { microserviceId, service, functions = undefined }) => {
   const microserviceNode = projectDefinition.microservices.nodes.find(
     (node) => node.id === microserviceId
   );
@@ -93,6 +95,7 @@ const updateServiceHandler: HandlerType<{
 
   serviceNode.data.name = service.name;
   serviceNode.data.type = service.type;
+  functions && (serviceNode.data.functions = functions);
 };
 
 const updateServicesHandler: HandlerType<{

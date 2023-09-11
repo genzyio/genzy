@@ -1,9 +1,43 @@
+import { type Class } from "../../../model/class/models";
+import { createClassNode } from "../../../model/common/utils/nodeFactories";
 import {
   type ProjectDefinition,
   type ClassDiagram,
   type ServiceDiagram,
 } from "../../models/project-definition.models";
 import { type HandlerType } from "./types";
+
+// Add
+
+const addClassHandler: HandlerType<{
+  microserviceId: string;
+  name: string;
+}> = (projectDefinition: ProjectDefinition, { microserviceId, name }) => {
+  const classDiagram = projectDefinition.classes[microserviceId];
+  const newClassNode = createClassNode({
+    microserviceId,
+    name,
+  });
+
+  classDiagram.nodes.push(newClassNode);
+
+  return newClassNode;
+};
+
+// Update
+
+const updateClassHandler: HandlerType<{
+  microserviceId: string;
+  classId: string;
+  class: Class;
+}> = (projectDefinition: ProjectDefinition, { microserviceId, classId, class: _class }) => {
+  const classDiagram = projectDefinition.classes[microserviceId];
+  const classNode = classDiagram.nodes.find((node) => node.id === classId);
+
+  classNode.data = _class;
+};
+
+// Delete
 
 const deleteClassHandler: HandlerType<{ microserviceId: string; classId: string }> = (
   projectDefinition: ProjectDefinition,
@@ -14,6 +48,12 @@ const deleteClassHandler: HandlerType<{ microserviceId: string; classId: string 
 
   const serviceDiagram = projectDefinition.services[microserviceId];
   removeClassRefferencesFromServices(serviceDiagram, classId);
+
+  removeClassNode(classDiagram, classId);
+};
+
+const removeClassNode = (classDiagram: ClassDiagram, classId: string) => {
+  classDiagram.nodes = classDiagram.nodes.filter((node) => node.id !== classId);
 };
 
 const removeClassRefferencesFromClasses = (classDiagram: ClassDiagram, classId: string) => {
@@ -56,4 +96,4 @@ const removeClassRefferencesFromServices = (serviceDiagram: ServiceDiagram, clas
   });
 };
 
-export { deleteClassHandler };
+export { addClassHandler, updateClassHandler, deleteClassHandler };

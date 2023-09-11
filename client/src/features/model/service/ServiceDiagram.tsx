@@ -22,7 +22,6 @@ import { Drawer } from "../../../components/drawer";
 import { ServiceDrawer } from "./ServiceDrawer";
 import { useProjectDefinitionContext } from "../../projects/contexts/project-definition.context";
 import nodeTypes from "../common/constants/nodeTypes";
-import { createServiceEdge } from "../common/utils/edgeFactories";
 import { projectDefinitionActions } from "../../projects/contexts/project-definition.dispatcher";
 import { ConfirmationModal } from "../../../components/confirmation-modal";
 import { RemovableEdge } from "../common/components/RemovableEdge";
@@ -51,16 +50,16 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState<Service>(initialNodes || []);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<{}>(initialEdges || []);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Service>([...initialNodes] || []);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<{}>([...initialEdges] || []);
 
   const [selected, setSelected] = useState<Node<Service, string>>();
 
   useEffect(() => {
     projectDefinition.services[microserviceId] = {
       ...projectDefinition.services[microserviceId],
-      nodes,
-      edges,
+      nodes: [...nodes],
+      edges: [...edges],
     };
   }, [nodes, edges]);
 
@@ -88,8 +87,15 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   };
 
   const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge(createServiceEdge(params), eds)),
-    [setEdges]
+    (params: Connection) => {
+      const newEdge = dispatcher(projectDefinitionActions.addDependency, {
+        microserviceId,
+        params,
+      });
+
+      setEdges((edges) => addEdge(newEdge, edges));
+    },
+    [microserviceId, dispatcher, setEdges]
   );
 
   const onEdgeUpdate = useCallback((oldEdge: Edge, newConnection: Connection) => {
@@ -117,7 +123,7 @@ export const ServiceDiagram: FC<DiagramProps> = ({
         type: "CONTROLLER",
       },
     });
-    setNodes((nds) => [...nds, serviceNode]);
+    setNodes((nodes) => [...nodes, serviceNode]);
   };
 
   // Handle Service update
@@ -129,12 +135,13 @@ export const ServiceDiagram: FC<DiagramProps> = ({
         id: selected.id,
         ...service,
       },
+      functions: service.functions,
     });
 
-    setNodes((ns) =>
-      ns.map((n) => {
-        if (n.id === selected.id) n.data = service;
-        return n;
+    setNodes((nodes) =>
+      nodes.map((node) => {
+        if (node.id === selected.id) return { ...node, data: service };
+        return node;
       })
     );
 
@@ -154,9 +161,9 @@ export const ServiceDiagram: FC<DiagramProps> = ({
       removedServices: [{ id: removedServiceId }],
     });
 
-    setNodes((ns) => ns.filter((n) => n.id !== removedServiceId));
-    setEdges((edgs) =>
-      edgs.filter((edge) => removedServiceId !== edge.target && removedServiceId !== edge.source)
+    setNodes((nodes) => nodes.filter((node) => node.id !== removedServiceId));
+    setEdges((edges) =>
+      edges.filter((edge) => removedServiceId !== edge.target && removedServiceId !== edge.source)
     );
 
     setIsModalOpen(false);
@@ -194,12 +201,16 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   const RemovableEdgeWrapper = useCallback(
     (props: EdgeProps) => {
       const onRemove = (_, id: string) => {
+        dispatcher(projectDefinitionActions.removeDependency, {
+          microserviceId,
+          dependencyId: id,
+        });
         setEdges((edges) => edges.filter((edge) => edge.id !== id));
       };
 
       return <RemovableEdge onRemove={onRemove} {...props} />;
     },
-    [setEdges]
+    [microserviceId, dispatcher, setEdges]
   );
 
   const edgeTypes = useMemo(

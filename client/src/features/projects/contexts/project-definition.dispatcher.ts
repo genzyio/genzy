@@ -14,18 +14,28 @@ import {
   updateServicesHandler,
   deleteServicesHandler,
 } from "./project-definition-handlers/service-handlers";
-import { deleteClassHandler } from "./project-definition-handlers/class-handlers";
 import {
+  addClassHandler,
+  updateClassHandler,
+  deleteClassHandler,
+} from "./project-definition-handlers/class-handlers";
+import {
+  addCommunicationHandler,
   removeCommunicationHandler,
   removeServicesFromCommunicationHandler,
   updateCommunicationHandler,
 } from "./project-definition-handlers/communication-handlers";
+import {
+  addDependencyHandler,
+  removeDependencyHandler,
+} from "./project-definition-handlers/dependency-handlers";
 
 export const projectDefinitionActions = {
   addMicroservice: Symbol("addMicroservice"),
   updateMicroservice: Symbol("updateMicroservice"),
   deleteMicroservice: Symbol("deleteMicroservice"),
 
+  addCommunication: Symbol("addCommunication"),
   updateCommunication: Symbol("updateCommunication"),
   removeServicesFromCommunication: Symbol("removeServicesFromCommunication"),
   removeCommunication: Symbol("removeCommunication"),
@@ -38,6 +48,11 @@ export const projectDefinitionActions = {
   updateServices: Symbol("updateServices"),
   deleteServices: Symbol("deleteServices"),
 
+  addDependency: Symbol("addDependency"),
+  removeDependency: Symbol("removeDependency"),
+
+  addClass: Symbol("addClass"),
+  updateClass: Symbol("updateClass"),
   deleteClass: Symbol("deleteClass"),
 } as const;
 
@@ -49,6 +64,7 @@ function createDispatcher(projectDefinition: ProjectDefinition): DispatcherType 
     [projectDefinitionActions.updateMicroservice]: updateMicroserviceHandler,
     [projectDefinitionActions.deleteMicroservice]: deleteMicroserviceHandler,
 
+    [projectDefinitionActions.addCommunication]: addCommunicationHandler,
     [projectDefinitionActions.updateCommunication]: updateCommunicationHandler,
     [projectDefinitionActions.removeServicesFromCommunication]:
       removeServicesFromCommunicationHandler,
@@ -62,6 +78,11 @@ function createDispatcher(projectDefinition: ProjectDefinition): DispatcherType 
     [projectDefinitionActions.updateServices]: updateServicesHandler,
     [projectDefinitionActions.deleteServices]: deleteServicesHandler,
 
+    [projectDefinitionActions.addDependency]: addDependencyHandler,
+    [projectDefinitionActions.removeDependency]: removeDependencyHandler,
+
+    [projectDefinitionActions.addClass]: addClassHandler,
+    [projectDefinitionActions.updateClass]: updateClassHandler,
     [projectDefinitionActions.deleteClass]: deleteClassHandler,
   };
 

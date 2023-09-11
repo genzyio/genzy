@@ -19,12 +19,12 @@ export const ConfirmationModal: FC<ConfirmationModalProps> = ({
         {children}
         <div className="flex justify-end mt-2">
           <div className="mr-2">
-            <Button type="button" onClick={onYes}>
+            <Button type="button" className="w-10" onClick={onYes}>
               Yes
             </Button>
           </div>
           <div>
-            <Button type="button" onClick={onClose}>
+            <Button type="button" className="w-10" onClick={onClose}>
               No
             </Button>
           </div>

@@ -2,16 +2,30 @@ import { type ProjectDefinition } from "../../models/project-definition.models";
 import { type HandlerType } from "./types";
 import { type Communication } from "../../../model/microservices/models";
 import { addRemoteProxiesHandler, deleteServicesHandler } from "./service-handlers";
+import { createMicroserviceEdge } from "../../../model/common/utils/edgeFactories";
+
+// Add
+
+const addCommunicationHandler: HandlerType<{
+  params: any;
+}> = (projectDefinition: ProjectDefinition, { params }) => {
+  const newCommunicationEdge = createMicroserviceEdge(params);
+
+  projectDefinition.microservices.edges.push(newCommunicationEdge);
+
+  return newCommunicationEdge;
+};
 
 // Update
 
 const updateCommunicationHandler: HandlerType<{
   communicationId: string;
+  communication: Communication;
   newServiceIds: string[];
   removedServiceIds: string[];
 }> = (
   projectDefinition: ProjectDefinition,
-  { communicationId, newServiceIds, removedServiceIds }
+  { communicationId, communication, newServiceIds, removedServiceIds }
 ) => {
   const communicationNode = projectDefinition.microservices.edges.find(
     (edge) => edge.id === communicationId
@@ -32,6 +46,9 @@ const updateCommunicationHandler: HandlerType<{
     microserviceId: dependentMicroserviceId,
     serviceIds: removedServiceIds,
   });
+
+  // Update node data
+  communicationNode.data = communication;
 };
 
 // Remove
@@ -39,6 +56,7 @@ const updateCommunicationHandler: HandlerType<{
 const removeCommunicationHandler: HandlerType<{
   communicationId: string;
 }> = (projectDefinition: ProjectDefinition, { communicationId }) => {
+  // Remove remote proxies
   const communicationNode = projectDefinition.microservices.edges.find(
     (edge) => edge.id === communicationId
   );
@@ -49,6 +67,11 @@ const removeCommunicationHandler: HandlerType<{
     microserviceId: dependentMicroserviceId,
     serviceIds: removedServiceIds,
   });
+
+  // Remove edge from current diagram
+  projectDefinition.microservices.edges = projectDefinition.microservices.edges.filter(
+    (edge) => edge.id !== communicationId
+  );
 };
 
 const removeServicesFromCommunicationHandler: HandlerType<{
@@ -61,6 +84,7 @@ const removeServicesFromCommunicationHandler: HandlerType<{
 };
 
 export {
+  addCommunicationHandler,
   updateCommunicationHandler,
   removeCommunicationHandler,
   removeServicesFromCommunicationHandler,

@@ -4,13 +4,12 @@ import { RecentlyOpenedListItem } from "./recenlty-opened-list-item";
 import { useAction } from "../../../../hooks/useAction";
 import { deleteRecentlyOpened, modifyRecentlyOpened } from "../../api/recently-opened.actions";
 import { type RecentlyOpenedProject } from "../../models/recently-opened.models";
-import { Modal } from "../../../../components/modal";
 import { Checkbox } from "../../../../components/checkbox";
-import { Button } from "../../../../components/button";
 import { useNotifications } from "../../../../hooks/useNotifications";
 import { extractErrorMessage } from "../../../../utils/errors";
 import { deleteProject } from "../../api/project.actions";
 import { useQueryClient } from "react-query";
+import { ConfirmationModal } from "../../../../components/confirmation-modal";
 import { useProjectNavigation } from "../../hooks/useProjectNavigation";
 
 export const RecentlyOpenedList: FC = () => {
@@ -124,7 +123,17 @@ export const RecentlyOpenedList: FC = () => {
       )}
 
       {isDeleteModalOpen && (
-        <Modal title="Confirm" isOpen={isDeleteModalOpen} onClose={closeDeleteModal}>
+        <ConfirmationModal
+          title="Confirm"
+          isOpen={isDeleteModalOpen}
+          onClose={closeDeleteModal}
+          onYes={() =>
+            deleteProjectAction({
+              projectName: selectedProject.name,
+              physical: isFromFileChecked,
+            })
+          }
+        >
           <p className="text-lg font-medium text-gray-700 mb-5">
             Are you sure you want to remove project "{selectedProject.name}" from workspace?
           </p>
@@ -133,26 +142,7 @@ export const RecentlyOpenedList: FC = () => {
             checked={isFromFileChecked}
             onChange={(isChecked) => setFromFileChecked(isChecked)}
           />
-          <div className="flex justify-end space-x-2 mt-5">
-            <Button
-              className="text-sm font-semibold leading-6 text-gray-900"
-              onClick={() =>
-                deleteProjectAction({
-                  projectName: selectedProject.name,
-                  physical: isFromFileChecked,
-                })
-              }
-            >
-              Delete
-            </Button>
-            <Button
-              className="text-sm font-semibold leading-6 text-gray-900"
-              onClick={closeDeleteModal}
-            >
-              Cancel
-            </Button>
-          </div>
-        </Modal>
+        </ConfirmationModal>
       )}
     </>
   );

@@ -7,6 +7,7 @@ type CreateMicroserviceEdgeParams = Connection;
 function createMicroserviceEdge(params: CreateMicroserviceEdgeParams): any {
   return {
     ...params,
+    id: `${+new Date()}`,
     data: {
       services: [],
     },
@@ -26,6 +27,7 @@ type CreateServiceEdgeParams = Connection;
 function createServiceEdge(params: CreateServiceEdgeParams): any {
   return {
     ...params,
+    id: `${+new Date()}`,
     data: {
       services: [],
     },

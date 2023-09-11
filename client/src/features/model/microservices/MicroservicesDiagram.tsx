@@ -26,8 +26,6 @@ import { projectDefinitionActions } from "../../projects/contexts/project-defini
 import nodeTypes from "../common/constants/nodeTypes";
 import { findArrayDiff } from "../../../utils/diff";
 import { ConfirmationModal } from "../../../components/confirmation-modal";
-import { createMicroserviceNode } from "../common/utils/nodeFactories";
-import { createMicroserviceEdge } from "../common/utils/edgeFactories";
 import { RemovableEdge } from "../common/components/RemovableEdge";
 import { RemovableNode } from "../common/components/RemovableNode";
 import { MicroserviceNode } from "./MicroserviceNode";
@@ -51,8 +49,8 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
 }) => {
   const { projectDefinition, dispatcher } = useProjectDefinitionContext();
 
-  const [nodes, setNodes, onNodesChange] = useNodesState<Microservice>(initialNodes || []);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Communication>(initialEdges || []);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Microservice>([...initialNodes] || []);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Communication>([...initialEdges] || []);
   const nextName = useSequenceGenerator(nodes, (node) => node.data.name, "Microservice");
 
   const [selectedMicroservice, setSelectedMicroservice] = useState<Node<Microservice, string>>();
@@ -75,8 +73,8 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   useEffect(() => {
     projectDefinition.microservices = {
       ...projectDefinition.microservices,
-      nodes,
-      edges,
+      nodes: [...nodes],
+      edges: [...edges],
     };
   }, [nodes, edges]);
 
@@ -99,8 +97,12 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   };
 
   const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge(createMicroserviceEdge(params), eds)),
-    [setEdges]
+    (params: Connection) => {
+      const newEdge = dispatcher(projectDefinitionActions.addCommunication, { params });
+
+      setEdges((edges) => addEdge(newEdge, edges));
+    },
+    [dispatcher, setEdges]
   );
 
   const onEdgeUpdate = useCallback((oldEdge: Edge, newConnection: Connection) => {
@@ -111,13 +113,13 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
     setEdges((eds) => updateEdge(oldEdge, newConnection, eds));
   }, []);
 
+  // Handle Microservice Add
   const handleMicroserviceAdd = () => {
-    const newMicroserviceNode = createMicroserviceNode({ name: nextName() });
-
-    dispatcher(projectDefinitionActions.addMicroservice, {
-      microserviceId: newMicroserviceNode.id,
+    const microserviceNode = dispatcher(projectDefinitionActions.addMicroservice, {
+      name: nextName(),
     });
-    setNodes((nodes) => [...nodes, newMicroserviceNode]);
+
+    setNodes((nodes) => [...nodes, microserviceNode]);
   };
 
   // Handle Microservice Update
@@ -130,6 +132,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
 
     dispatcher(projectDefinitionActions.updateMicroservice, {
       microserviceId: selectedMicroservice.id,
+      microservice,
       newServices,
       existingServices,
       removedServices,
@@ -205,6 +208,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
 
     dispatcher(projectDefinitionActions.updateCommunication, {
       communicationId: selectedCommunication.id,
+      communication,
       newServiceIds,
       removedServiceIds,
     });

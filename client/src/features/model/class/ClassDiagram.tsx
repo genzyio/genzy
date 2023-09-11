@@ -19,7 +19,6 @@ import { projectDefinitionActions } from "../../projects/contexts/project-defini
 import { useTypesContext } from "./TypesContext";
 import nodeTypes from "../common/constants/nodeTypes";
 import { ConfirmationModal } from "../../../components/confirmation-modal";
-import { createClassNode } from "../common/utils/nodeFactories";
 import { ClassNode } from "./ClassNode";
 import { RemovableNode } from "../common/components/RemovableNode";
 import { Button } from "../../../components/button";
@@ -44,7 +43,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
   const { projectDefinition, dispatcher } = useProjectDefinitionContext();
   const { updateTypes } = useTypesContext(microserviceId);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState<Class>(initialNodes || []);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Class>([...initialNodes] || []);
   const nextName = useSequenceGenerator(nodes, (node) => node.data.name, "Class");
 
   const [selectedClass, setSelectedClass] = useState<Node<Class, string>>();
@@ -55,7 +54,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
   useEffect(() => {
     projectDefinition.classes[microserviceId] = {
       ...projectDefinition.classes[microserviceId],
-      nodes,
+      nodes: [...nodes],
     };
     updateTypes(nodes);
   }, [nodes]);
@@ -69,13 +68,23 @@ export const ClassDiagram: FC<DiagramProps> = ({
   // Handle Class add
 
   const handleClassAdd = () => {
-    const newClassNode = createClassNode({ microserviceId, name: nextName() });
-    setNodes((ns) => [...ns, newClassNode]);
+    const classNode = dispatcher(projectDefinitionActions.addClass, {
+      microserviceId,
+      name: nextName(),
+    });
+
+    setNodes((nodes) => [...nodes, classNode]);
   };
 
   // Handle Class update
 
   const handleClassUpdate = (classObject: Class) => {
+    dispatcher(projectDefinitionActions.updateClass, {
+      microserviceId,
+      classId: selectedClass.id,
+      class: classObject,
+    });
+
     setNodes((nodes) =>
       nodes.map((node) => {
         if (node.id === selectedClass.id) {
@@ -94,7 +103,8 @@ export const ClassDiagram: FC<DiagramProps> = ({
   const handleClassDelete = () => {
     const deletedClassId = selectedClass.id;
     dispatcher(projectDefinitionActions.deleteClass, { microserviceId, classId: deletedClassId });
-    setNodes((ns) => ns.filter((n) => n.id !== deletedClassId));
+
+    setNodes((nodes) => nodes.filter((node) => node.id !== deletedClassId));
 
     setModalOpen(false);
     setSelectedClass(undefined);
@@ -133,7 +143,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
       return createPortal(
         <div className="flex justify-center gap-x-3">
           <Button className="hover:opacity-60 text-xs px-1 py-1" onClick={handleClassAdd}>
-            Add model
+            Add class
           </Button>
         </div>,
         elem

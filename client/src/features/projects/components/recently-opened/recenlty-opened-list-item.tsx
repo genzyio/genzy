@@ -57,7 +57,7 @@ export const RecentlyOpenedListItem: FC<RecentlyOpenedListItemProps> = ({
         </div> */}
         <div>
           <Button
-            className="text-sm font-semibold leading-6 text-gray-900"
+            className="text-sm font-semibold leading-6 text-gray-900 px-0 py-0"
             onClick={onRemoveProject}
           >
             <XMark />
