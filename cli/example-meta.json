@@ -1,6 +1,7 @@
 {
   "services": [
     {
+      "type": "Controller",
       "name": "AuthController",
       "actions": [
         {
@@ -37,6 +38,7 @@
       "path": "/auth"
     },
     {
+      "type": "Controller",
       "name": "PeraCrudController",
       "actions": [
         {
@@ -133,6 +135,7 @@
       "path": "/peras"
     },
     {
+      "type": "Controller",
       "name": "UserCrudController",
       "actions": [
         {
@@ -229,16 +232,25 @@
       "path": "/users"
     },
     {
+      "type": "LocalService",
       "name": "NoviServis",
       "actions": [
         {
-          "httpMethod": "get",
           "name": "getNesto",
-          "path": "/get-nesto",
-          "params": []
+          "params": [
+            {
+              "name": "test",
+              "type": "string",
+              "optional": true
+            },
+            {
+              "name": "pera",
+              "type": "int",
+              "optional": true
+            }
+          ]
         }
-      ],
-      "path": "/novi-servis"
+      ]
     }
   ],
   "types": {

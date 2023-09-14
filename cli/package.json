@@ -21,6 +21,7 @@
   "dependencies": {
     "axios": "^0.27.2",
     "nunjucks": "^3.2.3",
+    "pegjs": "^0.10.0",
     "prettier": "^3.0.1",
     "prettier-plugin-organize-imports": "^3.2.3",
     "yargs": "^17.5.1"
@@ -28,6 +29,7 @@
   "devDependencies": {
     "@types/jest": "^27.5.1",
     "@types/nunjucks": "^3.2.3",
+    "@types/pegjs": "^0.10.3",
     "@types/yargs": "^17.0.10",
     "copy-webpack-plugin": "^11.0.0",
     "esbuild-loader": "^2.16.0",

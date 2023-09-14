@@ -56,9 +56,7 @@ export async function generate(
     extension,
     url,
   } = params;
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
-  }
+  prepareDirectory(dirPath);
   await Promise.all(
     meta.services.map(async (service) => {
       if (contentHandlers.controllerFileContentFrom) {
@@ -104,8 +102,22 @@ export async function generate(
   }
 }
 
+export function pathExists(dirPath: string) {
+  return fs.existsSync(dirPath);
+}
+
+export function prepareDirectory(dirPath: string) {
+  if (!pathExists(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+}
+
 export function writeToFile(filePath: string, fileContent: string) {
   fs.writeFileSync(filePath, fileContent);
+}
+
+export function readFileSync(filePath: string) {
+  return fs.readFileSync(filePath).toString();
 }
 
 export async function formatFileContent(fileContent: string): Promise<string> {

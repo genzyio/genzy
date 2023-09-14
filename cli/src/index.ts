@@ -12,6 +12,8 @@ import { generate as generateCS } from "./csharp/client-generator";
 import { generate as generateServerJS } from "./javascript/server-generator";
 import { generate as generateServerTS } from "./typescript/server-generator";
 
+import type { ExtendedMetaInfo } from "./types";
+
 const options = yargs
   .usage("Usage: -l <language> -h <host> -o <out_dir> -f -server")
   .option("l", {
@@ -93,7 +95,11 @@ async function main() {
       break;
     case "ts":
       if (options.isServer) {
-        generateServerTS({ meta, dirPath: options.outDir, nunjucks: env });
+        generateServerTS({
+          meta: meta as ExtendedMetaInfo,
+          dirPath: options.outDir,
+          nunjucks: env,
+        });
       } else {
         generateTS({
           meta,
