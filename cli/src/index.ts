@@ -1,4 +1,5 @@
 import yargs from "yargs";
+import { generateMicroservice, initializeProject, startMicroservice, stopMicroservice } from "./actions";
 
 main();
 
@@ -30,9 +31,8 @@ async function main() {
             choices: ["js", "ts", "cs"],
           }),
       (cmd) => {
-        console.log(cmd.lang, cmd.outputDir, cmd.data);
-        // TODO: implement
-      }
+        generateMicroservice(cmd.outputDir, cmd.lang, cmd.data);
+      },
     )
     .command(
       "start",
@@ -44,9 +44,21 @@ async function main() {
           demandOption: true,
         }),
       (cmd) => {
-        console.log(cmd.path);
-        // TODO: implement
-      }
+        startMicroservice(cmd.path);
+      },
+    )
+    .command(
+      "stop",
+      "Stop a microservice",
+      (y) =>
+        y.option("path", {
+          describe: "Path to directory",
+          type: "string",
+          demandOption: true,
+        }),
+      (cmd) => {
+        stopMicroservice(cmd.path);
+      },
     )
     .command(
       "init",
@@ -65,9 +77,8 @@ async function main() {
           }),
 
       (cmd) => {
-        console.log(cmd.path, cmd.name);
-        // TODO: implement
-      }
+        initializeProject(cmd.path, cmd.name);
+      },
     )
     .help()
     .wrap(null).argv;
