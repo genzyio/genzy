@@ -1,12 +1,8 @@
 import { type Microservice, type Service } from "../../../model/microservices/models";
 import { type ProjectDefinition } from "../../models/project-definition.models";
 import { type HandlerType } from "./types";
+import { type DispatcherType, projectDefinitionActions } from "../project-definition.dispatcher";
 import { removeServicesFromCommunicationHandler } from "./communication-handlers";
-import {
-  addServicesHandler,
-  deleteServicesHandler,
-  updateServicesHandler,
-} from "./service-handlers";
 import { createMicroserviceNode } from "../../../model/common/utils/nodeFactories";
 
 export const defaultViewport = { x: 0, y: 0, zoom: 1 };
@@ -43,53 +39,55 @@ const updateMicroserviceHandler: HandlerType<{
   projectDefinition: ProjectDefinition,
   { microserviceId, microservice = undefined, newServices, existingServices, removedServices }
 ) => {
-  const microserviceDiagram = projectDefinition.microservices;
+  return (dispatcher: DispatcherType) => {
+    const microserviceDiagram = projectDefinition.microservices;
 
-  // Add new Services
-  addServicesHandler(projectDefinition, {
-    microserviceId,
-    services: newServices,
-  });
+    // Add new Services
+    dispatcher(projectDefinitionActions.addServices, {
+      microserviceId,
+      services: newServices,
+    });
 
-  // Update existing Services
-  updateServicesHandler(projectDefinition, {
-    microserviceId,
-    services: existingServices,
-  });
+    // Update existing Services
+    dispatcher(projectDefinitionActions.updateServices, {
+      microserviceId,
+      services: existingServices,
+    });
 
-  // Delete Service on current and remote proxies on other diagrams
-  const removedServiceIds = removedServices.map((service) => service.id);
+    // Delete Service on current and remote proxies on other diagrams
+    const removedServiceIds = removedServices.map((service) => service.id);
 
-  deleteServicesHandler(projectDefinition, {
-    microserviceId,
-    serviceIds: removedServiceIds,
-  });
-
-  const dependentCommunication = microserviceDiagram.edges.filter(
-    (edge) => edge.target === microserviceId
-  );
-  dependentCommunication.forEach((edge) => {
-    removeServicesFromCommunicationHandler(projectDefinition, {
-      communication: edge.data,
+    dispatcher(projectDefinitionActions.deleteServices, {
+      microserviceId,
       serviceIds: removedServiceIds,
     });
 
-    const dependentMicroserviceId = edge.source;
-    deleteServicesHandler(projectDefinition, {
-      microserviceId: dependentMicroserviceId,
-      serviceIds: removedServiceIds,
+    const dependentCommunication = microserviceDiagram.edges.filter(
+      (edge) => edge.target === microserviceId
+    );
+    dependentCommunication.forEach((edge) => {
+      removeServicesFromCommunicationHandler(projectDefinition, {
+        communication: edge.data,
+        serviceIds: removedServiceIds,
+      });
+
+      const dependentMicroserviceId = edge.source;
+      dispatcher(projectDefinitionActions.deleteServices, {
+        microserviceId: dependentMicroserviceId,
+        serviceIds: removedServiceIds,
+      });
     });
-  });
 
-  const microserviceNode = projectDefinition.microservices.nodes.find(
-    (node) => node.id === microserviceId
-  );
-  microserviceNode.data.services = microserviceNode.data.services.filter((service) =>
-    removedServices.every((removedService) => removedService.id !== service.id)
-  );
+    const microserviceNode = projectDefinition.microservices.nodes.find(
+      (node) => node.id === microserviceId
+    );
+    microserviceNode.data.services = microserviceNode.data.services.filter((service) =>
+      removedServices.every((removedService) => removedService.id !== service.id)
+    );
 
-  // Update microservice name
-  microservice && (microserviceNode.data.name = microservice.name);
+    // Update microservice name
+    microservice && (microserviceNode.data.name = microservice.name);
+  };
 };
 
 // Delete
@@ -98,33 +96,35 @@ const deleteMicroserviceHandler: HandlerType<{ microserviceId: string }> = (
   projectDefinition: ProjectDefinition,
   { microserviceId }
 ) => {
-  const microserviceData = projectDefinition.microservices.nodes.find(
-    (node) => node.id === microserviceId
-  ).data;
+  return (dispatcher: DispatcherType) => {
+    const microserviceData = projectDefinition.microservices.nodes.find(
+      (node) => node.id === microserviceId
+    ).data;
 
-  // Remove remote proxies
-  const dependentMicroservicesIds = projectDefinition.microservices.edges
-    .filter((edge) => edge.target === microserviceId)
-    .map((edge) => edge.source);
-  const removedServicesIds = microserviceData.services.map((service) => service.id);
-  dependentMicroservicesIds.forEach((dependentMicroserviceId) => {
-    deleteServicesHandler(projectDefinition, {
-      microserviceId: dependentMicroserviceId,
-      serviceIds: removedServicesIds,
+    // Remove remote proxies
+    const dependentMicroservicesIds = projectDefinition.microservices.edges
+      .filter((edge) => edge.target === microserviceId)
+      .map((edge) => edge.source);
+    const removedServicesIds = microserviceData.services.map((service) => service.id);
+    dependentMicroservicesIds.forEach((dependentMicroserviceId) => {
+      dispatcher(projectDefinitionActions.deleteServices, {
+        microserviceId: dependentMicroserviceId,
+        serviceIds: removedServicesIds,
+      });
     });
-  });
 
-  // Remove services and classews
-  delete projectDefinition.services[microserviceId];
-  delete projectDefinition.classes[microserviceId];
+    // Remove services and classews
+    delete projectDefinition.services[microserviceId];
+    delete projectDefinition.classes[microserviceId];
 
-  // Remove nodes and edges from current diagram
-  projectDefinition.microservices.nodes = projectDefinition.microservices.nodes.filter(
-    (node) => node.id !== microserviceId
-  );
-  projectDefinition.microservices.edges = projectDefinition.microservices.edges.filter(
-    (edge) => microserviceId !== edge.target && microserviceId !== edge.source
-  );
+    // Remove nodes and edges from current diagram
+    projectDefinition.microservices.nodes = projectDefinition.microservices.nodes.filter(
+      (node) => node.id !== microserviceId
+    );
+    projectDefinition.microservices.edges = projectDefinition.microservices.edges.filter(
+      (edge) => microserviceId !== edge.target && microserviceId !== edge.source
+    );
+  };
 };
 
 export { addMicroserviceHandler, updateMicroserviceHandler, deleteMicroserviceHandler };

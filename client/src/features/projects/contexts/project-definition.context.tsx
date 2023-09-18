@@ -44,7 +44,10 @@ export const ProjectDefinitionContextProvider: FC<PropsWithChildren> = ({ childr
   const dispatcher = useMemo(() => createDispatcher(projectDefinition), [projectDefinition]);
   const autoSaveDispatcher = useCallback(
     (type: symbol, payload: any) => {
-      const result = dispatcher(type, payload);
+      let result = dispatcher(type, payload);
+      if (typeof result === "function") {
+        result = result(dispatcher);
+      }
 
       setTimeout(() => {
         triggerAutoSave(projectDefinition);

@@ -8,8 +8,10 @@ import { IDENTIFIER_REGEX } from "../../../patterns";
 import { primitiveTypes } from "../class/TypesContext";
 import { useSequenceGenerator } from "../../../hooks/useStringSequence";
 import cloneDeep from "lodash.clonedeep";
+import { useValidationContext } from "../common/contexts/validation-context";
 
 type ServiceDrawerProps = {
+  serviceId: string;
   service: Service;
   updateService: (service: Service) => void;
   nameExists: (name: string) => boolean;
@@ -22,7 +24,14 @@ const serviceTypeOptions = Object.entries(SERVICE_TYPE_DISPLAY_NAME)
     label,
   }));
 
-export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, nameExists }) => {
+export const ServiceDrawer: FC<ServiceDrawerProps> = ({
+  serviceId,
+  service,
+  updateService,
+  nameExists,
+}) => {
+  const { isValid, setValidityFor } = useValidationContext();
+
   const [serviceData, setServiceData] = useState(cloneDeep(service));
   const [changed, setChanged] = useState(false);
 
@@ -85,6 +94,12 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
     updateState({ ...serviceData });
   };
 
+  const isIdentifier = IDENTIFIER_REGEX.test(serviceData.name);
+  const hasUniqueName = !nameExists(serviceData.name);
+
+  const isValidService = isIdentifier && hasUniqueName;
+  setValidityFor(serviceId, isValidService);
+
   return (
     <div className="mx-4">
       <div className="flex mb-5 w-full">
@@ -93,8 +108,7 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
             value={serviceData.name}
             onChange={(v) => updateState({ ...serviceData, name: v })}
             error={
-              (!IDENTIFIER_REGEX.test(serviceData.name) && "Must be an identifier") ||
-              (nameExists(serviceData.name) && "Already exists")
+              (!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")
             }
           />
         </span>
@@ -128,11 +142,11 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({ service, updateService, 
 
       <div className="flex justify-between">
         <Button type="button" onClick={handleAddFunction} className="text-sm mt-3">
-          New function
+          New {serviceData.type === "LOCAL" ? "function" : "route"}
         </Button>
 
         <div className="space-x-1">
-          <Button type="button" className="text-sm mt-3" onClick={handleSave}>
+          <Button type="button" className="text-sm mt-3" disabled={!isValid} onClick={handleSave}>
             Save
           </Button>
         </div>

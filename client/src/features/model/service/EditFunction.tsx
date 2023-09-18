@@ -17,6 +17,9 @@ import { useTypesContext } from "../class/TypesContext";
 import { RoundCard } from "../common/components/RoundCard";
 import { ClosableWrapper } from "../common/components/ClosableWrapper";
 import cloneDeep from "lodash.clonedeep";
+import { useValidationContext } from "../common/contexts/validation-context";
+import { Checkbox } from "../../../components/checkbox";
+import { XMark } from "../../../components/icons/x-mark";
 
 type EditFunctionProps = {
   function: ServiceFunction;
@@ -43,6 +46,7 @@ export const EditFunction: FC<EditFunctionProps> = ({
 }) => {
   const { microserviceId } = useMicroserviceContext();
   const { typesWithVoid: types } = useTypesContext(microserviceId);
+  const { setValidityFor } = useValidationContext();
 
   const [initialFunction, setInitialFunction] = useState(cloneDeep(fun));
 
@@ -69,6 +73,7 @@ export const EditFunction: FC<EditFunctionProps> = ({
 
   const onCancel = () => {
     setPreview(true);
+    setValidityFor(initialFunction.id, true);
     fun.route = initialFunction.route;
     fun.method = initialFunction.method;
     fun.name = initialFunction.name;
@@ -78,9 +83,34 @@ export const EditFunction: FC<EditFunctionProps> = ({
     updateState();
   };
 
+  const isRouteIdentifier = ROUTE_REGEX.test(fun.route);
+  const hasUniqueRoute = !routeExists(fun.route, fun.method);
+
+  const isFunctionIdentifier = IDENTIFIER_REGEX.test(fun.name);
+  const hasUniqueFunction = !nameExists(fun.name);
+
+  const areParamsIdentifiers = fun.params.every((param) => IDENTIFIER_REGEX.test(param.name));
+  const areParamsUnique = fun.params.every(
+    (param) => !fun.params.some((p) => p.id !== param.id && p.name === param.name)
+  );
+  const arePathParamsInRoute = fun.params
+    .filter((param) => param.source === "PATH")
+    .every(
+      (param) => fun.route.includes(`:${param.name}/`) || fun.route.endsWith(`:${param.name}`)
+    );
+
+  const isValidFunction =
+    (editRoute ? isRouteIdentifier && hasUniqueRoute : true) &&
+    isFunctionIdentifier &&
+    hasUniqueFunction &&
+    areParamsIdentifiers &&
+    areParamsUnique &&
+    arePathParamsInRoute;
+  setValidityFor(initialFunction.id, isValidFunction);
+
   return (
     <RoundCard className="py-2">
-      <ClosableWrapper onClick={onClose}>
+      <ClosableWrapper hidden={!isValidFunction} onClick={onClose}>
         {editRoute && (
           <div className="flex w-full mb-2">
             <Select
@@ -101,107 +131,114 @@ export const EditFunction: FC<EditFunctionProps> = ({
                 }}
                 label="Route"
                 error={
-                  (!ROUTE_REGEX.test(fun.route) && "Must be a valid route") ||
-                  (routeExists(fun.route, fun.method) && "Already exists")
+                  (!isRouteIdentifier && "Must be a valid route") ||
+                  (!hasUniqueRoute && "Already exists")
                 }
               />
             </div>
           </div>
         )}
-        <div key={fun.id} className="flex items-center w-full mb-2">
-          <TextField
-            value={fun.name}
-            onChange={(v) => {
-              fun.name = v;
-              updateState();
-            }}
-            label="Function Name"
-            error={
-              (!IDENTIFIER_REGEX.test(fun.name) && "Must be an identifier") ||
-              (nameExists(fun.name) && "Already exists")
-            }
-          />
-
-          <Select
-            value={fun.returnType}
-            onChange={(v) => {
-              fun.returnType = v;
-              updateState();
-            }}
-            options={types}
-            label="Returns"
-          />
-          <span className="mt-5">
-            <input
-              type="checkbox"
+        <div key={fun.id} className="flex w-full mb-2">
+          <div className="flex w-full items-top mr-2">
+            <div className="flex-1">
+              <TextField
+                value={fun.name}
+                onChange={(v) => {
+                  fun.name = v;
+                  updateState();
+                }}
+                label="Function Name"
+                error={
+                  (!isFunctionIdentifier && "Must be an identifier") ||
+                  (!hasUniqueFunction && "Already exists")
+                }
+              />
+            </div>
+            <Select
+              value={fun.returnType}
+              onChange={(v) => {
+                fun.returnType = v;
+                updateState();
+              }}
+              options={types}
+              label="Returns"
+            />
+          </div>
+          <span className="mt-[2em]">
+            <Checkbox
+              label="Array"
               checked={fun.returnsCollection}
               onChange={() => {
                 fun.returnsCollection = !fun.returnsCollection;
                 updateState();
               }}
             />
-            []
           </span>
         </div>
         <label className="block text-sm font-medium leading-6 text-gray-900">Parameters</label>
         <div className="ml-4">
           {fun.params.map((param, paramIndex) => (
-            <div key={param.id} className="flex items-center w-full">
-              <TextField
-                value={param.name}
-                onChange={(v) => {
-                  param.name = v;
-                  updateState();
-                }}
-                placeholder="Param Name"
-                error={
-                  (!IDENTIFIER_REGEX.test(param.name) && "Must be an identifier") ||
-                  (fun.params.some((p) => p.id !== param.id && p.name === param.name) &&
-                    "Duplicate") ||
-                  (param.source === "PATH" &&
-                    !(
-                      fun.route.includes(`:${param.name}/`) || fun.route.endsWith(`:${param.name}`)
-                    ) &&
-                    "Not in path")
-                }
-              />
-              {editRoute && (
-                <Select
-                  value={param.source}
+            <div key={param.id} className="flex w-full">
+              <div className="flex justify-top mr-2">
+                <TextField
+                  value={param.name}
                   onChange={(v) => {
-                    param.source = v as ParamSource;
+                    param.name = v;
                     updateState();
                   }}
-                  options={Object.keys(PARAM_SOURCE)}
+                  placeholder="Param Name"
+                  error={
+                    (!IDENTIFIER_REGEX.test(param.name) && "Must be an identifier") ||
+                    (fun.params.some((p) => p.id !== param.id && p.name === param.name) &&
+                      "Duplicate") ||
+                    (param.source === "PATH" &&
+                      !(
+                        fun.route.includes(`:${param.name}/`) ||
+                        fun.route.endsWith(`:${param.name}`)
+                      ) &&
+                      "Not in path")
+                  }
                 />
-              )}
-              <Select
-                value={param.type}
-                onChange={(v) => {
-                  param.type = v;
-                  updateState();
-                }}
-                options={types}
-              />
-              <input
-                type="checkbox"
-                checked={param.isCollection}
-                onChange={() => {
-                  param.isCollection = !param.isCollection;
-                  updateState();
-                }}
-              />
-              []
-              <button
-                onClick={() => handleDeleteParam(paramIndex)}
-                className="text-red-500 text-lg font-bold p-2"
-              >
-                x
-              </button>
+                {editRoute && (
+                  <Select
+                    value={param.source}
+                    onChange={(v) => {
+                      param.source = v as ParamSource;
+                      updateState();
+                    }}
+                    options={Object.keys(PARAM_SOURCE)}
+                  />
+                )}
+                <Select
+                  value={param.type}
+                  onChange={(v) => {
+                    param.type = v;
+                    updateState();
+                  }}
+                  options={types}
+                />
+              </div>
+              <span className="flex space-x-2 items-center">
+                <Checkbox
+                  label="Array"
+                  checked={param.isCollection}
+                  onChange={() => {
+                    param.isCollection = !param.isCollection;
+                    updateState();
+                  }}
+                />
+
+                <div
+                  onClick={() => handleDeleteParam(paramIndex)}
+                  // className="text-red-500 text-lg font-bold p-2"
+                >
+                  <XMark className="h-4 w-4" />
+                </div>
+              </span>
             </div>
           ))}
           <Button onClick={handleAddParam} className="text-xs mt-2">
-            Add param
+            Add parameter
           </Button>
         </div>
         <div className="flex justify-end space-x-2 mt-5">

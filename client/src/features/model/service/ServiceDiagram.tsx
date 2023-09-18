@@ -29,6 +29,7 @@ import { ServiceNode } from "./ServiceNode";
 import { RemovableNode } from "../common/components/RemovableNode";
 import { createPortal } from "react-dom";
 import { Button } from "../../../components/button";
+import { ValidationContextProvider } from "../common/contexts/validation-context";
 
 type DiagramProps = {
   microserviceId: string;
@@ -290,12 +291,15 @@ export const ServiceDiagram: FC<DiagramProps> = ({
         title={"GN1mbly"}
       >
         {selected && (
-          <ServiceDrawer
-            key={selected.id}
-            service={selected.data}
-            updateService={handleServiceUpdate}
-            nameExists={(name) => nodes.some((n) => n.id !== selected.id && n.data.name === name)}
-          />
+          <ValidationContextProvider>
+            <ServiceDrawer
+              key={selected.id}
+              serviceId={selected.id}
+              service={selected.data}
+              updateService={handleServiceUpdate}
+              nameExists={(name) => nodes.some((n) => n.id !== selected.id && n.data.name === name)}
+            />
+          </ValidationContextProvider>
         )}
       </Drawer>
     </>

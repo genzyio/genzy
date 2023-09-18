@@ -1,11 +1,11 @@
 import { type Class } from "../../../model/class/models";
-import { createClassNode } from "../../../model/common/utils/nodeFactories";
+import { type HandlerType } from "./types";
 import {
   type ProjectDefinition,
   type ClassDiagram,
   type ServiceDiagram,
 } from "../../models/project-definition.models";
-import { type HandlerType } from "./types";
+import { createClassNode } from "../../../model/common/utils/nodeFactories";
 
 // Add
 

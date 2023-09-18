@@ -11,6 +11,7 @@ import { useMicroserviceContext } from "../microservices/MicroserviceContext";
 import { RoundCard } from "../common/components/RoundCard";
 import { useSequenceGenerator } from "../../../hooks/useStringSequence";
 import { ClosableWrapper } from "../common/components/ClosableWrapper";
+import { useValidationContext } from "../common/contexts/validation-context";
 import cloneDeep from "lodash.clonedeep";
 
 type EditMethodProps = {
@@ -23,6 +24,7 @@ type EditMethodProps = {
 export const EditMethod: FC<EditMethodProps> = ({ method, onChange, onDelete, nameExists }) => {
   const { microserviceId } = useMicroserviceContext();
   const { typesWithVoid: types } = useTypesContext(microserviceId);
+  const { setValidityFor } = useValidationContext();
 
   const [preview, setPreview] = useState(true);
   const [initialMethod, setInitialMethod] = useState(cloneDeep(method));
@@ -62,7 +64,9 @@ export const EditMethod: FC<EditMethodProps> = ({ method, onChange, onDelete, na
   const isIdentifier = IDENTIFIER_REGEX.test(method.name);
   const hasUniqueName = !nameExists(method.name);
 
-  const isValid = isIdentifier && hasUniqueName && !hasDuplicateParamName() && areIdentifiers();
+  const isValidMethod =
+    isIdentifier && hasUniqueName && !hasDuplicateParamName() && areIdentifiers();
+  setValidityFor(method.id, isValidMethod);
 
   const handleAddParameter = () => {
     const newParameter = {
@@ -93,7 +97,7 @@ export const EditMethod: FC<EditMethodProps> = ({ method, onChange, onDelete, na
   return (
     <RoundCard className="py-2">
       <ClosableWrapper
-        hidden={!isValid}
+        hidden={!isValidMethod}
         onClick={() => {
           setPreview(true);
           setInitialMethod(cloneDeep(method));
@@ -146,6 +150,7 @@ export const EditMethod: FC<EditMethodProps> = ({ method, onChange, onDelete, na
           <button
             onClick={() => {
               setPreview(true);
+              setValidityFor(method.id, true);
               onChange(initialMethod);
               setParameters(initialMethod.parameters);
             }}

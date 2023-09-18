@@ -5,18 +5,23 @@ import { Button } from "../../../components/button";
 import { IDENTIFIER_REGEX } from "../../../patterns";
 import { EditService } from "./EditService";
 import { useSequenceGenerator } from "../../../hooks/useStringSequence";
+import { useValidationContext } from "../common/contexts/validation-context";
 
 type MicroserviceDrawerProps = {
+  microserviceId: string;
   microservice: Microservice;
   onMicroserviceUpdate: (microservice: Microservice) => any;
   nameExists: (name: string) => boolean;
 };
 
 export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
+  microserviceId,
   microservice: initialMicroservice,
   onMicroserviceUpdate,
   nameExists,
 }) => {
+  const { isValid, setValidityFor } = useValidationContext();
+
   const [microserviceName, setMicroserviceName] = useState(initialMicroservice.name);
   const [services, setServices] = useState([...initialMicroservice.services]);
 
@@ -54,16 +59,19 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
     onMicroserviceUpdate({ name: microserviceName, services });
   };
 
+  const isIdentifier = IDENTIFIER_REGEX.test(microserviceName);
+  const hasUniqueName = !nameExists(microserviceName);
+
+  const isValidMicroservice = isIdentifier && hasUniqueName;
+  setValidityFor(microserviceId, isValidMicroservice);
+
   return (
     <div className="mx-4">
       <div className="flex mb-5 w-full">
         <TextField
           value={microserviceName}
           onChange={setMicroserviceName}
-          error={
-            (!IDENTIFIER_REGEX.test(microserviceName) && "Must be an identifier") ||
-            (nameExists(microserviceName) && "Already exists")
-          }
+          error={(!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")}
         />
       </div>
 
@@ -86,7 +94,7 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
         </Button>
 
         <div className="space-x-1">
-          <Button type="button" className="text-sm mt-3" onClick={handleSave}>
+          <Button type="button" className="text-sm mt-3" disabled={!isValid} onClick={handleSave}>
             Save
           </Button>
         </div>

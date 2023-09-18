@@ -31,6 +31,7 @@ import { RemovableNode } from "../common/components/RemovableNode";
 import { MicroserviceNode } from "./MicroserviceNode";
 import { createPortal } from "react-dom";
 import { Button } from "../../../components/button";
+import { ValidationContextProvider } from "../common/contexts/validation-context";
 
 type DiagramProps = {
   nodes?: any[];
@@ -347,14 +348,17 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
         title={"GN1mbly"}
       >
         {selectedMicroservice && (
-          <MicroserviceDrawer
-            key={selectedMicroservice.id}
-            microservice={selectedMicroservice.data}
-            onMicroserviceUpdate={handleMicroserviceUpdate}
-            nameExists={(name) =>
-              nodes.some((n) => n.id !== selectedMicroservice.id && n.data.name === name)
-            }
-          />
+          <ValidationContextProvider>
+            <MicroserviceDrawer
+              key={selectedMicroservice.id}
+              microserviceId={selectedMicroservice.id}
+              microservice={selectedMicroservice.data}
+              onMicroserviceUpdate={handleMicroserviceUpdate}
+              nameExists={(name) =>
+                nodes.some((n) => n.id !== selectedMicroservice.id && n.data.name === name)
+              }
+            />
+          </ValidationContextProvider>
         )}
 
         {selectedCommunication && (

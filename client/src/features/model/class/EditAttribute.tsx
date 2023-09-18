@@ -9,6 +9,7 @@ import { useMicroserviceContext } from "../microservices/MicroserviceContext";
 import { useTypesContext } from "./TypesContext";
 import { RoundCard } from "../common/components/RoundCard";
 import { ClosableWrapper } from "../common/components/ClosableWrapper";
+import { useValidationContext } from "../common/contexts/validation-context";
 import cloneDeep from "lodash.clonedeep";
 
 type EditAttributeProps = {
@@ -26,6 +27,7 @@ export const EditAttribute: FC<EditAttributeProps> = ({
 }) => {
   const { microserviceId } = useMicroserviceContext();
   const { types } = useTypesContext(microserviceId);
+  const { setValidityFor } = useValidationContext();
 
   const [preview, setPreview] = useState(true);
   const [initialAttribute, setInitialAttribute] = useState(cloneDeep(attribute));
@@ -52,12 +54,13 @@ export const EditAttribute: FC<EditAttributeProps> = ({
   const isIdentifier = IDENTIFIER_REGEX.test(attribute.name);
   const hasUniqueName = !nameExists(attribute.name);
 
-  const isValid = isIdentifier && hasUniqueName;
+  const isValidAttribute = isIdentifier && hasUniqueName;
+  setValidityFor(attribute.id, isValidAttribute);
 
   return (
     <RoundCard className="py-2">
       <ClosableWrapper
-        hidden={!isValid}
+        hidden={!isValidAttribute}
         onClick={() => {
           setPreview(true);
           setInitialAttribute(cloneDeep(attribute));
@@ -97,6 +100,7 @@ export const EditAttribute: FC<EditAttributeProps> = ({
           <button
             onClick={() => {
               setPreview(true);
+              setValidityFor(attribute.id, true);
               onChange(initialAttribute);
             }}
           >

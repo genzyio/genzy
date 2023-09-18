@@ -6,18 +6,23 @@ import { IDENTIFIER_REGEX } from "../../../patterns";
 import { Button } from "../../../components/button";
 import { EditAttribute } from "./EditAttribute";
 import { EditMethod } from "./EditMethod";
+import { useValidationContext } from "../common/contexts/validation-context";
 
 type ClassDrawerProps = {
+  classId: string;
   class: Class;
   onClassUpdate: (classObject: Class) => any;
   nameExists: (name: string) => boolean;
 };
 
 export const ClassDrawer: FC<ClassDrawerProps> = ({
+  classId,
   class: initialClass,
   onClassUpdate,
   nameExists,
 }) => {
+  const { isValid, setValidityFor } = useValidationContext();
+
   const [className, setClassName] = useState(initialClass.name);
   const [attributes, setAttributes] = useState([...initialClass.attributes]);
   const [methods, setMethods] = useState([...initialClass.methods]);
@@ -95,6 +100,12 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
     });
   };
 
+  const isIdentifier = IDENTIFIER_REGEX.test(className);
+  const hasUniqueName = !nameExists(className);
+
+  const isValidClass = isIdentifier && hasUniqueName;
+  setValidityFor(classId, isValidClass);
+
   return (
     <>
       <div className="mx-4">
@@ -103,8 +114,7 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
             value={className}
             onChange={setClassName}
             error={
-              (!IDENTIFIER_REGEX.test(className) && "Must be an identifier") ||
-              (nameExists(className) && "AlreadyExists")
+              (!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")
             }
           />
         </div>
@@ -150,7 +160,7 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
           </div>
 
           <div className="space-x-1">
-            <Button type="button" className="text-sm mt-3" onClick={handleSave}>
+            <Button type="button" className="text-sm mt-3" disabled={!isValid} onClick={handleSave}>
               Save
             </Button>
           </div>

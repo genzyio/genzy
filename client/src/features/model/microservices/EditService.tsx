@@ -7,6 +7,7 @@ import { RoundCard } from "../common/components/RoundCard";
 import { Select } from "../../../components/select";
 import { SERVICE_TYPE_DISPLAY_NAME } from "../service/models";
 import { ClosableWrapper } from "../common/components/ClosableWrapper";
+import { useValidationContext } from "../common/contexts/validation-context";
 import cloneDeep from "lodash.clonedeep";
 
 const serviceTypeOptions = Object.entries(SERVICE_TYPE_DISPLAY_NAME)
@@ -24,6 +25,8 @@ type EditFunctionProps = {
 };
 
 export const EditService: FC<EditFunctionProps> = ({ service, onChange, onDelete, nameExists }) => {
+  const { setValidityFor } = useValidationContext();
+
   const [preview, setPreview] = useState(true);
   const [initialService, setInitialService] = useState(cloneDeep(service));
 
@@ -41,12 +44,13 @@ export const EditService: FC<EditFunctionProps> = ({ service, onChange, onDelete
   const isIdentifier = IDENTIFIER_REGEX.test(serviceName);
   const hasUniqueName = !nameExists(serviceName);
 
-  const isValid = isIdentifier && hasUniqueName;
+  const isValidService = isIdentifier && hasUniqueName;
+  setValidityFor(service.id, isValidService);
 
   return (
     <RoundCard className="py-2">
       <ClosableWrapper
-        hidden={!isValid}
+        hidden={!isValidService}
         onClick={() => {
           setPreview(true);
           setInitialService(cloneDeep(service));
@@ -73,6 +77,7 @@ export const EditService: FC<EditFunctionProps> = ({ service, onChange, onDelete
           <button
             onClick={() => {
               setPreview(true);
+              setValidityFor(service.id, true);
               onChange(initialService);
             }}
           >

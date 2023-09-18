@@ -24,6 +24,7 @@ import { RemovableNode } from "../common/components/RemovableNode";
 import { Button } from "../../../components/button";
 import { createPortal } from "react-dom";
 import { RemovableEdge } from "../common/components/RemovableEdge";
+import { ValidationContextProvider } from "../common/contexts/validation-context";
 
 type DiagramProps = {
   microserviceId: string;
@@ -196,14 +197,17 @@ export const ClassDiagram: FC<DiagramProps> = ({
         title={"GN1mbly"}
       >
         {selectedClass && (
-          <ClassDrawer
-            key={selectedClass.id}
-            class={selectedClass.data}
-            onClassUpdate={handleClassUpdate}
-            nameExists={(name) =>
-              nodes.some((n) => n.id !== selectedClass.id && n.data.name === name)
-            }
-          />
+          <ValidationContextProvider>
+            <ClassDrawer
+              key={selectedClass.id}
+              classId={selectedClass.id}
+              class={selectedClass.data}
+              onClassUpdate={handleClassUpdate}
+              nameExists={(name) =>
+                nodes.some((n) => n.id !== selectedClass.id && n.data.name === name)
+              }
+            />
+          </ValidationContextProvider>
         )}
       </Drawer>
     </>
