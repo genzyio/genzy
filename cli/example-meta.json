@@ -251,6 +251,20 @@
           ]
         }
       ]
+    },
+    {
+      "type": "RemoteProxy",
+      "name": "CatFactsService",
+      "host": "https://catfact.ninja",
+      "path": "/",
+      "actions": [
+        {
+          "httpMethod": "get",
+          "path": "/fact",
+          "name": "getFact",
+          "params": []
+        }
+      ]
     }
   ],
   "types": {

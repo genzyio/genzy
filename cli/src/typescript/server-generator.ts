@@ -63,7 +63,7 @@ export async function generate({
         );
       }),
     ...meta.services
-      .filter((s) => ["LocalService", "RemoteProxy"].includes(s.type))
+      .filter((s) => ["LocalService"].includes(s.type))
       .map(async (service) => {
         const path = `${dirPath}/${service.name}.ts`;
         if (pathExists(path)) {
