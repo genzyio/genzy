@@ -17,9 +17,14 @@ import {
   {{name}},
 {% endfor %}
 } from "./types";
+{% if extends %}
+import {
+{{extends}}
+} from "./{{extends}}";
+{% endif %}
 
 {% if path != null %}@Controller('{{ path }}'){% endif %}
-export class {{ name }} {
+export class {{ name }} {% if extends %} extends {{ extends }} {% endif %} {
 {% for action in actions %} {{ methods }}
 {% if action.httpMethod %}  @{{ action.httpMethod }}({% if action.httpMethod %}'{{ action.path }}'{% endif %}){% endif %}
   {% if action.resultType %}{{ action.resultDecorator }}{% endif %}

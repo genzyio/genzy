@@ -137,6 +137,7 @@
     {
       "type": "Controller",
       "name": "UserCrudController",
+      "extends": "AuthController",
       "actions": [
         {
           "httpMethod": "get",

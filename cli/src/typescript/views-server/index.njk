@@ -16,6 +16,6 @@ export const {
   {% endfor %}
 }: N1mblyContainerServices = nimble.getAllServices();
 
-const app = new N1mblyApi().from(nimble);
+const app = new N1mblyApi().buildAppFrom(nimble);
 
 app.listen(3000, () => console.log("App is listening on port 3000"));

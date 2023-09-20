@@ -14,7 +14,7 @@ CommonJSImportDefinition
  = ("const" _ [^=]+ _ "=")? _ "require" "(" [^\)]+ ")" [;]? _ { return text() }
 
 ClassDefinition
-  = _ DecoratorDefinition* _ ("export")? _ "class" _ name:Identifier _ "{" _ sections:Section* "}" _ { return { name, sections }; }
+  = _ DecoratorDefinition* _ ("export")? _ "class" _ name:Identifier _ "extends"? _ Identifier? _ "{" _ sections:Section* "}" _ { return { name, sections }; }
   
 Section
  = Comment / MethodDefinition / DecoratorDefinition
