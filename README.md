@@ -2,16 +2,17 @@
 
 A simple JavaScript framework that puts the focus on the business logic and problems from the domain.
 
-[![NPM](https://nodei.co/npm/nimbly-client.png)](https://nodei.co/npm/nimbly-client/)
-[![NPM](https://nodei.co/npm/nimbly-api.png)](https://nodei.co/npm/nimbly-api/)
+[![NPM](https://nodei.co/npm/@n1mbly/client.png)](https://nodei.co/npm/@n1mbly/client/)
+[![NPM](https://nodei.co/npm/@n1mbly/api.png)](https://nodei.co/npm/@n1mbly/api/)
 
 # Getting Started
 
 ### Setting up the server:
 
 1. `npm init -y`
-2. `npm i -S nimbly-api`
+2. `npm i -S @n1mbly/api`
 3. Implement services
+
 ```js
 class UserService {
   async createUser(user) {
@@ -30,36 +31,37 @@ class AccountService {
     return [];
   }
 
-  // take accountInfo object as parameter 
-  async createAccount({username, firstName, lastName, email}) {
+  // take accountInfo object as parameter
+  async createAccount({ username, firstName, lastName, email }) {
     // logic for adding the account
-    const newAccount = {id: 1, username};
+    const newAccount = { id: 1, username };
     // call another service
     this.userService.createUser({
       accountId: newAccount.id,
       firstName,
       lastName,
-      email
-    })
+      email,
+    });
     return newAccount;
   }
 }
 ```
-4. Create a Nimble of services
-```js
-import { Nimble } from 'nimbly-api';
 
-const usersNimble = new Nimble()
-  .ofLocal(UserService)
-  .andLocal(AccountService);
+4. Create a Nimble of services
+
+```js
+import { Nimble } from "@n1mbly/api";
+
+const usersNimble = new Nimble().ofLocal(UserService).andLocal(AccountService);
 
 // The instances are available for custom usage
 const { userService, accountService } = usersNimble.services();
 ```
 
 5. Create the NimblyApi
+
 ```js
-import { NimblyApi } from 'nimbly-api';
+import { NimblyApi } from "@n1mbly/api";
 
 const app = new NimblyApi().from(usersNimble);
 
@@ -76,8 +78,9 @@ app.listen(3000);
 ### Setting up the client:
 
 1. `npm init -y`
-2. `npm i -S nimbly-client`
+2. `npm i -S @n1mbly/client`
 3. Define services
+
 ```js
 class UserService {
   async createUser(user) {}
@@ -88,11 +91,13 @@ class AccountService {
   async createAccount(account) {}
 }
 ```
-4. Create a Nimble of remote services
-```js
-import { Nimble } from 'nimbly-client';
 
-const host = 'http://localhost:3000';
+4. Create a Nimble of remote services
+
+```js
+import { Nimble } from "@n1mbly/client";
+
+const host = "http://localhost:3000";
 
 const usersNimble = new Nimble()
   .ofRemote(UserService, host)
@@ -102,14 +107,15 @@ const usersNimble = new Nimble()
 const { userService, accountService } = usersNimble.services();
 
 // Use the services
-accountService.createAccount({
-  username: 'test',
-  email: 'test@test.com',
-  firstName: 'Test',
-  lastName: 'Test',
-})
-.then(newAccount => console.log(newAccount)) // created account from server
-.catch(error => console.log(error));
+accountService
+  .createAccount({
+    username: "test",
+    email: "test@test.com",
+    firstName: "Test",
+    lastName: "Test",
+  })
+  .then((newAccount) => console.log(newAccount)) // created account from server
+  .catch((error) => console.log(error));
 
 // Fetch all accounts
 const allAccounts = await accountService.getAllAccounts();
@@ -133,63 +139,55 @@ const allAccounts = await accountService.getAllAccounts();
 // Intercept all service calls
 const usersNimble = new Nimble()
   .ofRemote(UserService, host)
-  .interceptAllCalls(({setHeader, getHeader, setBody, getBody}) => {
-    setHeader('Authorization', 'Bearer <token>');
+  .interceptAllCalls(({ setHeader, getHeader, setBody, getBody }) => {
+    setHeader("Authorization", "Bearer <token>");
   });
 
 // Intercept only specific method calls
-const usersNimble = new Nimble()
-  .ofRemote(UserService, host)
-  .interceptCalls({
-    userService: {
-      getTest({setHeader, getHeader, setBody, getBody}) {
-        setBody({ ...getBody(), timestamp: new Date() });
-      }
-    }
-  });
+const usersNimble = new Nimble().ofRemote(UserService, host).interceptCalls({
+  userService: {
+    getTest({ setHeader, getHeader, setBody, getBody }) {
+      setBody({ ...getBody(), timestamp: new Date() });
+    },
+  },
+});
 
 // Define interceptors with an interceptor class
 class UserServiceCallInterceptor {
-  getTest({setHeader, getHeader, setBody, getBody}) {
-    setHeader('classCallInterceptor', 'Works!')
+  getTest({ setHeader, getHeader, setBody, getBody }) {
+    setHeader("classCallInterceptor", "Works!");
   }
 }
-const usersNimble = new Nimble()
-  .ofRemote(UserService, host)
-  .interceptCalls({
-    userService: UserServiceCallInterceptor
-  });
+const usersNimble = new Nimble().ofRemote(UserService, host).interceptCalls({
+  userService: UserServiceCallInterceptor,
+});
 
 // Intercept all service results
 const usersNimble = new Nimble()
   .ofRemote(UserService, host)
-  .interceptAllResults(({setHeader, getHeader, setBody, getBody}) => {
+  .interceptAllResults(({ setHeader, getHeader, setBody, getBody }) => {
     validateBody(getBody());
-    setToken(getHeader('Token'));
+    setToken(getHeader("Token"));
   });
 
 // Intercept only specific method results
-const usersNimble = new Nimble()
-  .ofRemote(UserService, host)
-  .interceptResults({
-    userService: {
-      getTest({setHeader, getHeader, setBody, getBody}) {
-        setBody({ ...getBody(), count: getBody().items.length });
-      }
-    }
-  });
+const usersNimble = new Nimble().ofRemote(UserService, host).interceptResults({
+  userService: {
+    getTest({ setHeader, getHeader, setBody, getBody }) {
+      setBody({ ...getBody(), count: getBody().items.length });
+    },
+  },
+});
 
 // Define interceptors with an interceptor class
 class UserServiceResultInterceptor {
-  getTest({setHeader, getHeader, setBody, getBody}) {
-    setHeader('classResultInterceptor', 'Works!')
+  getTest({ setHeader, getHeader, setBody, getBody }) {
+    setHeader("classResultInterceptor", "Works!");
   }
 }
-const usersNimble = new Nimble()
-  .ofRemote(UserService, host)
-  .interceptResults({
-    userService: UserServiceResultInterceptor
-  });
+const usersNimble = new Nimble().ofRemote(UserService, host).interceptResults({
+  userService: UserServiceResultInterceptor,
+});
 ```
 
 ## API Interceptors
@@ -199,7 +197,7 @@ const usersNimble = new Nimble()
 const usersNimble = new Nimble().ofLocal(UserService);
 const app = new NimblyApi()
   .interceptAll((req: Request, res: Response, next: NextFunction) => {
-    if(isTokenValid(req.headers.Authorization)) next();
+    if (isTokenValid(req.headers.Authorization)) next();
     else res.sendStatus(401);
   })
   .from(usersNimble);
@@ -210,17 +208,17 @@ const app = new NimblyApi()
   .intercept({
     userService: {
       createUser: (req: Request, res: Response, next: NextFunction) => {
-        if(isAdminUser(req.headers.Authorization)) next();
+        if (isAdminUser(req.headers.Authorization)) next();
         else res.sendStatus(401);
-      }
-    }
+      },
+    },
   })
   .from(usersNimble);
 
 // Intercept specific service handlers before they are called with Interceptor class
 class UserServiceInterceptor {
   createUser(req: Request, res: Response, next: NextFunction) {
-    if(isAdminUser(req.headers.Authorization)) next();
+    if (isAdminUser(req.headers.Authorization)) next();
     else res.sendStatus(401);
   }
 }
@@ -228,8 +226,8 @@ const usersNimble = new Nimble().ofLocal(UserService);
 const app = new NimblyApi()
   .intercept({
     userService: {
-      createUser: UserServiceInterceptor
-    }
+      createUser: UserServiceInterceptor,
+    },
   })
   .from(usersNimble);
 
@@ -249,8 +247,8 @@ const app = new NimblyApi()
       createUser: (req: Request, res: Response, next: NextFunction) => {
         res.status(201);
         next();
-      }
-    }
+      },
+    },
   })
   .from(usersNimble);
 
@@ -265,13 +263,14 @@ const usersNimble = new Nimble().ofLocal(UserService);
 const app = new NimblyApi()
   .interceptAfter({
     userService: {
-      createUser: UserServiceInterceptor
-    }
+      createUser: UserServiceInterceptor,
+    },
   })
   .from(usersNimble);
 ```
 
 ## API Error Status Code Mappings
+
 ```js
 class BadLogicError extends Error {
   name = "BadLogicError";
@@ -292,7 +291,9 @@ const app = new NimblyApi()
   })
   .from(usersNimble);
 ```
+
 ## Roadmap
+
 - Implement Open API docs generation.
 - Implement client generation CLI from meta info that is fetched from the API.
 - Support for defining custom paths and params.
