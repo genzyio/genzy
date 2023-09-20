@@ -2,20 +2,32 @@
 import { N1mblyContainer, N1mblyApi } from '@n1mbly/api';
 {% for service in services %}import { {{ service.name }} } from './{{ service.name }}';
 {% endfor %}
+{% for controller in controllers %}import { {{ controller.name }} } from './{{ controller.name }}';
+{% endfor %}
 
-export type N1mblyContainerServices = {
+export type N1mblyServicesContainerDeps = {
   {% for service in services %}{{ service.name.charAt(0).toLowerCase() + service.name.slice(1) }}: {{ service.name }};
   {% endfor %}
 };
 
-const nimble = new N1mblyContainer(){% for service in services %}
+export type N1mblyControllersContainerDeps = {
+  {% for controller in controllers %}{{ controller.name.charAt(0).toLowerCase() + controller.name.slice(1) }}: {{ controller.name }};{% endfor %}
+  services: N1mblyServicesContainerDeps;
+
+};
+const controllers = new N1mblyContainer(){% for controller in controllers %}
+.addLocalService({{ controller.name }}){% endfor %};
+
+const services = new N1mblyContainer(){% for service in services %}
 {% if service.host %}.addRemoteService("{{ service.host }}", {{ service.name }}){% else %}.addLocalService({{ service.name }}){% endif %}{% endfor %};
+
+controllers.addAccessToContainer("services", services);
 
 export const {
   {% for service in services %}{{ service.name.charAt(0).toLowerCase() + service.name.slice(1) }},
   {% endfor %}
-}: N1mblyContainerServices = nimble.getAllServices();
+}: N1mblyServicesContainerDeps = services.getAllServices();
 
-const app = new N1mblyApi().buildAppFrom(nimble);
+const app = new N1mblyApi().buildAppFrom(controllers);
 
 app.listen(3000, () => console.log("App is listening on port 3000"));

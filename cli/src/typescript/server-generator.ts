@@ -12,6 +12,7 @@ import {
   writeToFile,
 } from "../utils";
 import { JSTSParser } from "../parser/js-ts";
+import { lowerFirstLetter } from "../../../shared/functions";
 
 export async function generate({
   meta,
@@ -29,7 +30,7 @@ export async function generate({
     await indexFileContentFrom({
       nunjucks,
       services: meta.services,
-    })
+    }),
   );
 
   writeToFile(
@@ -37,7 +38,7 @@ export async function generate({
     await typesFileContentFrom({
       nunjucks,
       types: meta.types,
-    })
+    }),
   );
 
   await Promise.all([
@@ -59,7 +60,7 @@ export async function generate({
             nunjucks,
             types: meta.types,
             service: controller,
-          })
+          }),
         );
       }),
     ...meta.services
@@ -80,7 +81,7 @@ export async function generate({
             nunjucks,
             types: meta.types,
             service,
-          })
+          }),
         );
       }),
   ]);
@@ -88,13 +89,13 @@ export async function generate({
 
 function getExistingMethodBodyMap(
   path: string,
-  controller: ExtendedServiceInfo
+  controller: ExtendedServiceInfo,
 ): Map<string, string> {
   const methodBodyMap = new Map<string, string>();
   if (pathExists(path)) {
     try {
       const classObj = JSTSParser.parse(readFileSync(path)).classes.find(
-        (x) => x.name === controller.name
+        (x) => x.name === controller.name,
       );
       classObj.sections
         // TODO capture in-between sections, like comments as well
@@ -125,6 +126,9 @@ function controllerFileContentFrom({
   const content = nunjucks.render("controller.njk", {
     ...service,
     types,
+    dependencies: service.dependencies?.map((dependency) =>
+      lowerFirstLetter(dependency),
+    ),
     actions: service.actions.map((r) => ({
       ...r,
       httpMethod: capitalizeFirstLetter(r.httpMethod.toLowerCase()),
@@ -164,7 +168,15 @@ function indexFileContentFrom({
   services: ExtendedServiceInfo[];
   nunjucks: Environment;
 }): Promise<string> {
-  const content = nunjucks.render("index.njk", { services });
+  const controllers = services.filter((service) => {
+    return service.type == "Controller";
+  });
+  const content = nunjucks.render("index.njk", {
+    services: services.filter((service) => {
+      return service.type == "RemoteProxy" || service.type == "LocalService";
+    }),
+    controllers,
+  });
   return formatFileContent(content);
 }
 

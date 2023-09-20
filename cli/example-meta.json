@@ -3,6 +3,7 @@
     {
       "type": "Controller",
       "name": "AuthController",
+      "dependencies": ["NoviServis"],
       "actions": [
         {
           "httpMethod": "get",
