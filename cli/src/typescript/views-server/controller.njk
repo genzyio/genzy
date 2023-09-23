@@ -28,7 +28,7 @@ import { N1mblyControllersContainerDeps } from ".";
 
 {% if path != null %}@Controller('{{ path }}'){% endif %}
 export class {{ name }} {% if extends %} extends {{ extends }} {% endif %} {
- {% if dependencies != null %}
+{% if dependencies != null %}
   {% for dependency in dependencies %}
     private {{dependency}}: N1mblyControllersContainerDeps["services"]["{{dependency}}"];
   {% endfor %}
@@ -37,7 +37,7 @@ export class {{ name }} {% if extends %} extends {{ extends }} {% endif %} {
     this.{{dependency}} = deps.services.{{dependency}};
   {% endfor %}
   }
-  {% endif %}
+{% endif %}
 {% for action in actions %} {{ methods }}
 {% if action.httpMethod %}  @{{ action.httpMethod }}({% if action.httpMethod %}'{{ action.path }}'{% endif %}){% endif %}
   {% if action.resultType %}{{ action.resultDecorator }}{% endif %}

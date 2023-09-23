@@ -15,6 +15,7 @@ export type N1mblyControllersContainerDeps = {
   services: N1mblyServicesContainerDeps;
 
 };
+
 const controllers = new N1mblyContainer(){% for controller in controllers %}
 .addLocalService({{ controller.name }}){% endfor %};
 

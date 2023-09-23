@@ -3,7 +3,9 @@
     {
       "type": "Controller",
       "name": "AuthController",
-      "dependencies": ["NoviServis"],
+      "dependencies": [
+        "NoviServis"
+      ],
       "actions": [
         {
           "httpMethod": "get",
@@ -236,6 +238,9 @@
     {
       "type": "LocalService",
       "name": "NoviServis",
+      "dependencies": [
+        "CatFactsService"
+      ],
       "actions": [
         {
           "name": "getNesto",
