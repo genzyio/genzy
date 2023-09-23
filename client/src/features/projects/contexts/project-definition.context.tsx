@@ -11,6 +11,7 @@ import { type DispatcherType, createDispatcher } from "./project-definition.disp
 import { useProjectDefinition } from "../hooks/useProjectDefinition";
 import { useProjectContext } from "./project.context";
 import { useAutoSaveContext } from "./auto-save.context";
+import { useDirtyCheckContext } from "../../model/common/contexts/dirty-check-context";
 
 type ProjectDefinitionContextValues = {
   projectDefinition: ProjectDefinition;
@@ -38,6 +39,7 @@ export const useProjectDefinitionContext = () => useContext(ProjectDefinitionCon
 
 export const ProjectDefinitionContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const { project } = useProjectContext();
+  const { setCurrentState } = useDirtyCheckContext();
   const { triggerAutoSave } = useAutoSaveContext();
 
   const { projectDefinition, isFetching } = useProjectDefinition(project?.name);
@@ -48,10 +50,10 @@ export const ProjectDefinitionContextProvider: FC<PropsWithChildren> = ({ childr
       if (typeof result === "function") {
         result = result(dispatcher);
       }
-
+      setCurrentState(true);
       setTimeout(() => {
         triggerAutoSave(projectDefinition);
-      }, 1000);
+      }, 300);
 
       return result;
     },

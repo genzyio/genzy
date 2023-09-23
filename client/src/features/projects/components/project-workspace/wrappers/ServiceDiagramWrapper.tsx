@@ -4,6 +4,7 @@ import { useMicroserviceContext } from "../../../../model/microservices/Microser
 import { useTypesContext } from "../../../../model/class/TypesContext";
 import { ServiceDiagram } from "../../../../model/service/ServiceDiagram";
 import { defaultViewport } from "../../../contexts/project-definition-handlers/microservice-handlers";
+import { DirtyCheckContextProvider } from "../../../../model/common/contexts/dirty-check-context";
 
 export const ServiceDiagramWrapper: FC<{ microserviceId: string }> = ({ microserviceId }) => {
   const { projectDefinition } = useProjectDefinitionContext();
@@ -23,11 +24,13 @@ export const ServiceDiagramWrapper: FC<{ microserviceId: string }> = ({ microser
   }, []);
 
   return (
-    <ServiceDiagram
-      microserviceId={microserviceId}
-      nodes={serviceDiagram.nodes}
-      edges={serviceDiagram.edges}
-      viewport={serviceDiagram.viewport || defaultViewport}
-    />
+    <DirtyCheckContextProvider>
+      <ServiceDiagram
+        microserviceId={microserviceId}
+        nodes={serviceDiagram.nodes}
+        edges={serviceDiagram.edges}
+        viewport={serviceDiagram.viewport || defaultViewport}
+      />
+    </DirtyCheckContextProvider>
   );
 };

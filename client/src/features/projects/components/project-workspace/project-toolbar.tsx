@@ -10,11 +10,13 @@ import { saveProjectScreenshot } from "../../api/project-screenshots.actions";
 import { extractErrorMessage } from "../../../../utils/errors";
 import { useProjectNavigation } from "../../hooks/useProjectNavigation";
 import { useAutoSaveContext } from "../../contexts/auto-save.context";
+import { useDirtyCheckContext } from "../../../model/common/contexts/dirty-check-context";
 
 export const ProjectToolbar: FC = () => {
   const notificator = useNotifications();
   const { project } = useProjectContext();
   const { closeProject } = useProjectNavigation();
+  const { isDirty, setInitialState } = useDirtyCheckContext();
   const { shouldAutoSave, toggleAutoSave, lastAutoSave } = useAutoSaveContext();
   const { projectDefinition: initialProjectDefinition } = useProjectDefinitionContext();
 
@@ -23,6 +25,7 @@ export const ProjectToolbar: FC = () => {
     {
       onSuccess: () => {
         notificator.success("Project is saved.");
+        setInitialState(false);
         saveProjectScreenshot(project.name);
       },
       onError: (error) => {
@@ -36,8 +39,11 @@ export const ProjectToolbar: FC = () => {
     {
       onSuccess: () => {
         notificator.success("Project is saved.");
+        setInitialState(false);
         saveProjectScreenshot(project.name);
-        closeProject();
+        setTimeout(() => {
+          closeProject();
+        }, 10);
       },
       onError: (error) => {
         notificator.error(extractErrorMessage(error));
@@ -50,6 +56,7 @@ export const ProjectToolbar: FC = () => {
       <div className="w-fit absolute top-4 z-10 select-none left-1/2 -translate-x-1/2">
         <div className="w-fit flex items-center gap-x-2 py-2 px-4 border rounded-md border-gray-100">
           <Button
+            disabled={!isDirty}
             onClick={() => {
               saveProjectDefinitionAction(initialProjectDefinition);
             }}
@@ -58,6 +65,7 @@ export const ProjectToolbar: FC = () => {
             Save
           </Button>
           <Button
+            disabled={!isDirty}
             onClick={() => saveAndCloseProjectDefinitionAction(initialProjectDefinition)}
             className="text-xs"
           >

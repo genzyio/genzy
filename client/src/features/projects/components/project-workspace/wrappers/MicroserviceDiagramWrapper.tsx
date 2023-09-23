@@ -3,6 +3,7 @@ import { useProjectDefinitionContext } from "../../../contexts/project-definitio
 import { useMicroserviceContext } from "../../../../model/microservices/MicroserviceContext";
 import { MicroservicesDiagram } from "../../../../model/microservices/MicroservicesDiagram";
 import { defaultViewport } from "../../../contexts/project-definition-handlers/microservice-handlers";
+import { DirtyCheckContextProvider } from "../../../../model/common/contexts/dirty-check-context";
 
 type MicroserviceDiagramWrapperProps = {
   onMicroserviceDeleted: (microserviceId: string) => any;
@@ -21,11 +22,13 @@ export const MicroserviceDiagramWrapper: FC<MicroserviceDiagramWrapperProps> = (
   }, []);
 
   return (
-    <MicroservicesDiagram
-      nodes={microserviceDiagram.nodes}
-      edges={microserviceDiagram.edges}
-      viewport={microserviceDiagram.viewport || defaultViewport}
-      onMicroserviceDeleted={onMicroserviceDeleted}
-    />
+    <DirtyCheckContextProvider>
+      <MicroservicesDiagram
+        nodes={microserviceDiagram.nodes}
+        edges={microserviceDiagram.edges}
+        viewport={microserviceDiagram.viewport || defaultViewport}
+        onMicroserviceDeleted={onMicroserviceDeleted}
+      />
+    </DirtyCheckContextProvider>
   );
 };

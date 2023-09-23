@@ -14,6 +14,7 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { useAction } from "../../../hooks/useAction";
 import { saveProjectDefinition } from "../api/project-definition.actions";
 import { saveProjectScreenshot } from "../api/project-screenshots.actions";
+import { useDirtyCheckContext } from "../../model/common/contexts/dirty-check-context";
 
 type AutoSaveContextValues = {
   shouldAutoSave: boolean;
@@ -33,16 +34,33 @@ const AutoSaveContext = createContext<AutoSaveContextValues>(initialAutoSaveCont
 
 export const useAutoSaveContext = () => useContext(AutoSaveContext);
 
+const useAutoSavePreferences = (projectName: string) => {
+  const localStorageKey = `${projectName}/auto-save`;
+
+  return {
+    get: (): boolean => localStorage.getItem(localStorageKey) === "true",
+    store: (autoSave: boolean): void => localStorage.setItem(localStorageKey, autoSave.toString()),
+  };
+};
+
 export const AutoSaveContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const { project } = useProjectContext();
-  const [shouldAutoSave, setShouldAutoSave] = useState(initialAutoSaveContextValues.shouldAutoSave);
+  const { setInitialState } = useDirtyCheckContext();
+
+  const autoSavePreferences = useAutoSavePreferences(project.name);
+  const [shouldAutoSave, setShouldAutoSave] = useState(
+    autoSavePreferences.get() || initialAutoSaveContextValues.shouldAutoSave
+  );
   const [lastAutoSave, setLastAutoSave] = useState<any>(initialAutoSaveContextValues.lastAutoSave);
 
   const [projectDefinitionToSave, setProjectDefinitionToSave] = useState(null);
-  const projectDefinitionToSaveDebounced = useDebounce(projectDefinitionToSave, 15000);
+  const projectDefinitionToSaveDebounced = useDebounce(projectDefinitionToSave, 5000);
 
   const toggleAutoSave = useCallback(() => {
-    setShouldAutoSave((shouldAutoSave) => !shouldAutoSave);
+    setShouldAutoSave((shouldAutoSave) => {
+      autoSavePreferences.store(!shouldAutoSave);
+      return !shouldAutoSave;
+    });
     setProjectDefinitionToSave(null);
     setLastAutoSave(null);
   }, [setShouldAutoSave]);
@@ -60,6 +78,7 @@ export const AutoSaveContextProvider: FC<PropsWithChildren> = ({ children }) => 
     saveProjectDefinition(project.name),
     {
       onSuccess: () => {
+        setInitialState(false);
         saveProjectScreenshot(project.name);
         setLastAutoSave(moment());
       },

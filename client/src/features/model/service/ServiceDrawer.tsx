@@ -9,6 +9,7 @@ import { primitiveTypes } from "../class/TypesContext";
 import { useSequenceGenerator } from "../../../hooks/useStringSequence";
 import cloneDeep from "lodash.clonedeep";
 import { useValidationContext } from "../common/contexts/validation-context";
+import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 
 type ServiceDrawerProps = {
   serviceId: string;
@@ -30,25 +31,22 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({
   updateService,
   nameExists,
 }) => {
+  const { isDirty, setCurrentState } = useDirtyCheckContext();
   const { isValid, setValidityFor } = useValidationContext();
 
   const [serviceData, setServiceData] = useState(cloneDeep(service));
-  const [changed, setChanged] = useState(false);
 
   useEffect(() => {
     setServiceData(cloneDeep(service));
-    setChanged(false);
   }, [service]);
 
   const updateState = (service: Service) => {
     setServiceData(service);
-    setChanged(true);
+    setCurrentState(service);
   };
 
   const handleSave = () => {
-    if (!changed) return;
     updateService(serviceData);
-    setChanged(false);
   };
 
   const nextFunctionName = useSequenceGenerator(serviceData.functions, (f) => f.name, "function");
@@ -146,7 +144,12 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({
         </Button>
 
         <div className="space-x-1">
-          <Button type="button" className="text-sm mt-3" disabled={!isValid} onClick={handleSave}>
+          <Button
+            type="button"
+            className="text-sm mt-3"
+            disabled={!isValid || !isDirty}
+            onClick={handleSave}
+          >
             Save
           </Button>
         </div>

@@ -32,6 +32,7 @@ import { MicroserviceNode } from "./MicroserviceNode";
 import { createPortal } from "react-dom";
 import { Button } from "../../../components/button";
 import { ValidationContextProvider } from "../common/contexts/validation-context";
+import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 
 type DiagramProps = {
   nodes?: any[];
@@ -49,6 +50,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   onMicroserviceDeleted,
 }) => {
   const { projectDefinition, dispatcher } = useProjectDefinitionContext();
+  const { isDirty, promptDirtyModal, setInitialState } = useDirtyCheckContext();
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Microservice>([...initialNodes] || []);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Communication>([...initialEdges] || []);
@@ -297,10 +299,12 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
           edgeTypes={edgeTypes}
           onNodeDoubleClick={(_, node) => {
             setSelectedMicroservice(node);
+            setInitialState(node.data);
             setDrawerOpen(true);
           }}
           onEdgeDoubleClick={(_, edge) => {
             setSelectedCommunication(edge);
+            setInitialState(edge.data);
             setDrawerOpen(true);
           }}
           connectionMode={ConnectionMode.Loose}
@@ -341,9 +345,24 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
       <Drawer
         open={isDrawerOpen}
         onClose={() => {
+          if (!isDirty) {
+            setDrawerOpen(false);
+            setSelectedMicroservice(undefined);
+            setSelectedCommunication(undefined);
+            return;
+          }
+
           setDrawerOpen(false);
-          setSelectedMicroservice(undefined);
-          setSelectedCommunication(undefined);
+          promptDirtyModal(
+            () => {
+              setDrawerOpen(false);
+              setSelectedMicroservice(undefined);
+              setSelectedCommunication(undefined);
+            },
+            () => {
+              setDrawerOpen(true);
+            }
+          );
         }}
         title={"GN1mbly"}
       >

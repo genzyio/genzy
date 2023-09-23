@@ -30,6 +30,7 @@ import { RemovableNode } from "../common/components/RemovableNode";
 import { createPortal } from "react-dom";
 import { Button } from "../../../components/button";
 import { ValidationContextProvider } from "../common/contexts/validation-context";
+import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 
 type DiagramProps = {
   microserviceId: string;
@@ -47,6 +48,7 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   viewport: initialViewport,
 }) => {
   const { projectDefinition, dispatcher } = useProjectDefinitionContext();
+  const { isDirty, promptDirtyModal, setInitialState } = useDirtyCheckContext();
 
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -257,6 +259,7 @@ export const ServiceDiagram: FC<DiagramProps> = ({
           onNodeDoubleClick={(_e, node) => {
             if (node.data.type === "REMOTE_PROXY") return;
             setSelected(node);
+            setInitialState(node.data);
             setDrawerOpen(true);
           }}
           connectionMode={ConnectionMode.Loose}
@@ -285,8 +288,22 @@ export const ServiceDiagram: FC<DiagramProps> = ({
       <Drawer
         open={isDrawerOpen}
         onClose={() => {
+          if (!isDirty) {
+            setDrawerOpen(false);
+            setSelected(undefined);
+            return;
+          }
+
           setDrawerOpen(false);
-          setSelected(undefined);
+          promptDirtyModal(
+            () => {
+              setDrawerOpen(false);
+              setSelected(undefined);
+            },
+            () => {
+              setDrawerOpen(true);
+            }
+          );
         }}
         title={"GN1mbly"}
       >

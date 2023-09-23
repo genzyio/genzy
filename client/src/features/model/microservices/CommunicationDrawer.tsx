@@ -2,6 +2,7 @@ import { type FC, useState } from "react";
 import type { Service, Communication } from "./models";
 import { Checkbox } from "../../../components/checkbox";
 import { Button } from "../../../components/button";
+import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 
 type CommunicationDrawerProps = {
   communication: Communication;
@@ -14,6 +15,8 @@ export const CommunicationDrawer: FC<CommunicationDrawerProps> = ({
   possibleServices,
   onCommunicationUpdate,
 }) => {
+  const { isDirty, setCurrentState } = useDirtyCheckContext();
+
   const [selectedServices, setSelectedService] = useState(communication.services);
 
   const handleCheck = (serviceId: string, checked: boolean) => {
@@ -21,6 +24,7 @@ export const CommunicationDrawer: FC<CommunicationDrawerProps> = ({
       ? [...selectedServices, serviceId]
       : selectedServices.filter((sId) => sId !== serviceId);
     setSelectedService(newServices);
+    setCurrentState((state: any) => ({ ...state, services: newServices }));
   };
 
   const handleSave = () => {
@@ -42,7 +46,7 @@ export const CommunicationDrawer: FC<CommunicationDrawerProps> = ({
         }) ?? <></>}
 
         <div className="flex space-x-1 justify-end text-sm mt-3">
-          <Button type="button" className="text-sm mt-3" onClick={handleSave}>
+          <Button type="button" className="text-sm mt-3" disabled={!isDirty} onClick={handleSave}>
             Save
           </Button>
         </div>

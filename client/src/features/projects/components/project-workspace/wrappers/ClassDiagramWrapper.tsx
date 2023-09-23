@@ -3,6 +3,7 @@ import { useProjectDefinitionContext } from "../../../contexts/project-definitio
 import { useMicroserviceContext } from "../../../../model/microservices/MicroserviceContext";
 import { ClassDiagram } from "../../../../model/class/ClassDiagram";
 import { defaultViewport } from "../../../contexts/project-definition-handlers/microservice-handlers";
+import { DirtyCheckContextProvider } from "../../../../model/common/contexts/dirty-check-context";
 
 export const ClassDiagramWrapper: FC<{ microserviceId: string }> = ({ microserviceId }) => {
   const { projectDefinition } = useProjectDefinitionContext();
@@ -16,10 +17,12 @@ export const ClassDiagramWrapper: FC<{ microserviceId: string }> = ({ microservi
   }, []);
 
   return (
-    <ClassDiagram
-      microserviceId={microserviceId}
-      nodes={classDiagram.nodes}
-      viewport={classDiagram.viewport || defaultViewport}
-    />
+    <DirtyCheckContextProvider>
+      <ClassDiagram
+        microserviceId={microserviceId}
+        nodes={classDiagram.nodes}
+        viewport={classDiagram.viewport || defaultViewport}
+      />
+    </DirtyCheckContextProvider>
   );
 };

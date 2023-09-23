@@ -28,7 +28,9 @@ export const Button: FC<ButtonProps> = ({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={`${className} ${paddings} inline-flex justify-center rounded-md bg-indigo-600 font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2`}
+      className={`${className} ${paddings} inline-flex justify-center rounded-md bg-indigo-600 font-medium shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+        disabled ? "text-gray-200" : "text-white"
+      } select-none`}
     >
       {children}
     </button>

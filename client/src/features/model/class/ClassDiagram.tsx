@@ -25,6 +25,7 @@ import { Button } from "../../../components/button";
 import { createPortal } from "react-dom";
 import { RemovableEdge } from "../common/components/RemovableEdge";
 import { ValidationContextProvider } from "../common/contexts/validation-context";
+import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 
 type DiagramProps = {
   microserviceId: string;
@@ -42,6 +43,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
   viewport: initialViewport,
 }) => {
   const { projectDefinition, dispatcher } = useProjectDefinitionContext();
+  const { isDirty, promptDirtyModal, setInitialState } = useDirtyCheckContext();
   const { updateTypes } = useTypesContext(microserviceId);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Class>([...initialNodes] || []);
@@ -164,6 +166,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
           edgeTypes={edgeTypes}
           onNodeDoubleClick={(_, node) => {
             setSelectedClass(node);
+            setInitialState(node.data);
             setDrawerOpen(true);
           }}
           defaultViewport={initialViewport}
@@ -175,7 +178,6 @@ export const ClassDiagram: FC<DiagramProps> = ({
           <Background size={0} />
         </ReactFlow>
       </div>
-
       <ConfirmationModal
         title={`Delete ${selectedClass?.data.name}`}
         isOpen={isModalOpen}
@@ -191,8 +193,22 @@ export const ClassDiagram: FC<DiagramProps> = ({
       <Drawer
         open={isDrawerOpen}
         onClose={() => {
+          if (!isDirty) {
+            setDrawerOpen(false);
+            setSelectedClass(undefined);
+            return;
+          }
+
           setDrawerOpen(false);
-          setSelectedClass(undefined);
+          promptDirtyModal(
+            () => {
+              setDrawerOpen(false);
+              setSelectedClass(undefined);
+            },
+            () => {
+              setDrawerOpen(true);
+            }
+          );
         }}
         title={"GN1mbly"}
       >

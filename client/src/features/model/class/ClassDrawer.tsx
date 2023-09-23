@@ -7,6 +7,7 @@ import { Button } from "../../../components/button";
 import { EditAttribute } from "./EditAttribute";
 import { EditMethod } from "./EditMethod";
 import { useValidationContext } from "../common/contexts/validation-context";
+import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 
 type ClassDrawerProps = {
   classId: string;
@@ -21,11 +22,20 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
   onClassUpdate,
   nameExists,
 }) => {
+  const { isDirty, setCurrentState } = useDirtyCheckContext();
   const { isValid, setValidityFor } = useValidationContext();
 
   const [className, setClassName] = useState(initialClass.name);
   const [attributes, setAttributes] = useState([...initialClass.attributes]);
   const [methods, setMethods] = useState([...initialClass.methods]);
+
+  const handleClassNameUpdate = (newClassName: string) => {
+    setClassName(newClassName);
+    setCurrentState((state: any) => ({
+      ...state,
+      name: newClassName,
+    }));
+  };
 
   const nextAttributeName = useSequenceGenerator(
     attributes,
@@ -45,6 +55,10 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
     };
     const newAttributes = [...attributes, newAttribute];
     setAttributes(newAttributes);
+    setCurrentState((state: any) => ({
+      ...state,
+      attributes: newAttributes,
+    }));
   };
 
   const handleUpdateAttribute = (id: string, attribute: Attribute) => {
@@ -56,11 +70,19 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
       return attr;
     });
     setAttributes(newAttributes);
+    setCurrentState((state: any) => ({
+      ...state,
+      attributes: newAttributes,
+    }));
   };
 
   const handleDeleteAttribute = (id: string) => {
     const updatedAttributes = attributes.filter((a) => a.id !== id);
     setAttributes(updatedAttributes);
+    setCurrentState((state: any) => ({
+      ...state,
+      attributes: updatedAttributes,
+    }));
   };
 
   const handleAddMethod = () => {
@@ -73,6 +95,10 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
 
     const newMethods = [...methods, newMethod];
     setMethods(newMethods);
+    setCurrentState((state: any) => ({
+      ...state,
+      methods: newMethods,
+    }));
   };
 
   const handleUpdateMethod = (id: string, method: Method) => {
@@ -84,11 +110,19 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
       return m;
     });
     setMethods(newMethods);
+    setCurrentState((state: any) => ({
+      ...state,
+      methods: newMethods,
+    }));
   };
 
   const handleDeleteMethod = (id: string) => {
     const updatedMethods = methods.filter((m) => m.id !== id);
     setMethods(updatedMethods);
+    setCurrentState((state: any) => ({
+      ...state,
+      methods: updatedMethods,
+    }));
   };
 
   const handleSave = () => {
@@ -112,7 +146,7 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
         <div className="flex mb-5 w-full">
           <TextField
             value={className}
-            onChange={setClassName}
+            onChange={handleClassNameUpdate}
             error={
               (!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")
             }
@@ -160,7 +194,12 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
           </div>
 
           <div className="space-x-1">
-            <Button type="button" className="text-sm mt-3" disabled={!isValid} onClick={handleSave}>
+            <Button
+              type="button"
+              className="text-sm mt-3"
+              disabled={!isValid || !isDirty}
+              onClick={handleSave}
+            >
               Save
             </Button>
           </div>

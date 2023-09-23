@@ -6,6 +6,7 @@ import { IDENTIFIER_REGEX } from "../../../patterns";
 import { EditService } from "./EditService";
 import { useSequenceGenerator } from "../../../hooks/useStringSequence";
 import { useValidationContext } from "../common/contexts/validation-context";
+import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 
 type MicroserviceDrawerProps = {
   microserviceId: string;
@@ -20,12 +21,18 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
   onMicroserviceUpdate,
   nameExists,
 }) => {
+  const { isDirty, setCurrentState } = useDirtyCheckContext();
   const { isValid, setValidityFor } = useValidationContext();
 
   const [microserviceName, setMicroserviceName] = useState(initialMicroservice.name);
   const [services, setServices] = useState([...initialMicroservice.services]);
 
   const nextName = useSequenceGenerator(services, (service) => service.name, "Service");
+
+  const handleMicroserviceNameUpdate = (newMicroserviceName: string) => {
+    setMicroserviceName(newMicroserviceName);
+    setCurrentState((state: any) => ({ ...state, name: newMicroserviceName }));
+  };
 
   const handleAddService = () => {
     const newService: Service = {
@@ -35,6 +42,7 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
     };
     const newServices = [...services, newService];
     setServices(newServices);
+    setCurrentState((state: any) => ({ ...state, services: newServices }));
   };
 
   const handleUpdateService = (updatedService: Service) => {
@@ -48,11 +56,13 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
       return service;
     });
     setServices(newServices);
+    setCurrentState((state: any) => ({ ...state, services: newServices }));
   };
 
   const handleDeleteService = (id: string) => {
     const newServices = services.filter((s) => s.id !== id);
     setServices(newServices);
+    setCurrentState((state: any) => ({ ...state, services: newServices }));
   };
 
   const handleSave = () => {
@@ -70,7 +80,7 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
       <div className="flex mb-5 w-full">
         <TextField
           value={microserviceName}
-          onChange={setMicroserviceName}
+          onChange={handleMicroserviceNameUpdate}
           error={(!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")}
         />
       </div>
@@ -94,7 +104,12 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
         </Button>
 
         <div className="space-x-1">
-          <Button type="button" className="text-sm mt-3" disabled={!isValid} onClick={handleSave}>
+          <Button
+            type="button"
+            className="text-sm mt-3"
+            disabled={!isValid || !isDirty}
+            onClick={handleSave}
+          >
             Save
           </Button>
         </div>
