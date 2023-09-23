@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "npm run build:client && tsc && npm run copy-public-to-dist && node dist/src",
-    "build": "npm run build:client && tsc && npm run copy-public-to-dist",
+    "dev": "tsc && node dist/src",
+    "start": "npm run build:client && tsc && npm run copy-to-dist && node dist/src",
+    "build": "npm run build:client && tsc --declaration && npm run copy-to-dist",
     "build:client": "cd ../client && npm run build && rm -rf ../api/public 2> /dev/null && cp -r dist ../api/public",
-    "copy-public-to-dist": "cp -r public dist/src",
+    "copy-to-dist": "cp -r public dist/public && cp package.json dist",
     "test": "jest"
   },
   "keywords": [],

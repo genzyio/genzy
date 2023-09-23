@@ -9,7 +9,7 @@ import recentlyOpenedRouters from "./features/recently-opened/recently-opened.ro
 import fs from "fs";
 import { join } from "path";
 
-export const main = () => {
+export const startGn1mbly = (port: number | string) => {
   ensureArtefactsFolderExist();
 
   const app: Express = express();
@@ -17,10 +17,19 @@ export const main = () => {
   const publicPath = join(__dirname, "./public");
 
   if (fs.existsSync(publicPath)) {
-    const content = fs.readFileSync(`${publicPath}/index.html`).toString("utf-8");
-    const apiUrlPlaceholder = "{{API_URL}}";
-    const newContent = content.replace(apiUrlPlaceholder, `http://localhost:${config.port}/api`);
-    fs.writeFileSync(`${publicPath}/index.html`, newContent);
+    const indexFilePath = `${publicPath}/index.html`;
+    app.get("/", function (req, res) {
+      fs.readFile(indexFilePath, function (err, data) {
+        if (err) {
+          res.sendStatus(404);
+        } else {
+          const content = data.toString("utf-8");
+          const apiUrlPlaceholder = "{{API_URL}}";
+          const newContent = content.replace(apiUrlPlaceholder, `http://localhost:${port}/api`);
+          res.send(newContent);
+        }
+      });
+    });
     app.use(express.static(publicPath));
   }
 
@@ -32,11 +41,11 @@ export const main = () => {
     .use("/api", projectScreenshotsRouters)
     .use("/api", recentlyOpenedRouters);
 
-  app.listen(config.port, () => {
-    console.log(`⚡️[server]: Server is running at http://localhost:${config.port}`);
+  app.listen(port, () => {
+    console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
   });
 };
 
 if (config.port) {
-  main();
+  startGn1mbly(config.port);
 }
