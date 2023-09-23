@@ -17,7 +17,7 @@ ClassDefinition
   = _ DecoratorDefinition* _ ("export")? _ "class" _ name:Identifier _ "extends"? _ Identifier? _ "{" _ sections:Section* "}" _ { return { name, sections }; }
   
 Section
- = Comment / MethodDefinition / DecoratorDefinition
+ = Comment / MethodDefinition / DecoratorDefinition / Property
 
 Comment
  = MultiLineComment / SingleLineComment
@@ -29,32 +29,41 @@ SingleLineComment
  = _ "//" [^\n]* { return { type: "comment", content: text() } }
 
 DecoratorDefinition
-  = _ "@" name:Identifier _ params:NestedParamsContent _ { return { type: "decorator", name, params }; }
+  = _ "@" name:Identifier _ params:NestedParenthesesContent _ { return { type: "decorator", name, params }; }
+
+Property
+  = _ "private"? _ name:Identifier _ type:PropertyType? _ definition:PropertyDefinition? { return { type: "property", content: text() } }
+  
+PropertyDefinition
+  = _ "=" _ (NestedCurlyBracketsContent / [^;]*) _ ";"? { return text(); }
+  
+PropertyType
+  = ":" _ (NestedCurlyBracketsContent / [^;=]*) _ ";"? { return text(); }
 
 MethodDefinition
   = _ "private"? _ "async"? _ "override"?
   _ name:Identifier
-  _ params:NestedParamsContent 
-  _ body:NestedMethodContent
+  _ params:NestedParenthesesContent 
+  _ body:NestedCurlyBracketsContent
   _ { return { type: "method", name, params, body }; }
 
 Identifier
   = start:[a-zA-Z_] end:[a-zA-Z0-9_]* { return start + end?.join("") ?? "" }
 
 MethodContent
-  = (NestedMethodContent / [^{}]+)* { return text(); }
+  = (NestedCurlyBracketsContent / [^{}]+)* { return text(); }
 
-NestedMethodContent
+NestedCurlyBracketsContent
   = "{" _ content:MethodContent _ "}" { return "{" + content + "}"; }
   
 ParamsContent
-  = (NestedParamsContent / [^()]+)* { return text(); }
+  = (NestedParenthesesContent / [^()]+)* { return text(); }
 
-NestedParamsContent
+NestedParenthesesContent
   = "(" _ content:ParamsContent _ ")" _ result:ResultType? { return "(" + content + ")" + (result ?? ""); }
 
 ResultType
- = ":" _ (NestedMethodContent / [^{]*) { return text(); }
+ = ":" _ (NestedCurlyBracketsContent / [^{]*) { return text(); }
 
 _ "whitespace"
   = [ \t\r\n]*
