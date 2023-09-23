@@ -47,8 +47,8 @@ export const ProjectToolbar: FC = () => {
 
   return (
     <>
-      <div className="flex absolute w-full justify-center top-4 z-10">
-        <div className="flex items-center gap-x-2 py-2 px-4 border rounded-md border-gray-100">
+      <div className="w-fit absolute top-4 z-10 select-none left-1/2 -translate-x-1/2">
+        <div className="w-fit flex items-center gap-x-2 py-2 px-4 border rounded-md border-gray-100">
           <Button
             onClick={() => {
               saveProjectDefinitionAction(initialProjectDefinition);
