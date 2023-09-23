@@ -12,6 +12,7 @@ import {
   writeToFile,
 } from "../utils";
 import { JSTSParser } from "../parser/js-ts";
+import { lowerFirstLetter } from "../../../shared/functions";
 
 export async function generate({
   meta,
@@ -125,6 +126,9 @@ function controllerFileContentFrom({
   const content = nunjucks.render("controller.njk", {
     ...service,
     types,
+    dependencies: service.dependencies?.map((dependency) =>
+      lowerFirstLetter(dependency)
+    ),
     actions: service.actions.map((r) => ({
       ...r,
       httpMethod: capitalizeFirstLetter(r.httpMethod.toLowerCase()),
@@ -148,6 +152,9 @@ function serviceFileContentFrom({
   const content = nunjucks.render("service.njk", {
     ...service,
     types,
+    dependencies: service.dependencies?.map((dependency) =>
+      lowerFirstLetter(dependency)
+    ),
     actions: service.actions.map((r) => ({
       ...r,
       params: adoptParams(r.params, adoptTypeJS),
@@ -164,7 +171,15 @@ function indexFileContentFrom({
   services: ExtendedServiceInfo[];
   nunjucks: Environment;
 }): Promise<string> {
-  const content = nunjucks.render("index.njk", { services });
+  const controllers = services.filter((service) => {
+    return service.type == "Controller";
+  });
+  const content = nunjucks.render("index.njk", {
+    services: services.filter((service) => {
+      return service.type == "RemoteProxy" || service.type == "LocalService";
+    }),
+    controllers,
+  });
   return formatFileContent(content);
 }
 
