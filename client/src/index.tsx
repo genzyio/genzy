@@ -5,7 +5,7 @@ import { API_URL } from "./url";
 import axios from "axios";
 
 import "react-toastify/dist/ReactToastify.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createHashRouter, RouterProvider } from "react-router-dom";
 import { ProjectsModal } from "./projects-modal";
 import { ProjectWorkspace } from "./project-workspace";
 
@@ -33,7 +33,7 @@ const queryClient = new QueryClient({
 axios.defaults.baseURL = API_URL;
 axios.defaults.withCredentials = false;
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "/projects/:projectName",
     element: <ProjectWorkspace />,

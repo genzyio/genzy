@@ -24,6 +24,13 @@
     <script src="../node_modules/flowbite/dist/flowbite.min.js"></script>
   </head>
   <body>
+    <script>
+      const apiUrlPlaceholder = "{{API_URL}}";
+      window.__API_URL__ = apiUrlPlaceholder;
+      if (window.__API_URL__.startsWith("\{\{")) {
+        window.__API_URL__ = "http://localhost:4002/api";
+      }
+    </script>
     <div id="app" class="h-full w-full"></div>
     <script type="module" src="./index.tsx"></script>
   </body>

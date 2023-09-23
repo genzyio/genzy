@@ -1,1 +1,1 @@
-export const API_URL = "http://localhost:3002/api";
+export const API_URL = (window as any).__API_URL__ as string;
