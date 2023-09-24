@@ -101,13 +101,20 @@ export const ServiceDiagram: FC<DiagramProps> = ({
     [microserviceId, dispatcher, setEdges]
   );
 
-  const onEdgeUpdate = useCallback((oldEdge: Edge, newConnection: Connection) => {
-    const changingSource = oldEdge.source !== newConnection.source;
-    const changingTarget = oldEdge.target !== newConnection.target;
-    if (changingSource || changingTarget) return;
+  const onEdgeUpdate = useCallback(
+    (oldEdge: Edge, newConnection: Connection) => {
+      const changingSource = oldEdge.source !== newConnection.source;
+      const changingTarget = oldEdge.target !== newConnection.target;
+      if (changingSource || changingTarget) return;
 
-    setEdges((eds) => updateEdge(oldEdge, newConnection, eds));
-  }, []);
+      dispatcher(projectDefinitionActions.updateDependencyHandles, {
+        microserviceId,
+        ...newConnection,
+      });
+      setEdges((edges) => updateEdge(oldEdge, newConnection, edges));
+    },
+    [microserviceId, dispatcher]
+  );
 
   const nextName = () => {
     let i = 1;

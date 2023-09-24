@@ -30,7 +30,7 @@ export const RecentlyOpenedListItem: FC<RecentlyOpenedListItemProps> = ({
         />
         <div className="min-w-0 flex-auto">
           <p
-            className="text-sm font-semibold leading-6 text-gray-900 cursor-pointer"
+            className="text-sm font-semibold leading-6 text-gray-900 cursor-pointer hover:underline"
             onClick={onViewProject}
           >
             {recentlyOpenedProject.name}
@@ -47,14 +47,6 @@ export const RecentlyOpenedListItem: FC<RecentlyOpenedListItemProps> = ({
         </div>
       </div>
       <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end justify-center mr-2">
-        {/* <div>
-          <Button
-            className="text-sm font-semibold leading-6 text-gray-900 mb-1"
-            onClick={onViewProject}
-          >
-            View Project
-          </Button>
-        </div> */}
         <div>
           <Button
             className="text-sm font-semibold leading-6 text-gray-900 px-0 py-0"

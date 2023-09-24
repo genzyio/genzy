@@ -33,6 +33,9 @@ import { createPortal } from "react-dom";
 import { Button } from "../../../components/button";
 import { ValidationContextProvider } from "../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
+import { PluginModal } from "../../plugins/components/plugins-modal";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useProjectContext } from "../../projects/contexts/project.context";
 
 type DiagramProps = {
   nodes?: any[];
@@ -49,6 +52,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   viewport: initialViewport,
   onMicroserviceDeleted,
 }) => {
+  const { project } = useProjectContext();
   const { projectDefinition, dispatcher } = useProjectDefinitionContext();
   const { isDirty, promptDirtyModal, setInitialState } = useDirtyCheckContext();
 
@@ -108,13 +112,17 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
     [dispatcher, setEdges]
   );
 
-  const onEdgeUpdate = useCallback((oldEdge: Edge, newConnection: Connection) => {
-    const changingSource = oldEdge.source !== newConnection.source;
-    const changingTarget = oldEdge.target !== newConnection.target;
-    if (changingSource || changingTarget) return;
+  const onEdgeUpdate = useCallback(
+    (oldEdge: Edge, newConnection: Connection) => {
+      const changingSource = oldEdge.source !== newConnection.source;
+      const changingTarget = oldEdge.target !== newConnection.target;
+      if (changingSource || changingTarget) return;
 
-    setEdges((eds) => updateEdge(oldEdge, newConnection, eds));
-  }, []);
+      dispatcher(projectDefinitionActions.updateCommunicationHandles, newConnection);
+      setEdges((edges) => updateEdge(oldEdge, newConnection, edges));
+    },
+    [dispatcher]
+  );
 
   // Handle Microservice Add
   const handleMicroserviceAdd = () => {
@@ -266,6 +274,25 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
     [RemovableEdgeWrapper]
   );
 
+  const [isPluginsOpen, setIsPluginsOpen] = useState(false);
+  const location = useLocation();
+  const params = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const { microserviceId } = params;
+    const microserviceNode = nodes.find((node) => node.id === microserviceId);
+    if (!microserviceNode) {
+      setIsPluginsOpen(false);
+      setSelectedMicroservice(undefined);
+      location.pathname.includes("/plugins/") && navigate(`/projects/${project.name}`);
+      return;
+    }
+
+    setIsPluginsOpen(true);
+    setSelectedMicroservice(microserviceNode);
+  }, [location, params]);
+
   const elem = document.getElementById("toolbar-actions");
   const portal = useMemo(() => {
     if (elem) {
@@ -283,6 +310,17 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   return (
     <>
       {portal}
+
+      <PluginModal
+        microserviceId={selectedMicroservice?.id}
+        isOpen={isPluginsOpen}
+        isLarge={true}
+        onClose={() => {
+          setIsPluginsOpen(false);
+          navigate(`/projects/${project.name}`);
+        }}
+      />
+
       <div className="h-full w-full">
         <ReactFlow
           className="validationflow"

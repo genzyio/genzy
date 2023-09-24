@@ -23,6 +23,7 @@ export const Tabs: FC<TabsProps> = ({
   contentContainerClassName = "",
   children,
 }) => {
+  const [tabsInstance] = useState<TabsInstance>({} as TabsInstance);
   const [activeTab, setActiveTab] = useState(0);
   const [nextActiveTab, setNextActiveTab] = useState(-1);
 
@@ -48,7 +49,6 @@ export const Tabs: FC<TabsProps> = ({
     onInit && onInit(tabsInstance);
   }, []);
 
-  const tabsInstance: TabsInstance = {} as TabsInstance;
   useEffect(() => {
     tabsInstance.activeTab = activeTab;
     tabsInstance.setActiveTab = setNextActiveTab;

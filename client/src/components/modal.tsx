@@ -40,7 +40,7 @@ export const Modal: FC<ModalProps> = ({ title, isOpen, isLarge = false, onClose,
             >
               <Dialog.Panel
                 className={`relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full ${
-                  isLarge ? `sm:max-w-2xl` : `sm:max-w-xl`
+                  isLarge ? `sm:max-w-3xl` : `sm:max-w-xl`
                 }`}
               >
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">

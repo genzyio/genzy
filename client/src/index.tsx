@@ -39,6 +39,10 @@ const router = createHashRouter([
     element: <ProjectWorkspace />,
   },
   {
+    path: "/projects/:projectName/plugins/:microserviceId",
+    element: <ProjectWorkspace />,
+  },
+  {
     path: "/",
     element: <ProjectsModal />,
   },

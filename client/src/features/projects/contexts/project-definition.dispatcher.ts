@@ -24,10 +24,12 @@ import {
   removeCommunicationHandler,
   removeServicesFromCommunicationHandler,
   updateCommunicationHandler,
+  updateCommunicationHandlesHandler,
 } from "./project-definition-handlers/communication-handlers";
 import {
   addDependencyHandler,
   removeDependencyHandler,
+  updateDependencyHandlesHandler,
 } from "./project-definition-handlers/dependency-handlers";
 
 export const projectDefinitionActions = {
@@ -37,6 +39,7 @@ export const projectDefinitionActions = {
 
   addCommunication: Symbol("addCommunication"),
   updateCommunication: Symbol("updateCommunication"),
+  updateCommunicationHandles: Symbol("updateCommunicationHandles"),
   removeServicesFromCommunication: Symbol("removeServicesFromCommunication"),
   removeCommunication: Symbol("removeCommunication"),
 
@@ -49,6 +52,7 @@ export const projectDefinitionActions = {
   deleteServices: Symbol("deleteServices"),
 
   addDependency: Symbol("addDependency"),
+  updateDependencyHandles: Symbol("updateDependencyHandles"),
   removeDependency: Symbol("removeDependency"),
 
   addClass: Symbol("addClass"),
@@ -66,6 +70,7 @@ function createDispatcher(projectDefinition: ProjectDefinition): DispatcherType 
 
     [projectDefinitionActions.addCommunication]: addCommunicationHandler,
     [projectDefinitionActions.updateCommunication]: updateCommunicationHandler,
+    [projectDefinitionActions.updateCommunicationHandles]: updateCommunicationHandlesHandler,
     [projectDefinitionActions.removeServicesFromCommunication]:
       removeServicesFromCommunicationHandler,
     [projectDefinitionActions.removeCommunication]: removeCommunicationHandler,
@@ -79,6 +84,7 @@ function createDispatcher(projectDefinition: ProjectDefinition): DispatcherType 
     [projectDefinitionActions.deleteServices]: deleteServicesHandler,
 
     [projectDefinitionActions.addDependency]: addDependencyHandler,
+    [projectDefinitionActions.updateDependencyHandles]: updateDependencyHandlesHandler,
     [projectDefinitionActions.removeDependency]: removeDependencyHandler,
 
     [projectDefinitionActions.addClass]: addClassHandler,

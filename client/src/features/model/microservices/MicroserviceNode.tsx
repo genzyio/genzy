@@ -4,6 +4,8 @@ import { type Microservice } from "./models";
 import { Button } from "../../../components/button";
 import { useMicroserviceNodeContext } from "./MicroserviceNodeContext";
 import { ConnectableNodeWrapper } from "../common/components/ConnectableNodeWrapper";
+import { Link } from "react-router-dom";
+import { useProjectContext } from "../../projects/contexts/project.context";
 
 type MicroserviceNodeProps = NodeProps<Microservice>;
 
@@ -16,6 +18,7 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
   id: microserviceId,
   data: microservice,
 }) => {
+  const { project } = useProjectContext();
   const { onServicesClick, onModelsClick } = useMicroserviceNodeContext();
 
   return (
@@ -31,20 +34,17 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
           </div>
         ))}
 
-        <div className="mt-1 flex gap-x-2">
-          <Button
-            type="button"
-            className="text-sm mt-3"
-            onClick={() => onServicesClick(microserviceId)}
-          >
+        <div className="mt-3 flex gap-x-2 text-sm">
+          <Button type="button" onClick={() => onServicesClick(microserviceId)}>
             Services
           </Button>
-          <Button
-            type="button"
-            className="text-sm mt-3"
-            onClick={() => onModelsClick(microserviceId)}
-          >
+          <Button type="button" onClick={() => onModelsClick(microserviceId)}>
             Models
+          </Button>
+          <Button type="button">
+            <Link to={`/projects/${project.name}/plugins/${microserviceId}`} replace>
+              Plugins
+            </Link>
           </Button>
         </div>
       </ConnectableNodeWrapper>

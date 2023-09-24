@@ -129,6 +129,21 @@ export const Project: FC = () => {
     return <EmptyDiagram />;
   }
 
+  useEffect(() => {
+    if (!tabsInstance) return;
+
+    const activeTab = searchParams.get("activeTab");
+    if (!activeTab && tabsInstance?.activeTab !== 0) {
+      tabsInstance.setActiveTab(0);
+      return;
+    }
+
+    const existingTabIndex = tabs?.findIndex((tab) => tab.id === activeTab);
+    if (tabsInstance?.activeTab !== existingTabIndex + 1) {
+      tabsInstance.setActiveTab(existingTabIndex + 1);
+    }
+  }, [tabsInstance, searchParams]);
+
   return (
     <>
       <ReactFlowProvider>
