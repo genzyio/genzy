@@ -180,27 +180,30 @@ export const EditFunction: FC<EditFunctionProps> = ({
           {fun.params.map((param, paramIndex) => (
             <div key={param.id} className="flex w-full">
               <div className="flex justify-top mr-2">
-                <TextField
-                  value={param.name}
-                  onChange={(v) => {
-                    param.name = v;
-                    updateState();
-                  }}
-                  placeholder="Param Name"
-                  error={
-                    (!IDENTIFIER_REGEX.test(param.name) && "Must be an identifier") ||
-                    (fun.params.some((p) => p.id !== param.id && p.name === param.name) &&
-                      "Duplicate") ||
-                    (param.source === "PATH" &&
-                      !(
-                        fun.route.includes(`:${param.name}/`) ||
-                        fun.route.endsWith(`:${param.name}`)
-                      ) &&
-                      "Not in path")
-                  }
-                />
+                <div className="w-1/3">
+                  <TextField
+                    value={param.name}
+                    onChange={(v) => {
+                      param.name = v;
+                      updateState();
+                    }}
+                    placeholder="Param Name"
+                    error={
+                      (!IDENTIFIER_REGEX.test(param.name) && "Must be an identifier") ||
+                      (fun.params.some((p) => p.id !== param.id && p.name === param.name) &&
+                        "Duplicate") ||
+                      (param.source === "PATH" &&
+                        !(
+                          fun.route.includes(`:${param.name}/`) ||
+                          fun.route.endsWith(`:${param.name}`)
+                        ) &&
+                        "Not in path")
+                    }
+                  />
+                </div>
                 {editRoute && (
                   <Select
+                    className="text-xs"
                     value={param.source}
                     onChange={(v) => {
                       param.source = v as ParamSource;
@@ -224,6 +227,14 @@ export const EditFunction: FC<EditFunctionProps> = ({
                   checked={param.isCollection}
                   onChange={() => {
                     param.isCollection = !param.isCollection;
+                    updateState();
+                  }}
+                />
+                <Checkbox
+                  label="Optional"
+                  checked={param.isOptional}
+                  onChange={() => {
+                    param.isOptional = !param.isOptional;
                     updateState();
                   }}
                 />

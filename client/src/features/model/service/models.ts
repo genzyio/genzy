@@ -31,6 +31,7 @@ type Parameter = {
   name: string;
   type: string;
   isCollection: boolean;
+  isOptional: boolean;
   source: ParamSource;
   id: string;
 };
@@ -50,6 +51,7 @@ type Service = {
   name: string;
   functions: ServiceFunction[];
   type: ServiceType;
+  basePath: string;
 };
 
 export type { Service, ServiceFunction, Parameter, HTTPMethod, ParamSource, ServiceType };

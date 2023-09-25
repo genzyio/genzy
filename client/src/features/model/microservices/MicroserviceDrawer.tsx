@@ -25,13 +25,30 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
   const { isValid, setValidityFor } = useValidationContext();
 
   const [microserviceName, setMicroserviceName] = useState(initialMicroservice.name);
+  const [description, setDescription] = useState(initialMicroservice.description);
+  const [basePath, setBasePath] = useState(initialMicroservice.basePath);
+  const [version, setVersion] = useState(initialMicroservice.version);
   const [services, setServices] = useState([...initialMicroservice.services]);
-
   const nextName = useSequenceGenerator(services, (service) => service.name, "Service");
 
   const handleMicroserviceNameUpdate = (newMicroserviceName: string) => {
     setMicroserviceName(newMicroserviceName);
     setCurrentState((state: any) => ({ ...state, name: newMicroserviceName }));
+  };
+
+  const handleMicroserviceDescriptionUpdate = (newDescription: string) => {
+    setDescription(newDescription);
+    setCurrentState((state: any) => ({ ...state, description: newDescription }));
+  };
+
+  const handleMicroserviceBasePathUpdate = (newBasePath: string) => {
+    setBasePath(newBasePath);
+    setCurrentState((state: any) => ({ ...state, basePath: newBasePath }));
+  };
+
+  const handleMicroserviceVersionUpdate = (newVersion: string) => {
+    setVersion(newVersion);
+    setCurrentState((state: any) => ({ ...state, version: newVersion }));
   };
 
   const handleAddService = () => {
@@ -66,7 +83,7 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
   };
 
   const handleSave = () => {
-    onMicroserviceUpdate({ name: microserviceName, services });
+    onMicroserviceUpdate({ name: microserviceName, description, basePath, version, services });
   };
 
   const isIdentifier = IDENTIFIER_REGEX.test(microserviceName);
@@ -77,14 +94,33 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
 
   return (
     <div className="mx-4">
-      <div className="flex mb-5 w-full">
+      <div className="flex mb-1 w-full">
+        <div>
+          <TextField
+            label="Name"
+            value={microserviceName}
+            onChange={handleMicroserviceNameUpdate}
+            error={
+              (!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")
+            }
+          />
+        </div>
+        <div className="ml-2">
+          <TextField value={version} onChange={handleMicroserviceVersionUpdate} label="Version" />
+        </div>
+      </div>
+      <div className="mb-1 w-full">
         <TextField
-          value={microserviceName}
-          onChange={handleMicroserviceNameUpdate}
-          error={(!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")}
+          value={description}
+          onChange={handleMicroserviceDescriptionUpdate}
+          label="Description"
         />
       </div>
+      <div className="mb-5 w-full">
+        <TextField value={basePath} onChange={handleMicroserviceBasePathUpdate} label="Base Path" />
+      </div>
 
+      <p>Services</p>
       {services.map((service, index) => (
         <EditService
           key={service.id}

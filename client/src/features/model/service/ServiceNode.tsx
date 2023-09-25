@@ -22,7 +22,11 @@ export const ServiceNode: FC<ServiceNodeProps> = ({ data: service }) => {
       <ConnectableNodeWrapper>
         <div className="text-center w-full mb-2">
           <p className="text-xs text-gray-500">{SERVICE_TYPE_DISPLAY_NAME[service.type]}</p>
+
           <h2 className="text-xl">{service.name}</h2>
+          <h6 className="text-center text-xs text-gray-500">
+            {service.basePath === "/" ? "" : service.basePath}
+          </h6>
         </div>
         {service.functions.map((fun) => (
           <div key={fun.id} className="flex w-full p-1 rounded-md border border-gray-400">
