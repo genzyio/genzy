@@ -32,13 +32,13 @@ DecoratorDefinition
   = _ "@" name:Identifier _ params:NestedParenthesesContent _ { return { type: "decorator", name, params }; }
 
 Property
-  = _ "private"? _ name:Identifier _ type:PropertyType? _ definition:PropertyDefinition? { return { type: "property", content: text() } }
+  = _ "private"? _ name:Identifier _ type:PropertyType? _ definition:PropertyDefinition? _ ";"? { return { type: "property", content: text() } }
   
 PropertyDefinition
-  = _ "=" _ (NestedCurlyBracketsContent / [^;]*) _ ";"? { return text(); }
+  = _ "=" _ (NestedCurlyBracketsContent / [^;]*) { return text(); }
   
 PropertyType
-  = ":" _ (NestedCurlyBracketsContent / [^;=]*) _ ";"? { return text(); }
+  = ":" _ (NestedCurlyBracketsContent / [^;=]*) { return text(); }
 
 MethodDefinition
   = _ "private"? _ "async"? _ "override"?
@@ -48,7 +48,7 @@ MethodDefinition
   _ { return { type: "method", name, params, body }; }
 
 Identifier
-  = start:[a-zA-Z_] end:[a-zA-Z0-9_]* { return start + end?.join("") ?? "" }
+  = start:[$a-zA-Z_] end:[a-zA-Z0-9_]* { return start + end?.join("") ?? "" }
 
 MethodContent
   = (NestedCurlyBracketsContent / [^{}]+)* { return text(); }

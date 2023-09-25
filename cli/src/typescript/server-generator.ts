@@ -171,14 +171,13 @@ function indexFileContentFrom({
   services: ExtendedServiceInfo[];
   nunjucks: Environment;
 }): Promise<string> {
-  const controllers = services.filter((service) => {
-    return service.type == "Controller";
-  });
   const content = nunjucks.render("index.njk", {
     services: services.filter((service) => {
       return service.type == "RemoteProxy" || service.type == "LocalService";
     }),
-    controllers,
+    controllers: services.filter((service) => {
+      return service.type == "Controller";
+    }),
   });
   return formatFileContent(content);
 }

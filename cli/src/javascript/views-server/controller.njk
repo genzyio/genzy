@@ -3,6 +3,11 @@
 export class {{ name }} {
   $nimbly = {{ $nimbly | dump | safe }}
 {% for action in actions %} {{ methods }}
-  async {{ action.name }}({% for param in action.params %}{{ param.name }}{% if not loop.last %}, {% endif %}{% endfor %}) {}
+  async {{ action.name }}({% for param in action.params %}{{ param.name }}{% if not loop.last %}, {% endif %}{% endfor %})
+  {% if action.existingBody %}
+    {{ action.existingBody | safe }}
+  {% else %}
+    {}
+  {% endif %}
 {% endfor %}
 }
