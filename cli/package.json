@@ -11,7 +11,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "yargs": "^17.7.2"
+    "gn1mbly-api": "file:../api/dist",
+    "yargs": "17.7.2",
+    "@n1mbly/cli": "0.2.15"
   },
   "devDependencies": {
     "@jest/globals": "29.0.3",

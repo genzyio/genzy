@@ -1,11 +1,55 @@
 import yargs from "yargs";
 import { generateMicroservice, initializeProject, startMicroservice, stopMicroservice } from "./actions";
+import { startGn1mbly } from "gn1mbly-api";
+import { generateJSClient } from "@n1mbly/cli";
+
+// this forces the main function in @n1mbly/cli to run only when the file is executed directly
+process.env.DONT_RUN_MAIN = "true";
 
 main();
 
 async function main() {
   const argv = await yargs
     .usage("Usage: $0 <command> [options]")
+    .command(
+      "serve [port]",
+      "Generate a microservice project",
+      (y) =>
+        y.positional("port", {
+          type: "number",
+          default: "4000",
+          demandOption: true,
+        }),
+      (cmd) => {
+        console.log(cmd);
+        startGn1mbly(cmd.port);
+        generateJSClient(
+          {
+            services: [
+              {
+                name: "Test",
+                actions: [
+                  {
+                    name: "test",
+                    params: [
+                      {
+                        name: "pera",
+                        type: "string",
+                      },
+                    ],
+                  },
+                ],
+                type: "LocalService",
+                dependencies: [],
+              },
+            ],
+            types: {},
+          },
+          "pera",
+          "http://localhost:4000",
+        );
+      },
+    )
     .command(
       "generate [data]",
       "Generate a microservice project",
