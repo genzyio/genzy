@@ -59,6 +59,14 @@ module.exports = {
           from: path.resolve(__dirname, "src/typescript/views-server/"),
           to: "typescript/views-server/",
         },
+        {
+          from: path.resolve(__dirname, "src/index.d.ts"),
+          to: ".",
+        },
+        {
+          from: path.resolve(__dirname, "src/types.d.ts"),
+          to: ".",
+        },
       ],
     }),
   ],

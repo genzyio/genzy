@@ -123,7 +123,10 @@ export function readFileSync(filePath: string) {
 export async function formatFileContent(fileContent: string): Promise<string> {
   return await format(fileContent, {
     parser: "typescript",
-    plugins: ["prettier-plugin-organize-imports"],
+    // TODO: fix prettier-plugin-organize-imports quirk
+    plugins: process.env.DONT_RUN_MAIN
+      ? undefined
+      : ["prettier-plugin-organize-imports"],
   });
 }
 
