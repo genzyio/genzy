@@ -51,7 +51,7 @@ export const BASIC_TYPES = {
   boolean: "boolean",
   int: "int",
   float: "float",
-};
+} as const;
 
 export const defaultTypeOptions: TypeDecoratorOptions = {
   optional: false,

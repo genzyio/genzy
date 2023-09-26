@@ -8,7 +8,10 @@ import {
   int,
   string,
   type,
+  intArray,
+  stringArray,
 } from "../../shared/decorators";
+import type { BasicType } from "../../shared/types";
 
 class Test1Service {
   async get() {}
@@ -17,13 +20,14 @@ class Test1Service {
 class Test2Service {
   async get(
     @string() one: string,
-    @int() two: number,
+    @intArray({ optional: true }) two: number,
     @boolean() three: boolean
   ) {}
 }
 
 class Example {
   @string() test: string;
+  @stringArray() tests: string[];
   @boolean() bool: boolean;
   @int() num: number;
 }
@@ -32,6 +36,7 @@ class Model {
   @string() test: string;
   @boolean() bool: boolean;
   @int() num: number;
+  @intArray() nums: number[];
   @type(Example) type: Example;
 }
 
@@ -65,6 +70,18 @@ class Test5Service {
   ) {}
 }
 
+function getBasicNonArrayType(
+  type: BasicType["type"],
+  optional = false,
+  array = false
+): BasicType {
+  return {
+    type,
+    $isOptional: optional,
+    $isArray: array,
+  };
+}
+
 describe("Types", () => {
   it("should be undefined", async () => {
     const { test1Service } = new N1mblyContainer()
@@ -80,33 +97,33 @@ describe("Types", () => {
       .getAllServices();
 
     expect(test2Service.$nimbly_config?.actions?.get).not.toBeUndefined();
-    expect(test2Service.$nimbly_config.actions.get.params[0].type).toBe(
-      BASIC_TYPES.string
-    );
-    expect(test2Service.$nimbly_config.actions.get.params[1].type).toBe(
-      BASIC_TYPES.int
-    );
-    expect(test2Service.$nimbly_config.actions.get.params[2].type).toBe(
-      BASIC_TYPES.boolean
-    );
+    expect(
+      test2Service.$nimbly_config.actions.get.params[0].type
+    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.string));
+    expect(
+      test2Service.$nimbly_config.actions.get.params[1].type
+    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.int, true, true));
+    expect(
+      test2Service.$nimbly_config.actions.get.params[2].type
+    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.boolean));
   });
 
   it("should support property in model", async () => {
     const model: any = new Model();
 
     expect(model.$nimbly_config?.types).not.toBe(undefined);
-    expect(model.$nimbly_config?.types.test).toStrictEqual({
-      type: BASIC_TYPES.string,
-      $isOptional: false,
-    });
-    expect(model.$nimbly_config?.types.bool).toStrictEqual({
-      type: BASIC_TYPES.boolean,
-      $isOptional: false,
-    });
-    expect(model.$nimbly_config?.types.num).toStrictEqual({
-      type: BASIC_TYPES.int,
-      $isOptional: false,
-    });
+    expect(model.$nimbly_config?.types.test).toStrictEqual(
+      getBasicNonArrayType(BASIC_TYPES.string)
+    );
+    expect(model.$nimbly_config?.types.bool).toStrictEqual(
+      getBasicNonArrayType(BASIC_TYPES.boolean)
+    );
+    expect(model.$nimbly_config?.types.num).toStrictEqual(
+      getBasicNonArrayType(BASIC_TYPES.int)
+    );
+    expect(model.$nimbly_config?.types.nums).toStrictEqual(
+      getBasicNonArrayType(BASIC_TYPES.int, false, true)
+    );
   });
 
   it("should add meta info with @type", async () => {
@@ -136,18 +153,19 @@ describe("Types", () => {
       .getAllServices();
 
     expect(test3Service.$nimbly_config?.actions?.get).not.toBeUndefined();
-    expect(test3Service.$nimbly_config.actions.get.params[0].type).toBe(
-      BASIC_TYPES.string
-    );
-    expect(test3Service.$nimbly_config.actions.get.params[1].type).toBe(
-      BASIC_TYPES.int
-    );
-    expect(test3Service.$nimbly_config.actions.get.params[2].type).toBe(
-      BASIC_TYPES.boolean
-    );
+    expect(
+      test3Service.$nimbly_config.actions.get.params[0].type
+    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.string));
+    expect(
+      test3Service.$nimbly_config.actions.get.params[1].type
+    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.int));
+    expect(
+      test3Service.$nimbly_config.actions.get.params[2].type
+    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.boolean));
     expect(
       test3Service.$nimbly_config.actions.get.params[3].type
     ).toStrictEqual({
+      $isOptional: false,
       $isArray: false,
       $typeName: "Example",
     });
@@ -162,18 +180,19 @@ describe("Types", () => {
       .getAllServices();
 
     expect(test4Service.$nimbly_config?.actions?.get).not.toBeUndefined();
-    expect(test4Service.$nimbly_config.actions.get.params[0].type).toBe(
-      BASIC_TYPES.string
-    );
-    expect(test4Service.$nimbly_config.actions.get.params[1].type).toBe(
-      BASIC_TYPES.int
-    );
-    expect(test4Service.$nimbly_config.actions.get.params[2].type).toBe(
-      BASIC_TYPES.boolean
-    );
+    expect(
+      test4Service.$nimbly_config.actions.get.params[0].type
+    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.string));
+    expect(
+      test4Service.$nimbly_config.actions.get.params[1].type
+    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.int));
+    expect(
+      test4Service.$nimbly_config.actions.get.params[2].type
+    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.boolean));
     expect(
       test4Service.$nimbly_config.actions.get.params[3].type
     ).toStrictEqual({
+      $isOptional: false,
       $isArray: true,
       $typeName: "Example",
     });
@@ -188,24 +207,26 @@ describe("Types", () => {
       .getAllServices();
 
     expect(test5Service.$nimbly_config?.actions?.get).not.toBeUndefined();
-    expect(test5Service.$nimbly_config.actions.get.params[0].type).toBe(
-      BASIC_TYPES.string
-    );
-    expect(test5Service.$nimbly_config.actions.get.params[1].type).toBe(
-      BASIC_TYPES.int
-    );
-    expect(test5Service.$nimbly_config.actions.get.params[2].type).toBe(
-      BASIC_TYPES.boolean
-    );
+    expect(
+      test5Service.$nimbly_config.actions.get.params[0].type
+    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.string));
+    expect(
+      test5Service.$nimbly_config.actions.get.params[1].type
+    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.int));
+    expect(
+      test5Service.$nimbly_config.actions.get.params[2].type
+    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.boolean));
     expect(
       test5Service.$nimbly_config.actions.get.params[3].type
     ).toStrictEqual({
+      $isOptional: false,
       $isArray: true,
       $typeName: "Example",
     });
     expect(
       test5Service.$nimbly_config.actions.get.params[4].type
     ).toStrictEqual({
+      $isOptional: false,
       $isArray: false,
       $typeName: "Example",
     });

@@ -13,6 +13,7 @@ import {
   ReturnsArrayOf,
   string,
   type,
+  stringArray,
 } from "../../api/src";
 import { Get, Post, Controller, N1mblyContainer } from "../../client/src";
 
@@ -142,6 +143,8 @@ class User {
   @string() surname: string;
   @int({ optional: true }) age?: number;
 
+  @stringArray() roles: string[];
+
   @type(Account, { optional: true }) account?: Account;
 }
 
@@ -154,6 +157,7 @@ class AuthController {
       name: "pera",
       surname: "nikola me zovu",
       age: 10,
+      roles: ["admin", "user"],
     };
   }
 
@@ -194,7 +198,10 @@ class CrudController {
 
   @Delete("/:id")
   @Returns(GenericType)
-  delete(@Path("id", { type: "string" }) id: string) {
+  delete(
+    @Path("id", { type: "string" }) id: string,
+    @Query("q", { type: "string", array: true }) q: string[]
+  ) {
     return null;
   }
 }

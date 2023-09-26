@@ -49,7 +49,7 @@ export function Controller(path: string = "/", rootTypeClass?: new () => any) {
         Object.values(action.params ?? {}).forEach((param) => {
           if (
             param.type &&
-            typeof param.type === "object" &&
+            "$typeName" in param.type &&
             (param.type as ComplexTypeReference).$typeName === GenericType.name
           ) {
             param.type.$typeName = rootTypeName;
@@ -133,7 +133,7 @@ const typeDecorator =
               ...(type as any),
               ...typeProps,
             }
-          : { type, $isOptional: options.optional };
+          : { type, $isOptional: options.optional, $isArray: isArray };
       }
     } else {
       if (!target.$nimbly_config.actions[propertyKey]) {
@@ -146,11 +146,17 @@ const typeDecorator =
       const existingIndex = params.findIndex(
         (p: any) => p.index === parameterIndex
       );
+      const typeForParam = isComplex
+        ? { ...(type as any), $isOptional: options.optional }
+        : { type, $isOptional: options.optional, $isArray: isArray };
       if (existingIndex !== -1) {
-        params[existingIndex] = { ...params[existingIndex], type: type as any };
+        params[existingIndex] = {
+          ...params[existingIndex],
+          type: typeForParam,
+        };
       } else {
         params.splice(parameterIndex, 0, {
-          type,
+          type: typeForParam,
           index: parameterIndex,
         } as any);
       }
@@ -170,9 +176,6 @@ function registerType(target: any, type: ComplexType) {
 
   Object.keys(type).forEach((propName) => {
     if (propName.startsWith("$")) return;
-    if (propName === "account") {
-      // console.log(type[propName], isTypeComplex(type[propName]));
-    }
     if (isTypeComplex(type[propName])) {
       const complexType = type[propName] as any as ComplexType;
       const { $isArray, $typeName } = complexType;
@@ -202,6 +205,18 @@ export const int = (options?: TypeDecoratorOptions) =>
 
 export const float = (options?: TypeDecoratorOptions) =>
   typeDecorator(BASIC_TYPES.float, "type", false, options);
+
+export const stringArray = (options?: TypeDecoratorOptions) =>
+  typeDecorator(BASIC_TYPES.string, "type", true, options);
+
+export const booleanArray = (options?: TypeDecoratorOptions) =>
+  typeDecorator(BASIC_TYPES.boolean, "type", true, options);
+
+export const intArray = (options?: TypeDecoratorOptions) =>
+  typeDecorator(BASIC_TYPES.int, "type", true, options);
+
+export const floatArray = (options?: TypeDecoratorOptions) =>
+  typeDecorator(BASIC_TYPES.float, "type", true, options);
 
 export const type = (type: { new (): any }, options?: TypeDecoratorOptions) =>
   typeDecorator(type, "type", false, options);
@@ -242,9 +257,14 @@ export const Body = function (
       parameterIndex
     );
     if (options?.type) {
-      typeDecorator(options.type, "type", false, {
-        optional: options.optional,
-      })(target, propertyKey, parameterIndex);
+      typeDecorator(
+        "type" in options.type ? options.type.type : options.type,
+        "type",
+        false,
+        {
+          optional: options.optional,
+        }
+      )(target, propertyKey, parameterIndex);
     }
   };
 };
@@ -282,20 +302,28 @@ function paramDecorator(
     const existingIndex = params.findIndex(
       (p: any) => p.index === parameterIndex
     );
+    const typeObject = {} as any;
+    if (options.type !== undefined) {
+      typeObject.type = options.type;
+    }
+    if (options.optional !== undefined) {
+      typeObject.$isOptional = options.optional;
+    }
+    if (options.array !== undefined) {
+      typeObject.$isArray = options.array;
+    }
     if (existingIndex !== -1) {
       params[existingIndex] = {
-        type: options.type,
+        type: { ...params[existingIndex].type, ...typeObject },
         ...params[existingIndex],
         name: name ?? "",
         source,
-        optional: options.optional,
       };
     } else {
       params.splice(parameterIndex, 0, {
         name,
         source,
-        type: options.type,
-        optional: options.optional,
+        type: typeObject,
         index: parameterIndex,
       } as any);
     }
