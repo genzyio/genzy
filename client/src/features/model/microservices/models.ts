@@ -1,5 +1,8 @@
 type Microservice = {
   name: string;
+  description: string;
+  basePath: string;
+  version: string;
   services: Service[];
 };
 

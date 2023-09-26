@@ -50,7 +50,7 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({
   };
 
   const nextFunctionName = useSequenceGenerator(serviceData.functions, (f) => f.name, "function");
-  const nextApiPath = useSequenceGenerator(serviceData.functions, (f) => f.route, "/api/route");
+  const nextApiPath = useSequenceGenerator(serviceData.functions, (f) => f.route, "/route");
 
   const handleAddFunction = () => {
     serviceData.functions.push({
@@ -75,6 +75,7 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({
     serviceData.functions[index].params.push({
       name: nextParamName(index),
       isCollection: false,
+      isOptional: false,
       source: "QUERY",
       type: primitiveTypes[0],
       id: `${+new Date()}`,
@@ -100,7 +101,7 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({
 
   return (
     <div className="mx-4">
-      <div className="flex mb-5 w-full">
+      <div className="flex mb-1 w-full">
         <span className="w-2/3">
           <TextField
             value={serviceData.name}
@@ -117,6 +118,18 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({
             options={serviceTypeOptions}
           />
         </span>
+      </div>
+      <div className="mb-5" hidden={serviceData.type !== "CONTROLLER"}>
+        <TextField
+          value={serviceData.basePath}
+          onChange={(v) =>
+            updateState({
+              ...serviceData,
+              basePath: v,
+            })
+          }
+          label="Base Path"
+        />
       </div>
       {serviceData.functions.map((fun, index) => (
         <EditFunction

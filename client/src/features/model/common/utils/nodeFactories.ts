@@ -16,6 +16,9 @@ function createMicroserviceNode({ name }: CreateMicroserviceNodeParams): Node<Mi
     position: { x: 0, y: 0 },
     data: {
       name,
+      version: "0.0.0",
+      description: "",
+      basePath: "/api/",
       services: [],
     },
     type: "microserviceNode",
@@ -43,6 +46,7 @@ function createServiceNode({
     data: {
       microserviceId,
       name,
+      basePath: "",
       functions: [],
       type,
     },
@@ -65,6 +69,7 @@ function createRemoteProxyNode({
     data: {
       microserviceId: microserviceId,
       name: "",
+      basePath: "",
       functions: [],
       type: "REMOTE_PROXY",
     },
