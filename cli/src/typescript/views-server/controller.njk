@@ -41,7 +41,8 @@ export class {{ name }} {% if extends %} extends {{ extends }} {% endif %} {
 {% for action in actions %} {{ methods }}
 {% if action.httpMethod %}  @{{ action.httpMethod }}({% if action.httpMethod %}'{{ action.path }}'{% endif %}){% endif %}
   {% if action.resultType %}{{ action.resultDecorator }}{% endif %}
-  async {{ action.name }}({% for param in action.params %}{% if param.source == "query" %}@Query('{{ param.name }}'){% endif %}{% if param.source == "path" %}@Path('{{ param.name }}'){% endif %}{% if param.source == "body" %}@Body(){% endif %} {% if param.type %} {{ param.typeDecorator }} {% endif %} {{ param.name }}: {{ param.type }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{{ action.resultType }}>
+  async {{ action.name }}({% for param in action.params %}
+    {% if param.source == "query" %}@Query{% endif %}{% if param.source == "path" %}@Path{% endif %}{% if param.source == "body" %}@Body{% endif %}('{{ param.name }}', { type: "{{ param.type }}" {% if param.$isOptional %}, optional: true {% endif %} {% if param.$isArray %}, array: true {% endif %}}) {{ param.name }}{% if param.$isOptional %}?{% endif %}: {{ param.type }}{% if param.$isArray %}[]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{{ action.resultType }}>
   {% if action.existingBody %}
     {{ action.existingBody | safe }}
   {% else %}
