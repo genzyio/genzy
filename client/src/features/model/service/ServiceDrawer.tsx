@@ -19,7 +19,7 @@ type ServiceDrawerProps = {
 };
 
 const serviceTypeOptions = Object.entries(SERVICE_TYPE_DISPLAY_NAME)
-  .filter(([value, _]) => value !== "REMOTE_PROXY")
+  .filter(([value, _]) => !["REMOTE_PROXY", "PLUGABLE_SERVICE"].includes(value))
   .map(([value, label]) => ({
     value,
     label,

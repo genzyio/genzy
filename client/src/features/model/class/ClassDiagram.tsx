@@ -17,7 +17,6 @@ import { ClassDrawer } from "./ClassDrawer";
 import { useProjectDefinitionContext } from "../../projects/contexts/project-definition.context";
 import { projectDefinitionActions } from "../../projects/contexts/project-definition.dispatcher";
 import { useTypesContext } from "./TypesContext";
-import nodeTypes from "../common/constants/nodeTypes";
 import { ConfirmationModal } from "../../../components/confirmation-modal";
 import { ClassNode } from "./ClassNode";
 import { RemovableNode } from "../common/components/RemovableNode";
@@ -26,6 +25,8 @@ import { createPortal } from "react-dom";
 import { RemovableEdge } from "../common/components/RemovableEdge";
 import { ValidationContextProvider } from "../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
+import nodeTypes from "../common/constants/nodeTypes";
+import edgeTypes from "../common/constants/edgeTypes";
 
 type DiagramProps = {
   microserviceId: string;
@@ -33,7 +34,8 @@ type DiagramProps = {
   viewport: any;
 };
 
-const edgeTypes = {
+const localEdgeTypes = {
+  ...edgeTypes,
   removableEdge: RemovableEdge,
 };
 
@@ -163,7 +165,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
           nodes={nodes}
           onNodesChange={onNodesChange}
           nodeTypes={localNodeTypes}
-          edgeTypes={edgeTypes}
+          edgeTypes={localEdgeTypes}
           onNodeDoubleClick={(_, node) => {
             setSelectedClass(node);
             setInitialState(node.data);

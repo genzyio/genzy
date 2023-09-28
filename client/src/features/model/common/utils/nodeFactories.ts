@@ -1,5 +1,5 @@
 import { type Node } from "reactflow";
-import { type Service } from "../../service/models";
+import { type Service, type ServiceFunction } from "../../service/models";
 import { type Microservice } from "../../microservices/models";
 import { type Class } from "../../class/models";
 
@@ -78,6 +78,33 @@ function createRemoteProxyNode({
   };
 }
 
+type CreatePlugableServiceNodeParam = {
+  serviceId: string;
+  microserviceId: string;
+  name: string;
+  functions: ServiceFunction[];
+};
+
+function createPlugableServiceNode({
+  serviceId,
+  microserviceId,
+  name,
+  functions,
+}: CreatePlugableServiceNodeParam): Node<Service> {
+  return {
+    id: serviceId,
+    position: { x: 25, y: 25 },
+    data: {
+      microserviceId: microserviceId,
+      name,
+      basePath: "",
+      functions,
+      type: "PLUGABLE_SERVICE",
+    },
+    type: "plugableServiceNode",
+  };
+}
+
 // Class Node
 
 type CreateClassNodeParams = {
@@ -100,4 +127,10 @@ function createClassNode({ microserviceId, name }: CreateClassNodeParams): Node<
   };
 }
 
-export { createMicroserviceNode, createServiceNode, createRemoteProxyNode, createClassNode };
+export {
+  createMicroserviceNode,
+  createServiceNode,
+  createRemoteProxyNode,
+  createPlugableServiceNode,
+  createClassNode,
+};

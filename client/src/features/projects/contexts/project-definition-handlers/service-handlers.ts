@@ -1,10 +1,14 @@
 import { type ProjectDefinition } from "../../models/project-definition.models";
 import { type HandlerType } from "./types";
 import { type Service } from "../../../model/microservices/models";
-import { type ServiceFunction } from "../../../model/service/models";
 import {
-  createRemoteProxyNode,
+  type ServiceFunction,
+  type Service as ExtendedService,
+} from "../../../model/service/models";
+import {
   createServiceNode,
+  createRemoteProxyNode,
+  createPlugableServiceNode,
 } from "../../../model/common/utils/nodeFactories";
 
 // Add
@@ -76,6 +80,22 @@ const addRemoteProxiesHandler: HandlerType<{
   );
 };
 
+const addPlugableServiceHandler: HandlerType<{
+  microserviceId: string;
+  serviceId: string;
+  service: Pick<ExtendedService, "name" | "functions">;
+}> = (projectDefinition: ProjectDefinition, { microserviceId, serviceId, service }) => {
+  const serviceDiagram = projectDefinition.services[microserviceId];
+  const newPlugableServiceNode = createPlugableServiceNode({
+    serviceId,
+    microserviceId,
+    name: service.name,
+    functions: service.functions,
+  });
+
+  serviceDiagram.nodes.push(newPlugableServiceNode);
+};
+
 // Update
 
 const updateServiceHandler: HandlerType<{
@@ -127,6 +147,7 @@ export {
   addServicesHandler,
   addRemoteProxyHandler,
   addRemoteProxiesHandler,
+  addPlugableServiceHandler,
   updateServiceHandler,
   updateServicesHandler,
   deleteServicesHandler,

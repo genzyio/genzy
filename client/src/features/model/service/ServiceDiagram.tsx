@@ -21,7 +21,6 @@ import { type Service } from "./models";
 import { Drawer } from "../../../components/drawer";
 import { ServiceDrawer } from "./ServiceDrawer";
 import { useProjectDefinitionContext } from "../../projects/contexts/project-definition.context";
-import nodeTypes from "../common/constants/nodeTypes";
 import { projectDefinitionActions } from "../../projects/contexts/project-definition.dispatcher";
 import { ConfirmationModal } from "../../../components/confirmation-modal";
 import { RemovableEdge } from "../common/components/RemovableEdge";
@@ -31,6 +30,8 @@ import { createPortal } from "react-dom";
 import { Button } from "../../../components/button";
 import { ValidationContextProvider } from "../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
+import nodeTypes from "../common/constants/nodeTypes";
+import edgeTypes from "../common/constants/edgeTypes";
 
 type DiagramProps = {
   microserviceId: string;
@@ -78,7 +79,9 @@ export const ServiceDiagram: FC<DiagramProps> = ({
 
     const connectingFromRemoteProxy =
       nodes.find((node) => node.id === connection.source).data.type === "REMOTE_PROXY";
-    if (connectingFromRemoteProxy) return;
+    const connectingFromPlugableService =
+      nodes.find((node) => node.id === connection.source).data.type === "PLUGABLE_SERVICE";
+    if (connectingFromRemoteProxy || connectingFromPlugableService) return;
 
     // TODO: check circular dependencies
     const alreadyConnected = edges.some(
@@ -223,8 +226,9 @@ export const ServiceDiagram: FC<DiagramProps> = ({
     [microserviceId, dispatcher, setEdges]
   );
 
-  const edgeTypes = useMemo(
+  const localEdgeTypes = useMemo(
     () => ({
+      ...edgeTypes,
       removableEdge: RemovableEdgeWrapper,
     }),
     [RemovableEdgeWrapper]
@@ -261,10 +265,10 @@ export const ServiceDiagram: FC<DiagramProps> = ({
           onEdgeUpdateEnd={() => (updateValidation = false)}
           onEdgeUpdate={onEdgeUpdate}
           nodeTypes={localNodeTypes}
-          edgeTypes={edgeTypes}
+          edgeTypes={localEdgeTypes}
           onNodeClick={() => {}}
           onNodeDoubleClick={(_e, node) => {
-            if (node.data.type === "REMOTE_PROXY") return;
+            if (["REMOTE_PROXY", "PLUGABLE_SERVICE"].includes(node.data.type)) return;
             setSelected(node);
             setInitialState(node.data);
             setDrawerOpen(true);

@@ -4,14 +4,17 @@ import { type Connection, MarkerType } from "reactflow";
 
 type CreateMicroserviceEdgeParams = Connection;
 
-function createMicroserviceEdge(params: CreateMicroserviceEdgeParams): any {
+function createMicroserviceEdge(
+  params: CreateMicroserviceEdgeParams,
+  removable: boolean = true
+): any {
   return {
     ...params,
     id: `${+new Date()}`,
     data: {
       services: [],
     },
-    type: "removableEdge",
+    type: removable ? "removableEdge" : "defaultEdge",
     markerEnd: {
       type: MarkerType.ArrowClosed,
       width: 30,
@@ -24,14 +27,14 @@ function createMicroserviceEdge(params: CreateMicroserviceEdgeParams): any {
 
 type CreateServiceEdgeParams = Connection;
 
-function createServiceEdge(params: CreateServiceEdgeParams): any {
+function createServiceEdge(params: CreateServiceEdgeParams, removable: boolean = true): any {
   return {
     ...params,
     id: `${+new Date()}`,
     data: {
       services: [],
     },
-    type: "removableEdge",
+    type: removable ? "removableEdge" : "defaultEdge",
     markerEnd: {
       type: MarkerType.ArrowClosed,
       width: 30,

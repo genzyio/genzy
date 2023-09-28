@@ -33,3 +33,7 @@
 .bg-gray-200 {
   background-color: rgb(209 213 219);
 }
+
+.border-amber-500 {
+  border-color: rgb(245 158 11);
+}

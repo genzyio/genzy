@@ -17,12 +17,14 @@ export const SERVICE_TYPE = {
   LOCAL: "L",
   REMOTE_PROXY: "RP",
   CONTROLLER: "C",
+  PLUGABLE_SERVICE: "PS",
 } as const;
 
 export const SERVICE_TYPE_DISPLAY_NAME = {
   LOCAL: "Local Service",
   REMOTE_PROXY: "Remote Proxy",
   CONTROLLER: "Controller",
+  PLUGABLE_SERVICE: "Plugable Service",
 } as const;
 
 type ServiceType = keyof typeof SERVICE_TYPE;

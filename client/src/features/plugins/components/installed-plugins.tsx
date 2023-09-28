@@ -58,6 +58,14 @@ export const InstalledPlugins: FC = () => {
     projectDefinition.microservices.nodes.find((node) => node.id === microserviceId)?.data
       ?.plugins ?? [];
 
+  if (!plugins.length) {
+    return (
+      <p className="mt-5">
+        You do not have any plugin installed yet. Go to the "Search" tab, find some and install it.
+      </p>
+    );
+  }
+
   return (
     <div className="mt-5">
       {plugins?.map((plugin: Plugin) => (

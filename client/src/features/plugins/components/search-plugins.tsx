@@ -61,7 +61,7 @@ export const SearchPlugins: FC = () => {
     <>
       <div className="mt-5">
         <div className="mb-2">
-          <TextField title="Search packages" value={search} onChange={setSearch} />
+          <TextField autoFocus={true} title="Search packages" value={search} onChange={setSearch} />
         </div>
 
         {isFetching && !!debouncedSearch ? (

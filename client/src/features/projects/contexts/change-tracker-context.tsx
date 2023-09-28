@@ -1,10 +1,9 @@
 import {
-  FC,
-  PropsWithChildren,
+  type FC,
+  type PropsWithChildren,
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useState,
 } from "react";
 
@@ -57,10 +56,6 @@ export const ChangeTrackerContextProvider: FC<PropsWithChildren> = ({ children }
     },
     [states, setStates]
   );
-
-  useEffect(() => {
-    console.log(states);
-  }, [states]);
 
   const resetStates = useCallback(() => {
     setStates({});

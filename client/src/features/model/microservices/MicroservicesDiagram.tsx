@@ -23,7 +23,6 @@ import { useSequenceGenerator } from "../../../hooks/useStringSequence";
 import { CommunicationDrawer } from "./CommunicationDrawer";
 import { useProjectDefinitionContext } from "../../projects/contexts/project-definition.context";
 import { projectDefinitionActions } from "../../projects/contexts/project-definition.dispatcher";
-import nodeTypes from "../common/constants/nodeTypes";
 import { findArrayDiff } from "../../../utils/diff";
 import { ConfirmationModal } from "../../../components/confirmation-modal";
 import { RemovableEdge } from "../common/components/RemovableEdge";
@@ -37,7 +36,8 @@ import { PluginModal } from "../../plugins/components/plugins-modal";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useProjectContext } from "../../projects/contexts/project.context";
 import { MicroserviceContextProvider } from "./MicroserviceContext";
-import { ImageNode } from "./ImageNode";
+import nodeTypes from "../common/constants/nodeTypes";
+import edgeTypes from "../common/constants/edgeTypes";
 
 type DiagramProps = {
   nodes?: any[];
@@ -96,6 +96,13 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   const isValidConnection = (connection: Connection) => {
     const selfConnecting = connection.source === connection.target;
     if (selfConnecting) return false;
+
+    const connectionFromPlugin =
+      nodes.find((node) => node.id === connection.source).type !== "microserviceNode";
+    const connectionToPlugin =
+      nodes.find((node) => node.id === connection.target).type !== "microserviceNode";
+    const connectingPlugin = connectionFromPlugin || connectionToPlugin;
+    if (connectingPlugin) return false;
 
     const alreadyConnected = edges.some(
       (edge) => edge.target === connection.target && edge.source === connection.source
@@ -208,7 +215,6 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
     () => ({
       ...nodeTypes,
       microserviceNode: RemovableMicroserviceNodeWrapper,
-      imageNode: ImageNode,
     }),
     [RemovableMicroserviceNodeWrapper]
   );
@@ -270,8 +276,9 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
     [setSelectedCommunication, setIsDeleteCommunicationModalOpen]
   );
 
-  const edgeTypes = useMemo(
+  const localEdgeTypes = useMemo(
     () => ({
+      ...edgeTypes,
       removableEdge: RemovableEdgeWrapper,
     }),
     [RemovableEdgeWrapper]
@@ -323,6 +330,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
           onClose={() => {
             setIsPluginsOpen(false);
             setNodes([...projectDefinition.microservices.nodes]);
+            setEdges([...projectDefinition.microservices.edges]);
             navigate(`/projects/${project.name}`);
           }}
         />
@@ -341,13 +349,17 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
           onEdgeUpdateEnd={() => (updateValidation = false)}
           onEdgeUpdate={onEdgeUpdate}
           nodeTypes={localNodeTypes}
-          edgeTypes={edgeTypes}
+          edgeTypes={localEdgeTypes}
           onNodeDoubleClick={(_, node) => {
+            if (node.type !== "microserviceNode") return;
+
             setSelectedMicroservice(node);
             setInitialState(node.data);
             setDrawerOpen(true);
           }}
           onEdgeDoubleClick={(_, edge) => {
+            if (edge.type === "defaultEdge") return;
+
             setSelectedCommunication(edge);
             setInitialState(edge.data);
             setDrawerOpen(true);
