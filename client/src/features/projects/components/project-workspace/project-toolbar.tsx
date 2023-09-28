@@ -11,6 +11,7 @@ import { extractErrorMessage } from "../../../../utils/errors";
 import { useProjectNavigation } from "../../hooks/useProjectNavigation";
 import { useAutoSaveContext } from "../../contexts/auto-save.context";
 import { useDirtyCheckContext } from "../../../model/common/contexts/dirty-check-context";
+import { useChangeTrackerContext } from "../../contexts/change-tracker-context";
 
 export const ProjectToolbar: FC = () => {
   const notificator = useNotifications();
@@ -19,6 +20,7 @@ export const ProjectToolbar: FC = () => {
   const { isDirty, setInitialState } = useDirtyCheckContext();
   const { shouldAutoSave, toggleAutoSave, lastAutoSave } = useAutoSaveContext();
   const { projectDefinition: initialProjectDefinition } = useProjectDefinitionContext();
+  const { resetStates } = useChangeTrackerContext();
 
   const saveProjectDefinitionAction = useAction<ProjectDefinition>(
     saveProjectDefinition(project.name),
@@ -27,6 +29,7 @@ export const ProjectToolbar: FC = () => {
         notificator.success("Project is saved.");
         setInitialState(false);
         saveProjectScreenshot(project.name);
+        resetStates();
       },
       onError: (error) => {
         notificator.error(extractErrorMessage(error));
@@ -41,6 +44,8 @@ export const ProjectToolbar: FC = () => {
         notificator.success("Project is saved.");
         setInitialState(false);
         saveProjectScreenshot(project.name);
+        resetStates();
+
         setTimeout(() => {
           closeProject();
         }, 10);

@@ -11,7 +11,9 @@ import { type DispatcherType, createDispatcher } from "./project-definition.disp
 import { useProjectDefinition } from "../hooks/useProjectDefinition";
 import { useProjectContext } from "./project.context";
 import { useAutoSaveContext } from "./auto-save.context";
+import { useChangeTrackerContext } from "./change-tracker-context";
 import { useDirtyCheckContext } from "../../model/common/contexts/dirty-check-context";
+import { createChangeTrackingDispatcherWrapper } from "./change-tracker.dispatcher";
 
 type ProjectDefinitionContextValues = {
   projectDefinition: ProjectDefinition;
@@ -41,15 +43,27 @@ export const ProjectDefinitionContextProvider: FC<PropsWithChildren> = ({ childr
   const { project } = useProjectContext();
   const { setCurrentState } = useDirtyCheckContext();
   const { triggerAutoSave } = useAutoSaveContext();
-
+  const { setStateForMS } = useChangeTrackerContext();
   const { projectDefinition, isFetching } = useProjectDefinition(project?.name);
   const dispatcher = useMemo(() => createDispatcher(projectDefinition), [projectDefinition]);
-  const autoSaveDispatcher = useCallback(
+  const multiLevelDispatcher = useCallback(
     (type: symbol, payload: any) => {
       let result = dispatcher(type, payload);
-      if (typeof result === "function") {
-        result = result(dispatcher);
+      while (typeof result === "function") {
+        result = result(multiLevelDispatcher);
       }
+      return result;
+    },
+    [dispatcher]
+  );
+  const changeTrackingDispatcher = useMemo(
+    () => createChangeTrackingDispatcherWrapper(multiLevelDispatcher, setStateForMS),
+    [multiLevelDispatcher, setStateForMS]
+  );
+
+  const autoSaveDispatcher = useCallback(
+    (type: symbol, payload: any) => {
+      const result = changeTrackingDispatcher(type, payload);
       setCurrentState(true);
       setTimeout(() => {
         triggerAutoSave(projectDefinition);
@@ -57,7 +71,7 @@ export const ProjectDefinitionContextProvider: FC<PropsWithChildren> = ({ childr
 
       return result;
     },
-    [dispatcher, triggerAutoSave]
+    [changeTrackingDispatcher, triggerAutoSave]
   );
 
   if (isFetching) {
