@@ -15,6 +15,7 @@ import { useAction } from "../../../hooks/useAction";
 import { saveProjectDefinition } from "../api/project-definition.actions";
 import { saveProjectScreenshot } from "../api/project-screenshots.actions";
 import { useDirtyCheckContext } from "../../model/common/contexts/dirty-check-context";
+import { useChangeTrackerContext } from "./change-tracker-context";
 
 type AutoSaveContextValues = {
   shouldAutoSave: boolean;
@@ -46,6 +47,7 @@ const useAutoSavePreferences = (projectName: string) => {
 export const AutoSaveContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const { project } = useProjectContext();
   const { setInitialState } = useDirtyCheckContext();
+  const { resetStates } = useChangeTrackerContext();
 
   const autoSavePreferences = useAutoSavePreferences(project.name);
   const [shouldAutoSave, setShouldAutoSave] = useState(
@@ -80,6 +82,7 @@ export const AutoSaveContextProvider: FC<PropsWithChildren> = ({ children }) => 
       onSuccess: () => {
         setInitialState(false);
         saveProjectScreenshot(project.name);
+        resetStates();
         setLastAutoSave(moment());
       },
       onError: (error) => {},
