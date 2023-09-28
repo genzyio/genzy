@@ -17,3 +17,19 @@
 .w-17 {
   width: 4.25rem;
 }
+
+.border-gray-100 {
+  border-color: rgb(243 244 246);
+}
+
+.bg-gray-100 {
+  background-color: rgb(243 244 246);
+}
+
+.border-gray-200 {
+  border-color: rgb(209 213 219);
+}
+
+.bg-gray-200 {
+  background-color: rgb(209 213 219);
+}

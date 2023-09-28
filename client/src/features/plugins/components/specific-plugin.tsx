@@ -1,12 +1,18 @@
 import { type FC, useState, useMemo } from "react";
 import type { Dependency, NPMPackage, Version } from "../api/specific-plugin.contracts";
-import { useSpecificPlugin } from "../hooks/useSpecificPlugin";
+import { usePlugin } from "../hooks/usePlugin";
 import { Select } from "../../../components/select";
 import { Button } from "../../../components/button";
 import { KeywordsList } from "./keywords";
 import { NewTabLink } from "./new-tab-link";
 import { Section } from "./section";
 import moment from "moment";
+import { useIsPluginInstalled } from "../hooks/useIsPluginInstalled";
+import { useProjectDefinitionContext } from "../../projects/contexts/project-definition.context";
+import { usePluginsModalContext } from "../context/plugins-modal.context";
+import { projectDefinitionActions } from "../../projects/contexts/project-definition.dispatcher";
+import { useMicroserviceContext } from "../../model/microservices/MicroserviceContext";
+import { useNotifications } from "../../../hooks/useNotifications";
 
 type DependenciesProps = {
   depedencies: Dependency[];
@@ -82,7 +88,13 @@ const VersionInfo: FC<VersionInfoProps> = ({
 };
 
 export const SpecificPlugin: FC<{ pluginName: string }> = ({ pluginName }) => {
-  const { plugin, isFetching } = useSpecificPlugin(pluginName);
+  const notificator = useNotifications();
+  const { microserviceId } = useMicroserviceContext();
+  const { dispatcher } = useProjectDefinitionContext();
+  const { close } = usePluginsModalContext();
+  const { isInstalled, installedVersion } = useIsPluginInstalled(pluginName);
+
+  const { plugin, isFetching } = usePlugin(pluginName);
   const [versionValue, setVersionValue] = useState("");
 
   const versionOptions = useMemo(
@@ -95,25 +107,68 @@ export const SpecificPlugin: FC<{ pluginName: string }> = ({ pluginName }) => {
     [plugin, versionValue]
   );
 
+  const installPlugin = () => {
+    dispatcher(projectDefinitionActions.installPlugin, {
+      microserviceId,
+      plugin: {
+        name: pluginName,
+        version: versionValue,
+      },
+    });
+
+    notificator.success(`You have installed plugin ${pluginName}.`);
+    close();
+  };
+
+  const updatePlugin = () => {
+    dispatcher(projectDefinitionActions.installPlugin, {
+      microserviceId,
+      plugin: {
+        name: pluginName,
+        version: versionValue,
+      },
+    });
+
+    notificator.success(`You have updated plugin ${pluginName}.`);
+    close();
+  };
+
+  const uninstallPlugin = () => {
+    dispatcher(projectDefinitionActions.uninstallPlugin, {
+      microserviceId,
+      plugin: {
+        name: pluginName,
+        version: versionValue,
+      },
+    });
+
+    notificator.success(`You have uninstalled plugin ${pluginName}.`);
+    close();
+  };
+
   if (isFetching) {
     return <></>;
   } else {
-    !versionValue && setVersionValue(plugin.latestVersion);
+    !versionValue && setVersionValue(installedVersion || plugin.latestVersion);
   }
 
   return (
     <>
       <div className="flex w-full items-center">
-        <div className="w-[70%]">
+        <div className="w-[65%]">
           <PluginHeader {...plugin} />
         </div>
 
-        <div className="flex space-x-1 w-[30%] items-center">
-          <div className="flex-1">
+        <div className="flex space-x-1 w-[35%] items-center">
+          <div className="flex-1 mr-1">
             <Select options={versionOptions} value={versionValue} onChange={setVersionValue} />
           </div>
-          <div>
-            <Button>Install</Button>
+          <div className="flex space-x-1">
+            {!isInstalled && <Button onClick={installPlugin}>Install</Button>}
+            {isInstalled && installedVersion !== versionValue && (
+              <Button onClick={updatePlugin}>Update</Button>
+            )}
+            {isInstalled && <Button onClick={uninstallPlugin}>Uninstall</Button>}
           </div>
         </div>
       </div>

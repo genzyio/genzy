@@ -36,6 +36,8 @@ import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 import { PluginModal } from "../../plugins/components/plugins-modal";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useProjectContext } from "../../projects/contexts/project.context";
+import { MicroserviceContextProvider } from "./MicroserviceContext";
+import { ImageNode } from "./ImageNode";
 
 type DiagramProps = {
   nodes?: any[];
@@ -206,6 +208,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
     () => ({
       ...nodeTypes,
       microserviceNode: RemovableMicroserviceNodeWrapper,
+      imageNode: ImageNode,
     }),
     [RemovableMicroserviceNodeWrapper]
   );
@@ -311,15 +314,19 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
     <>
       {portal}
 
-      <PluginModal
-        microserviceId={selectedMicroservice?.id}
-        isOpen={isPluginsOpen}
-        isLarge={true}
-        onClose={() => {
-          setIsPluginsOpen(false);
-          navigate(`/projects/${project.name}`);
-        }}
-      />
+      <MicroserviceContextProvider>
+        <PluginModal
+          key={selectedMicroservice?.id}
+          microserviceId={selectedMicroservice?.id}
+          isOpen={isPluginsOpen}
+          isLarge={true}
+          onClose={() => {
+            setIsPluginsOpen(false);
+            setNodes([...projectDefinition.microservices.nodes]);
+            navigate(`/projects/${project.name}`);
+          }}
+        />
+      </MicroserviceContextProvider>
 
       <div className="h-full w-full">
         <ReactFlow

@@ -1,0 +1,70 @@
+import { type FC, useState } from "react";
+import { type Plugin } from "../../model/microservices/models";
+import { KeywordsList } from "./keywords";
+import { useMicroserviceContext } from "../../model/microservices/MicroserviceContext";
+import { useProjectDefinitionContext } from "../../projects/contexts/project-definition.context";
+import { useSpecificPluginVersion } from "../hooks/useSpecificPluginVersion";
+import { LoadingRow } from "./loading-row";
+import { usePluginsModalContext } from "../context/plugins-modal.context";
+
+type PluginProps = {
+  name: string;
+  version: string;
+};
+
+const Plugin: FC<PluginProps> = ({ name, version }) => {
+  const { setSpecificPlugin } = usePluginsModalContext();
+
+  const { plugin, isFetching } = useSpecificPluginVersion(name, version);
+  const [descriptionWidth] = useState(Math.floor(Math.random() * 71 + 30));
+  const [versionWidth] = useState(Math.floor(Math.random() * 51 + 20));
+  const { description, keywords, publisher } = plugin || {};
+
+  if (isFetching) {
+    return (
+      <div className="space-y-2">
+        <div className="font-medium text-xl">{name}</div>
+        <LoadingRow color={"gray-200"} width={descriptionWidth} />
+        <LoadingRow color={"gray-100"} width={versionWidth} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-1">
+      <div
+        className="font-medium text-xl cursor-pointer hover:underline"
+        onClick={() => setSpecificPlugin(name)}
+      >
+        {name}
+      </div>
+
+      {!!plugin.description && <div className="text-sm text-gray-600">{description}</div>}
+      {!!keywords?.length && <KeywordsList keywords={keywords} />}
+
+      <div className="flex text-gray-600">
+        <span className="font-medium mr-1">{publisher.username || publisher.email}</span>
+        published {version}
+      </div>
+    </div>
+  );
+};
+
+export const InstalledPlugins: FC = () => {
+  const { microserviceId } = useMicroserviceContext();
+  const { projectDefinition } = useProjectDefinitionContext();
+
+  const plugins =
+    projectDefinition.microservices.nodes.find((node) => node.id === microserviceId)?.data
+      ?.plugins ?? [];
+
+  return (
+    <div className="mt-5">
+      {plugins?.map((plugin: Plugin) => (
+        <div key={plugin.name} className="mb-2 border-b w-full border-gray-300 pb-2">
+          <Plugin name={plugin.name} version={plugin.version} />
+        </div>
+      ))}
+    </div>
+  );
+};

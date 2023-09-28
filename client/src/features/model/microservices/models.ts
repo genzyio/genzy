@@ -4,6 +4,7 @@ type Microservice = {
   basePath: string;
   version: string;
   services: Service[];
+  plugins: Plugin[];
 };
 
 type Service = {
@@ -16,4 +17,9 @@ type Communication = {
   services: string[];
 };
 
-export type { Microservice, Communication, Service };
+type Plugin = {
+  name: string;
+  version: string;
+};
+
+export type { Microservice, Communication, Service, Plugin };

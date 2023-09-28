@@ -83,7 +83,14 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
   };
 
   const handleSave = () => {
-    onMicroserviceUpdate({ name: microserviceName, description, basePath, version, services });
+    onMicroserviceUpdate({
+      name: microserviceName,
+      description,
+      basePath,
+      version,
+      services,
+      plugins: initialMicroservice.plugins,
+    });
   };
 
   const isIdentifier = IDENTIFIER_REGEX.test(microserviceName);

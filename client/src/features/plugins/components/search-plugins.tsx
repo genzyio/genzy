@@ -1,22 +1,25 @@
-import { type FC, useState } from "react";
+import { type FC, useState, useEffect } from "react";
 import { type NPMPackageInfo } from "../api/search.contracts";
 import { TextField } from "../../../components/text-field";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useSearch } from "../hooks/useSearch";
 import { KeywordsList } from "./keywords";
-import { SpecificPlugin } from "./specific-plugin";
 import moment from "moment";
-
-let openSpecificPlugin = undefined;
+import { LoadingRow } from "./loading-row";
+import { usePluginsModalContext } from "../context/plugins-modal.context";
+import { useIsPluginInstalled } from "../hooks/useIsPluginInstalled";
 
 const Plugin: FC<NPMPackageInfo> = ({ name, description, keywords, publisher, version, date }) => {
+  const { setSpecificPlugin } = usePluginsModalContext();
+  const { isInstalled } = useIsPluginInstalled(name);
+
   return (
     <div className="space-y-1">
       <div
         className="font-medium text-xl cursor-pointer hover:underline"
-        onClick={() => openSpecificPlugin(name)}
+        onClick={() => setSpecificPlugin(name)}
       >
-        {name}
+        {name} <span className="text-base">{isInstalled ? " (Installed)" : ""}</span>
       </div>
 
       {!!description && <div className="text-sm text-gray-600">{description}</div>}
@@ -30,18 +33,29 @@ const Plugin: FC<NPMPackageInfo> = ({ name, description, keywords, publisher, ve
   );
 };
 
+const LoadingPlugin: FC = () => {
+  const [nameWidth] = useState(Math.floor(Math.random() * 31 + 10));
+  const [descriptionWidth] = useState(Math.floor(Math.random() * 71 + 30));
+  const [versionWidth] = useState(Math.floor(Math.random() * 51 + 20));
+
+  return (
+    <div className="space-y-2">
+      <LoadingRow color={"gray-200"} height={20} width={nameWidth} />
+      <LoadingRow color={"gray-200"} width={descriptionWidth} />
+      <LoadingRow color={"gray-100"} width={versionWidth} />
+    </div>
+  );
+};
+
 export const SearchPlugins: FC = () => {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 200);
 
-  const { plugins } = useSearch(debouncedSearch);
-
-  const [specificPlugin, setSpecificPlugin] = useState("");
-  openSpecificPlugin = setSpecificPlugin;
-
-  if (!!specificPlugin) {
-    return <SpecificPlugin pluginName={specificPlugin}></SpecificPlugin>;
-  }
+  const { plugins, isFetching } = useSearch(debouncedSearch);
+  const [loadingElements, setLoadingElemements] = useState<any[]>([]);
+  useEffect(() => {
+    setLoadingElemements(Array.from({ length: Math.floor(Math.random() * 5) + 2 }));
+  }, [debouncedSearch]);
 
   return (
     <>
@@ -49,11 +63,24 @@ export const SearchPlugins: FC = () => {
         <div className="mb-2">
           <TextField title="Search packages" value={search} onChange={setSearch} />
         </div>
-        {plugins?.map((plugin: NPMPackageInfo, index: number) => (
-          <div key={index} className="mb-2 border-b w-full border-gray-300 pb-2">
-            <Plugin {...plugin} />
-          </div>
-        ))}
+
+        {isFetching && !!debouncedSearch ? (
+          <>
+            {loadingElements?.map((_: any, index: number) => (
+              <div key={index} className="mb-2 border-b w-full border-gray-300 pb-2">
+                <LoadingPlugin />
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            {plugins?.map((plugin: NPMPackageInfo, index: number) => (
+              <div key={index} className="mb-2 border-b w-full border-gray-300 pb-2">
+                <Plugin {...plugin} />
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </>
   );

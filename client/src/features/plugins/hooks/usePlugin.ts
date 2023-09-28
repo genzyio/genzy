@@ -1,11 +1,11 @@
 import { useQuery } from "react-query";
-import { getSpecificPlugin } from "../api/specific-plugin.actions";
+import { getPlugin } from "../api/specific-plugin.actions";
 import { type NPMPackage } from "../api/specific-plugin.contracts";
 
-export function useSpecificPlugin(pluginName: string, dependencies: any[] = []) {
+export function usePlugin(pluginName: string, dependencies: any[] = []) {
   const { data, isFetching } = useQuery(
     [`plugins/specific/${pluginName}`, ...dependencies],
-    () => getSpecificPlugin(pluginName),
+    () => getPlugin(pluginName),
     {
       enabled: dependencies.reduce((acc, d) => acc && !d, true) && !!pluginName,
     }

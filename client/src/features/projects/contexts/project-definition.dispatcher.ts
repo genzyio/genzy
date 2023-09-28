@@ -31,11 +31,20 @@ import {
   removeDependencyHandler,
   updateDependencyHandlesHandler,
 } from "./project-definition-handlers/dependency-handlers";
+import {
+  installPluginHandler,
+  uninstallPluginHandler,
+  updatePluginHandler,
+} from "./project-definition-handlers/plugins-handlers";
 
 export const projectDefinitionActions = {
   addMicroservice: Symbol("addMicroservice"),
   updateMicroservice: Symbol("updateMicroservice"),
   deleteMicroservice: Symbol("deleteMicroservice"),
+
+  installPlugin: Symbol("installPlugin"),
+  updatePlugin: Symbol("updatePlugin"),
+  uninstallPlugin: Symbol("uninstallPlugin"),
 
   addCommunication: Symbol("addCommunication"),
   updateCommunication: Symbol("updateCommunication"),
@@ -67,6 +76,10 @@ function createDispatcher(projectDefinition: ProjectDefinition): DispatcherType 
     [projectDefinitionActions.addMicroservice]: addMicroserviceHandler,
     [projectDefinitionActions.updateMicroservice]: updateMicroserviceHandler,
     [projectDefinitionActions.deleteMicroservice]: deleteMicroserviceHandler,
+
+    [projectDefinitionActions.installPlugin]: installPluginHandler,
+    [projectDefinitionActions.updatePlugin]: updatePluginHandler,
+    [projectDefinitionActions.uninstallPlugin]: uninstallPluginHandler,
 
     [projectDefinitionActions.addCommunication]: addCommunicationHandler,
     [projectDefinitionActions.updateCommunication]: updateCommunicationHandler,

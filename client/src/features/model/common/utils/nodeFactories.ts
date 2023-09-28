@@ -20,6 +20,7 @@ function createMicroserviceNode({ name }: CreateMicroserviceNodeParams): Node<Mi
       description: "",
       basePath: "/api/",
       services: [],
+      plugins: [],
     },
     type: "microserviceNode",
   };

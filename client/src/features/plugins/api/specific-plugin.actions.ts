@@ -1,7 +1,11 @@
 import axios from "axios";
 
-function getSpecificPlugin(pluginName: string) {
-  return axios.get(`https://registry.npmjs.org/${pluginName}`);
+function getPlugin(name: string) {
+  return axios.get(`https://registry.npmjs.org/${name}`);
 }
 
-export { getSpecificPlugin };
+function getSpecificPluginVersion(name: string, version: string) {
+  return axios.get(`https://registry.npmjs.org/${name}/${version}`);
+}
+
+export { getPlugin, getSpecificPluginVersion };
