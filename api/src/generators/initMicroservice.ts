@@ -4,7 +4,7 @@ import path from "path";
 import fs from "fs";
 import { exec } from "child_process";
 
-export function initMicroserviceTsJs(info: N1mblyGeneratorInput, project: Project, lang: "ts" | "js" = "ts") {
+function initMicroserviceTsJs(info: N1mblyGeneratorInput, project: Project, lang: "ts" | "js" = "ts") {
   const { name, version, description } = info.n1mblyInfo;
   const microservicePath = path.join(project.path, name);
 
@@ -66,5 +66,23 @@ export function initMicroserviceTsJs(info: N1mblyGeneratorInput, project: Projec
 
   fs.mkdirSync(path.join(microservicePath, "src"));
 
-  exec("npm i", { cwd: microservicePath });
+  exec("npm install", { cwd: microservicePath });
 }
+
+function installPackage(packageName: string, packageVersion: string, microservicePath: string): Promise<string> {
+  return new Promise((res, rej) =>
+    exec(`npm install ${packageName}@${packageVersion}`, { cwd: microservicePath }, (err, stdout, stderr) =>
+      err ? rej(stderr) : res(stdout)
+    )
+  );
+}
+
+function uninstallPackage(packageName: string, packageVersion: string, microservicePath: string): Promise<string> {
+  return new Promise((res, rej) =>
+    exec(`npm uninstall ${packageName}@${packageVersion}`, { cwd: microservicePath }, (err, stdout, stderr) =>
+      err ? rej(stderr) : res(stdout)
+    )
+  );
+}
+
+export { initMicroserviceTsJs, installPackage, uninstallPackage };

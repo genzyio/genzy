@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import eventEmitter from "../../core/events/events.utils";
 import { Project } from "./projects.models";
-import { initMicroserviceTsJs } from "../../generators/initMicroservice";
+import { initMicroserviceTsJs, installPackage } from "../../generators/initMicroservice";
 
 export const ProjectCreated = Symbol.for("ProjectCreated");
 export const ProjectDeleted = Symbol.for("ProjectDeleted");
@@ -18,12 +18,14 @@ eventEmitter.on(ProjectCreated, (project: Project) => {
     })
   );
 
+  // Example
+  const name = "example-microservice";
   initMicroserviceTsJs(
     {
       n1mblyInfo: {
         basePath: "/",
         description: "Microservice example",
-        name: "example-microservice",
+        name,
         version: "1.0.0",
       },
       services: [],
@@ -31,6 +33,9 @@ eventEmitter.on(ProjectCreated, (project: Project) => {
     },
     project
   );
+  setTimeout(() => {
+    installPackage("jsonwebtoken", "9.0.1", path.join(project.path, name));
+  }, 30000);
 });
 
 eventEmitter.on(ProjectDeleted, ({ project, deletePhysically }: { project: Project; deletePhysically: boolean }) => {
