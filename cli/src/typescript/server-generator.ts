@@ -30,7 +30,7 @@ export async function generate({
     await indexFileContentFrom({
       nunjucks,
       services: meta.services,
-    })
+    }),
   );
 
   writeToFile(
@@ -38,7 +38,7 @@ export async function generate({
     await typesFileContentFrom({
       nunjucks,
       types: meta.types,
-    })
+    }),
   );
 
   await Promise.all([
@@ -60,7 +60,7 @@ export async function generate({
             nunjucks,
             types: meta.types,
             service: controller,
-          })
+          }),
         );
       }),
     ...meta.services
@@ -81,7 +81,7 @@ export async function generate({
             nunjucks,
             types: meta.types,
             service,
-          })
+          }),
         );
       }),
   ]);
@@ -89,13 +89,13 @@ export async function generate({
 
 function getExistingMethodBodyMap(
   path: string,
-  controller: ExtendedServiceInfo
+  controller: ExtendedServiceInfo,
 ): Map<string, string> {
   const methodBodyMap = new Map<string, string>();
   if (pathExists(path)) {
     try {
       const classObj = JSTSParser.parse(readFileSync(path)).classes.find(
-        (x) => x.name === controller.name
+        (x) => x.name === controller.name,
       );
       classObj.sections
         // TODO capture in-between sections, like comments as well
@@ -127,7 +127,7 @@ function controllerFileContentFrom({
     ...service,
     types,
     dependencies: service.dependencies?.map((dependency) =>
-      lowerFirstLetter(dependency)
+      lowerFirstLetter(dependency),
     ),
     actions: service.actions.map((r) => ({
       ...r,
@@ -153,7 +153,7 @@ function serviceFileContentFrom({
     ...service,
     types,
     dependencies: service.dependencies?.map((dependency) =>
-      lowerFirstLetter(dependency)
+      lowerFirstLetter(dependency),
     ),
     actions: service.actions.map((r) => ({
       ...r,

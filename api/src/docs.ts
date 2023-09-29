@@ -68,14 +68,25 @@ const getPathDocFrom = (s: ServiceMetaInfo, r: RouteMetaInfo) => ({
 const getParametersDocFrom = (routeMetaInfo: RouteMetaInfo) => {
   return routeMetaInfo.params
     .filter((p) => p.source !== "body")
-    .map((p) => ({
-      name: p.name,
-      in: p.source,
-      schema: {
-        type: mapTypeToOpenAPIType(p.type as string),
-      },
-      required: !p.optional,
-    }));
+    .map((p) => {
+      if (p.type && "type" in p.type) {
+        return {
+          name: p.name,
+          in: p.source,
+          schema: p.type.$isArray
+            ? {
+                type: "array",
+                items: {
+                  type: mapTypeToOpenAPIType(p.type.type),
+                },
+              }
+            : {
+                type: mapTypeToOpenAPIType(p.type.type),
+              },
+          required: !p.type.$isOptional,
+        };
+      }
+    });
 };
 
 const getBodyDocFrom = (routeMetaInfo: RouteMetaInfo) => {
@@ -137,6 +148,8 @@ const getPropertiesFrom = (type: ComplexType) => {
     }
     return typeof type[key].type === "object"
       ? getSchemaFrom(type[key].type as any)
+      : type[key].$isArray
+      ? { type: "array", items: { type: mapTypeToOpenAPIType(type[key].type) } }
       : { type: mapTypeToOpenAPIType(type[key].type) };
   });
 };

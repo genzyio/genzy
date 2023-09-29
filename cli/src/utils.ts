@@ -46,7 +46,7 @@ export async function generate(
       types: MetaTypesRegistry;
       nunjucks: Environment;
     }) => Promise<string>;
-  }
+  },
 ) {
   const {
     dirPath,
@@ -67,7 +67,7 @@ export async function generate(
             types: meta.types,
             nunjucks,
             url,
-          })
+          }),
         );
       }
       if (contentHandlers.serviceFileContentFrom) {
@@ -77,10 +77,10 @@ export async function generate(
             service,
             types: meta.types,
             nunjucks,
-          })
+          }),
         );
       }
-    })
+    }),
   );
 
   if (contentHandlers.indexFileContentFrom) {
@@ -90,7 +90,7 @@ export async function generate(
         services: meta.services,
         url,
         nunjucks,
-      })
+      }),
     );
   }
   if (contentHandlers.typesFileContentFrom) {
@@ -139,15 +139,17 @@ export function adoptParams(params: Param[], typeAdopt: (p: any) => string) {
     ...p,
     type: typeAdopt(p.type),
     typeDecorator: adoptTypeToDecorator(p.type),
+    $isOptional: p.type.$isOptional,
+    $isArray: p.type.$isArray,
   }));
 }
 
 export function adoptTypeJS(type) {
   if (!type) return "any";
-  if (typeof type === "string") {
-    return type === "int" || type === "float" ? "number" : type;
+  if (typeof type.type === "string") {
+    return type === "int" || type === "float" ? "number" : type.type;
   }
-  return type.$typeName + (type.$isArray ? "[]" : "");
+  return type.$typeName;
 }
 
 export function adoptTypeToDecorator(type) {

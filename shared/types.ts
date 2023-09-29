@@ -105,12 +105,19 @@ export type N1mblyConfig = {
 export type ComplexType = {
   $typeName: string;
   $isArray: boolean;
+  $isOptional: boolean;
 } & {
-  [key: ParamName]: { type: Type; $isOptional: boolean };
+  [key: ParamName]: ComplexTypeReference | BasicType;
 };
 
-export type ComplexTypeProperties = Omit<ComplexType, "$typeName" | "$isArray">;
-export type ComplexTypeReference = Pick<ComplexType, "$typeName" | "$isArray">;
+export type ComplexTypeProperties = Omit<
+  ComplexType,
+  "$typeName" | "$isArray" | "$isOptional"
+>;
+export type ComplexTypeReference = Pick<
+  ComplexType,
+  "$typeName" | "$isArray" | "$isOptional"
+>;
 
 export type Action = Modify<
   Omit<RouteMetaInfo, "name">,
@@ -131,14 +138,19 @@ export type ParamSource = "query" | "path" | "body";
 export type Type = BasicType | ComplexTypeReference;
 export type MethodName = string;
 export type ParamName = string;
-export type BasicType = "boolean" | "string" | "int" | "float";
+export type BasicType = {
+  type: "boolean" | "string" | "int" | "float";
+  $isArray: boolean;
+  $isOptional: boolean;
+};
 
 export type TypeDecoratorOptions = {
   optional?: boolean;
 };
 
 export type ParamDecoratorOptions = TypeDecoratorOptions & {
-  type?: BasicType;
+  type?: BasicType["type"];
+  array?: boolean;
 };
 
 export type BodyDecoratorOptions = {

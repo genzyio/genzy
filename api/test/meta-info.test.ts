@@ -16,6 +16,7 @@ import {
   Body,
 } from "../../shared/decorators";
 import { BASIC_TYPES } from "../../shared/constants";
+import type { BasicType } from "../../shared/types";
 
 class TestService {
   async get() {}
@@ -78,13 +79,20 @@ describe("N1mblyApi Meta Info", () => {
 
     expect(bodyParam?.type).toStrictEqual({
       $isArray: false,
+      $isOptional: false,
       $typeName: "Example",
     });
     expect(pathParams.map((p) => p.type)).toHaveLength(2);
-    expect(pathParams.map((p) => p.type)).toContainEqual(BASIC_TYPES.string);
-    expect(pathParams.map((p) => p.type)).toContainEqual(BASIC_TYPES.boolean);
+    expect(pathParams.map((p) => (p.type as BasicType).type)).toContainEqual(
+      BASIC_TYPES.string
+    );
+    expect(pathParams.map((p) => (p.type as BasicType).type)).toContainEqual(
+      BASIC_TYPES.boolean
+    );
     expect(queryParams.map((p) => p.type)).toHaveLength(1);
-    expect(queryParams.map((p) => p.type)).toContainEqual(BASIC_TYPES.int);
+    expect(queryParams.map((p) => (p.type as BasicType).type)).toContainEqual(
+      BASIC_TYPES.int
+    );
 
     expect(pathParams.map((p) => p.name)).toHaveLength(2);
     expect(pathParams.map((p) => p.name)).toContainEqual("one");
