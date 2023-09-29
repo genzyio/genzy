@@ -13,6 +13,7 @@ import { usePluginsModalContext } from "../context/plugins-modal.context";
 import { projectDefinitionActions } from "../../projects/contexts/project-definition.dispatcher";
 import { useMicroserviceContext } from "../../model/microservices/MicroserviceContext";
 import { useNotifications } from "../../../hooks/useNotifications";
+import { Loader } from "./loader";
 
 type DependenciesProps = {
   depedencies: Dependency[];
@@ -121,7 +122,7 @@ export const SpecificPlugin: FC<{ pluginName: string }> = ({ pluginName }) => {
   };
 
   const updatePlugin = () => {
-    dispatcher(projectDefinitionActions.installPlugin, {
+    dispatcher(projectDefinitionActions.updatePlugin, {
       microserviceId,
       plugin: {
         name: pluginName,
@@ -147,7 +148,11 @@ export const SpecificPlugin: FC<{ pluginName: string }> = ({ pluginName }) => {
   };
 
   if (isFetching) {
-    return <></>;
+    return (
+      <div className="mt-[70px]">
+        <Loader />
+      </div>
+    );
   } else {
     !versionValue && setVersionValue(installedVersion || plugin.latestVersion);
   }

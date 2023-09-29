@@ -4,7 +4,7 @@ type GN1mblyClass = any;
 
 type GN1mblyEdge = any;
 
-type N1mblyInfo = {
+export type N1mblyInfo = {
   name: string;
   description: string;
   version: string;
@@ -111,7 +111,7 @@ function createServices(inputJson: GN1mblyOutput, microserviceId: string): N1mbl
         return {
           name,
           type: "Controller",
-          dependsOn: createDependsOn(s.id, services, edges),
+          dependencies: createDependsOn(s.id, services, edges),
           actions: createActions("Controller", s.data.functions, classes),
           path: `${s.data.basePath ?? "/"}`,
         };
@@ -120,7 +120,7 @@ function createServices(inputJson: GN1mblyOutput, microserviceId: string): N1mbl
         return {
           name,
           type: "LocalService",
-          dependsOn: createDependsOn(s.id, services, edges),
+          dependencies: createDependsOn(s.id, services, edges),
           actions: createActions("LocalService", s.data.functions, classes),
         };
 
@@ -133,7 +133,7 @@ function createServices(inputJson: GN1mblyOutput, microserviceId: string): N1mbl
 function createRemoteProxyService(
   inputJson: GN1mblyOutput,
   remoteMicroserviceId: string,
-  serviceId: string
+  serviceId: string,
 ): N1mblyService {
   const classes = inputJson["classes"][remoteMicroserviceId]["nodes"];
   const remoteService = inputJson["services"][remoteMicroserviceId]["nodes"].find((n: any) => n.id === serviceId).data;
@@ -204,7 +204,7 @@ function createTypes(classes: any): Record<string, N1mblyType> {
 
     c.data.attributes.map((a: any) => {
       attr[a.name] = {
-        ...getTypeObject(classes, a.type, a.isOptional, a.isArray),
+        ...getTypeObject(classes, a.type, a.isOptional, a.isCollection),
       };
     });
 

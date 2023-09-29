@@ -30,6 +30,8 @@ export const ChangeTrackerContextProvider: FC<PropsWithChildren> = ({ children }
 
   const setStateForMS = useCallback(
     (id: string, state: string) => {
+      if (!id) return;
+
       const currentState = states[id];
       switch (state) {
         case "REMOVED":

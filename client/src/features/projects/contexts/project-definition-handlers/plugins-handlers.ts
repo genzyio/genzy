@@ -174,29 +174,62 @@ const dbPluginMetadataPerProject: PluginMetadata = {
       ],
     },
 
-    // {
-    //   id: "Posgres",
-    //   name: "Posgres",
-    //   showName: true,
-    //   type: "imageNode",
-    //   url: "https://icon2.cleanpng.com/20180315/ifq/kisspng-postgresql-logo-computer-software-database-open-source-vector-images-5aaa26e1a38cf4.7370214515211005136699.jpg",
-    //   width: 150,
-    //   height: 150,
-    // },
-    // {
-    //   id: "Rabbit",
-    //   name: "Rabbit",
-    //   showName: true,
-    //   type: "imageNode",
-    //   url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANoAAADnCAMAAABPJ7iaAAAAeFBMVEX/ZgD/////aQv/YwD/jV3/XwD/WAD/8u7/nHT/XQD/y7j/tpr/VgD/WwD/UwD/+vf/o37/wKn/x7P/poP/cSb/3dD/qIf/gkn/1cX/eTj/fkH/7OT/s5b/ro//dS//bRz/0L//5dv/u6H/jFr/mW//kmT/2cv/hU7dIu50AAADwklEQVR4nO3dXVPyMBCG4S0xpZGmgOVDgYIFhf//Dy3oy+uBlN2OGbOd5z7wcCeXZToOpikll+aL5YBuNlhNnhNxz5NV28zlYi6fKYnOP+pZas3tVRAZ6wdC3Cv5ezPTbR1AdO1M2xeta/haSV5K5mb5/ZFkimkg1rmGtuesoimd8MdmnjczD2ijpC54q2jW8cqd+sT8bREVdUDalvFp/Mpwpzr+yJdwtHnKXgb5J97QKZ9GebD7JFWWvwxz4A1d8j8IZBfBaCfBMsjxhgo+CGRWwWg7wTIoH3NmDtk3kYstGK3lD4bONMlVIwsaaKCBBhpooIEGGmigxUZjzQQNNNBAAw000EADDTTQQAMNNNBAA00ZLQUNNNBAAw000EADLQzNgwYaaKCBBhpooIEGGmigaabxHvICDTTQQAMNNB003jJAAw000EDrFY33T6iaefqNZGZwmmede7IXnKTS0NZR0OwbZ+ZAcoQJ2SoKGuX1/ZGV6KI1l20YBY3s3Y/PVHSQSpPZsR7TDE6jtP3kq/W76Pb4abPM45AC08jZt81otGmq/rVoKsvJZJJtc8EpSP/z7pD9WptjV1rzobTO3kh0A/meuTWxQ95Mu9LiLz31lkZ21Vsa+aq3NCrGvaW5fW9p5qG3NJr1lzYATWGgaQw0jYGmMdA0BprGQNMYaBoDTWOgaQw0jYGmMdA0BprGQNMYaBoDTWOgaSwu2s09aF12tUVEM94dFqMfWzw4L9bFQ0uXrW/SPZ6kW0hjoRl79xXBRyO7cJHQzIyx/Xi8Fe2QjYNmdoytxE07yXWLg5Yzn2IQPdESBc1teLIkGQkeIYiCxjtZ4ZIymhW8h7vk30lioHnBq+GP/IesYqBJnqkRvB44ChpfJnmpszoa/z4CWtBAA+0aaEEDDbRroAUNNNCugRY00EC7BlrQQAPtmjpaf7+HHOv6HtIf+bS5rqtmF3xapes7f8nRboKpUdBc+yFP35oKjoyLgkaeeZDWWHL4WBw088KjrfT9L5vskiM7KdyB0Nh29T3YeiY7fSwWGpk8a92GsM5y4VamaGjNhctn5fTxx6blTH5gXES0824m5/wPOddla11UtN8NNI2BpjHQNAaaxkDTGGgaA01joGkMNI2BpjHQNAaaxkDTGGgaA01joGkMNI2BprEB7f56CaHa0aHzi+7izhxo1OnlhPFnRzQs/noRYSqGlGTCN5zqyGUJCU/MUdL5tKCGNp717rq58wlPdN6RV+XOmt5kXX554/GFloyfyveHnvRePn5uZf4AhbVjkBQU2eYAAAAASUVORK5CYII=",
-    //   width: 150,
-    //   height: 150,
-    // },
+    {
+      id: "Posgres",
+      name: "Posgres",
+      showName: true,
+      type: "imageNode",
+      url: "https://icon2.cleanpng.com/20180315/ifq/kisspng-postgresql-logo-computer-software-database-open-source-vector-images-5aaa26e1a38cf4.7370214515211005136699.jpg",
+      width: 150,
+      height: 150,
+
+      services: [],
+      dependencies: [],
+    },
+    {
+      id: "Rabbit",
+      name: "Rabbit",
+      showName: true,
+      type: "imageNode",
+      url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANoAAADnCAMAAABPJ7iaAAAAeFBMVEX/ZgD/////aQv/YwD/jV3/XwD/WAD/8u7/nHT/XQD/y7j/tpr/VgD/WwD/UwD/+vf/o37/wKn/x7P/poP/cSb/3dD/qIf/gkn/1cX/eTj/fkH/7OT/s5b/ro//dS//bRz/0L//5dv/u6H/jFr/mW//kmT/2cv/hU7dIu50AAADwklEQVR4nO3dXVPyMBCG4S0xpZGmgOVDgYIFhf//Dy3oy+uBlN2OGbOd5z7wcCeXZToOpikll+aL5YBuNlhNnhNxz5NV28zlYi6fKYnOP+pZas3tVRAZ6wdC3Cv5ezPTbR1AdO1M2xeta/haSV5K5mb5/ZFkimkg1rmGtuesoimd8MdmnjczD2ijpC54q2jW8cqd+sT8bREVdUDalvFp/Mpwpzr+yJdwtHnKXgb5J97QKZ9GebD7JFWWvwxz4A1d8j8IZBfBaCfBMsjxhgo+CGRWwWg7wTIoH3NmDtk3kYstGK3lD4bONMlVIwsaaKCBBhpooIEGGmigxUZjzQQNNNBAAw000EADDTTQQAMNNNBAA00ZLQUNNNBAAw000EADLQzNgwYaaKCBBhpooIEGGmigaabxHvICDTTQQAMNNB003jJAAw000EDrFY33T6iaefqNZGZwmmede7IXnKTS0NZR0OwbZ+ZAcoQJ2SoKGuX1/ZGV6KI1l20YBY3s3Y/PVHSQSpPZsR7TDE6jtP3kq/W76Pb4abPM45AC08jZt81otGmq/rVoKsvJZJJtc8EpSP/z7pD9WptjV1rzobTO3kh0A/meuTWxQ95Mu9LiLz31lkZ21Vsa+aq3NCrGvaW5fW9p5qG3NJr1lzYATWGgaQw0jYGmMdA0BprGQNMYaBoDTWOgaQw0jYGmMdA0BprGQNMYaBoDTWOgaSwu2s09aF12tUVEM94dFqMfWzw4L9bFQ0uXrW/SPZ6kW0hjoRl79xXBRyO7cJHQzIyx/Xi8Fe2QjYNmdoytxE07yXWLg5Yzn2IQPdESBc1teLIkGQkeIYiCxjtZ4ZIymhW8h7vk30lioHnBq+GP/IesYqBJnqkRvB44ChpfJnmpszoa/z4CWtBAA+0aaEEDDbRroAUNNNCugRY00EC7BlrQQAPtmjpaf7+HHOv6HtIf+bS5rqtmF3xapes7f8nRboKpUdBc+yFP35oKjoyLgkaeeZDWWHL4WBw088KjrfT9L5vskiM7KdyB0Nh29T3YeiY7fSwWGpk8a92GsM5y4VamaGjNhctn5fTxx6blTH5gXES0824m5/wPOddla11UtN8NNI2BpjHQNAaaxkDTGGgaA01joGkMNI2BpjHQNAaaxkDTGGgaA01joGkMNI2BprEB7f56CaHa0aHzi+7izhxo1OnlhPFnRzQs/noRYSqGlGTCN5zqyGUJCU/MUdL5tKCGNp717rq58wlPdN6RV+XOmt5kXX554/GFloyfyveHnvRePn5uZf4AhbVjkBQU2eYAAAAASUVORK5CYII=",
+      width: 150,
+      height: 150,
+
+      services: [],
+      dependencies: [],
+    },
+    {
+      id: "Rabbit2",
+      name: "Rabbit",
+      showName: true,
+      type: "imageNode",
+      url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANoAAADnCAMAAABPJ7iaAAAAeFBMVEX/ZgD/////aQv/YwD/jV3/XwD/WAD/8u7/nHT/XQD/y7j/tpr/VgD/WwD/UwD/+vf/o37/wKn/x7P/poP/cSb/3dD/qIf/gkn/1cX/eTj/fkH/7OT/s5b/ro//dS//bRz/0L//5dv/u6H/jFr/mW//kmT/2cv/hU7dIu50AAADwklEQVR4nO3dXVPyMBCG4S0xpZGmgOVDgYIFhf//Dy3oy+uBlN2OGbOd5z7wcCeXZToOpikll+aL5YBuNlhNnhNxz5NV28zlYi6fKYnOP+pZas3tVRAZ6wdC3Cv5ezPTbR1AdO1M2xeta/haSV5K5mb5/ZFkimkg1rmGtuesoimd8MdmnjczD2ijpC54q2jW8cqd+sT8bREVdUDalvFp/Mpwpzr+yJdwtHnKXgb5J97QKZ9GebD7JFWWvwxz4A1d8j8IZBfBaCfBMsjxhgo+CGRWwWg7wTIoH3NmDtk3kYstGK3lD4bONMlVIwsaaKCBBhpooIEGGmigxUZjzQQNNNBAAw000EADDTTQQAMNNNBAA00ZLQUNNNBAAw000EADLQzNgwYaaKCBBhpooIEGGmigaabxHvICDTTQQAMNNB003jJAAw000EDrFY33T6iaefqNZGZwmmede7IXnKTS0NZR0OwbZ+ZAcoQJ2SoKGuX1/ZGV6KI1l20YBY3s3Y/PVHSQSpPZsR7TDE6jtP3kq/W76Pb4abPM45AC08jZt81otGmq/rVoKsvJZJJtc8EpSP/z7pD9WptjV1rzobTO3kh0A/meuTWxQ95Mu9LiLz31lkZ21Vsa+aq3NCrGvaW5fW9p5qG3NJr1lzYATWGgaQw0jYGmMdA0BprGQNMYaBoDTWOgaQw0jYGmMdA0BprGQNMYaBoDTWOgaSwu2s09aF12tUVEM94dFqMfWzw4L9bFQ0uXrW/SPZ6kW0hjoRl79xXBRyO7cJHQzIyx/Xi8Fe2QjYNmdoytxE07yXWLg5Yzn2IQPdESBc1teLIkGQkeIYiCxjtZ4ZIymhW8h7vk30lioHnBq+GP/IesYqBJnqkRvB44ChpfJnmpszoa/z4CWtBAA+0aaEEDDbRroAUNNNCugRY00EC7BlrQQAPtmjpaf7+HHOv6HtIf+bS5rqtmF3xapes7f8nRboKpUdBc+yFP35oKjoyLgkaeeZDWWHL4WBw088KjrfT9L5vskiM7KdyB0Nh29T3YeiY7fSwWGpk8a92GsM5y4VamaGjNhctn5fTxx6blTH5gXES0824m5/wPOddla11UtN8NNI2BpjHQNAaaxkDTGGgaA01joGkMNI2BpjHQNAaaxkDTGGgaA01joGkMNI2BprEB7f56CaHa0aHzi+7izhxo1OnlhPFnRzQs/noRYSqGlGTCN5zqyGUJCU/MUdL5tKCGNp717rq58wlPdN6RV+XOmt5kXX554/GFloyfyveHnvRePn5uZf4AhbVjkBQU2eYAAAAASUVORK5CYII=",
+      width: 150,
+      height: 150,
+
+      services: [],
+      dependencies: [],
+    },
   ],
   communications: [
     {
       source: "{{installingOnMicroserviceId}}",
       target: "MariaDB",
+    },
+
+    {
+      source: "{{installingOnMicroserviceId}}",
+      target: "Posgres",
+    },
+
+    {
+      source: "{{installingOnMicroserviceId}}",
+      target: "Rabbit",
+    },
+
+    {
+      source: "{{installingOnMicroserviceId}}",
+      target: "Rabbit2",
     },
   ],
 };
@@ -212,8 +245,38 @@ const dbPluginMetadataPerProject2: PluginMetadata = {
       width: 150,
       height: 150,
 
-      services: [],
-      dependencies: [],
+      services: [
+        {
+          id: "MariaDB_{{installingOnMicroserviceId}}_DBService",
+          name: "DB Service",
+          functions: [
+            {
+              id: "Method 1",
+              name: "Test",
+              returnType: "int",
+            } as any,
+          ],
+        },
+
+        {
+          id: "MariaDB2_{{installingOnMicroserviceId}}_DBService2",
+          name: "DB Service2",
+          functions: [
+            {
+              id: "Method 2",
+              name: "Test",
+              returnType: "int",
+            } as any,
+          ],
+        },
+      ],
+
+      dependencies: [
+        {
+          source: "MariaDB_{{installingOnMicroserviceId}}_DBService",
+          target: "MariaDB2_{{installingOnMicroserviceId}}_DBService2",
+        },
+      ],
     },
 
     {
@@ -246,6 +309,16 @@ const dbPluginMetadataPerProject2: PluginMetadata = {
       source: "{{installingOnMicroserviceId}}",
       target: "MariaDB",
     },
+
+    {
+      source: "{{installingOnMicroserviceId}}",
+      target: "Posgres",
+    },
+
+    {
+      source: "{{installingOnMicroserviceId}}",
+      target: "Rabbit",
+    },
   ],
 };
 
@@ -273,7 +346,7 @@ const installPluginHandler: HandlerType<{
   microserviceId: string;
   plugin: Plugin;
 }> = (projectDefinition: ProjectDefinition, { microserviceId, plugin }) => {
-  return (dispatch: DispatcherType) => {
+  return (dispatcher: DispatcherType) => {
     const microserviceNode = findMicroserviceNode(projectDefinition, microserviceId);
     const isInstalled = microserviceNode.data.plugins.some(
       (installedPlugin) => installedPlugin.name === plugin.name
@@ -285,7 +358,7 @@ const installPluginHandler: HandlerType<{
     const nodeMiddleY = microserviceNode.position.y + microserviceNode.height / 2;
 
     const metadata = dbPluginMetadata;
-    // const metadata = i === 0 ? dbPluginMetadataPerProject : dbPluginMetadataPerProject2;
+    // const metadata = i === 0 ? dbPluginMetadataPerProject2 : dbPluginMetadataPerProject;
     i++;
 
     metadata.microservices
@@ -313,6 +386,7 @@ const installPluginHandler: HandlerType<{
             url: pluginMicroservice.url,
             width: pluginMicroservice.width,
             height: pluginMicroservice.height,
+            services: [],
           },
           type: pluginMicroservice.type,
         } as any);
@@ -321,7 +395,7 @@ const installPluginHandler: HandlerType<{
     metadata.microservices
       .flatMap((pluginMicroservice) => pluginMicroservice.services)
       .forEach((plugableService) => {
-        dispatch(projectDefinitionActions.addPlugableService, {
+        dispatcher(projectDefinitionActions.addPlugableService, {
           serviceId: formKey(plugableService.id, keyValues),
           microserviceId,
           service: { name: plugableService.name, functions: plugableService.functions },
@@ -346,7 +420,7 @@ const installPluginHandler: HandlerType<{
           targetServiceNode
         );
 
-        dispatch(projectDefinitionActions.addDependency, {
+        dispatcher(projectDefinitionActions.addDependency, {
           microserviceId,
           params: {
             removable: false,
@@ -372,7 +446,7 @@ const installPluginHandler: HandlerType<{
         targetMicroserviceNode
       );
 
-      const newEdge = dispatch(projectDefinitionActions.addCommunication, {
+      const newEdge = dispatcher(projectDefinitionActions.addCommunication, {
         params: {
           removable: false,
           source: sourceMicroserviceNode.id,
@@ -395,15 +469,25 @@ const updatePluginHandler: HandlerType<{
   microserviceId: string;
   plugin: Plugin;
 }> = (projectDefinition: ProjectDefinition, { microserviceId, plugin }) => {
-  const microserviceData = projectDefinition.microservices.nodes.find(
-    (node) => node.id === microserviceId
-  ).data;
-  const installedPlugin = microserviceData.plugins.find(
-    (installedPlugin) => installedPlugin.name === plugin.name
-  );
-  if (!installedPlugin) return;
+  return (dispatcher: DispatcherType) => {
+    const microserviceData = projectDefinition.microservices.nodes.find(
+      (node) => node.id === microserviceId
+    ).data;
+    const installedPlugin = microserviceData.plugins.find(
+      (installedPlugin) => installedPlugin.name === plugin.name
+    );
+    if (installedPlugin) {
+      dispatcher(projectDefinitionActions.uninstallPlugin, {
+        microserviceId,
+        plugin: installedPlugin,
+      });
+    }
 
-  installedPlugin.version = plugin.version;
+    dispatcher(projectDefinitionActions.installPlugin, {
+      microserviceId,
+      plugin,
+    });
+  };
 };
 
 // Remove
@@ -412,14 +496,55 @@ const uninstallPluginHandler: HandlerType<{
   microserviceId: string;
   plugin: Plugin;
 }> = (projectDefinition: ProjectDefinition, { microserviceId, plugin }) => {
-  // Remove remote proxies
-  const microserviceData = projectDefinition.microservices.nodes.find(
-    (node) => node.id === microserviceId
-  ).data;
+  return (dispatcher: DispatcherType) => {
+    const microserviceData = projectDefinition.microservices.nodes.find(
+      (node) => node.id === microserviceId
+    ).data;
 
-  microserviceData.plugins = microserviceData.plugins.filter(
-    (installedPlugin) => installedPlugin.name !== plugin.name
-  );
+    const keyValues = { installingOnMicroserviceId: microserviceId };
+    const metadata = dbPluginMetadata;
+
+    const plugableServiceIdsToDelete = metadata.microservices
+      .flatMap((pluginMicroservice) => pluginMicroservice.services)
+      .map((plugableService) => formKey(plugableService.id, keyValues));
+
+    dispatcher(projectDefinitionActions.deleteServices, {
+      microserviceId,
+      serviceIds: plugableServiceIdsToDelete,
+    });
+
+    metadata.communications.forEach(({ source, target }) => {
+      const communication = projectDefinition.microservices.edges.find(
+        (edge) =>
+          edge.source === formKey(source, keyValues) && edge.target === formKey(target, keyValues)
+      );
+
+      dispatcher(projectDefinitionActions.removeCommunication, {
+        microserviceId,
+        communicationId: communication.id,
+      });
+    });
+
+    metadata.microservices
+      .map((pluginMicroservice) => {
+        pluginMicroservice.id = formKey(pluginMicroservice.id, keyValues);
+        return pluginMicroservice;
+      })
+      .filter((pluginMicroservice) =>
+        projectDefinition.microservices.edges.every(
+          (communication) => communication.target !== pluginMicroservice.id
+        )
+      )
+      .forEach((pluginMicroservice) => {
+        dispatcher(projectDefinitionActions.deleteMicroservice, {
+          microserviceId: pluginMicroservice.id,
+        });
+      });
+
+    microserviceData.plugins = microserviceData.plugins.filter(
+      (installedPlugin) => installedPlugin.name !== plugin.name
+    );
+  };
 };
 
 export { installPluginHandler, updatePluginHandler, uninstallPluginHandler };

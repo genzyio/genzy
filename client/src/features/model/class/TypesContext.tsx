@@ -31,7 +31,7 @@ export const useTypesContext = (microserviceId: string) => {
   };
 };
 
-export const primitiveTypes = ["any", "int", "float", "bool", "string"];
+export const primitiveTypes = ["any", "int", "float", "boolean", "string"];
 const primitiveTypeOptions = primitiveTypes.map((type) => ({
   label: type,
   value: type,

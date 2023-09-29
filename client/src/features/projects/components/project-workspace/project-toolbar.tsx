@@ -4,7 +4,7 @@ import { useNotifications } from "../../../../hooks/useNotifications";
 import { useProjectContext } from "../../contexts/project.context";
 import { useProjectDefinitionContext } from "../../contexts/project-definition.context";
 import { useAction } from "../../../../hooks/useAction";
-import { type ProjectDefinition } from "../../models/project-definition.models";
+import { type SaveProjectDefinition } from "../../api/project.contracts";
 import { saveProjectDefinition } from "../../api/project-definition.actions";
 import { saveProjectScreenshot } from "../../api/project-screenshots.actions";
 import { extractErrorMessage } from "../../../../utils/errors";
@@ -20,9 +20,9 @@ export const ProjectToolbar: FC = () => {
   const { isDirty, setInitialState } = useDirtyCheckContext();
   const { shouldAutoSave, toggleAutoSave, lastAutoSave } = useAutoSaveContext();
   const { projectDefinition: initialProjectDefinition } = useProjectDefinitionContext();
-  const { resetStates } = useChangeTrackerContext();
+  const { states, resetStates } = useChangeTrackerContext();
 
-  const saveProjectDefinitionAction = useAction<ProjectDefinition>(
+  const saveProjectDefinitionAction = useAction<SaveProjectDefinition>(
     saveProjectDefinition(project.name),
     {
       onSuccess: () => {
@@ -37,7 +37,7 @@ export const ProjectToolbar: FC = () => {
     }
   );
 
-  const saveAndCloseProjectDefinitionAction = useAction<ProjectDefinition>(
+  const saveAndCloseProjectDefinitionAction = useAction<SaveProjectDefinition>(
     saveProjectDefinition(project.name),
     {
       onSuccess: () => {
@@ -63,7 +63,7 @@ export const ProjectToolbar: FC = () => {
           <Button
             disabled={!isDirty}
             onClick={() => {
-              saveProjectDefinitionAction(initialProjectDefinition);
+              saveProjectDefinitionAction({ projectDefinition: initialProjectDefinition, states });
             }}
             className="text-xs"
           >
@@ -71,7 +71,12 @@ export const ProjectToolbar: FC = () => {
           </Button>
           <Button
             disabled={!isDirty}
-            onClick={() => saveAndCloseProjectDefinitionAction(initialProjectDefinition)}
+            onClick={() =>
+              saveAndCloseProjectDefinitionAction({
+                projectDefinition: initialProjectDefinition,
+                states,
+              })
+            }
             className="text-xs"
           >
             Save And Close
@@ -93,9 +98,7 @@ export const ProjectToolbar: FC = () => {
       </div>
 
       {shouldAutoSave && lastAutoSave ? (
-        <div className="flex absolute w-full justify-end top-4 z-10 right-2">
-          Last saved: {lastAutoSave.fromNow()}
-        </div>
+        <div className="absolute top-4 z-10 right-2">Last saved: {lastAutoSave.fromNow()}</div>
       ) : (
         <></>
       )}

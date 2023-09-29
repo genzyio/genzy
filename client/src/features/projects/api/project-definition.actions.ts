@@ -1,13 +1,13 @@
 import axios from "axios";
-import { type ProjectDefinition } from "../models/project-definition.models";
+import { type SaveProjectDefinition } from "./project.contracts";
 
 function getProjectDefinition(projectName: string) {
   return axios.get(`/projects/${projectName}/definition`);
 }
 
 function saveProjectDefinition(projectName: string) {
-  return (projectDefinition: ProjectDefinition) =>
-    axios.put(`/projects/${projectName}/definition`, projectDefinition);
+  return ({ projectDefinition, states }: SaveProjectDefinition) =>
+    axios.put(`/projects/${projectName}/definition`, { projectDefinition, states });
 }
 
 export { getProjectDefinition, saveProjectDefinition };

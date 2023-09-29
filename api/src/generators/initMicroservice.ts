@@ -1,14 +1,14 @@
-import { type N1mblyGeneratorInput } from "../utils/converter";
+import { type N1mblyInfo } from "../utils/converter";
 import { type Project } from "../features/projects/projects.models";
 import path from "path";
 import fs from "fs";
 import { exec } from "child_process";
 
-function initMicroserviceTsJs(info: N1mblyGeneratorInput, project: Project, lang: "ts" | "js" = "ts") {
-  const { name, version, description } = info.n1mblyInfo;
+function initMicroserviceTsJs(project: Project, metadata: N1mblyInfo, lang: "ts" | "js" = "ts") {
+  const { name, version, description } = metadata;
   const microservicePath = path.join(project.path, name);
 
-  fs.mkdirSync(microservicePath);
+  !fs.existsSync(microservicePath) && fs.mkdirSync(microservicePath);
 
   fs.writeFileSync(
     path.join(microservicePath, "package.json"),
@@ -40,8 +40,8 @@ function initMicroserviceTsJs(info: N1mblyGeneratorInput, project: Project, lang
         },
       },
       null,
-      2
-    )
+      2,
+    ),
   );
 
   if (lang === "ts") {
@@ -59,30 +59,37 @@ function initMicroserviceTsJs(info: N1mblyGeneratorInput, project: Project, lang
           include: ["src/**/*.ts"],
         },
         null,
-        2
-      )
+        2,
+      ),
     );
   }
 
-  fs.mkdirSync(path.join(microservicePath, "src"));
+  const microserviceSourcePath = path.join(microservicePath, "src");
+  !fs.existsSync(microserviceSourcePath) && fs.mkdirSync(microserviceSourcePath);
 
   exec("npm install", { cwd: microservicePath });
 }
 
-function installPackage(packageName: string, packageVersion: string, microservicePath: string): Promise<string> {
-  return new Promise((res, rej) =>
-    exec(`npm install ${packageName}@${packageVersion}`, { cwd: microservicePath }, (err, stdout, stderr) =>
-      err ? rej(stderr) : res(stdout)
-    )
+function reinitializeMicroservicePackageJson(project: Project, metadata: N1mblyInfo) {
+  const { name, version, description } = metadata;
+  const microservicePath = path.join(project.path, name);
+  const packageJsonPath = path.join(microservicePath, "package.json");
+  const packageJsonContent = fs.readFileSync(packageJsonPath).toString();
+  const packageJson = JSON.parse(packageJsonContent);
+
+  fs.writeFileSync(
+    packageJsonPath,
+    JSON.stringify(
+      {
+        ...packageJson,
+        name,
+        version,
+        description,
+      },
+      null,
+      2,
+    ),
   );
 }
 
-function uninstallPackage(packageName: string, packageVersion: string, microservicePath: string): Promise<string> {
-  return new Promise((res, rej) =>
-    exec(`npm uninstall ${packageName}@${packageVersion}`, { cwd: microservicePath }, (err, stdout, stderr) =>
-      err ? rej(stderr) : res(stdout)
-    )
-  );
-}
-
-export { initMicroserviceTsJs, installPackage, uninstallPackage };
+export { initMicroserviceTsJs, reinitializeMicroservicePackageJson };

@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { type ProjectDefinition } from "../models/project-definition.models";
+import { type SaveProjectDefinition } from "../api/project.contracts";
 import { useProjectContext } from "./project.context";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useAction } from "../../../hooks/useAction";
@@ -47,7 +48,7 @@ const useAutoSavePreferences = (projectName: string) => {
 export const AutoSaveContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const { project } = useProjectContext();
   const { setInitialState } = useDirtyCheckContext();
-  const { resetStates } = useChangeTrackerContext();
+  const { states, resetStates } = useChangeTrackerContext();
 
   const autoSavePreferences = useAutoSavePreferences(project.name);
   const [shouldAutoSave, setShouldAutoSave] = useState(
@@ -76,7 +77,7 @@ export const AutoSaveContextProvider: FC<PropsWithChildren> = ({ children }) => 
     [shouldAutoSave, setProjectDefinitionToSave]
   );
 
-  const saveProjectDefinitionAction = useAction<ProjectDefinition>(
+  const saveProjectDefinitionAction = useAction<SaveProjectDefinition>(
     saveProjectDefinition(project.name),
     {
       onSuccess: () => {
@@ -92,10 +93,9 @@ export const AutoSaveContextProvider: FC<PropsWithChildren> = ({ children }) => 
   useEffect(() => {
     if (!projectDefinitionToSaveDebounced || !shouldAutoSave) return;
 
-    saveProjectDefinitionAction(projectDefinitionToSaveDebounced);
+    saveProjectDefinitionAction({ projectDefinition: projectDefinitionToSaveDebounced, states });
   }, [projectDefinitionToSaveDebounced]);
 
-  // TODO: See if this is enought for multiple instances
   useEffect(() => {
     const interval = setInterval(() => {
       if (!lastAutoSave) return;
