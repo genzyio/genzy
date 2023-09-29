@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import eventEmitter from "../../core/events/events.utils";
 import { Project } from "./projects.models";
+import { initMicroserviceTsJs } from "../../generators/initMicroservice";
 
 export const ProjectCreated = Symbol.for("ProjectCreated");
 export const ProjectDeleted = Symbol.for("ProjectDeleted");
@@ -15,6 +16,20 @@ eventEmitter.on(ProjectCreated, (project: Project) => {
       services: {},
       classes: {},
     })
+  );
+
+  initMicroserviceTsJs(
+    {
+      n1mblyInfo: {
+        basePath: "/",
+        description: "Microservice example",
+        name: "example-microservice",
+        version: "1.0.0",
+      },
+      services: [],
+      types: {},
+    },
+    project
   );
 });
 

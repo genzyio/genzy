@@ -47,7 +47,11 @@ type N1mblyAction = {
 
 type N1mblyType = Record<string, any>;
 
-type N1mblyGeneratorInput = { services: N1mblyService[]; types: Record<string, N1mblyType>; n1mblyInfo: N1mblyInfo };
+export type N1mblyGeneratorInput = {
+  services: N1mblyService[];
+  types: Record<string, N1mblyType>;
+  n1mblyInfo: N1mblyInfo;
+};
 
 type MicroserviceInfo = N1mblyInfo;
 
