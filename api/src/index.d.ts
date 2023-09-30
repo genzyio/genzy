@@ -50,14 +50,19 @@ export class N1mblyApi {
   public buildAppFrom(...containers: N1mblyContainer[]): Application;
 }
 
-type BasicType = "boolean" | "string" | "int" | "float";
+type BasicType = {
+  type: "boolean" | "string" | "int" | "float";
+  $isArray: boolean;
+  $isOptional: boolean;
+};
 
 type TypeDecoratorOptions = {
   optional?: boolean;
 };
 
 type ParamDecoratorOptions = TypeDecoratorOptions & {
-  type?: BasicType;
+  type?: BasicType["type"];
+  array?: boolean;
 };
 
 type BodyDecoratorOptions = {
@@ -108,12 +113,29 @@ export function int(
 export function float(
   options?: TypeDecoratorOptions
 ): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
+export function stringArray(
+  options?: TypeDecoratorOptions
+): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
+
+export function booleanArray(
+  options?: TypeDecoratorOptions
+): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
+
+export function intArray(
+  options?: TypeDecoratorOptions
+): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
+
+export function floatArray(
+  options?: TypeDecoratorOptions
+): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
 
 export function type(
-  type: Constructor
+  type: Constructor,
+  options?: TypeDecoratorOptions
 ): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
 export function arrayOf(
-  type: Constructor
+  type: Constructor,
+  options?: TypeDecoratorOptions
 ): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
 
 export function Returns(

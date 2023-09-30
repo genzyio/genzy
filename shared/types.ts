@@ -87,7 +87,7 @@ export type RouteMetaInfo = {
   name: MethodName;
   path: string;
   params: Param[];
-  result?: ComplexTypeReference;
+  result?: BasicType | ComplexTypeReference;
 };
 
 export type Param = {
