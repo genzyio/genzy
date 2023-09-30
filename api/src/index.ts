@@ -1,3 +1,6 @@
+// this forces the main function in @n1mbly/cli to run only when the file is executed directly
+process.env.DONT_RUN_MAIN = "true";
+
 import express, { type Express } from "express";
 import cors from "cors";
 import { config } from "./config";
