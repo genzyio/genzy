@@ -119,10 +119,16 @@ const typeDecorator =
         if (!target.$nimbly_config.actions[propertyKey]) {
           target.$nimbly_config.actions[propertyKey] = {};
         }
-        if (type) {
+        // TODO: check if type is complex and register it - otherwise add it as basic type (ex. line 132)
+        if (type && isComplex) {
           target.$nimbly_config.actions[propertyKey].result = type;
+          registerType(target, { ...(type as any), ...typeProps } as any);
+        } else {
+          target.$nimbly_config.actions[propertyKey].result = {
+            type,
+            $isArray: isArray,
+          };
         }
-        registerType(target, { ...(type as any), ...typeProps } as any);
       } else {
         // if it's a decorator for class prop
         if (!target.$nimbly_config.types) {

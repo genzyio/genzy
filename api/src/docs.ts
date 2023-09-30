@@ -112,6 +112,28 @@ const getBodyDocFrom = (routeMetaInfo: RouteMetaInfo) => {
 };
 
 const getResponsesDocFrom = (routeMetaInfo: RouteMetaInfo) => {
+  if ("type" in routeMetaInfo.result) {
+    const type = routeMetaInfo.result.type;
+    return {
+      200: {
+        headers: {},
+        content: {
+          "application/json": {
+            schema: type.$isArray
+              ? {
+                  type: "array",
+                  items: {
+                    type: mapTypeToOpenAPIType(type.type),
+                  },
+                }
+              : {
+                  type: mapTypeToOpenAPIType(type.type),
+                },
+          },
+        },
+      },
+    };
+  }
   return {
     200: {
       headers: {},
