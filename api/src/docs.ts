@@ -112,8 +112,19 @@ const getBodyDocFrom = (routeMetaInfo: RouteMetaInfo) => {
 };
 
 const getResponsesDocFrom = (routeMetaInfo: RouteMetaInfo) => {
+  if (!routeMetaInfo.result)
+    return {
+      200: {
+        headers: {},
+        content: {
+          "application/json": {
+            schema: {},
+          },
+        },
+      },
+    };
   if ("type" in routeMetaInfo.result) {
-    const type = routeMetaInfo.result.type;
+    const type = routeMetaInfo.result.type as any;
     return {
       200: {
         headers: {},
