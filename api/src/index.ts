@@ -12,6 +12,36 @@ import recentlyOpenedRouters from "./features/recently-opened/recently-opened.ro
 import fs from "fs";
 import { join } from "path";
 
+const microservices = {
+  ["PanicJajeMS"]: {
+    port: 3001,
+    processId: "12312",
+  },
+};
+
+// find next available port as a maximum of microservices object
+const nextPort =
+  Object.keys(microservices).reduce((acc, curr) => {
+    const key = curr as keyof typeof microservices;
+    if (!microservices[key]) return acc;
+    const port = microservices[key].port;
+    return port > acc ? port : acc;
+  }, 3000) + 1;
+
+import net from "net";
+
+// check if nextPort is taken in host machine
+const isPortTaken = (port: number) => {
+  return new Promise((resolve, reject) => {
+    const tester = net.createServer();
+
+    tester
+      .once("error", (err: any) => (err.code == "EADDRINUSE" ? resolve(true) : reject(err)))
+      .once("listening", () => tester.once("close", () => resolve(false)).close())
+      .listen(port);
+  });
+};
+
 export const startGn1mbly = (port: number | string) => {
   ensureArtefactsFolderExist();
 
