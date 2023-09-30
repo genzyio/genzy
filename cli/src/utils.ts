@@ -46,7 +46,7 @@ export async function generate(
       types: MetaTypesRegistry;
       nunjucks: Environment;
     }) => Promise<string>;
-  },
+  }
 ) {
   const {
     dirPath,
@@ -67,7 +67,7 @@ export async function generate(
             types: meta.types,
             nunjucks,
             url,
-          }),
+          })
         );
       }
       if (contentHandlers.serviceFileContentFrom) {
@@ -77,10 +77,10 @@ export async function generate(
             service,
             types: meta.types,
             nunjucks,
-          }),
+          })
         );
       }
-    }),
+    })
   );
 
   if (contentHandlers.indexFileContentFrom) {
@@ -90,7 +90,7 @@ export async function generate(
         services: meta.services,
         url,
         nunjucks,
-      }),
+      })
     );
   }
   if (contentHandlers.typesFileContentFrom) {
@@ -123,10 +123,6 @@ export function readFileSync(filePath: string) {
 export async function formatFileContent(fileContent: string): Promise<string> {
   return await format(fileContent, {
     parser: "typescript",
-    // TODO: fix prettier-plugin-organize-imports quirk
-    plugins: process.env.DONT_RUN_MAIN
-      ? undefined
-      : ["prettier-plugin-organize-imports"],
   });
 }
 
