@@ -12,6 +12,7 @@ import { useProjectNavigation } from "../../hooks/useProjectNavigation";
 import { useAutoSaveContext } from "../../contexts/auto-save.context";
 import { useDirtyCheckContext } from "../../../model/common/contexts/dirty-check-context";
 import { useChangeTrackerContext } from "../../contexts/change-tracker-context";
+import { useWatchModeContext } from "../../contexts/watch-mode.context";
 
 export const ProjectToolbar: FC = () => {
   const notificator = useNotifications();
@@ -19,6 +20,7 @@ export const ProjectToolbar: FC = () => {
   const { closeProject } = useProjectNavigation();
   const { isDirty, setInitialState } = useDirtyCheckContext();
   const { shouldAutoSave, toggleAutoSave, lastAutoSave } = useAutoSaveContext();
+  const { watchModeEnabled, togglingWatchMode, toggleWatchMode } = useWatchModeContext();
   const { projectDefinition: initialProjectDefinition } = useProjectDefinitionContext();
   const { states, resetStates } = useChangeTrackerContext();
 
@@ -89,6 +91,10 @@ export const ProjectToolbar: FC = () => {
 
           <Button onClick={toggleAutoSave} className="text-xs">
             Auto Save: {shouldAutoSave ? "ON" : "OFF"}
+          </Button>
+
+          <Button onClick={toggleWatchMode} disabled={togglingWatchMode} className="text-xs">
+            Watch Mode: {watchModeEnabled ? "ON" : "OFF"}
           </Button>
 
           <div className="border-r h-6 border-gray-300 mx-2"></div>

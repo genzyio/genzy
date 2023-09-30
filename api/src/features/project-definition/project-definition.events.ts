@@ -2,6 +2,7 @@ import { type Project } from "../projects/projects.models";
 import { initMicroserviceTsJs, reinitializeMicroservicePackageJson } from "../../generators/initMicroservice";
 import { generateMicroserviceCode } from "../../generators/generateMicroserviceCode";
 import { convertJSON } from "../../utils/converter";
+import { allocatePorts, removePorts } from "../watch-project/ports.manager";
 import eventEmitter from "../../core/events/events.utils";
 import path from "path";
 import fs from "fs";
@@ -13,7 +14,7 @@ export const ProjectDefinitionSaved = Symbol.for("ProjectDefinitionSaved");
 
 eventEmitter.on(
   ProjectDefinitionSaved,
-  ({
+  async ({
     project,
     oldProjectDefinition,
     newProjectDefinition,
@@ -26,9 +27,12 @@ eventEmitter.on(
   }) => {
     const { added, modified, removed } = groupMicroserviceIdsBasedOnState(states);
 
-    handleAddedMicroservices(project, newProjectDefinition, added);
-    handleModifiedMicroservices(project, oldProjectDefinition, newProjectDefinition, modified);
+    await removePorts(project, removed);
+    await allocatePorts(project, added);
+
     handleRemovedMicroservices(project, oldProjectDefinition, removed);
+    handleModifiedMicroservices(project, oldProjectDefinition, newProjectDefinition, modified);
+    handleAddedMicroservices(project, newProjectDefinition, added);
   },
 );
 

@@ -8,7 +8,10 @@ const addDependencyHandler: HandlerType<{
   microserviceId: string;
   params: any;
 }> = (projectDefinition: ProjectDefinition, { microserviceId, params }) => {
-  const newDependencyEdge = createServiceEdge(params, !!params.removable);
+  const newDependencyEdge = createServiceEdge(
+    params,
+    params.removable !== undefined ? params.removable : true
+  );
 
   const serviceDiagram = projectDefinition.services[microserviceId];
   serviceDiagram.edges.push(newDependencyEdge);

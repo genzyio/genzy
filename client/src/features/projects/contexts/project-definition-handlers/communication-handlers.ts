@@ -9,7 +9,10 @@ import { createMicroserviceEdge } from "../../../model/common/utils/edgeFactorie
 const addCommunicationHandler: HandlerType<{
   params: any;
 }> = (projectDefinition: ProjectDefinition, { params }) => {
-  const newCommunicationEdge = createMicroserviceEdge(params, !!params.removable);
+  const newCommunicationEdge = createMicroserviceEdge(
+    params,
+    params.removable !== undefined ? params.removable : true
+  );
 
   projectDefinition.microservices.edges.push(newCommunicationEdge);
 

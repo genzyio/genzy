@@ -4,6 +4,7 @@ import { Project } from "./features/projects/components/project-workspace/projec
 import { AutoSaveContextProvider } from "./features/projects/contexts/auto-save.context";
 import { DirtyCheckContextProvider } from "./features/model/common/contexts/dirty-check-context";
 import { ChangeTrackerContextProvider } from "./features/projects/contexts/change-tracker-context";
+import { WatchModeContextProvider } from "./features/projects/contexts/watch-mode.context";
 
 export function ProjectWorkspace() {
   return (
@@ -12,9 +13,11 @@ export function ProjectWorkspace() {
         <DirtyCheckContextProvider>
           <ChangeTrackerContextProvider>
             <AutoSaveContextProvider>
-              <ProjectDefinitionContextProvider>
-                <Project />
-              </ProjectDefinitionContextProvider>
+              <WatchModeContextProvider>
+                <ProjectDefinitionContextProvider>
+                  <Project />
+                </ProjectDefinitionContextProvider>
+              </WatchModeContextProvider>
             </AutoSaveContextProvider>
           </ChangeTrackerContextProvider>
         </DirtyCheckContextProvider>

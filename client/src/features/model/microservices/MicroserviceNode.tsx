@@ -6,6 +6,7 @@ import { useMicroserviceNodeContext } from "./MicroserviceNodeContext";
 import { ConnectableNodeWrapper } from "../common/components/ConnectableNodeWrapper";
 import { Link } from "react-router-dom";
 import { useProjectContext } from "../../projects/contexts/project.context";
+import { useWatchModeContext } from "../../projects/contexts/watch-mode.context";
 
 type MicroserviceNodeProps = NodeProps<Microservice>;
 
@@ -19,7 +20,8 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
   data: microservice,
 }) => {
   const { project } = useProjectContext();
-  const { onServicesClick, onModelsClick } = useMicroserviceNodeContext();
+  const { watchModeEnabled } = useWatchModeContext();
+  const { onServicesClick, onModelsClick, onDocsClick } = useMicroserviceNodeContext();
 
   return (
     <div className={`p-4 rounded-lg border-2 bg-white border-gray-600 flex flex-col gap-y-2`}>
@@ -44,6 +46,11 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
           <Button type="button" onClick={() => onModelsClick(microserviceId)}>
             Models
           </Button>
+          {watchModeEnabled && (
+            <Button type="button" onClick={() => onDocsClick(microserviceId)}>
+              Docs
+            </Button>
+          )}
           <Button type="button">
             <Link to={`/projects/${project.name}/plugins/${microserviceId}`} replace>
               Plugins

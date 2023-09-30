@@ -3,6 +3,7 @@ import { type FC, type PropsWithChildren, createContext, useContext } from "reac
 type MicroserviceNodeContextValues = {
   onServicesClick: (microservice: string) => any;
   onModelsClick: (microservice: string) => any;
+  onDocsClick: (microservice: string) => any;
 };
 
 const MicroserviceNodeContext = createContext<MicroserviceNodeContextValues | null>(null);
@@ -11,9 +12,9 @@ export const useMicroserviceNodeContext = () => useContext(MicroserviceNodeConte
 
 export const MicroserviceNodeContextProvider: FC<
   PropsWithChildren & MicroserviceNodeContextValues
-> = ({ children, onServicesClick, onModelsClick }) => {
+> = ({ children, onServicesClick, onModelsClick, onDocsClick }) => {
   return (
-    <MicroserviceNodeContext.Provider value={{ onServicesClick, onModelsClick }}>
+    <MicroserviceNodeContext.Provider value={{ onServicesClick, onModelsClick, onDocsClick }}>
       {children}
     </MicroserviceNodeContext.Provider>
   );

@@ -103,6 +103,13 @@ function createServices(inputJson: GN1mblyOutput, microserviceId: string): N1mbl
   const classes = inputJson["classes"][microserviceId]["nodes"];
   const edges = inputJson["services"][microserviceId]["edges"];
 
+  services.forEach((s: any) => {
+    if (s.data.type !== "REMOTE_PROXY") return;
+
+    const realService = inputJson["services"][s.data.microserviceId]["nodes"].find((n: any) => n.id === s.id).data;
+    s.data.name = realService.name;
+  });
+
   return services
     .filter((s: any) => !["PLUGABLE_SERVICE"].includes(s.data.type))
     .map((s: any) => {
@@ -115,7 +122,7 @@ function createServices(inputJson: GN1mblyOutput, microserviceId: string): N1mbl
             type: "Controller",
             dependencies: createDependsOn(s.id, services, edges),
             actions: createActions("Controller", s.data.functions, classes),
-            path: `${s.data.basePath ?? "/"}`,
+            path: s.data.basePath ?? "/",
           };
 
         case "LOCAL":
@@ -143,6 +150,7 @@ function createRemoteProxyService(
     name: remoteService.name,
     type: "RemoteProxy",
     actions: createActions("RemoteProxy", remoteService.functions, classes),
+    path: remoteService.basePath ?? "/",
     host: "localhost",
   };
 }

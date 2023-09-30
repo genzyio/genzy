@@ -6,48 +6,22 @@ import cors from "cors";
 import { config } from "./config";
 import { ensureArtefactsFolderExist } from "./core/artefacts/artefacts.utils";
 import projectRouters from "./features/projects/projects.routes";
+import microserviceRouters from "./features/microservices/microservices.routes";
+import watchProjectRoutes from "./features/watch-project/watch-project.routes";
 import projectDefinitionRouters from "./features/project-definition/project-definition.routes";
 import projectScreenshotsRouters from "./features/project-screenshots/project-screenshots.routes";
 import recentlyOpenedRouters from "./features/recently-opened/recently-opened.routes";
 import fs from "fs";
-import { join } from "path";
+import path from "path";
 
-const microservices = {
-  ["PanicJajeMS"]: {
-    port: 3001,
-    processId: "12312",
-  },
-};
-
-// find next available port as a maximum of microservices object
-const nextPort =
-  Object.keys(microservices).reduce((acc, curr) => {
-    const key = curr as keyof typeof microservices;
-    if (!microservices[key]) return acc;
-    const port = microservices[key].port;
-    return port > acc ? port : acc;
-  }, 3000) + 1;
-
-import net from "net";
-
-// check if nextPort is taken in host machine
-const isPortTaken = (port: number) => {
-  return new Promise((resolve, reject) => {
-    const tester = net.createServer();
-
-    tester
-      .once("error", (err: any) => (err.code == "EADDRINUSE" ? resolve(true) : reject(err)))
-      .once("listening", () => tester.once("close", () => resolve(false)).close())
-      .listen(port);
-  });
-};
+import "./features/watch-project/projects.events";
 
 export const startGn1mbly = (port: number | string) => {
   ensureArtefactsFolderExist();
 
   const app: Express = express();
 
-  const publicPath = join(__dirname, "./public");
+  const publicPath = path.join(__dirname, "./public");
 
   if (fs.existsSync(publicPath)) {
     const indexFilePath = `${publicPath}/index.html`;
@@ -70,6 +44,8 @@ export const startGn1mbly = (port: number | string) => {
     .use(cors())
     .use(express.json())
     .use("/api", projectRouters)
+    .use("/api", microserviceRouters)
+    .use("/api", watchProjectRoutes)
     .use("/api", projectDefinitionRouters)
     .use("/api", projectScreenshotsRouters)
     .use("/api", recentlyOpenedRouters);

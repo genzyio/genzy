@@ -7,7 +7,7 @@ export const ProjectCreated = Symbol.for("ProjectCreated");
 export const ProjectDeleted = Symbol.for("ProjectDeleted");
 
 eventEmitter.on(ProjectCreated, (project: Project) => {
-  fs.mkdirSync(project.path);
+  !fs.existsSync(project.path) && fs.mkdirSync(project.path);
   fs.writeFileSync(
     path.join(project.path, "project.json"),
     JSON.stringify({
