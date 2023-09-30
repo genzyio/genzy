@@ -20,4 +20,7 @@ function uninstallPackage({ name, version }: Package, microservicePath: string):
     ),
   );
 }
+
+export type { Package };
+
 export { installPackage, uninstallPackage };

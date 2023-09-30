@@ -103,31 +103,32 @@ function createServices(inputJson: GN1mblyOutput, microserviceId: string): N1mbl
   const classes = inputJson["classes"][microserviceId]["nodes"];
   const edges = inputJson["services"][microserviceId]["edges"];
 
-  return services.map((s: any) => {
-    const name = s.data.name;
+  return services
+    .filter((s: any) => !["PLUGABLE_SERVICE"].includes(s.data.type))
+    .map((s: any) => {
+      const name = s.data.name;
 
-    switch (s.data.type) {
-      case "CONTROLLER":
-        return {
-          name,
-          type: "Controller",
-          dependencies: createDependsOn(s.id, services, edges),
-          actions: createActions("Controller", s.data.functions, classes),
-          path: `${s.data.basePath ?? "/"}`,
-        };
+      switch (s.data.type) {
+        case "CONTROLLER":
+          return {
+            name,
+            type: "Controller",
+            dependencies: createDependsOn(s.id, services, edges),
+            actions: createActions("Controller", s.data.functions, classes),
+            path: `${s.data.basePath ?? "/"}`,
+          };
 
-      case "LOCAL":
-        return {
-          name,
-          type: "LocalService",
-          dependencies: createDependsOn(s.id, services, edges),
-          actions: createActions("LocalService", s.data.functions, classes),
-        };
-
-      default:
-        return createRemoteProxyService(inputJson, s.data.microserviceId, s.id);
-    }
-  });
+        case "LOCAL":
+          return {
+            name,
+            type: "LocalService",
+            dependencies: createDependsOn(s.id, services, edges),
+            actions: createActions("LocalService", s.data.functions, classes),
+          };
+        default:
+          return createRemoteProxyService(inputJson, s.data.microserviceId, s.id);
+      }
+    });
 }
 
 function createRemoteProxyService(

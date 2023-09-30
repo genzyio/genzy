@@ -42,14 +42,13 @@ function handleAddedMicroservices(project: Project, projectDefinition: any, adde
         version: microserviceData.version,
         description: microserviceData.description,
         basePath: microserviceData.basePath,
+        packages: microserviceData.packages,
       },
       "ts",
     );
 
     generateMicroserviceCode(project, convertJSON(microserviceId, projectDefinition), "ts");
   });
-
-  // TODO: Handle plugins
 }
 
 function handleModifiedMicroservices(
@@ -73,11 +72,9 @@ function handleModifiedMicroservices(
       initMicroserviceTsJs(project, newMicroserviceData, "ts");
     }
 
-    reinitializeMicroservicePackageJson(project, newMicroserviceData);
+    reinitializeMicroservicePackageJson(project, oldMicroserviceData, newMicroserviceData);
     generateMicroserviceCode(project, convertJSON(microserviceId, newProjectDefinition), "ts");
   });
-
-  // TODO: Handle plugins
 }
 
 function handleRemovedMicroservices(project: Project, oldProjectDefinition: any, removed: string[]) {
@@ -90,7 +87,10 @@ function handleRemovedMicroservices(project: Project, oldProjectDefinition: any,
 }
 
 function findMicroserviceNode(projectDefinition: any, microserviceId: string) {
-  return projectDefinition.microservices.nodes.find((node: any) => node.id === microserviceId);
+  const microserviceNode = projectDefinition.microservices.nodes.find((node: any) => node.id === microserviceId);
+  microserviceNode.data.packages = microserviceNode.data.plugins || [];
+
+  return microserviceNode;
 }
 
 function groupMicroserviceIdsBasedOnState(states: States) {
