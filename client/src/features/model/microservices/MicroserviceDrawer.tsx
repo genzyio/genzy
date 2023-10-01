@@ -7,6 +7,7 @@ import { EditService } from "./EditService";
 import { useSequenceGenerator } from "../../../hooks/useStringSequence";
 import { useValidationContext } from "../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
+import { useWatchModeContext } from "../../projects/contexts/watch-mode.context";
 
 type MicroserviceDrawerProps = {
   microserviceId: string;
@@ -23,6 +24,8 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
 }) => {
   const { isDirty, setCurrentState } = useDirtyCheckContext();
   const { isValid, setValidityFor } = useValidationContext();
+  const { isMicroserviceActive } = useWatchModeContext();
+  const microserviceActive = isMicroserviceActive(microserviceId);
 
   const [microserviceName, setMicroserviceName] = useState(initialMicroservice.name);
   const [description, setDescription] = useState(initialMicroservice.description);
@@ -102,17 +105,19 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
   return (
     <div className="mx-4">
       <div className="flex mb-1 w-full">
-        <div>
-          <TextField
-            label="Name"
-            value={microserviceName}
-            onChange={handleMicroserviceNameUpdate}
-            error={
-              (!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")
-            }
-          />
-        </div>
-        <div className="ml-2">
+        <div className="flex space-x-2 w-full">
+          <div className="flex-1">
+            <TextField
+              label="Name"
+              disabled={microserviceActive}
+              value={microserviceName}
+              onChange={handleMicroserviceNameUpdate}
+              error={
+                (!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")
+              }
+            />
+          </div>
+
           <TextField value={version} onChange={handleMicroserviceVersionUpdate} label="Version" />
         </div>
       </div>

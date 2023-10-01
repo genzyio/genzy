@@ -1,13 +1,23 @@
 import { Router, type Request, type Response } from "express";
+import { type Project } from "../projects/projects.models";
 import { projectsRepo } from "../projects/projects.repo";
 import { projectDoesNotExistError } from "../projects/projects.errors";
-import { startProject, stopProject } from "./processes.manager";
+import { getPids, startProject, stopProject } from "./processes.manager";
 import path from "path";
 import fs from "fs";
 
 const watchProjectRouters = Router();
 
-// Mozda nekako da track ako je watch mode on/off?
+watchProjectRouters.get("/projects/:name/watch/active", async (req: Request, res: Response) => {
+  const projectName = req.params.name || "";
+  const existingProject = await projectsRepo.getByName(projectName);
+  if (!existingProject) {
+    return res.status(404).send(projectDoesNotExistError(projectName));
+  }
+
+  return res.status(200).send(getActiveMicroserviceIds(existingProject));
+});
+
 watchProjectRouters.post("/projects/:name/watch/start", async (req: Request, res: Response) => {
   const projectName = req.params.name || "";
   const existingProject = await projectsRepo.getByName(projectName);
@@ -19,7 +29,7 @@ watchProjectRouters.post("/projects/:name/watch/start", async (req: Request, res
   const projectDefinition = loadProjectDefinition(projectJsonPath);
   await startProject(existingProject, projectDefinition);
 
-  return res.status(200).send();
+  return res.status(200).send(getActiveMicroserviceIds(existingProject));
 });
 
 watchProjectRouters.post("/projects/:name/watch/stop", async (req: Request, res: Response) => {
@@ -31,7 +41,7 @@ watchProjectRouters.post("/projects/:name/watch/stop", async (req: Request, res:
 
   await stopProject(existingProject);
 
-  return res.status(200).send();
+  return res.status(200).send(getActiveMicroserviceIds(existingProject));
 });
 
 function loadProjectDefinition(projectJsonPath: string) {
@@ -40,6 +50,13 @@ function loadProjectDefinition(projectJsonPath: string) {
   return {
     microservices: projectDefinition.microservices,
   };
+}
+
+function getActiveMicroserviceIds(project: Project) {
+  const pids = getPids(project);
+  const microserviceIds = Object.keys(pids);
+
+  return microserviceIds;
 }
 
 export default watchProjectRouters;

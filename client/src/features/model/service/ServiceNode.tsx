@@ -16,6 +16,12 @@ type ServiceNodeProps = NodeProps<Service>;
 export const ServiceNode: FC<ServiceNodeProps> = ({ data: service }) => {
   const showRoute = service.type !== "LOCAL";
 
+  const url = `${service.host || ""}${
+    service.host?.endsWith("/") && service.basePath?.startsWith("/")
+      ? service.basePath.substring(1)
+      : service.basePath
+  }`;
+
   return (
     <div
       className={`p-4 rounded-lg border-2 bg-white ${colors[service.type]} flex flex-col gap-y-2`}
@@ -25,12 +31,7 @@ export const ServiceNode: FC<ServiceNodeProps> = ({ data: service }) => {
           <p className="text-xs text-gray-500">{SERVICE_TYPE_DISPLAY_NAME[service.type]}</p>
 
           <h2 className="text-xl">{service.name}</h2>
-          {(service.host || service.basePath) && (
-            <h6 className="text-center text-xs text-gray-500">
-              {service.host ?? ""}
-              {service.basePath ?? ""}
-            </h6>
-          )}
+          {!!url && url !== "/" && <h6 className="text-center text-xs text-gray-500">{url}</h6>}
         </div>
         {service.functions.map((fun) => (
           <div key={fun.id} className="flex w-full p-1 rounded-md border border-gray-400">

@@ -8,6 +8,10 @@ import findPidFromPort from "find-pid-from-port";
 
 const pidsPerProject: Record<string, Record<string, number>> = {};
 
+function getPids(project: Project) {
+  return pidsPerProject[project.name] || {};
+}
+
 async function getPidIfPortIsTaken(port: number) {
   try {
     const pids = await findPidFromPort(port);
@@ -17,11 +21,14 @@ async function getPidIfPortIsTaken(port: number) {
   }
 }
 
-function startMicroservice(projectPath: string, microserviceName: string) {
+function startMicroservice(projectPath: string, microserviceName: string, port: number) {
   const child_process = exec(
     "npm run watch",
     {
       cwd: path.join(projectPath, microserviceName),
+      env: {
+        PORT: port.toString(),
+      },
     },
     (e, m) => console.log(e, m),
   );
@@ -44,10 +51,8 @@ async function startProject(project: Project, projectDefinition: any) {
       const projectPath = project.path;
       const microserviceName = projectDefinition.microservices.nodes.find((node: any) => node.id === microserviceId)
         .data.name;
-      const newPid = startMicroservice(projectPath, microserviceName);
+      const newPid = startMicroservice(projectPath, microserviceName, port);
       pidsPerProject[project.name][microserviceId] = newPid;
-
-      // Ovde bih mogao promeniti .env file?
     }
   }
 }
@@ -55,9 +60,10 @@ async function startProject(project: Project, projectDefinition: any) {
 async function stopProject(project: Project) {
   const pids = pidsPerProject[project.name];
 
-  for (const pid of Object.values(pids)) {
+  for (const [microserviceId, pid] of Object.entries(pids)) {
     terminate(pid, (err: any) => console.log(err));
+    delete pids[microserviceId];
   }
 }
 
-export { startProject, stopProject };
+export { getPids, startProject, stopProject };

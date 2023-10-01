@@ -51,7 +51,7 @@ function handleAddedMicroservices(project: Project, projectDefinition: any, adde
       "ts",
     );
 
-    generateMicroserviceCode(project, convertJSON(microserviceId, projectDefinition), "ts");
+    generateMicroserviceCode(project, convertJSON(project, microserviceId, projectDefinition), "ts");
   });
 }
 
@@ -77,7 +77,7 @@ function handleModifiedMicroservices(
     }
 
     reinitializeMicroservicePackageJson(project, oldMicroserviceData, newMicroserviceData);
-    generateMicroserviceCode(project, convertJSON(microserviceId, newProjectDefinition), "ts");
+    generateMicroserviceCode(project, convertJSON(project, microserviceId, newProjectDefinition), "ts");
   });
 }
 

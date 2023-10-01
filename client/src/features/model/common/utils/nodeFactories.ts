@@ -18,7 +18,7 @@ function createMicroserviceNode({ name }: CreateMicroserviceNodeParams): Node<Mi
       name,
       version: "0.0.0",
       description: "",
-      basePath: "/api/",
+      basePath: "/api",
       services: [],
       plugins: [],
     },
@@ -47,6 +47,7 @@ function createServiceNode({
     data: {
       microserviceId,
       name,
+      host: "",
       basePath: "",
       functions: [],
       type,
@@ -70,6 +71,7 @@ function createRemoteProxyNode({
     data: {
       microserviceId: microserviceId,
       name: "",
+      host: "",
       basePath: "",
       functions: [],
       type: "REMOTE_PROXY",
@@ -97,6 +99,7 @@ function createPlugableServiceNode({
     data: {
       microserviceId: microserviceId,
       name,
+      host: "",
       basePath: "",
       functions,
       type: "PLUGABLE_SERVICE",

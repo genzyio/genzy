@@ -57,7 +57,7 @@ export const AutoSaveContextProvider: FC<PropsWithChildren> = ({ children }) => 
   const [lastAutoSave, setLastAutoSave] = useState<any>(initialAutoSaveContextValues.lastAutoSave);
 
   const [projectDefinitionToSave, setProjectDefinitionToSave] = useState(null);
-  const projectDefinitionToSaveDebounced = useDebounce(projectDefinitionToSave, 5000);
+  const projectDefinitionToSaveDebounced = useDebounce(projectDefinitionToSave, 10000);
 
   const toggleAutoSave = useCallback(() => {
     setShouldAutoSave((shouldAutoSave) => {

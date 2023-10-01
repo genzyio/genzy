@@ -1,3 +1,6 @@
+import { type Project } from "../features/projects/projects.models";
+import { getPorts } from "../features/watch-project/ports.manager";
+
 type GN1mblyOutput = any;
 
 type GN1mblyClass = any;
@@ -73,7 +76,7 @@ type GN1mblyFunction = {
   params: GN1mblyParameter[];
 };
 
-export function convertJSON(microserviceId: string, inputJson: GN1mblyOutput): N1mblyGeneratorInput {
+export function convertJSON(project: Project, microserviceId: string, inputJson: GN1mblyOutput): N1mblyGeneratorInput {
   const outputJson: N1mblyGeneratorInput = {
     services: [],
     types: {},
@@ -82,7 +85,7 @@ export function convertJSON(microserviceId: string, inputJson: GN1mblyOutput): N
 
   const microserviceInfo = inputJson["microservices"]["nodes"].find((m: any) => m.id === microserviceId).data;
 
-  outputJson.services = createServices(inputJson, microserviceId);
+  outputJson.services = createServices(project, inputJson, microserviceId);
   outputJson.types = createTypes(inputJson["classes"][microserviceId]["nodes"]);
   outputJson.n1mblyInfo = createInfo(microserviceInfo);
 
@@ -98,7 +101,7 @@ function createInfo(microservice: MicroserviceInfo): N1mblyInfo {
   };
 }
 
-function createServices(inputJson: GN1mblyOutput, microserviceId: string): N1mblyService[] {
+function createServices(project: Project, inputJson: GN1mblyOutput, microserviceId: string): N1mblyService[] {
   const services = inputJson["services"][microserviceId]["nodes"];
   const classes = inputJson["classes"][microserviceId]["nodes"];
   const edges = inputJson["services"][microserviceId]["edges"];
@@ -141,12 +144,13 @@ function createServices(inputJson: GN1mblyOutput, microserviceId: string): N1mbl
             path: s.data.basePath ?? "/",
           };
         default:
-          return createRemoteProxyService(inputJson, s.data.microserviceId, s.id);
+          return createRemoteProxyService(project, inputJson, s.data.microserviceId, s.id);
       }
     });
 }
 
 function createRemoteProxyService(
+  project: Project,
   inputJson: GN1mblyOutput,
   remoteMicroserviceId: string,
   serviceId: string
@@ -154,12 +158,14 @@ function createRemoteProxyService(
   const classes = inputJson["classes"][remoteMicroserviceId]["nodes"];
   const remoteService = inputJson["services"][remoteMicroserviceId]["nodes"].find((n: any) => n.id === serviceId).data;
 
+  const ports = getPorts(project);
+  const port = ports[remoteMicroserviceId];
   return {
     name: remoteService.name,
     type: "RemoteProxy",
     actions: createActions("RemoteProxy", remoteService.functions, classes),
     path: remoteService.basePath ?? "/",
-    host: "localhost",
+    host: `http://localhost:${port}/api`,
   };
 }
 

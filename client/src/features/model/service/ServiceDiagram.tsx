@@ -80,7 +80,6 @@ export const ServiceDiagram: FC<DiagramProps> = ({
     const sourceNodeType = nodes.find((node) => node.id === connection.source).data.type;
     if (["REMOTE_PROXY", "PLUGABLE_SERVICE", "API_INTEGRATION"].includes(sourceNodeType)) return;
 
-    // TODO: check circular dependencies
     const alreadyConnected = edges.some(
       (edge) => edge.target === connection.target && edge.source === connection.source
     );

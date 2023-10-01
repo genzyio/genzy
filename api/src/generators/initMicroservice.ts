@@ -47,6 +47,7 @@ function initMicroserviceTsJs(project: Project, metadata: InitialN1mblyMetadata,
           ...initialDependencies,
           "@n1mbly/api": "0.2.1",
           "@n1mbly/client": "0.2.0",
+          dotenv: "16.3.1",
         },
         devDependencies: {
           nodemon: "3.0.1",
@@ -77,6 +78,9 @@ function initMicroserviceTsJs(project: Project, metadata: InitialN1mblyMetadata,
       ),
     );
   }
+
+  const microserviceEnvPath = path.join(microservicePath, ".env");
+  !fs.existsSync(microserviceEnvPath) && fs.writeFileSync(microserviceEnvPath, "PORT=3000");
 
   const microserviceSourcePath = path.join(microservicePath, "src");
   !fs.existsSync(microserviceSourcePath) && fs.mkdirSync(microserviceSourcePath);

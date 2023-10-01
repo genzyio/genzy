@@ -21,8 +21,10 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
   data: microservice,
 }) => {
   const { project } = useProjectContext();
-  const { watchModeEnabled } = useWatchModeContext();
+  const { isMicroserviceActive } = useWatchModeContext();
   const { onServicesClick, onModelsClick, onDocsClick } = useMicroserviceNodeContext();
+
+  const microserviceActive = isMicroserviceActive(microserviceId);
 
   return (
     <div className={`p-4 rounded-lg border-2 bg-white border-gray-600 flex flex-col gap-y-2`}>
@@ -47,7 +49,7 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
           <Button type="button" onClick={() => onModelsClick(microserviceId)}>
             Models
           </Button>
-          {watchModeEnabled && (
+          {microserviceActive && (
             <Button type="button" onClick={() => onDocsClick(microserviceId)}>
               Docs
             </Button>
