@@ -33,12 +33,17 @@ export const {
   {% endfor %}
 }: N1mblyServicesContainerDeps = services.getAllServices();
 
-const app = new N1mblyApi({
+const app = new N1mblyApi(
+/*
+{
   n1mblyInfo: {
   version: "{{info.version}}",
   name: "{{info.name}}",
   description: "{{info.description}}",
-  },}).buildAppFrom(controllers);
+  },
+}
+*/
+  ).buildAppFrom(controllers);
 
 const port = process.env.PORT || 3000 ;
 
