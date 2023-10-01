@@ -25,10 +25,6 @@ export async function generate({
 }) {
   prepareDirectory(dirPath);
 
-  const envPath = `${dirPath}/.env`;
-  if (!pathExists(envPath)) {
-    writeToFile(envPath, envFileContentFrom({ info: meta.n1mblyInfo }));
-  }
   writeToFile(
     `${dirPath}/index.ts`,
     await indexFileContentFrom({
@@ -200,8 +196,4 @@ function typesFileContentFrom({
   //TODO: sort classes by dependecy
   const content = nunjucks.render("types.njk", { types });
   return formatFileContent(content);
-}
-
-function envFileContentFrom({ info }: { info: N1mblyInfo }): string {
-  return `PORT=${info.port}`;
 }
