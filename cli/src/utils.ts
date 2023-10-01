@@ -160,6 +160,11 @@ export function adoptTypeToDecorator(type) {
 
 export function adoptTypeToResultDecorator(type) {
   if (!type) return undefined;
+  if (typeof type.type === "string") {
+  return type.$isArray
+    ? `@ReturnsArrayOf(${type.type})`
+    : `@Returns(${type.type})`;
+  }
   return type.$isArray
     ? `@ReturnsArrayOf(${type.$typeName})`
     : `@Returns(${type.$typeName})`;

@@ -1,5 +1,5 @@
 import type { Environment } from "nunjucks";
-import type { MetaTypesRegistry } from "../../../shared/types";
+import type { MetaTypesRegistry, N1mblyInfo } from "../../../shared/types";
 import type { ExtendedMetaInfo, ExtendedServiceInfo } from "../types";
 import {
   adoptParams,
@@ -25,11 +25,16 @@ export async function generate({
 }) {
   prepareDirectory(dirPath);
 
+  const envPath = `${dirPath}/.env`;
+  if (!pathExists(envPath)) {
+    writeToFile(envPath, envFileContentFrom({ info: meta.n1mblyInfo }));
+  }
   writeToFile(
     `${dirPath}/index.ts`,
     await indexFileContentFrom({
       nunjucks,
       services: meta.services,
+      info: meta.n1mblyInfo,
     }),
   );
 
@@ -166,9 +171,11 @@ function serviceFileContentFrom({
 
 function indexFileContentFrom({
   services,
+  info,
   nunjucks,
 }: {
   services: ExtendedServiceInfo[];
+  info: N1mblyInfo;
   nunjucks: Environment;
 }): Promise<string> {
   const content = nunjucks.render("index.njk", {
@@ -178,6 +185,7 @@ function indexFileContentFrom({
     controllers: services.filter((service) => {
       return service.type == "Controller";
     }),
+    info,
   });
   return formatFileContent(content);
 }
@@ -189,6 +197,11 @@ function typesFileContentFrom({
   types: MetaTypesRegistry;
   nunjucks: Environment;
 }): Promise<string> {
+  //TODO: sort classes by dependecy
   const content = nunjucks.render("types.njk", { types });
   return formatFileContent(content);
+}
+
+function envFileContentFrom({ info }: { info: N1mblyInfo }): string {
+  return `PORT=${info.port}`;
 }

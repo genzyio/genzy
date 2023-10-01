@@ -240,5 +240,6 @@ export const api = new N1mblyApi({
     version: "0.0.1-alpha1",
     name: "Test Microservice",
     description: "This microservice is used for random stuff.",
+    port: 3000,
   },
 }).buildAppFrom(modul, noviModul);

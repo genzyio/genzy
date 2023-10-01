@@ -63,6 +63,7 @@ export type N1mblyInfo = {
   name?: string;
   description?: string;
   basePath?: string;
+  port?: number;
 };
 
 export type Modify<T, R> = Omit<T, keyof R> & R;
