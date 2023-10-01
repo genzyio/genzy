@@ -8,6 +8,7 @@ const colors = {
   LOCAL: "border-green-300",
   CONTROLLER: "border-red-300",
   REMOTE_PROXY: "border-blue-300",
+  API_INTEGRATION: "border-yellow-300",
 } as const;
 
 type ServiceNodeProps = NodeProps<Service>;
@@ -24,9 +25,12 @@ export const ServiceNode: FC<ServiceNodeProps> = ({ data: service }) => {
           <p className="text-xs text-gray-500">{SERVICE_TYPE_DISPLAY_NAME[service.type]}</p>
 
           <h2 className="text-xl">{service.name}</h2>
-          <h6 className="text-center text-xs text-gray-500">
-            {service.basePath === "/" ? "" : service.basePath}
-          </h6>
+          {(service.host || service.basePath) && (
+            <h6 className="text-center text-xs text-gray-500">
+              {service.host ?? ""}
+              {service.basePath ?? ""}
+            </h6>
+          )}
         </div>
         {service.functions.map((fun) => (
           <div key={fun.id} className="flex w-full p-1 rounded-md border border-gray-400">

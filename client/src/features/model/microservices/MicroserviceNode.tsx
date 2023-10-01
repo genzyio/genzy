@@ -13,6 +13,7 @@ type MicroserviceNodeProps = NodeProps<Microservice>;
 const colors = {
   CONTROLLER: "border-red-500",
   LOCAL: "border-green-300",
+  API_INTEGRATION: "border-yellow-300",
 } as const;
 
 export const MicroserviceNode: FC<MicroserviceNodeProps> = ({

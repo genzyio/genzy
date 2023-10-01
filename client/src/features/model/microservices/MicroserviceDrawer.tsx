@@ -127,7 +127,7 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
         <TextField value={basePath} onChange={handleMicroserviceBasePathUpdate} label="Base Path" />
       </div>
 
-      <p>Services</p>
+      {!!services?.length && <p>Services</p>}
       {services.map((service, index) => (
         <EditService
           key={service.id}

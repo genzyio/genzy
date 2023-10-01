@@ -132,6 +132,14 @@ function createServices(inputJson: GN1mblyOutput, microserviceId: string): N1mbl
             dependencies: createDependsOn(s.id, services, edges),
             actions: createActions("LocalService", s.data.functions, classes),
           };
+        case "API_INTEGRATION":
+          return {
+            name,
+            type: "RemoteProxy",
+            actions: createActions("Controller", s.data.functions, classes),
+            host: s.data.host,
+            path: s.data.basePath ?? "/",
+          };
         default:
           return createRemoteProxyService(inputJson, s.data.microserviceId, s.id);
       }
@@ -141,7 +149,7 @@ function createServices(inputJson: GN1mblyOutput, microserviceId: string): N1mbl
 function createRemoteProxyService(
   inputJson: GN1mblyOutput,
   remoteMicroserviceId: string,
-  serviceId: string,
+  serviceId: string
 ): N1mblyService {
   const classes = inputJson["classes"][remoteMicroserviceId]["nodes"];
   const remoteService = inputJson["services"][remoteMicroserviceId]["nodes"].find((n: any) => n.id === serviceId).data;

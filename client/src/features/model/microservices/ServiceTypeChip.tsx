@@ -4,6 +4,7 @@ import { SERVICE_TYPE_DISPLAY_NAME } from "../service/models";
 const colors = {
   CONTROLLER: "bg-red-100 border-red-500",
   LOCAL: "bg-green-100 border-green-300",
+  API_INTEGRATION: "bg-yellow-100 border-yellow-300",
 } as const;
 
 type ServiceTypeChipProps = {

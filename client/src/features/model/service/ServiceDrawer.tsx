@@ -101,7 +101,7 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({
 
   return (
     <div className="mx-4">
-      <div className="flex mb-1 w-full">
+      <div className="flex mb-1 w-full space-x-2">
         <span className="w-2/3">
           <TextField
             value={serviceData.name}
@@ -119,18 +119,38 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({
           />
         </span>
       </div>
-      <div className="mb-5" hidden={serviceData.type !== "CONTROLLER"}>
-        <TextField
-          value={serviceData.basePath}
-          onChange={(v) =>
-            updateState({
-              ...serviceData,
-              basePath: v,
-            })
-          }
-          label="Base Path"
-        />
+      <div className="flex mb-1 w-full mb-5 space-x-2">
+        <span className="w-1/2" hidden={serviceData.type !== "API_INTEGRATION"}>
+          <TextField
+            value={serviceData.host}
+            onChange={(v) =>
+              updateState({
+                ...serviceData,
+                host: v,
+              })
+            }
+            label="Host"
+          />
+        </span>
+        <span
+          className={serviceData.type !== "API_INTEGRATION" ? "flex-1" : "w-1/2"}
+          hidden={serviceData.type !== "API_INTEGRATION" && serviceData.type !== "CONTROLLER"}
+        >
+          <TextField
+            value={serviceData.basePath}
+            onChange={(v) =>
+              updateState({
+                ...serviceData,
+                basePath: v,
+              })
+            }
+            label="Base Path"
+          />
+        </span>
       </div>
+      {!!serviceData.functions?.length && (
+        <p>{serviceData.type === "LOCAL" ? "Functions" : "Routes"}</p>
+      )}
       {serviceData.functions.map((fun, index) => (
         <EditFunction
           function={fun}

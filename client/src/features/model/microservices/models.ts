@@ -10,7 +10,7 @@ type Microservice = {
 type Service = {
   id: string;
   name: string;
-  type: "LOCAL" | "CONTROLLER";
+  type: "LOCAL" | "CONTROLLER" | "API_INTEGRATION";
 };
 
 type Communication = {

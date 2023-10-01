@@ -18,6 +18,7 @@ export const SERVICE_TYPE = {
   REMOTE_PROXY: "RP",
   CONTROLLER: "C",
   PLUGABLE_SERVICE: "PS",
+  API_INTEGRATION: "API",
 } as const;
 
 export const SERVICE_TYPE_DISPLAY_NAME = {
@@ -25,6 +26,7 @@ export const SERVICE_TYPE_DISPLAY_NAME = {
   REMOTE_PROXY: "Remote Proxy",
   CONTROLLER: "Controller",
   PLUGABLE_SERVICE: "Plugable Service",
+  API_INTEGRATION: "API Integration",
 } as const;
 
 type ServiceType = keyof typeof SERVICE_TYPE;
@@ -54,6 +56,7 @@ type Service = {
   functions: ServiceFunction[];
   type: ServiceType;
   basePath: string;
+  host: string;
 };
 
 export type { Service, ServiceFunction, Parameter, HTTPMethod, ParamSource, ServiceType };
