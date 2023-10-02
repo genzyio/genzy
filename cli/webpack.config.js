@@ -24,6 +24,13 @@ module.exports = {
       }),
     ],
   },
+  externals: {
+    prettier: {
+      commonjs: 'prettier',
+      commonjs2: 'prettier',
+      amd: 'prettier',
+    },
+  },
   output: {
     path: path.resolve(__dirname, "bin"),
     filename: "index.js",
