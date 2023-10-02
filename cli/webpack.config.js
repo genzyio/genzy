@@ -26,9 +26,14 @@ module.exports = {
   },
   externals: {
     prettier: {
-      commonjs: 'prettier',
-      commonjs2: 'prettier',
-      amd: 'prettier',
+      commonjs: "prettier",
+      commonjs2: "prettier",
+      amd: "prettier",
+    },
+    ["prettier-plugin-organize-imports"]: {
+      commonjs: "prettier-plugin-organize-imports",
+      commonjs2: "prettier-plugin-organize-imports",
+      amd: "prettier-plugin-organize-imports",
     },
   },
   output: {
