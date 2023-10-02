@@ -1,6 +1,6 @@
 const path = require("path");
 const { ESBuildMinifyPlugin } = require("esbuild-loader");
-const CopyPlugin = require('copy-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 
 const { NODE_ENV = "production" } = process.env;
 module.exports = {
@@ -33,11 +33,12 @@ module.exports = {
   },
   plugins: [
     new CopyPlugin({
-      patterns: [{
-        from: path.resolve(__dirname, "node_modules/swagger-ui-dist/"),
-        to: "node_modules/swagger-ui-dist",
-        
-      }],
+      patterns: [
+        {
+          from: path.resolve(__dirname, "node_modules/swagger-ui-dist/"),
+          to: "node_modules/swagger-ui-dist",
+        },
+      ],
     }),
   ],
 };

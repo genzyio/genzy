@@ -1,4 +1,5 @@
 import type {
+  BasicType,
   ComplexType,
   ComplexTypeReference,
   MetaInfo,
@@ -124,7 +125,10 @@ const getResponsesDocFrom = (routeMetaInfo: RouteMetaInfo) => {
       },
     };
   if ("type" in routeMetaInfo.result) {
-    const type = routeMetaInfo.result.type as any;
+    const type = routeMetaInfo.result as BasicType;
+    if (routeMetaInfo.path.includes("/pera-jaje")) {
+      console.log(routeMetaInfo, mapTypeToOpenAPIType(type.type));
+    }
     return {
       200: {
         headers: {},

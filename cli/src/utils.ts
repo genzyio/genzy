@@ -130,9 +130,13 @@ export async function fetchMeta(url: string): Promise<MetaInfo> {
   return (await axios.get(`${url}/meta`)).data;
 }
 
-export function adoptParams(params: Param[], typeAdopt: (p: any) => string) {
+export function adoptParams(
+  params: Param[],
+  typeAdopt: (p: any) => { name: string; isComplex: boolean }
+) {
   return params.map((p) => ({
     ...p,
+    name: p.name ?? "body",
     type: typeAdopt(p.type),
     typeDecorator: adoptTypeToDecorator(p.type),
     $isOptional: p.type.$isOptional,
@@ -141,29 +145,38 @@ export function adoptParams(params: Param[], typeAdopt: (p: any) => string) {
 }
 
 export function adoptTypeJS(type) {
-  if (!type) return "any";
+  if (!type) return { name: "any", isComplex: false };
   if (typeof type.type === "string") {
-    return type === "int" || type === "float" ? "number" : type.type;
+    return {
+      name: type.type === "int" || type.type === "float" ? "number" : type.type,
+      isComplex: false,
+    };
   }
-  return type.$typeName;
+  return { name: type.$typeName, isComplex: true };
 }
 
 export function adoptTypeToDecorator(type) {
   if (!type) return undefined;
-  if (typeof type === "string") {
-    return `@${type}()`;
+  if (typeof type.type === "string") {
+    return `@${type.$isArray ? `${type.type}Array` : `${type.type}`}(${
+      type.$isOptional ? ", { optional: true }" : ""
+    })`;
   }
   return type.$isArray
-    ? `@arrayOf(${type.$typeName})`
-    : `@type(${type.$typeName})`;
+    ? `@arrayOf(${type.$typeName}${
+        type.$isOptional ? ", { optional: true }" : ""
+      })`
+    : `@type(${type.$typeName}${
+        type.$isOptional ? ", { optional: true }" : ""
+      })`;
 }
 
 export function adoptTypeToResultDecorator(type) {
   if (!type) return undefined;
   if (typeof type.type === "string") {
-  return type.$isArray
-    ? `@ReturnsArrayOf(${type.type})`
-    : `@Returns(${type.type})`;
+    return type.$isArray
+      ? `@ReturnsArrayOf("${type.type}")`
+      : `@Returns("${type.type}")`;
   }
   return type.$isArray
     ? `@ReturnsArrayOf(${type.$typeName})`

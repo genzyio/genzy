@@ -228,12 +228,13 @@ export const type = (type: { new (): any }, options?: TypeDecoratorOptions) =>
   typeDecorator(type, "type", false, options);
 
 export const arrayOf = (
-  type: { new (): any },
+  type: { new (): any } | BasicType["type"],
   options?: TypeDecoratorOptions
 ) => typeDecorator(type, "type", true, options);
 
-export const Returns = (type: { new (): any }) => typeDecorator(type, "result");
-export const ReturnsArrayOf = (type: { new (): any }) =>
+export const Returns = (type: { new (): any } | BasicType["type"]) =>
+  typeDecorator(type, "result");
+export const ReturnsArrayOf = (type: { new (): any } | BasicType["type"]) =>
   typeDecorator(type, "result", true);
 
 export const Query = (name: string, options?: ParamDecoratorOptions) =>

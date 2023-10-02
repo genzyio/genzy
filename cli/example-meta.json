@@ -1,11 +1,7 @@
 {
   "services": [
     {
-      "type": "Controller",
       "name": "AuthController",
-      "dependencies": [
-        "NoviServis"
-      ],
       "actions": [
         {
           "httpMethod": "get",
@@ -28,8 +24,7 @@
               "type": {
                 "$typeName": "User",
                 "$isArray": false
-              },
-              "optional": false
+              }
             }
           ],
           "result": {
@@ -41,7 +36,6 @@
       "path": "/auth"
     },
     {
-      "type": "Controller",
       "name": "PeraCrudController",
       "actions": [
         {
@@ -52,13 +46,25 @@
             {
               "name": "id",
               "source": "path",
-              "type": "string",
-              "optional": false
+              "type": {
+                "type": "string",
+                "$isOptional": false
+              }
             }
           ],
           "result": {
             "$typeName": "Pera",
             "$isArray": false
+          }
+        },
+        {
+          "httpMethod": "get",
+          "name": "peraJaje",
+          "path": "/pera-jaje",
+          "params": [],
+          "result": {
+            "type": "string",
+            "$isArray": true
           }
         },
         {
@@ -82,8 +88,7 @@
               "type": {
                 "$typeName": "Pera",
                 "$isArray": false
-              },
-              "optional": false
+              }
             }
           ],
           "result": {
@@ -99,17 +104,17 @@
             {
               "name": "id",
               "source": "path",
-              "type": "string",
-              "optional": false
+              "type": {
+                "type": "string",
+                "$isOptional": false
+              }
             },
             {
-              "name": "body",
               "source": "body",
               "type": {
                 "$typeName": "Pera",
                 "$isArray": false
-              },
-              "optional": false
+              }
             }
           ],
           "result": {
@@ -125,8 +130,19 @@
             {
               "name": "id",
               "source": "path",
-              "type": "string",
-              "optional": false
+              "type": {
+                "type": "string",
+                "$isOptional": false
+              }
+            },
+            {
+              "name": "q",
+              "source": "query",
+              "type": {
+                "type": "string",
+                "$isOptional": true,
+                "$isArray": true
+              }
             }
           ],
           "result": {
@@ -138,9 +154,7 @@
       "path": "/peras"
     },
     {
-      "type": "Controller",
       "name": "UserCrudController",
-      "extends": "AuthController",
       "actions": [
         {
           "httpMethod": "get",
@@ -150,8 +164,10 @@
             {
               "name": "id",
               "source": "path",
-              "type": "string",
-              "optional": false
+              "type": {
+                "type": "string",
+                "$isOptional": false
+              }
             }
           ],
           "result": {
@@ -180,8 +196,7 @@
               "type": {
                 "$typeName": "User",
                 "$isArray": false
-              },
-              "optional": false
+              }
             }
           ],
           "result": {
@@ -197,17 +212,17 @@
             {
               "name": "id",
               "source": "path",
-              "type": "string",
-              "optional": false
+              "type": {
+                "type": "string",
+                "$isOptional": false
+              }
             },
             {
-              "name": "body",
               "source": "body",
               "type": {
                 "$typeName": "User",
                 "$isArray": false
-              },
-              "optional": false
+              }
             }
           ],
           "result": {
@@ -223,8 +238,19 @@
             {
               "name": "id",
               "source": "path",
-              "type": "string",
-              "optional": false
+              "type": {
+                "type": "string",
+                "$isOptional": false
+              }
+            },
+            {
+              "name": "q",
+              "source": "query",
+              "type": {
+                "type": "string",
+                "$isOptional": true,
+                "$isArray": true
+              }
             }
           ],
           "result": {
@@ -236,59 +262,36 @@
       "path": "/users"
     },
     {
-      "type": "LocalService",
       "name": "NoviServis",
-      "dependencies": [
-        "CatFactsService"
-      ],
-      "actions": [
-        {
-          "name": "getNesto",
-          "params": [
-            {
-              "name": "test",
-              "type": "string",
-              "optional": true
-            },
-            {
-              "name": "pera",
-              "type": "int",
-              "optional": true
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "RemoteProxy",
-      "name": "CatFactsService",
-      "host": "https://catfact.ninja",
-      "path": "/",
       "actions": [
         {
           "httpMethod": "get",
-          "path": "/fact",
-          "name": "getFact",
+          "name": "getNesto",
+          "path": "/get-nesto",
           "params": []
         }
-      ]
+      ],
+      "path": "/novi-servis"
     }
   ],
   "types": {
     "Peraa": {
       "hello": {
         "type": "string",
-        "$isOptional": false
+        "$isOptional": false,
+        "$isArray": false
       }
     },
     "Test": {
       "username": {
         "type": "string",
-        "$isOptional": false
+        "$isOptional": false,
+        "$isArray": false
       },
       "password": {
         "type": "string",
-        "$isOptional": false
+        "$isOptional": false,
+        "$isArray": false
       },
       "peraas": {
         "$isArray": true,
@@ -298,11 +301,13 @@
     "Account": {
       "username": {
         "type": "string",
-        "$isOptional": false
+        "$isOptional": false,
+        "$isArray": false
       },
       "password": {
         "type": "string",
-        "$isOptional": false
+        "$isOptional": false,
+        "$isArray": false
       },
       "tests": {
         "$isArray": true,
@@ -312,15 +317,23 @@
     "User": {
       "name": {
         "type": "string",
-        "$isOptional": false
+        "$isOptional": false,
+        "$isArray": false
       },
       "surname": {
         "type": "string",
-        "$isOptional": false
+        "$isOptional": false,
+        "$isArray": false
       },
       "age": {
         "type": "int",
-        "$isOptional": true
+        "$isOptional": true,
+        "$isArray": false
+      },
+      "roles": {
+        "type": "string",
+        "$isOptional": false,
+        "$isArray": true
       },
       "account": {
         "$isArray": false,
@@ -330,15 +343,23 @@
     "Pera": {
       "username": {
         "type": "string",
-        "$isOptional": false
+        "$isOptional": false,
+        "$isArray": false
       },
       "password": {
         "type": "string",
-        "$isOptional": false
+        "$isOptional": false,
+        "$isArray": false
       },
       "car": {
         "type": "boolean",
-        "$isOptional": false
+        "$isOptional": false,
+        "$isArray": false
+      },
+      "test": {
+        "type": "string",
+        "$isOptional": true,
+        "$isArray": true
       }
     }
   },
@@ -346,6 +367,7 @@
     "basePath": "/api",
     "version": "0.0.1-alpha1",
     "name": "Test Microservice",
-    "description": "This microservice is used for random stuff."
+    "description": "This microservice is used for random stuff.",
+    "port": 3000
   }
 }

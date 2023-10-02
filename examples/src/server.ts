@@ -213,6 +213,7 @@ class Pera {
   @string() username: string;
   @string() password: string;
   @boolean() car: boolean;
+  @arrayOf("string", { optional: true }) test: string[];
 }
 
 @Controller("/peras", Pera)
@@ -225,6 +226,15 @@ class PeraCrudController extends CrudController {
     return {
       id,
       car: true,
+    };
+  }
+
+  @Get("/pera-jaje")
+  @ReturnsArrayOf("string")
+  peraJaje() {
+    return {
+      id: "pera",
+      car: this.isCar,
     };
   }
 }
