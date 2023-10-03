@@ -46,7 +46,7 @@ export async function generate(
       types: MetaTypesRegistry;
       nunjucks: Environment;
     }) => Promise<string>;
-  }
+  },
 ) {
   const {
     dirPath,
@@ -67,7 +67,7 @@ export async function generate(
             types: meta.types,
             nunjucks,
             url,
-          })
+          }),
         );
       }
       if (contentHandlers.serviceFileContentFrom) {
@@ -77,10 +77,10 @@ export async function generate(
             service,
             types: meta.types,
             nunjucks,
-          })
+          }),
         );
       }
-    })
+    }),
   );
 
   if (contentHandlers.indexFileContentFrom) {
@@ -90,7 +90,7 @@ export async function generate(
         services: meta.services,
         url,
         nunjucks,
-      })
+      }),
     );
   }
   if (contentHandlers.typesFileContentFrom) {
@@ -133,7 +133,7 @@ export async function fetchMeta(url: string): Promise<MetaInfo> {
 
 export function adoptParams(
   params: Param[],
-  typeAdopt: (p: any) => { name: string; isComplex: boolean }
+  typeAdopt: (p: any) => { name: string; isComplex: boolean },
 ) {
   return params.map((p) => ({
     ...p,

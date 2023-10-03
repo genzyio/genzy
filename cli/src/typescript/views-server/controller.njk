@@ -22,19 +22,19 @@ import {
 {{extends}}
 } from "./{{extends}}";
 {% endif %}
-{% if dependencies %}
+{% if dependencies | length %}
 import { N1mblyControllersContainerDeps } from ".";
 {% endif %}
 
 {% if path != null %}@Controller('{{ path }}'){% endif %}
 export class {{ name }} {% if extends %} extends {{ extends }} {% endif %} {
-{% if dependencies != null %}
+{% if dependencies | length %}
   {% for dependency in dependencies %}
-    private {{dependency}}: N1mblyControllersContainerDeps["services"]["{{dependency}}"];
+    private {{dependency}}: N1mblyControllersContainerDeps["{{dependency}}"];
   {% endfor %}
   constructor(deps: N1mblyControllersContainerDeps) {
   {% for dependency in dependencies %}
-    this.{{dependency}} = deps.services.{{dependency}};
+    this.{{dependency}} = deps.{{dependency}};
   {% endfor %}
   }
 {% endif %}
