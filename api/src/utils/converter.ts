@@ -153,7 +153,7 @@ function createRemoteProxyService(
   project: Project,
   inputJson: GN1mblyOutput,
   remoteMicroserviceId: string,
-  serviceId: string
+  serviceId: string,
 ): N1mblyService {
   const classes = inputJson["classes"][remoteMicroserviceId]["nodes"];
   const remoteService = inputJson["services"][remoteMicroserviceId]["nodes"].find((n: any) => n.id === serviceId).data;

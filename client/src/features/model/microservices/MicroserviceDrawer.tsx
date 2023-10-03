@@ -1,6 +1,7 @@
 import { useState, type FC } from "react";
-import { type Service, type Microservice } from "./models";
+import { type Microservice, type Language, type Service } from "./models";
 import { TextField } from "../../../components/text-field";
+import { Select } from "../../../components/select";
 import { Button } from "../../../components/button";
 import { IDENTIFIER_REGEX } from "../../../patterns";
 import { EditService } from "./EditService";
@@ -8,6 +9,8 @@ import { useSequenceGenerator } from "../../../hooks/useStringSequence";
 import { useValidationContext } from "../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 import { useWatchModeContext } from "../../projects/contexts/watch-mode.context";
+import { useChangeTrackerContext } from "../../projects/contexts/change-tracker-context";
+import { Languages } from "./constants";
 
 type MicroserviceDrawerProps = {
   microserviceId: string;
@@ -15,6 +18,11 @@ type MicroserviceDrawerProps = {
   onMicroserviceUpdate: (microservice: Microservice) => any;
   nameExists: (name: string) => boolean;
 };
+
+const LanguageOptions = Object.entries(Languages).map(([extension, name]) => ({
+  label: name,
+  value: extension,
+}));
 
 export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
   microserviceId,
@@ -25,18 +33,31 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
   const { isDirty, setCurrentState } = useDirtyCheckContext();
   const { isValid, setValidityFor } = useValidationContext();
   const { isMicroserviceActive } = useWatchModeContext();
+  const { states } = useChangeTrackerContext();
   const microserviceActive = isMicroserviceActive(microserviceId);
+  const microserviceNotSavedYet = states[microserviceId] === "ADDED";
 
   const [microserviceName, setMicroserviceName] = useState(initialMicroservice.name);
+  const [version, setVersion] = useState(initialMicroservice.version);
+  const [language, setLanguage] = useState<Language | "">(initialMicroservice.language || "");
   const [description, setDescription] = useState(initialMicroservice.description);
   const [basePath, setBasePath] = useState(initialMicroservice.basePath);
-  const [version, setVersion] = useState(initialMicroservice.version);
   const [services, setServices] = useState([...initialMicroservice.services]);
   const nextName = useSequenceGenerator(services, (service) => service.name, "Service");
 
   const handleMicroserviceNameUpdate = (newMicroserviceName: string) => {
     setMicroserviceName(newMicroserviceName);
     setCurrentState((state: any) => ({ ...state, name: newMicroserviceName }));
+  };
+
+  const handleMicroserviceVersionUpdate = (newVersion: string) => {
+    setVersion(newVersion);
+    setCurrentState((state: any) => ({ ...state, version: newVersion }));
+  };
+
+  const handleMicroserviceLanguageUpdate = (newLanguage: Language) => {
+    setLanguage(newLanguage);
+    setCurrentState((state: any) => ({ ...state, language: newLanguage }));
   };
 
   const handleMicroserviceDescriptionUpdate = (newDescription: string) => {
@@ -47,11 +68,6 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
   const handleMicroserviceBasePathUpdate = (newBasePath: string) => {
     setBasePath(newBasePath);
     setCurrentState((state: any) => ({ ...state, basePath: newBasePath }));
-  };
-
-  const handleMicroserviceVersionUpdate = (newVersion: string) => {
-    setVersion(newVersion);
-    setCurrentState((state: any) => ({ ...state, version: newVersion }));
   };
 
   const handleAddService = () => {
@@ -88,9 +104,10 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
   const handleSave = () => {
     onMicroserviceUpdate({
       name: microserviceName,
+      version,
+      language,
       description,
       basePath,
-      version,
       services,
       plugins: initialMicroservice.plugins,
     });
@@ -119,6 +136,15 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
           </div>
 
           <TextField value={version} onChange={handleMicroserviceVersionUpdate} label="Version" />
+
+          <Select
+            label="Language"
+            placeholder=""
+            disabled={!microserviceNotSavedYet}
+            value={language}
+            options={LanguageOptions}
+            onChange={handleMicroserviceLanguageUpdate}
+          />
         </div>
       </div>
       <div className="mb-1 w-full">

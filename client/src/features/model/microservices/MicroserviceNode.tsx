@@ -31,7 +31,12 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
       <ConnectableNodeWrapper>
         <div>
           <h6 className="w-full text-center text-sm text-gray-700">{microservice.basePath}</h6>
-          <h2 className="w-full text-center text-xl mb-2">{microservice.name}</h2>
+          <h2 className="w-full text-center text-xl mb-2">
+            {microservice.name}{" "}
+            <span className="text-base">
+              {!!microservice.language ? `(${microservice.language.toLocaleUpperCase()})` : ""}
+            </span>
+          </h2>
         </div>
         {microservice.services.map((service) => (
           <div

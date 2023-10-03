@@ -1,11 +1,14 @@
 type Microservice = {
   name: string;
+  version: string;
+  language: Language | "";
   description: string;
   basePath: string;
-  version: string;
   services: Service[];
   plugins: Plugin[];
 };
+
+type Language = "js" | "ts";
 
 type Service = {
   id: string;
@@ -13,13 +16,13 @@ type Service = {
   type: "LOCAL" | "CONTROLLER" | "API_INTEGRATION";
 };
 
-type Communication = {
-  services: string[];
-};
-
 type Plugin = {
   name: string;
   version: string;
 };
 
-export type { Microservice, Communication, Service, Plugin };
+type Communication = {
+  services: string[];
+};
+
+export type { Microservice, Language, Service, Plugin, Communication };

@@ -17,6 +17,7 @@ function createMicroserviceNode({ name }: CreateMicroserviceNodeParams): Node<Mi
     data: {
       name,
       version: "0.0.0",
+      language: "",
       description: "",
       basePath: "/api",
       services: [],
@@ -32,7 +33,7 @@ type CreateServiceNodeParams = {
   serviceId: string;
   microserviceId: string;
   name: string;
-  type: "LOCAL" | "CONTROLLER";
+  type: "LOCAL" | "CONTROLLER" | "API_INTEGRATION";
 };
 
 function createServiceNode({

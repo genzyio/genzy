@@ -13,16 +13,26 @@ import { useAutoSaveContext } from "../../contexts/auto-save.context";
 import { useDirtyCheckContext } from "../../../model/common/contexts/dirty-check-context";
 import { useChangeTrackerContext } from "../../contexts/change-tracker-context";
 import { useWatchModeContext } from "../../contexts/watch-mode.context";
+import { isValidProject } from "../../utils/validations";
 
 export const ProjectToolbar: FC = () => {
   const notificator = useNotifications();
   const { project } = useProjectContext();
   const { closeProject } = useProjectNavigation();
   const { isDirty, setInitialState } = useDirtyCheckContext();
-  const { shouldAutoSave, toggleAutoSave, lastAutoSave } = useAutoSaveContext();
+  const { shouldAutoSave, lastAutoSave, resetAutoSave, toggleAutoSave } = useAutoSaveContext();
   const { watchModeEnabled, togglingWatchMode, toggleWatchMode } = useWatchModeContext();
   const { projectDefinition: initialProjectDefinition } = useProjectDefinitionContext();
   const { states, resetStates } = useChangeTrackerContext();
+
+  const executeIfValid = (operation: () => any) => {
+    const [valid, validationMessage] = isValidProject(initialProjectDefinition, states);
+    if (valid) {
+      operation();
+    } else {
+      notificator.error(validationMessage);
+    }
+  };
 
   const saveProjectDefinitionAction = useAction<SaveProjectDefinition>(
     saveProjectDefinition(project.name),
@@ -31,6 +41,7 @@ export const ProjectToolbar: FC = () => {
         notificator.success("Project is saved.");
         setInitialState(false);
         saveProjectScreenshot(project.name);
+        resetAutoSave();
         resetStates();
       },
       onError: (error) => {
@@ -46,6 +57,7 @@ export const ProjectToolbar: FC = () => {
         notificator.success("Project is saved.");
         setInitialState(false);
         saveProjectScreenshot(project.name);
+        resetAutoSave();
         resetStates();
 
         setTimeout(() => {
@@ -65,7 +77,12 @@ export const ProjectToolbar: FC = () => {
           <Button
             disabled={!isDirty}
             onClick={() => {
-              saveProjectDefinitionAction({ projectDefinition: initialProjectDefinition, states });
+              executeIfValid(() => {
+                saveProjectDefinitionAction({
+                  projectDefinition: initialProjectDefinition,
+                  states,
+                });
+              });
             }}
             className="text-xs"
           >
@@ -74,9 +91,11 @@ export const ProjectToolbar: FC = () => {
           <Button
             disabled={!isDirty}
             onClick={() =>
-              saveAndCloseProjectDefinitionAction({
-                projectDefinition: initialProjectDefinition,
-                states,
+              executeIfValid(() => {
+                saveAndCloseProjectDefinitionAction({
+                  projectDefinition: initialProjectDefinition,
+                  states,
+                });
               })
             }
             className="text-xs"

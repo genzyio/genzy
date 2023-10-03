@@ -48,10 +48,14 @@ function handleAddedMicroservices(project: Project, projectDefinition: any, adde
         basePath: microserviceData.basePath,
         packages: microserviceData.packages,
       },
-      "ts",
+      microserviceData.language || "ts",
     );
 
-    generateMicroserviceCode(project, convertJSON(project, microserviceId, projectDefinition), "ts");
+    generateMicroserviceCode(
+      project,
+      convertJSON(project, microserviceId, projectDefinition),
+      microserviceData.language || "ts",
+    );
   });
 }
 
@@ -73,11 +77,15 @@ function handleModifiedMicroservices(
 
     const microservicePath = path.join(project.path, newMicroserviceData.name);
     if (!fs.existsSync(microservicePath)) {
-      initMicroserviceTsJs(project, newMicroserviceData, "ts");
+      initMicroserviceTsJs(project, newMicroserviceData, newMicroserviceData.language || "ts");
     }
 
     reinitializeMicroservicePackageJson(project, oldMicroserviceData, newMicroserviceData);
-    generateMicroserviceCode(project, convertJSON(project, microserviceId, newProjectDefinition), "ts");
+    generateMicroserviceCode(
+      project,
+      convertJSON(project, microserviceId, newProjectDefinition),
+      newMicroserviceData.language || "ts",
+    );
   });
 }
 

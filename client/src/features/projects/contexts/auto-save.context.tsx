@@ -17,10 +17,12 @@ import { saveProjectDefinition } from "../api/project-definition.actions";
 import { saveProjectScreenshot } from "../api/project-screenshots.actions";
 import { useDirtyCheckContext } from "../../model/common/contexts/dirty-check-context";
 import { useChangeTrackerContext } from "./change-tracker-context";
+import { isValidProject } from "../utils/validations";
 
 type AutoSaveContextValues = {
   shouldAutoSave: boolean;
   lastAutoSave: any;
+  resetAutoSave: () => void;
   toggleAutoSave: () => void;
   triggerAutoSave: (projectDefinition: ProjectDefinition) => void;
 };
@@ -28,6 +30,7 @@ type AutoSaveContextValues = {
 const initialAutoSaveContextValues: AutoSaveContextValues = {
   shouldAutoSave: false,
   lastAutoSave: null,
+  resetAutoSave: () => {},
   toggleAutoSave: () => {},
   triggerAutoSave: () => {},
 };
@@ -58,6 +61,10 @@ export const AutoSaveContextProvider: FC<PropsWithChildren> = ({ children }) => 
 
   const [projectDefinitionToSave, setProjectDefinitionToSave] = useState(null);
   const projectDefinitionToSaveDebounced = useDebounce(projectDefinitionToSave, 10000);
+
+  const resetAutoSave = useCallback(() => {
+    setProjectDefinitionToSave(undefined);
+  }, [setProjectDefinitionToSave]);
 
   const toggleAutoSave = useCallback(() => {
     setShouldAutoSave((shouldAutoSave) => {
@@ -93,6 +100,9 @@ export const AutoSaveContextProvider: FC<PropsWithChildren> = ({ children }) => 
   useEffect(() => {
     if (!projectDefinitionToSaveDebounced || !shouldAutoSave) return;
 
+    const [valid] = isValidProject(projectDefinitionToSaveDebounced, states);
+    if (!valid) return;
+
     saveProjectDefinitionAction({ projectDefinition: projectDefinitionToSaveDebounced, states });
   }, [projectDefinitionToSaveDebounced]);
 
@@ -107,7 +117,7 @@ export const AutoSaveContextProvider: FC<PropsWithChildren> = ({ children }) => 
 
   return (
     <AutoSaveContext.Provider
-      value={{ shouldAutoSave, toggleAutoSave, triggerAutoSave, lastAutoSave }}
+      value={{ shouldAutoSave, lastAutoSave, resetAutoSave, toggleAutoSave, triggerAutoSave }}
     >
       {children}
     </AutoSaveContext.Provider>
