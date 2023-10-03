@@ -27,6 +27,7 @@ import { ValidationContextProvider } from "../common/contexts/validation-context
 import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 import nodeTypes from "../common/constants/nodeTypes";
 import edgeTypes from "../common/constants/edgeTypes";
+import { CustomControls } from "../common/components/CustomControls";
 
 type DiagramProps = {
   microserviceId: string;
@@ -176,7 +177,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
           proOptions={{ account: "paid-sponsor", hideAttribution: true }}
         >
           <MiniMap zoomable pannable />
-          <Controls />
+          <CustomControls />
           <Background size={0} />
         </ReactFlow>
       </div>
