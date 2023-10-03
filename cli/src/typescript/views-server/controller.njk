@@ -30,11 +30,11 @@ import { N1mblyControllersContainerDeps } from ".";
 export class {{ name }} {% if extends %} extends {{ extends }} {% endif %} {
 {% if dependencies | length %}
   {% for dependency in dependencies %}
-    private {{dependency}}: N1mblyControllersContainerDeps["{{dependency}}"];
+    private {{dependency}}: N1mblyControllersContainerDeps["services"]["{{dependency}}"];
   {% endfor %}
   constructor(deps: N1mblyControllersContainerDeps) {
   {% for dependency in dependencies %}
-    this.{{dependency}} = deps.{{dependency}};
+    this.{{dependency}} = deps.services.{{dependency}};
   {% endfor %}
   }
 {% endif %}
