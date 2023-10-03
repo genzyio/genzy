@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "target": "es6",
+    "outDir": "build",
+    "module": "commonjs",
+    "experimentalDecorators": true
+  },
+  "include": ["src/**/*.ts"]
+}
