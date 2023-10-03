@@ -2,6 +2,9 @@
   "services": [
     {
       "name": "AuthController",
+      "dependencies": [
+        "NoviServis"
+      ],
       "actions": [
         {
           "httpMethod": "get",
@@ -155,6 +158,7 @@
     },
     {
       "name": "UserCrudController",
+      "dependencies": [],
       "actions": [
         {
           "httpMethod": "get",
@@ -263,15 +267,16 @@
     },
     {
       "name": "NoviServis",
+      "dependencies": [
+        "AuthController"
+      ],
+      "type": "LocalService",
       "actions": [
         {
-          "httpMethod": "get",
           "name": "getNesto",
-          "path": "/get-nesto",
           "params": []
         }
-      ],
-      "path": "/novi-servis"
+      ]
     }
   ],
   "types": {

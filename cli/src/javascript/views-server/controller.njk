@@ -2,6 +2,16 @@
 
 export class {{ name }} {
   $nimbly = {{ $nimbly | dump | safe }}
+{% if dependencies != null %}
+  {% for dependency in dependencies %}
+    {{dependency}};
+  {% endfor %}
+  constructor(deps) {
+  {% for dependency in dependencies %}
+    this.{{dependency}} = deps.{{dependency}};
+  {% endfor %}
+  }
+{% endif %}
 {% for action in actions %} {{ methods }}
   async {{ action.name }}({% for param in action.params %}{{ param.name }}{% if not loop.last %}, {% endif %}{% endfor %})
   {% if action.existingBody %}
