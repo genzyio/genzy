@@ -1,30 +1,48 @@
 export { Application, Request, Response, NextFunction } from "express";
-import { Application, NextFunction } from "express";
+import { Application, Request, Response, NextFunction } from "express";
 import { N1mblyContainer } from "@n1mbly/client";
 export { N1mblyContainer } from "@n1mbly/client";
 
+export type N1mblyPluginParams = {
+  n1mblyApi: N1mblyApi;
+  app: Application;
+};
+
+export interface N1mblyPlugin {
+  beforeAll(params: N1mblyPluginParams): Promise<void> | void;
+  beforeRouteRegister(
+    params: N1mblyPluginParams & {
+      serviceKey: string;
+      serviceInstance: any;
+      n1mblyConfig: N1mblyConfig;
+    }
+  ): Promise<void> | void;
+  afterRouteRegister(
+    params: N1mblyPluginParams & {
+      serviceKey: string;
+      serviceInstance: any;
+      n1mblyConfig: N1mblyConfig;
+      meta: ServiceMetaInfo & { types: MetaInfo["types"] };
+    }
+  ): Promise<void> | void;
+  afterAll(params: N1mblyPluginParams): Promise<void> | void;
+}
+
 export class GenericType {}
 
-type InterceptorCallback = (
+export type InterceptorCallback = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => any;
 
-type CustomInterceptors<TInterceptorCallback> = {
+export type CustomInterceptors<TInterceptorCallback> = {
   [classKey: string]: {
     [methodKey: string]: TInterceptorCallback;
   };
 };
 
-type ErrorRegistry = { [key: string]: number };
-
-type N1mblyInfo = {
-  version?: string;
-  name?: string;
-  description?: string;
-  basePath?: string;
-};
+export type ErrorRegistry = { [key: string]: number };
 
 interface Constructor {
   new (...args: any[]);
@@ -38,6 +56,7 @@ export class N1mblyApi {
     basePath?: string;
   });
 
+  public addPlugin(plugin: N1mblyPlugin): N1mblyApi;
   public intercept(
     customInterceptors: CustomInterceptors<InterceptorCallback>
   ): N1mblyApi;
@@ -49,30 +68,6 @@ export class N1mblyApi {
   public withErrors(errors: ErrorRegistry): N1mblyApi;
   public buildAppFrom(...containers: N1mblyContainer[]): Application;
 }
-
-type BasicType = {
-  type: "boolean" | "string" | "int" | "float";
-  $isArray: boolean;
-  $isOptional: boolean;
-};
-
-type TypeDecoratorOptions = {
-  optional?: boolean;
-};
-
-type ParamDecoratorOptions = TypeDecoratorOptions & {
-  type?: BasicType["type"];
-  array?: boolean;
-};
-
-type BodyDecoratorOptions = {
-  type?:
-    | BasicType
-    | {
-        new (): any;
-      };
-  optional?: boolean;
-};
 
 export function Controller(
   rootPath: string,
@@ -144,3 +139,110 @@ export function Returns(
 export function ReturnsArrayOf(
   type: Constructor
 ): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
+
+// TYPES
+
+export type N1mblyInfo = {
+  version?: string;
+  name?: string;
+  description?: string;
+  basePath?: string;
+  port?: number;
+};
+
+export type Modify<T, R> = Omit<T, keyof R> & R;
+
+export type MetaInfo = {
+  services: ServiceMetaInfo[];
+  types: MetaTypesRegistry;
+  n1mblyInfo?: N1mblyInfo;
+};
+
+export type MetaTypesRegistry = Record<string, ComplexTypeProperties>;
+
+export type ServiceMetaInfo = {
+  name: string;
+  path: string;
+  actions: RouteMetaInfo[];
+};
+
+export type RouteMetaInfo = {
+  httpMethod: HTTPMethod;
+  name: MethodName;
+  path: string;
+  params: Param[];
+  result?: BasicType | ComplexTypeReference;
+};
+
+export type Param = {
+  source: ParamSource;
+  name: string;
+  type?: Type;
+  optional?: boolean;
+};
+
+export type N1mblyConfig = {
+  path?: string;
+  actions: ActionConfig;
+  types?: MetaTypesRegistry;
+};
+
+export type ComplexType = {
+  $typeName: string;
+  $isArray: boolean;
+  $isOptional: boolean;
+} & {
+  [key: ParamName]: ComplexTypeReference | BasicType;
+};
+
+export type ComplexTypeProperties = Omit<
+  ComplexType,
+  "$typeName" | "$isArray" | "$isOptional"
+>;
+export type ComplexTypeReference = Pick<
+  ComplexType,
+  "$typeName" | "$isArray" | "$isOptional"
+>;
+
+export type Action = Modify<
+  Omit<RouteMetaInfo, "name">,
+  {
+    httpMethod?: HTTPMethod;
+    path?: string;
+    params?: Param[];
+    result?: ComplexTypeReference;
+  }
+>;
+
+export type ActionConfig = {
+  [key: MethodName]: Action;
+};
+
+export type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+export type ParamSource = "query" | "path" | "body";
+export type Type = BasicType | ComplexTypeReference;
+export type MethodName = string;
+export type ParamName = string;
+export type BasicType = {
+  type: "boolean" | "string" | "int" | "float";
+  $isArray: boolean;
+  $isOptional: boolean;
+};
+
+export type TypeDecoratorOptions = {
+  optional?: boolean;
+};
+
+export type ParamDecoratorOptions = TypeDecoratorOptions & {
+  type?: BasicType["type"];
+  array?: boolean;
+};
+
+export type BodyDecoratorOptions = {
+  type?:
+    | BasicType
+    | {
+        new (): any;
+      };
+  optional?: boolean;
+};
