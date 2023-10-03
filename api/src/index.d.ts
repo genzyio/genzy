@@ -134,10 +134,10 @@ export function arrayOf(
 ): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
 
 export function Returns(
-  type: Constructor
+  type: Constructor | BasicType["type"]
 ): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
 export function ReturnsArrayOf(
-  type: Constructor
+  type: Constructor | BasicType["type"]
 ): (target: any, propertyKey?: string | symbol, parameterIndex?: any) => void;
 
 // TYPES
