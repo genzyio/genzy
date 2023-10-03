@@ -85,9 +85,12 @@ export function convertJSON(project: Project, microserviceId: string, inputJson:
 
   const microserviceInfo = inputJson["microservices"]["nodes"].find((m: any) => m.id === microserviceId).data;
 
-  outputJson.services = createServices(project, inputJson, microserviceId);
-  outputJson.types = createTypes(inputJson["classes"][microserviceId]["nodes"]);
   outputJson.n1mblyInfo = createInfo(microserviceInfo);
+  outputJson.services = createServices(project, inputJson, microserviceId);
+  outputJson.types = {
+    ...createTypesForRemoteServices(inputJson, microserviceId),
+    ...createTypes(inputJson, microserviceId),
+  };
 
   return outputJson;
 }
@@ -219,31 +222,74 @@ function createParams(isController: boolean, paramsInput: any, classes: any): N1
   return params;
 }
 
-function createTypes(classes: any): Record<string, N1mblyType> {
-  let types: Record<string, Record<string, any>> = {};
+function createTypesForRemoteServices(inputJson: any, microserviceId: string) {
+  const services = inputJson["services"][microserviceId]["nodes"];
+  const remoteProxies = services.filter((node: any) => node.data.type === "REMOTE_PROXY");
 
-  classes.map((c: any) => {
-    const attr: Record<string, any> = {};
+  return remoteProxies.reduce((acc: any, remoteProxy: any) => {
+    const remoteService = inputJson["services"][remoteProxy.data.microserviceId]["nodes"].find(
+      (n: any) => n.id === remoteProxy.id,
+    ).data;
 
-    c.data.attributes.map((a: any) => {
-      attr[a.name] = {
-        ...getTypeObject(classes, a.type, a.isOptional, a.isCollection),
-      };
-    });
+    const compexTypeIds = remoteService.functions.flatMap(extractComplexTypesFromFunction);
+    const complexTypes = extractTypesInDepth(
+      inputJson["classes"][remoteProxy.data.microserviceId]["nodes"],
+      compexTypeIds,
+    );
 
-    types = {
-      ...types,
-      [c.data.name]: {
-        ...attr,
-      },
+    return {
+      ...acc,
+      ...complexTypes,
     };
-  });
-
-  return types;
+  }, {});
 }
 
-function getType(classes: any, param: string): string | undefined {
-  return classes.find((c: any) => c.id === param)?.data.name;
+function extractTypesInDepth(classes: any, types: string[]) {
+  const typesToExtract = [...types];
+  const extractedTypes: any = {};
+
+  while (typesToExtract.length > 0) {
+    const typeToExtract = typesToExtract.pop();
+    const type = classes.find((node: any) => node.id === typeToExtract);
+    if (extractedTypes[type.data.name]) continue;
+
+    extractedTypes[type.data.name] = createType(classes, type);
+    typesToExtract.push(...extractComplexTypesFromClass(type.data));
+  }
+
+  return extractedTypes;
+}
+
+const primitiveTypes = ["any", "int", "float", "boolean", "string", "void"];
+
+function extractComplexTypesFromFunction(_function: any) {
+  const typesFromFunction = [_function.returnType, ..._function.params.map((param: any) => param.type)] as string[];
+
+  return typesFromFunction.filter((type) => !primitiveTypes.includes(type));
+}
+
+function extractComplexTypesFromClass(_class: any) {
+  const attributeTypes = _class.attributes.map((attribute: any) => attribute.type) as string[];
+
+  return attributeTypes.filter((type) => !primitiveTypes.includes(type));
+}
+
+function createTypes(inputJson: any, microserviceId: string): Record<string, N1mblyType> {
+  const classes = inputJson["classes"][microserviceId]["nodes"];
+  return classes.reduce((types: any, c: any) => {
+    types[c.data.name] = createType(classes, c);
+    return types;
+  }, {});
+}
+
+function createType(classes: any, type: any) {
+  const { attributes } = type.data;
+
+  return attributes.reduce((attributes: any, attribute: any) => {
+    const { name, type, isOptional, isCollection } = attribute;
+    attributes[name] = getTypeObject(classes, type, isOptional, isCollection);
+    return attributes;
+  }, {});
 }
 
 function getTypeObject(classes: any, type: string, isOptional: boolean, isArray: boolean): N1mblyTypeInfo {
@@ -256,4 +302,8 @@ function getTypeObject(classes: any, type: string, isOptional: boolean, isArray:
     $isOptional: isOptional,
     $isArray: isArray,
   };
+}
+
+function getType(classes: any, param: string): string | undefined {
+  return classes.find((c: any) => c.id === param)?.data.name;
 }

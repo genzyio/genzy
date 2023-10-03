@@ -45,25 +45,28 @@ export const ProjectDefinitionContextProvider: FC<PropsWithChildren> = ({ childr
   const { triggerAutoSave } = useAutoSaveContext();
   const { setStateForMS } = useChangeTrackerContext();
   const { projectDefinition, isFetching } = useProjectDefinition(project?.name);
+
   const dispatcher = useMemo(() => createDispatcher(projectDefinition), [projectDefinition]);
+
+  const changeTrackingDispatcher = useMemo(
+    () => createChangeTrackingDispatcherWrapper(dispatcher, setStateForMS),
+    [dispatcher, setStateForMS]
+  );
+
   const multiLevelDispatcher = useCallback(
     (type: symbol, payload: any) => {
-      let result = dispatcher(type, payload);
+      let result = changeTrackingDispatcher(type, payload);
       while (typeof result === "function") {
         result = result(multiLevelDispatcher);
       }
       return result;
     },
-    [dispatcher]
-  );
-  const changeTrackingDispatcher = useMemo(
-    () => createChangeTrackingDispatcherWrapper(multiLevelDispatcher, setStateForMS),
-    [multiLevelDispatcher, setStateForMS]
+    [changeTrackingDispatcher]
   );
 
   const autoSaveDispatcher = useCallback(
     (type: symbol, payload: any) => {
-      const result = changeTrackingDispatcher(type, payload);
+      const result = multiLevelDispatcher(type, payload);
       setCurrentState(true);
       setTimeout(() => {
         triggerAutoSave(projectDefinition);
@@ -71,7 +74,7 @@ export const ProjectDefinitionContextProvider: FC<PropsWithChildren> = ({ childr
 
       return result;
     },
-    [changeTrackingDispatcher, triggerAutoSave]
+    [multiLevelDispatcher, triggerAutoSave]
   );
 
   if (isFetching) {
