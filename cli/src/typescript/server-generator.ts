@@ -1,5 +1,10 @@
 import type { Environment } from "nunjucks";
-import type { MetaTypesRegistry, N1mblyInfo } from "../../../shared/types";
+import type {
+  ComplexTypeProperties,
+  ComplexTypeReference,
+  MetaTypesRegistry,
+  N1mblyInfo,
+} from "../../../shared/types";
 import type { ExtendedMetaInfo, ExtendedServiceInfo } from "../types";
 import {
   adoptParams,
@@ -9,6 +14,7 @@ import {
   pathExists,
   prepareDirectory,
   readFileSync,
+  sortedTypes,
   writeToFile,
 } from "../utils";
 import { JSTSParser } from "../parser/js-ts";
@@ -33,15 +39,30 @@ export async function generate({
       info: meta.n1mblyInfo,
     }),
   );
-
-  writeToFile(
-    `${dirPath}/types.ts`,
-    await typesFileContentFrom({
-      nunjucks,
-      types: meta.types,
+  //
+  // writeToFile(
+  //   `${dirPath}/types.ts`,
+  //   await typesFileContentFrom({
+  //     nunjucks,
+  //     types: meta.types,
+  //   }),
+  // );
+  const { sorted, dependencies } = sortedTypes(meta.types);
+  const typesPath = dirPath + "/types";
+  prepareDirectory(typesPath);
+  await Promise.all(
+    sorted.map(async (type: string) => {
+      writeToFile(
+        `${typesPath}/${type}.ts`,
+        await typeFileContentFrom({
+          name: type,
+          type: meta.types[type],
+          dependencies: dependencies[type],
+          nunjucks,
+        }),
+      );
     }),
   );
-
   await Promise.all([
     ...meta.services
       .filter((s) => !s.type || ["Controller", "RemoteProxy"].includes(s.type))
@@ -195,5 +216,20 @@ function typesFileContentFrom({
 }): Promise<string> {
   //TODO: sort classes by dependecy
   const content = nunjucks.render("types.njk", { types });
+  return formatFileContent(content);
+}
+
+function typeFileContentFrom({
+  name,
+  type,
+  dependencies,
+  nunjucks,
+}: {
+  name: string;
+  type: ComplexTypeProperties;
+  dependencies: string[];
+  nunjucks: Environment;
+}): Promise<string> {
+  const content = nunjucks.render("type.njk", { name, type, dependencies });
   return formatFileContent(content);
 }

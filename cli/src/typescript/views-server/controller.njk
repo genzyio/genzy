@@ -12,11 +12,9 @@ import {
   ReturnsArrayOf,
   string, int, float, boolean, type, arrayOf
 } from '@n1mbly/api';
-import {
 {% for name, fields in types %}
-  {{name}},
+import { {{name}} } from "./types/{{name}}";
 {% endfor %}
-} from "./types";
 {% if extends %}
 import {
 {{extends}}
