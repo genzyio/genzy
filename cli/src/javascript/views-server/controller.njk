@@ -20,4 +20,8 @@ export class {{ name }} {
     {}
   {% endif %}
 {% endfor %}
+
+{% for existingMethod in existingMethodsNotInMeta %}
+  {{ existingMethod | safe }}
+{% endfor %}
 }

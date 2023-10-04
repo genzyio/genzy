@@ -4,7 +4,7 @@ import type {
   MetaTypesRegistry,
   ServiceMetaInfo,
 } from "../../../shared/types";
-import { adoptParams, adoptTypeCS, generate as generateUtil } from "../utils";
+import { adoptParams, adoptTypeCS, generate as generateUtil } from "../utils/general";
 
 export function generate({
   meta,

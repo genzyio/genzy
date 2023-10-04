@@ -9,7 +9,7 @@ import type {
   MetaTypesRegistry,
   Param,
   ServiceMetaInfo,
-} from "../../shared/types";
+} from "../../../shared/types";
 
 export async function readMetaFromFile(filePath: string): Promise<MetaInfo> {
   return new Promise((resolve) => {
@@ -48,7 +48,7 @@ export async function generate(
       types: MetaTypesRegistry;
       nunjucks: Environment;
     }) => Promise<string>;
-  },
+  }
 ) {
   const {
     dirPath,
@@ -69,7 +69,7 @@ export async function generate(
             types: meta.types,
             nunjucks,
             url,
-          }),
+          })
         );
       }
       if (contentHandlers.serviceFileContentFrom) {
@@ -79,10 +79,10 @@ export async function generate(
             service,
             types: meta.types,
             nunjucks,
-          }),
+          })
         );
       }
-    }),
+    })
   );
 
   if (contentHandlers.indexFileContentFrom) {
@@ -92,7 +92,7 @@ export async function generate(
         services: meta.services,
         url,
         nunjucks,
-      }),
+      })
     );
   }
   if (contentHandlers.typesFileContentFrom) {
@@ -135,19 +135,19 @@ export async function fetchMeta(url: string): Promise<MetaInfo> {
 
 export function adoptParams(
   params: Param[],
-  typeAdopt: (p: any) => { name: string; isComplex: boolean },
+  typeAdapt: (p: any) => { name: string; isComplex: boolean }
 ) {
   return params.map((p) => ({
     ...p,
     name: p.name ?? "body",
-    type: typeAdopt(p.type),
+    typeAdapted: typeAdapt(p.type),
     typeDecorator: adoptTypeToDecorator(p.type),
     $isOptional: p.type.$isOptional,
     $isArray: p.type.$isArray,
   }));
 }
 
-export function adoptTypeJS(type) {
+export function adaptTypeJS(type) {
   if (!type || (!type.type && !type.$typeName)) {
     return { name: "any", isComplex: false };
   }
@@ -163,9 +163,7 @@ export function adoptTypeJS(type) {
 export function adoptTypeToDecorator(type) {
   if (!type || (!type.type && !type.$typeName)) return undefined;
   if (typeof type.type === "string") {
-    const typeDecorator =
-      type.type === "int" || type.type === "float" ? "number" : type.type;
-    return `@${type.$isArray ? `${typeDecorator}Array` : `${typeDecorator}`}(${
+    return `@${type.$isArray ? `${type.type}Array` : `${type.type}`}(${
       type.$isOptional ? ", { optional: true }" : ""
     })`;
   }
@@ -181,11 +179,9 @@ export function adoptTypeToDecorator(type) {
 export function adoptTypeToResultDecorator(type) {
   if (!type || (!type.type && !type.$typeName)) return undefined;
   if (typeof type.type === "string") {
-    const typeDecorator =
-      type.type === "int" || type.type === "float" ? "number" : type.type;
     return type.$isArray
-      ? `@ReturnsArrayOf("${typeDecorator}")`
-      : `@Returns("${typeDecorator}")`;
+      ? `@ReturnsArrayOf("${type.type}")`
+      : `@Returns("${type.type}")`;
   }
   return type.$isArray
     ? `@ReturnsArrayOf(${type.$typeName})`
@@ -203,44 +199,4 @@ export function adoptTypeCS(type) {
 export function controllerToServiceName(controllerName: string): string {
   const name = controllerName.replace("Controller", "Service");
   return `${name}${name.endsWith("Service") ? "" : "Service"}`;
-}
-
-export function sortedTypes(types: MetaTypesRegistry): any {
-  const vals: { [key: string]: string[] } = {};
-  Object.keys(types).map((typeName: string) => {
-    vals[typeName] = typeDependsOn(types[typeName]);
-  });
-  const result = topologicalSort(vals);
-  return { sorted: result, dependencies: vals };
-}
-function topologicalSort(graph: { [key: string]: string[] }): string[] {
-  const visited: { [key: string]: boolean } = {};
-  const stack: string[] = [];
-
-  function dfs(vertex: string) {
-    visited[vertex] = true;
-    const neighbors = graph[vertex] || [];
-    for (const neighbor of neighbors) {
-      if (!visited[neighbor]) {
-        dfs(neighbor);
-      }
-    }
-    stack.push(vertex);
-  }
-
-  for (const vertex of Object.keys(graph)) {
-    if (!visited[vertex]) {
-      dfs(vertex);
-    }
-  }
-
-  return stack;
-}
-
-function typeDependsOn(type: ComplexTypeProperties): string[] {
-  return Object.values(type)
-    .filter((field) => {
-      return field["$typeName"] !== undefined;
-    })
-    .map((field) => field["$typeName"]);
 }

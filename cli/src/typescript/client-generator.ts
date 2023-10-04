@@ -5,13 +5,12 @@ import {
   ServiceMetaInfo,
 } from "../../../shared/types";
 import {
-  adoptParams,
-  adoptTypeJS,
-  adoptTypeToResultDecorator,
-  controllerToServiceName,
+  adoptParams as adaptParams,
+  adaptTypeJS,
+  adoptTypeToResultDecorator as adaptTypeToResultDecorator,
   formatFileContent,
   generate as generateUtil,
-} from "../utils";
+} from "../utils/general";
 
 export function generate({
   meta,
@@ -54,9 +53,9 @@ function controllerFileContentFrom({
     actions: service.actions.map((r) => ({
       ...r,
       httpMethod: capitalizeFirstLetter(r.httpMethod.toLowerCase()),
-      params: adoptParams(r.params, adoptTypeJS),
-      resultType: adoptTypeJS(r.result),
-      resultDecorator: adoptTypeToResultDecorator(r.result),
+      params: adaptParams(r.params, adaptTypeJS),
+      resultType: adaptTypeJS(r.result),
+      resultDecorator: adaptTypeToResultDecorator(r.result),
     })),
     existingMethods: [
       ...new Set(

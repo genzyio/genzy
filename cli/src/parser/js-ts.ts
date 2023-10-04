@@ -41,11 +41,11 @@ PropertyType
   = ":" _ (NestedCurlyBracketsContent / [^;=]*) { return text(); }
 
 MethodDefinition
-  = _ "private"? _ "async"? _ "override"?
+  = _ privateMatch:"private"? _ asyncMatch:"async"? _ overrideMatch:"override"?
   _ name:Identifier
   _ params:NestedParenthesesContent 
   _ body:NestedCurlyBracketsContent
-  _ { return { type: "method", name, params, body }; }
+  _ { return { type: "method", name, params, body, privateMatch, asyncMatch, overrideMatch }; }
 
 Identifier
   = start:[$a-zA-Z_] end:[a-zA-Z0-9_]* { return start + end?.join("") ?? "" }

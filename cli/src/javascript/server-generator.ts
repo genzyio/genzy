@@ -7,9 +7,10 @@ import {
   prepareDirectory,
   readFileSync,
   writeToFile,
-} from "../utils";
+} from "../utils/general";
 import type { ExtendedMetaInfo, ExtendedServiceInfo } from "../types";
 import { JSTSParser } from "../parser/js-ts";
+import { handleExistingCode } from "../utils/existing-code";
 
 export async function generate({
   meta,
@@ -36,13 +37,9 @@ export async function generate({
       .filter((s) => !s.type || ["Controller", "RemoteProxy"].includes(s.type))
       .map(async (controller) => {
         const path = `${dirPath}/${controller.name}.js`;
+        const existingMethodsNotInMeta: string[] = [];
         if (pathExists(path) && controller.type !== "RemoteProxy") {
-          const methodBodyMap = getExistingMethodBodyMap(path, controller);
-          controller.actions.forEach((action) => {
-            // TODO handle type
-            const existingAction = action as any;
-            existingAction.existingBody = methodBodyMap.get(action.name);
-          });
+          handleExistingCode(path, controller, existingMethodsNotInMeta);
         }
         writeToFile(
           path,
@@ -50,6 +47,7 @@ export async function generate({
             nunjucks,
             types: meta.types,
             service: controller,
+            existingMethodsNotInMeta,
           })
         );
       }),
@@ -57,13 +55,9 @@ export async function generate({
       .filter((s) => ["LocalService"].includes(s.type))
       .map(async (service) => {
         const path = `${dirPath}/${service.name}.js`;
+        const existingMethodsNotInMeta: string[] = [];
         if (pathExists(path)) {
-          const methodBodyMap = getExistingMethodBodyMap(path, service);
-          service.actions.forEach((action) => {
-            // TODO handle type
-            const existingAction = action as any;
-            existingAction.existingBody = methodBodyMap.get(action.name);
-          });
+          handleExistingCode(path, service, existingMethodsNotInMeta);
         }
         writeToFile(
           path,
@@ -71,43 +65,23 @@ export async function generate({
             nunjucks,
             types: meta.types,
             service,
+            existingMethodsNotInMeta,
           })
         );
       }),
   ]);
 }
 
-function getExistingMethodBodyMap(
-  path: string,
-  controller: ExtendedServiceInfo
-): Map<string, string> {
-  const methodBodyMap = new Map<string, string>();
-  if (pathExists(path)) {
-    try {
-      const classObj = JSTSParser.parse(readFileSync(path)).classes.find(
-        (x) => x.name === controller.name
-      );
-      classObj.sections
-        // TODO capture in-between sections, like comments as well
-        .filter((section) => section.type === "method")
-        .forEach((method) => {
-          methodBodyMap.set(method.name, method.body);
-        });
-    } catch (error) {
-      console.log("Parsing error: ", readFileSync(path), error);
-    }
-  }
-  return methodBodyMap;
-}
-
 async function controllerFileContentFrom({
   service,
   types,
   nunjucks,
+  existingMethodsNotInMeta,
 }: {
   service: ExtendedServiceInfo;
   types: MetaTypesRegistry;
   nunjucks: Environment;
+  existingMethodsNotInMeta: string[];
 }): Promise<string> {
   const content = nunjucks.render("controller.njk", {
     ...service,
@@ -116,6 +90,7 @@ async function controllerFileContentFrom({
     ),
     $nimbly: { ...n1mblyConfigFrom(service), types },
     types,
+    existingMethodsNotInMeta,
   });
   return formatFileContent(content);
 }
@@ -124,10 +99,12 @@ async function serviceFileContentFrom({
   service,
   types,
   nunjucks,
+  existingMethodsNotInMeta,
 }: {
   service: ExtendedServiceInfo;
   types: MetaTypesRegistry;
   nunjucks: Environment;
+  existingMethodsNotInMeta: string[];
 }): Promise<string> {
   const content = nunjucks.render("service.njk", {
     ...service,
@@ -136,6 +113,7 @@ async function serviceFileContentFrom({
     ),
     $nimbly: { ...n1mblyConfigFrom(service), types },
     types,
+    existingMethodsNotInMeta,
   });
   return formatFileContent(content);
 }

@@ -1,7 +1,7 @@
 "use strict";
 import * as yargs from "yargs";
 
-import { fetchMeta, readMetaFromFile } from "./utils";
+import { fetchMeta, readMetaFromFile } from "./utils/general";
 
 import { generate as generateJS } from "./javascript/client-generator";
 import { generate as generateTS } from "./typescript/client-generator";

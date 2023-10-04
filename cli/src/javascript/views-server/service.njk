@@ -24,4 +24,8 @@ export class {{ name }} {% if extends %} extends {{ extends }} {% endif %} {
     {}
   {% endif %}
 {% endfor %}
+
+{% for existingMethod in existingMethodsNotInMeta %}
+  {{ existingMethod | safe }}
+{% endfor %}
 }

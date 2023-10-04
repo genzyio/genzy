@@ -41,14 +41,14 @@ export class {{ name }} {% if extends %} extends {{ extends }} {% endif %} {
   {% if action.resultDecorator %}{{ action.resultDecorator | safe }}{% endif %}
   async {{ action.name }}({% for param in action.params %}
     {% if param.source == "query" %}
-      @Query('{{ param.name }}', { {% if param.type.name != "any" %}type: {% if param.type.isComplex %} {{ param.type.name }} {% else %} "{{ param.type.name }}" {% endif %}, {% endif %} {% if param.$isOptional %}optional: true {% endif %} {% if param.$isArray %}, array: true {% endif %}})
+      @Query('{{ param.name }}', { {% if param.typeAdapted.name != "any" %}type: {% if param.typeAdapted.isComplex %} {{ param.typeAdapted.name }} {% else %} "{{ param.type.type }}" {% endif %}, {% endif %} {% if param.$isOptional %}optional: true {% endif %} {% if param.$isArray %}, array: true {% endif %}})
     {% endif %}
     {% if param.source == "path" %}
-      @Path('{{ param.name }}', { {% if param.type.name != "any" %}type: {% if param.type.isComplex %} {{ param.type.name }} {% else %} "{{ param.type.name }}" {% endif %}, {% endif %} {% if param.$isOptional %}optional: true {% endif %} {% if param.$isArray %}, array: true {% endif %}})
+      @Path('{{ param.name }}', { {% if param.typeAdapted.name != "any" %}type: {% if param.typeAdapted.isComplex %} {{ param.typeAdapted.name }} {% else %} "{{ param.type.type }}" {% endif %}, {% endif %} {% if param.$isOptional %}optional: true {% endif %} {% if param.$isArray %}, array: true {% endif %}})
     {% endif %}
     {% if param.source == "body" %}
-      @Body({ {% if param.type.name != "any" %}type: {{ param.type.name }}, {% endif %} {% if param.$isOptional %}optional: true {% endif %} {% if param.$isArray %}, array: true {% endif %}})
-    {% endif %} {{ param.name }}{% if param.$isOptional %}?{% endif %}: {{ param.type.name }}{% if param.$isArray %}[]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{{ action.resultType.name }}{% if action.result.$isArray %}[]{% endif %}>
+      @Body({ {% if param.typeAdapted.name != "any" %}type: {{ param.typeAdapted.name }}, {% endif %} {% if param.$isOptional %}optional: true {% endif %} {% if param.$isArray %}, array: true {% endif %}})
+    {% endif %} {{ param.name }}{% if param.$isOptional %}?{% endif %}: {{ param.typeAdapted.name }}{% if param.$isArray %}[]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{{ action.resultType.name }}{% if action.result.$isArray %}[]{% endif %}>
   {% if action.existingBody %}
     {{ action.existingBody | safe }}
   {% else %}
@@ -57,5 +57,9 @@ export class {{ name }} {% if extends %} extends {{ extends }} {% endif %} {
       return null;
     }
   {% endif %}
+{% endfor %}
+
+{% for existingMethod in existingMethodsNotInMeta %}
+  {{ existingMethod | safe }}
 {% endfor %}
 }

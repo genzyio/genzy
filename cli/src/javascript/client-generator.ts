@@ -5,7 +5,7 @@ import type {
   MetaTypesRegistry,
   ServiceMetaInfo,
 } from "../../../shared/types";
-import { formatFileContent, generate as generateUtil } from "../utils";
+import { formatFileContent, generate as generateUtil } from "../utils/general";
 
 export function generate({
   meta,
