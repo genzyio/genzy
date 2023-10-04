@@ -2,14 +2,13 @@ import type { Environment } from "nunjucks";
 import type { MetaTypesRegistry, N1mblyInfo } from "../../../shared/types";
 import { lowerFirstLetter, n1mblyConfigFrom } from "../../../shared/functions";
 import {
+  capitalizeFirstLetter,
   formatFileContent,
   pathExists,
   prepareDirectory,
-  readFileSync,
   writeToFile,
 } from "../utils/general";
 import type { ExtendedMetaInfo, ExtendedServiceInfo } from "../types";
-import { JSTSParser } from "../parser/js-ts";
 import { handleExistingCode } from "../utils/existing-code";
 
 export async function generate({
@@ -29,6 +28,7 @@ export async function generate({
       nunjucks,
       info: meta.n1mblyInfo,
       services: meta.services,
+      plugins: meta.plugins,
     })
   );
 
@@ -122,10 +122,12 @@ function indexFileContentFrom({
   services,
   nunjucks,
   info,
+  plugins,
 }: {
   services: ExtendedServiceInfo[];
   info: N1mblyInfo;
   nunjucks: Environment;
+  plugins: string[];
 }): Promise<string> {
   const content = nunjucks.render("index.njk", {
     services: services.filter((service) => {
@@ -135,6 +137,13 @@ function indexFileContentFrom({
       return service.type == "Controller";
     }),
     info,
+    plugins: plugins.map((plugin) => ({
+      name: plugin
+        .split("-")
+        .map((x) => capitalizeFirstLetter(x))
+        .join(""),
+      package: plugin,
+    })),
   });
   return formatFileContent(content);
 }

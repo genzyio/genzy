@@ -13,6 +13,7 @@ import {
   pathExists,
   prepareDirectory,
   writeToFile,
+  capitalizeFirstLetter,
 } from "../utils/general";
 import { lowerFirstLetter } from "../../../shared/functions";
 import { handleExistingCode } from "../utils/existing-code";
@@ -35,6 +36,7 @@ export async function generate({
       nunjucks,
       services: meta.services,
       info: meta.n1mblyInfo,
+      plugins: meta.plugins,
     })
   );
   const { sorted, dependencies } = sortedTypes(meta.types);
@@ -91,10 +93,6 @@ export async function generate({
         );
       }),
   ]);
-}
-
-function capitalizeFirstLetter(string: string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 function controllerFileContentFrom({
@@ -157,10 +155,12 @@ function indexFileContentFrom({
   services,
   info,
   nunjucks,
+  plugins,
 }: {
   services: ExtendedServiceInfo[];
   info: N1mblyInfo;
   nunjucks: Environment;
+  plugins: string[];
 }): Promise<string> {
   const content = nunjucks.render("index.njk", {
     services: services.filter((service) => {
@@ -170,6 +170,13 @@ function indexFileContentFrom({
       return !service.type || service.type === "Controller";
     }),
     info,
+    plugins: plugins.map((plugin) => ({
+      name: plugin
+        .split("-")
+        .map((x) => capitalizeFirstLetter(x))
+        .join(""),
+      package: plugin,
+    })),
   });
   return formatFileContent(content);
 }

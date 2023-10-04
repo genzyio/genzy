@@ -200,3 +200,7 @@ export function controllerToServiceName(controllerName: string): string {
   const name = controllerName.replace("Controller", "Service");
   return `${name}${name.endsWith("Service") ? "" : "Service"}`;
 }
+
+export function capitalizeFirstLetter(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
