@@ -24,4 +24,4 @@ export {
   ReturnsArrayOf,
 } from "../../shared/decorators";
 export { GenericType } from "../../shared/constants";
-export { N1mblyApi } from "./n1mbly-api";
+export { N1mblyApi, N1mblyPlugin } from "./n1mbly-api";

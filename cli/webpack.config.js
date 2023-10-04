@@ -7,7 +7,7 @@ const { NODE_ENV = "production" } = process.env;
 module.exports = {
   entry: "./src/index.ts",
   mode: NODE_ENV,
-  target: ["node", "es2015"],
+  target: ["node", "es2021"],
   module: {
     rules: [
       {
