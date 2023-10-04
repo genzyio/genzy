@@ -260,7 +260,7 @@ function extractTypesInDepth(classes: any, types: string[]) {
   return extractedTypes;
 }
 
-const primitiveTypes = ["any", "int", "float", "boolean", "string", "void"];
+const primitiveTypes = ["any", "int", "float", "boolean", "string"];
 
 function extractComplexTypesFromFunction(_function: any) {
   const typesFromFunction = [_function.returnType, ..._function.params.map((param: any) => param.type)] as string[];
@@ -295,7 +295,7 @@ function createType(classes: any, type: any) {
 function getTypeObject(classes: any, type: string, isOptional: boolean, isArray: boolean): N1mblyTypeInfo {
   const typeObj: Record<string, string> = {};
   const typeName = getType(classes, type);
-  typeName ? (typeObj["$typeName"] = typeName) : (typeObj["type"] = type);
+  typeName ? (typeObj["$typeName"] = typeName) : (typeObj["type"] = (type === "any" ? undefined : type) as string);
 
   return {
     ...typeObj,

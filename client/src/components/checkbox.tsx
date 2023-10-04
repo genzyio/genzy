@@ -9,7 +9,7 @@ type CheckboxProps = {
 export const Checkbox: FC<CheckboxProps> = ({ label, checked, onChange }) => {
   return (
     <>
-      <div className="flex space-x-2">
+      <div className="flex space-x-1">
         <div>
           <input
             name={label}
@@ -18,7 +18,7 @@ export const Checkbox: FC<CheckboxProps> = ({ label, checked, onChange }) => {
             onChange={(e) => onChange(e.target.checked)}
           />
         </div>
-        <label className="text-lg font-medium text-gray-700" htmlFor={label}>
+        <label className="text-base font-medium leading-6 text-gray-900" htmlFor={label}>
           {label}
         </label>
       </div>

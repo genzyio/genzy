@@ -19,7 +19,7 @@ export type Method = {
   id: string;
   name: string;
   parameters: Parameter[];
-  returnValue: DataType | "void";
+  returnValue: DataType;
   returnsCollection: boolean;
   isOptional: boolean;
 };

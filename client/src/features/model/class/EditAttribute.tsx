@@ -66,37 +66,33 @@ export const EditAttribute: FC<EditAttributeProps> = ({
           setInitialAttribute(cloneDeep(attribute));
         }}
       >
-        <div className="flex">
-          <div className="mr-4">
+        <div className="flex space-x-2">
+          <div className="flex-1">
             <TextField
+              label="Attribute Name"
               value={attribute.name}
               onChange={changeAttributeName}
-              label="Attribute Name"
               error={
                 (!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")
               }
             />
           </div>
-          <div>
+          <div className="min-w-[30%]">
             <Select
+              label="Attribute Type"
               value={attribute.type}
               onChange={changeAttributeType}
               options={types}
-              label="Attribute Type"
             />
           </div>
         </div>
-        <div className="mt-4">
-          <Checkbox checked={attribute.isOptional} label="Optional" onChange={changeIsOptional} />
+        <div className="mt-4 flex space-x-3 items-center">
+          <label className="font-medium leading-6 text-gray-900">Attribute options:</label>
+          <Checkbox label="Array" checked={attribute.isCollection} onChange={changeIsCollection} />
+          <Checkbox label="Optional" checked={attribute.isOptional} onChange={changeIsOptional} />
         </div>
-        <div className="mt-4">
-          <Checkbox
-            checked={attribute.isCollection}
-            label="Collection"
-            onChange={changeIsCollection}
-          />
-        </div>
-        <div className="flex justify-end space-x-2 mt-5">
+
+        <div className="flex justify-end">
           <button
             onClick={() => {
               setPreview(true);

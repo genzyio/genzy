@@ -54,10 +54,11 @@ export const FunctionCard: FC<FunctionCardProps> = ({
         <>
           <div>{showRoute && "Name: " + fun.name}</div>
           {fun.params.length > 0 && "Parameters:"}
-          <ul className="ml-4">
+          <ul className="ml-2">
             {fun.params.map((param) => (
               <li key={param.id} className="flex items-center w-full">
-                <span className="font-semibold">{param.name}</span>: {getTypeLabel(param.type)}
+                <span>{param.name}</span>
+                {param.isOptional ? "?" : ""}: {getTypeLabel(param.type)}
                 {param.isCollection && "[]"}{" "}
                 {showRoute && (
                   <span className="text-xs italic text-gray-500">({param.source})</span>

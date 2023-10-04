@@ -67,8 +67,8 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({
 
   const nextParamName = (index: number) => {
     let i = 1;
-    while (serviceData.functions[index].params.find((p) => p.name === `p${i}`)) i++;
-    return `p${i}`;
+    while (serviceData.functions[index].params.find((p) => p.name === `param${i}`)) i++;
+    return `param${i}`;
   };
 
   const handleAddParam = (index: number) => {
@@ -119,7 +119,7 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({
           />
         </span>
       </div>
-      <div className="flex mb-1 w-full mb-5 space-x-2">
+      <div className="flex w-full mb-5 space-x-2">
         <span className="w-1/2" hidden={serviceData.type !== "API_INTEGRATION"}>
           <TextField
             value={serviceData.host}

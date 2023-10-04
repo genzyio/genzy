@@ -4,7 +4,6 @@ import { type Class } from "./models";
 
 type TypesContextValues = {
   typesPerMicroservice: Record<string, any>;
-  typesWithVoidPerMicroservice: Record<string, any>;
 
   updateTypesPerMicroservice: (microserviceId: string) => (classNodes: Node<Class>[]) => any;
 };
@@ -12,20 +11,17 @@ type TypesContextValues = {
 const TypesContext = createContext<TypesContextValues | null>(null);
 
 export const useTypesContext = (microserviceId: string) => {
-  const { typesPerMicroservice, typesWithVoidPerMicroservice, updateTypesPerMicroservice } =
-    useContext(TypesContext);
+  const { typesPerMicroservice, updateTypesPerMicroservice } = useContext(TypesContext);
 
   const types = typesPerMicroservice[microserviceId] || [];
-  const typesWithVoid = typesWithVoidPerMicroservice[microserviceId] || [];
 
   const getTypeLabel = (value: string) => {
-    return typesWithVoid.find((option) => option.value === value)?.label ?? "";
+    return types.find((option) => option.value === value)?.label ?? "";
   };
   const updateTypes = updateTypesPerMicroservice(microserviceId);
 
   return {
     types,
-    typesWithVoid,
     getTypeLabel,
     updateTypes,
   };
@@ -36,11 +32,9 @@ const primitiveTypeOptions = primitiveTypes.map((type) => ({
   label: type,
   value: type,
 }));
-const voidOption = { label: "void", value: "void" };
 
 export const TypesContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [typesPerMicroservice, setTypesPerMicroservice] = useState<any>({});
-  const [typesWithVoidPerMicroservice, setTypesWithVoidPerMicroservice] = useState<any>({});
 
   const updateTypesPerMicroservice = (microserviceId: string) => {
     return (classNodes: Node<Class>[]) => {
@@ -53,18 +47,11 @@ export const TypesContextProvider: FC<PropsWithChildren> = ({ children }) => {
         ...typesPerMicroservice,
         [microserviceId]: [...primitiveTypeOptions, ...classTypeOptions],
       });
-
-      setTypesWithVoidPerMicroservice({
-        ...typesWithVoidPerMicroservice,
-        [microserviceId]: [...primitiveTypeOptions, voidOption, ...classTypeOptions],
-      });
     };
   };
 
   return (
-    <TypesContext.Provider
-      value={{ typesPerMicroservice, typesWithVoidPerMicroservice, updateTypesPerMicroservice }}
-    >
+    <TypesContext.Provider value={{ typesPerMicroservice, updateTypesPerMicroservice }}>
       {children}
     </TypesContext.Provider>
   );

@@ -40,10 +40,10 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
   const nextAttributeName = useSequenceGenerator(
     attributes,
     (attribute) => attribute.name,
-    "Attribute"
+    "attribute"
   );
 
-  const nextMethodName = useSequenceGenerator(methods, (method) => method.name, "Method");
+  const nextMethodName = useSequenceGenerator(methods, (method) => method.name, "method");
 
   const handleAddAttribute = () => {
     const newAttribute = {
@@ -90,7 +90,7 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
       id: `${+new Date()}`,
       name: nextMethodName(),
       parameters: [] as Parameter[],
-      returnValue: "void",
+      returnValue: "any",
     } as Method;
 
     const newMethods = [...methods, newMethod];
@@ -152,6 +152,8 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
             }
           />
         </div>
+
+        {!!attributes?.length && <p>Attributes</p>}
         {attributes.map((attribute, index) => (
           <EditAttribute
             key={attribute.id}
@@ -167,7 +169,9 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
             }
           />
         ))}
-        {methods.length > 0 && <hr />}
+        {methods.length > 0 && <hr className="my-3" />}
+        {!!methods?.length && <p>Methods</p>}
+
         {methods.map((method, index) => (
           <EditMethod
             key={method.id}

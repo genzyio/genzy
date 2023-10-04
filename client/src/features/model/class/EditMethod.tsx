@@ -23,21 +23,20 @@ type EditMethodProps = {
 
 export const EditMethod: FC<EditMethodProps> = ({ method, onChange, onDelete, nameExists }) => {
   const { microserviceId } = useMicroserviceContext();
-  const { typesWithVoid: types } = useTypesContext(microserviceId);
+  const { types } = useTypesContext(microserviceId);
   const { setValidityFor } = useValidationContext();
 
   const [preview, setPreview] = useState(true);
   const [initialMethod, setInitialMethod] = useState(cloneDeep(method));
-  const [parameters, setParameters] = useState(method.parameters);
+  const [parameters, setParameters] = useState(cloneDeep(method.parameters));
 
   const changeMethodName = (name: string) => onChange({ ...method, name });
-  const changeReturnValue = (returnValue: DataType | "void") =>
-    onChange({ ...method, returnValue });
+  const changeReturnValue = (returnValue: DataType) => onChange({ ...method, returnValue });
   const changeIsOptional = (isOptional: boolean) => onChange({ ...method, isOptional });
   const changeReturnsCollection = (returnsCollection: boolean) =>
     onChange({ ...method, returnsCollection });
 
-  const nextParamName = useSequenceGenerator(parameters, (param) => param.name, "Param");
+  const nextParamName = useSequenceGenerator(parameters, (param) => param.name, "param");
 
   const hasDuplicateParamName = useCallback(() => {
     return new Set(parameters.map((p) => p.name)).size !== parameters.length;
@@ -77,21 +76,21 @@ export const EditMethod: FC<EditMethodProps> = ({ method, onChange, onDelete, na
     };
     const newParameters = [...parameters, newParameter];
     setParameters(newParameters);
-    method.parameters = newParameters;
+    onChange({ ...method, parameters: newParameters });
   };
 
   const handleUpdateParameter = (index: number, updatedParam: Parameter) => {
     const updatedParameters = [...parameters];
     updatedParameters[index] = updatedParam;
     setParameters(updatedParameters);
-    method.parameters = updatedParameters;
+    onChange({ ...method, parameters: updatedParameters });
   };
 
   const handleDeleteParameter = (index: number) => {
     const updatedParameters = [...parameters];
     updatedParameters.splice(index, 1);
     setParameters(updatedParameters);
-    method.parameters = updatedParameters;
+    onChange({ ...method, parameters: updatedParameters });
   };
 
   return (
@@ -103,8 +102,8 @@ export const EditMethod: FC<EditMethodProps> = ({ method, onChange, onDelete, na
           setInitialMethod(cloneDeep(method));
         }}
       >
-        <div className="flex">
-          <div className="mr-4">
+        <div className="flex space-x-2">
+          <div className="flex-1">
             <TextField
               value={method.name}
               onChange={changeMethodName}
@@ -114,39 +113,37 @@ export const EditMethod: FC<EditMethodProps> = ({ method, onChange, onDelete, na
               }
             />
           </div>
-          <div>
+          <div className="min-w-[30%]">
             <Select
               value={method.returnValue}
               onChange={changeReturnValue}
               options={types}
-              label="Return value"
+              label="Returns"
             />
           </div>
         </div>
-        {method.returnValue !== "void" && (
-          <div className="mt-4">
-            <Checkbox
-              checked={method.returnsCollection}
-              label="Returns collection"
-              onChange={changeReturnsCollection}
-            />
-          </div>
-        )}
-        {method.returnValue !== "void" && (
-          <div className="mt-4">
-            <Checkbox checked={method.isOptional} label="Is optional" onChange={changeIsOptional} />
-          </div>
-        )}
+        <div className="mt-4 flex space-x-3 items-center">
+          <label className="font-medium leading-6 text-gray-900">Return options:</label>
+          <Checkbox
+            label="Array"
+            checked={method.returnsCollection}
+            onChange={changeReturnsCollection}
+          />
+          <Checkbox label="Optional" checked={method.isOptional} onChange={changeIsOptional} />
+        </div>
 
         <EditParameters
           parameters={parameters}
           onParameterChange={handleUpdateParameter}
-          onAddParameter={handleAddParameter}
           onDeleteParameter={handleDeleteParameter}
-          types={types.filter((type: any) => type.label !== "void")}
+          types={types}
         />
 
-        <div className="flex justify-end space-x-2 mt-5">
+        <div className="flex justify-between mt-5">
+          <button onClick={handleAddParameter} className="mt-2">
+            Add Parameter
+          </button>
+
           <button
             onClick={() => {
               setPreview(true);
