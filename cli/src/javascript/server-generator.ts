@@ -1,5 +1,5 @@
 import type { Environment } from "nunjucks";
-import type { MetaTypesRegistry } from "../../../shared/types";
+import type { MetaTypesRegistry, N1mblyInfo } from "../../../shared/types";
 import { lowerFirstLetter, n1mblyConfigFrom } from "../../../shared/functions";
 import {
   formatFileContent,
@@ -26,6 +26,7 @@ export async function generate({
     `${dirPath}/index.js`,
     await indexFileContentFrom({
       nunjucks,
+      info: meta.n1mblyInfo,
       services: meta.services,
     })
   );
@@ -142,8 +143,10 @@ async function serviceFileContentFrom({
 function indexFileContentFrom({
   services,
   nunjucks,
+  info,
 }: {
   services: ExtendedServiceInfo[];
+  info: N1mblyInfo;
   nunjucks: Environment;
 }): Promise<string> {
   const content = nunjucks.render("index.njk", {
@@ -153,6 +156,7 @@ function indexFileContentFrom({
     controllers: services.filter((service) => {
       return service.type == "Controller";
     }),
+    info,
   });
   return formatFileContent(content);
 }

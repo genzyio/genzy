@@ -48,7 +48,7 @@ export async function generate(
       types: MetaTypesRegistry;
       nunjucks: Environment;
     }) => Promise<string>;
-  },
+  }
 ) {
   const {
     dirPath,
@@ -69,7 +69,7 @@ export async function generate(
             types: meta.types,
             nunjucks,
             url,
-          }),
+          })
         );
       }
       if (contentHandlers.serviceFileContentFrom) {
@@ -79,10 +79,10 @@ export async function generate(
             service,
             types: meta.types,
             nunjucks,
-          }),
+          })
         );
       }
-    }),
+    })
   );
 
   if (contentHandlers.indexFileContentFrom) {
@@ -92,7 +92,7 @@ export async function generate(
         services: meta.services,
         url,
         nunjucks,
-      }),
+      })
     );
   }
   if (contentHandlers.typesFileContentFrom) {
@@ -135,7 +135,7 @@ export async function fetchMeta(url: string): Promise<MetaInfo> {
 
 export function adoptParams(
   params: Param[],
-  typeAdopt: (p: any) => { name: string; isComplex: boolean },
+  typeAdopt: (p: any) => { name: string; isComplex: boolean }
 ) {
   return params.map((p) => ({
     ...p,
@@ -148,7 +148,9 @@ export function adoptParams(
 }
 
 export function adoptTypeJS(type) {
-  if (!type) return { name: "any", isComplex: false };
+  if (!type || (!type.type && !type.$typeName)) {
+    return { name: "any", isComplex: false };
+  }
   if (typeof type.type === "string") {
     return {
       name: type.type === "int" || type.type === "float" ? "number" : type.type,
@@ -159,7 +161,7 @@ export function adoptTypeJS(type) {
 }
 
 export function adoptTypeToDecorator(type) {
-  if (!type) return undefined;
+  if (!type || (!type.type && !type.$typeName)) return undefined;
   if (typeof type.type === "string") {
     return `@${type.$isArray ? `${type.type}Array` : `${type.type}`}(${
       type.$isOptional ? ", { optional: true }" : ""
@@ -175,7 +177,7 @@ export function adoptTypeToDecorator(type) {
 }
 
 export function adoptTypeToResultDecorator(type) {
-  if (!type) return undefined;
+  if (!type || (!type.type && !type.$typeName)) return undefined;
   if (typeof type.type === "string") {
     return type.$isArray
       ? `@ReturnsArrayOf("${type.type}")`

@@ -23,8 +23,7 @@ export class {{ name }} {% if extends %} extends {{ extends }} {% endif %} {
   }
 {% endif %}
 {% for action in actions %} {{ methods }}
-  {% if action.resultType %}{{ action.resultDecorator }}{% endif %}
-  async {{ action.name }}({% for param in action.params %}{{ param.name }}{% if param.$isOptional %}?{% endif %}: {{ param.type }}{% if param.$isArray %}[]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{{ action.resultType.name }}{% if action.result.$isArray %}[]{% endif %}>
+  async {{ action.name }}({% for param in action.params %}{{ param.name }}{% if param.$isOptional %}?{% endif %}: {{ param.type.name }}{% if param.$isArray %}[]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{{ action.resultType.name }}{% if action.result.$isArray %}[]{% endif %}>
   {% if action.existingBody %}
     {{ action.existingBody | safe }}
   {% else %}

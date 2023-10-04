@@ -1,6 +1,6 @@
 {
   "name": "@n1mbly/cli",
-  "version": "0.2.22",
+  "version": "0.2.23",
   "description": "N1mbly CLI used for client code generation.",
   "main": "bin/index.js",
   "scripts": {

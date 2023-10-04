@@ -267,14 +267,23 @@
     },
     {
       "name": "NoviServis",
-      "dependencies": [
-        "AuthController"
-      ],
       "type": "LocalService",
       "actions": [
         {
           "name": "getNesto",
-          "params": []
+          "params": [
+            {
+              "name": "nesto",
+              "type": {
+                "$typeName": "Pera",
+                "$isOptional": true,
+                "$isArray": true
+              }
+            }
+          ],
+          "result": {
+            "$typeName": "Pera"
+          }
         }
       ]
     }

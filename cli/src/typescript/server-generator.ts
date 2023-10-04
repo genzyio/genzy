@@ -37,16 +37,8 @@ export async function generate({
       nunjucks,
       services: meta.services,
       info: meta.n1mblyInfo,
-    }),
+    })
   );
-  //
-  // writeToFile(
-  //   `${dirPath}/types.ts`,
-  //   await typesFileContentFrom({
-  //     nunjucks,
-  //     types: meta.types,
-  //   }),
-  // );
   const { sorted, dependencies } = sortedTypes(meta.types);
   const typesPath = dirPath + "/types";
   prepareDirectory(typesPath);
@@ -59,9 +51,9 @@ export async function generate({
           type: meta.types[type],
           dependencies: dependencies[type],
           nunjucks,
-        }),
+        })
       );
-    }),
+    })
   );
   await Promise.all([
     ...meta.services
@@ -82,7 +74,7 @@ export async function generate({
             nunjucks,
             types: meta.types,
             service: controller,
-          }),
+          })
         );
       }),
     ...meta.services
@@ -103,7 +95,7 @@ export async function generate({
             nunjucks,
             types: meta.types,
             service,
-          }),
+          })
         );
       }),
   ]);
@@ -111,13 +103,13 @@ export async function generate({
 
 function getExistingMethodBodyMap(
   path: string,
-  controller: ExtendedServiceInfo,
+  controller: ExtendedServiceInfo
 ): Map<string, string> {
   const methodBodyMap = new Map<string, string>();
   if (pathExists(path)) {
     try {
       const classObj = JSTSParser.parse(readFileSync(path)).classes.find(
-        (x) => x.name === controller.name,
+        (x) => x.name === controller.name
       );
       classObj.sections
         // TODO capture in-between sections, like comments as well
@@ -149,7 +141,7 @@ function controllerFileContentFrom({
     ...service,
     types,
     dependencies: service.dependencies?.map((dependency) =>
-      lowerFirstLetter(dependency),
+      lowerFirstLetter(dependency)
     ),
     actions: service.actions.map((r) => ({
       ...r,
@@ -175,7 +167,7 @@ function serviceFileContentFrom({
     ...service,
     types,
     dependencies: service.dependencies?.map((dependency) =>
-      lowerFirstLetter(dependency),
+      lowerFirstLetter(dependency)
     ),
     actions: service.actions.map((r) => ({
       ...r,
@@ -197,10 +189,10 @@ function indexFileContentFrom({
 }): Promise<string> {
   const content = nunjucks.render("index.njk", {
     services: services.filter((service) => {
-      return service.type == "RemoteProxy" || service.type == "LocalService";
+      return service.type === "RemoteProxy" || service.type === "LocalService";
     }),
     controllers: services.filter((service) => {
-      return service.type == "Controller";
+      return !service.type || service.type === "Controller";
     }),
     info,
   });

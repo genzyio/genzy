@@ -23,7 +23,13 @@ export const {
   {% endfor %}
 } = services.getAllServices();
 
-const app = new N1mblyApi().buildAppFrom(nimble);
+const app = new N1mblyApi({
+  n1mblyInfo: {
+  version: "{{info.version}}",
+  name: "{{info.name}}",
+  description: "{{info.description}}",
+  },
+}).buildAppFrom(nimble);
 
 const port = process.env.PORT || 3000 ;
 
