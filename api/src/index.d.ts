@@ -9,6 +9,8 @@ export type N1mblyPluginParams = {
 };
 
 export interface N1mblyPlugin {
+  new (params?: { containers?: N1mblyContainer[] }): void;
+
   beforeAll(params: N1mblyPluginParams): Promise<void> | void;
   beforeRouteRegister(
     params: N1mblyPluginParams & {
