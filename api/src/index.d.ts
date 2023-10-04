@@ -8,8 +8,8 @@ export type N1mblyPluginParams = {
   app: Application;
 };
 
-export interface N1mblyPlugin {
-  new (params?: { containers?: N1mblyContainer[] }): void;
+export abstract class N1mblyPlugin {
+  constructor(params?: { containers?: N1mblyContainer[] });
 
   beforeAll(params: N1mblyPluginParams): Promise<void> | void;
   beforeRouteRegister(

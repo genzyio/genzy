@@ -22,17 +22,17 @@ type N1mblyPluginParams = {
   app: Application;
 };
 
-export interface N1mblyPlugin {
-  new (params?: { containers?: N1mblyContainer[] }): void;
+export abstract class N1mblyPlugin {
+  constructor(params?: { containers?: N1mblyContainer[] }) {}
 
-  beforeAll(params: N1mblyPluginParams): Promise<void> | void;
+  beforeAll(params: N1mblyPluginParams): Promise<void> | void {}
   beforeRouteRegister(
     params: N1mblyPluginParams & {
       serviceKey: string;
       serviceInstance: any;
       n1mblyConfig: N1mblyConfig;
     }
-  ): Promise<void> | void;
+  ): Promise<void> | void {}
   afterRouteRegister(
     params: N1mblyPluginParams & {
       serviceKey: string;
@@ -40,8 +40,8 @@ export interface N1mblyPlugin {
       n1mblyConfig: N1mblyConfig;
       meta: ServiceMetaInfo & { types: MetaInfo["types"] };
     }
-  ): Promise<void> | void;
-  afterAll(params: N1mblyPluginParams): Promise<void> | void;
+  ): Promise<void> | void {}
+  afterAll(params: N1mblyPluginParams): Promise<void> | void {}
 }
 
 type InterceptorCallback = (
