@@ -6,7 +6,7 @@ import {
 {% endif %}
 
 export class {{ name }} {% if extends %} extends {{ extends }} {% endif %} {
-{% if dependencies != null %}
+{% if dependencies | length %}
   {% for dependency in dependencies %}
     {{dependency}};
   {% endfor %}

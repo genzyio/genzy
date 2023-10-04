@@ -2,7 +2,7 @@
 
 export class {{ name }} {
   $nimbly = {{ $nimbly | dump | safe }}
-{% if dependencies != null %}
+{% if dependencies | length %}
   {% for dependency in dependencies %}
     {{dependency}};
   {% endfor %}
