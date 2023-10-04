@@ -1,4 +1,4 @@
-import { ZodValidationPlugin } from "../src";
+import { Plugin } from "../src";
 import { N1mblyContainer } from "@n1mbly/client";
 import {
   Body,
@@ -45,11 +45,11 @@ class TestController {
   }
 }
 
-describe("ZodValidationPlugin", () => {
+describe("Plugin", () => {
   it("should register before interceptors for object", async () => {
     const n1mbly = new N1mblyContainer().addLocalService(TestController);
     const app = new N1mblyApi()
-      .addPlugin(new ZodValidationPlugin())
+      .addPlugin(new Plugin())
       .buildAppFrom(n1mbly);
 
     await agent(app).get("/api/tests?filter=1").expect(400);
