@@ -39,6 +39,7 @@ import { MicroserviceContextProvider } from "./MicroserviceContext";
 import nodeTypes from "../common/constants/nodeTypes";
 import edgeTypes from "../common/constants/edgeTypes";
 import { CustomControls } from "../common/components/CustomControls";
+import { isNodeMoved } from "../common/utils/move.utils";
 
 type DiagramProps = {
   nodes?: any[];
@@ -56,7 +57,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   onMicroserviceDeleted,
 }) => {
   const { project } = useProjectContext();
-  const { projectDefinition, dispatcher } = useProjectDefinitionContext();
+  const { projectDefinition, dispatcher, setExecuteOnUndoRedo } = useProjectDefinitionContext();
   const { isDirty, promptDirtyModal, setInitialState } = useDirtyCheckContext();
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Microservice>([...initialNodes] || []);
@@ -81,12 +82,24 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   }, [selectedCommunication]);
 
   useEffect(() => {
+    if (selectedMicroservice) return;
+
     projectDefinition.microservices = {
       ...projectDefinition.microservices,
       nodes: [...nodes],
       edges: [...edges],
     };
   }, [nodes, edges]);
+
+  useEffect(() => {
+    setExecuteOnUndoRedo(() => () => {
+      const { nodes, edges } = projectDefinition.microservices;
+      setNodes([...nodes]);
+      setEdges([...edges]);
+    });
+
+    return () => setExecuteOnUndoRedo(() => () => {});
+  }, [setNodes, setEdges]);
 
   useOnViewportChange({
     onEnd: useCallback((viewport: Viewport) => {
@@ -351,6 +364,17 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
           onEdgeUpdate={onEdgeUpdate}
           nodeTypes={localNodeTypes}
           edgeTypes={localEdgeTypes}
+          onNodeDragStart={(_, node) => setSelectedMicroservice(node)}
+          onNodeDragStop={(_, node) => {
+            if (isNodeMoved(selectedMicroservice, node) && node.type === "microserviceNode") {
+              dispatcher(projectDefinitionActions.microserviceMoved, {
+                microserviceId: selectedMicroservice?.id,
+                position: node.position,
+                positionAbsolute: node.positionAbsolute,
+              });
+            }
+            setSelectedMicroservice(undefined);
+          }}
           onNodeDoubleClick={(_, node) => {
             if (node.type !== "microserviceNode") return;
 

@@ -28,6 +28,7 @@ import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 import nodeTypes from "../common/constants/nodeTypes";
 import edgeTypes from "../common/constants/edgeTypes";
 import { CustomControls } from "../common/components/CustomControls";
+import { isNodeMoved } from "../common/utils/move.utils";
 
 type DiagramProps = {
   microserviceId: string;
@@ -45,7 +46,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
   nodes: initialNodes,
   viewport: initialViewport,
 }) => {
-  const { projectDefinition, dispatcher } = useProjectDefinitionContext();
+  const { projectDefinition, dispatcher, setExecuteOnUndoRedo } = useProjectDefinitionContext();
   const { isDirty, promptDirtyModal, setInitialState } = useDirtyCheckContext();
   const { updateTypes } = useTypesContext(microserviceId);
 
@@ -58,12 +59,23 @@ export const ClassDiagram: FC<DiagramProps> = ({
   const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
+    if (selectedClass) return;
+
     projectDefinition.classes[microserviceId] = {
       ...projectDefinition.classes[microserviceId],
       nodes: [...nodes],
     };
     updateTypes(nodes);
   }, [nodes]);
+
+  useEffect(() => {
+    setExecuteOnUndoRedo(() => () => {
+      const { nodes } = projectDefinition.classes[microserviceId];
+      setNodes([...nodes]);
+    });
+
+    return () => setExecuteOnUndoRedo(() => () => {});
+  }, [setNodes]);
 
   useOnViewportChange({
     onEnd: useCallback((viewport: Viewport) => {
@@ -167,6 +179,18 @@ export const ClassDiagram: FC<DiagramProps> = ({
           onNodesChange={onNodesChange}
           nodeTypes={localNodeTypes}
           edgeTypes={localEdgeTypes}
+          onNodeDragStart={(_, node) => setSelectedClass(node)}
+          onNodeDragStop={(_, node) => {
+            if (isNodeMoved(selectedClass, node)) {
+              dispatcher(projectDefinitionActions.classMoved, {
+                microserviceId,
+                classId: selectedClass?.id,
+                position: node.position,
+                positionAbsolute: node.positionAbsolute,
+              });
+            }
+            setSelectedClass(undefined);
+          }}
           onNodeDoubleClick={(_, node) => {
             setSelectedClass(node);
             setInitialState(node.data);

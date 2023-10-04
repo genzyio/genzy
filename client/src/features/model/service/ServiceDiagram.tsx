@@ -33,6 +33,7 @@ import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 import nodeTypes from "../common/constants/nodeTypes";
 import edgeTypes from "../common/constants/edgeTypes";
 import { CustomControls } from "../common/components/CustomControls";
+import { isNodeMoved } from "../common/utils/move.utils";
 
 type DiagramProps = {
   microserviceId: string;
@@ -49,7 +50,7 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   edges: initialEdges,
   viewport: initialViewport,
 }) => {
-  const { projectDefinition, dispatcher } = useProjectDefinitionContext();
+  const { projectDefinition, dispatcher, setExecuteOnUndoRedo } = useProjectDefinitionContext();
   const { isDirty, promptDirtyModal, setInitialState } = useDirtyCheckContext();
 
   const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -61,12 +62,24 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   const [selected, setSelected] = useState<Node<Service, string>>();
 
   useEffect(() => {
+    if (selected) return;
+
     projectDefinition.services[microserviceId] = {
       ...projectDefinition.services[microserviceId],
       nodes: [...nodes],
       edges: [...edges],
     };
   }, [nodes, edges]);
+
+  useEffect(() => {
+    setExecuteOnUndoRedo(() => () => {
+      const { nodes, edges } = projectDefinition.services[microserviceId];
+      setNodes([...nodes]);
+      setEdges([...edges]);
+    });
+
+    return () => setExecuteOnUndoRedo(() => () => {});
+  }, [setNodes, setEdges]);
 
   useOnViewportChange({
     onEnd: useCallback((viewport: Viewport) => {
@@ -263,7 +276,18 @@ export const ServiceDiagram: FC<DiagramProps> = ({
           onEdgeUpdate={onEdgeUpdate}
           nodeTypes={localNodeTypes}
           edgeTypes={localEdgeTypes}
-          onNodeClick={() => {}}
+          onNodeDragStart={(_, node) => setSelected(node)}
+          onNodeDragStop={(_, node) => {
+            if (isNodeMoved(selected, node)) {
+              dispatcher(projectDefinitionActions.serviceMoved, {
+                microserviceId,
+                serviceId: selected?.id,
+                position: node.position,
+                positionAbsolute: node.positionAbsolute,
+              });
+            }
+            setSelected(undefined);
+          }}
           onNodeDoubleClick={(_e, node) => {
             if (["REMOTE_PROXY", "PLUGABLE_SERVICE"].includes(node.data.type)) return;
             setSelected(node);

@@ -37,11 +37,17 @@ import {
   uninstallPluginHandler,
   updatePluginHandler,
 } from "./project-definition-handlers/plugins-handlers";
+import {
+  microserviceMovedHandler,
+  serviceMovedHandler,
+  classMovedHandler,
+} from "./project-definition-handlers/diagram-handlers";
 
 export const projectDefinitionActions = {
   addMicroservice: Symbol("addMicroservice"),
   updateMicroservice: Symbol("updateMicroservice"),
   deleteMicroservice: Symbol("deleteMicroservice"),
+  microserviceMoved: Symbol("microserviceMoved"),
 
   installPlugin: Symbol("installPlugin"),
   updatePlugin: Symbol("updatePlugin"),
@@ -61,6 +67,7 @@ export const projectDefinitionActions = {
   updateService: Symbol("updateService"),
   updateServices: Symbol("updateServices"),
   deleteServices: Symbol("deleteServices"),
+  serviceMoved: Symbol("serviceMoved"),
 
   addDependency: Symbol("addDependency"),
   updateDependencyHandles: Symbol("updateDependencyHandles"),
@@ -69,6 +76,7 @@ export const projectDefinitionActions = {
   addClass: Symbol("addClass"),
   updateClass: Symbol("updateClass"),
   deleteClass: Symbol("deleteClass"),
+  classMoved: Symbol("classMoved"),
 } as const;
 
 type DispatcherType = (type: symbol, payload: any) => any;
@@ -78,6 +86,7 @@ function createDispatcher(projectDefinition: ProjectDefinition): DispatcherType 
     [projectDefinitionActions.addMicroservice]: addMicroserviceHandler,
     [projectDefinitionActions.updateMicroservice]: updateMicroserviceHandler,
     [projectDefinitionActions.deleteMicroservice]: deleteMicroserviceHandler,
+    [projectDefinitionActions.microserviceMoved]: microserviceMovedHandler,
 
     [projectDefinitionActions.installPlugin]: installPluginHandler,
     [projectDefinitionActions.updatePlugin]: updatePluginHandler,
@@ -98,6 +107,7 @@ function createDispatcher(projectDefinition: ProjectDefinition): DispatcherType 
     [projectDefinitionActions.updateService]: updateServiceHandler,
     [projectDefinitionActions.updateServices]: updateServicesHandler,
     [projectDefinitionActions.deleteServices]: deleteServicesHandler,
+    [projectDefinitionActions.serviceMoved]: serviceMovedHandler,
 
     [projectDefinitionActions.addDependency]: addDependencyHandler,
     [projectDefinitionActions.updateDependencyHandles]: updateDependencyHandlesHandler,
@@ -106,6 +116,7 @@ function createDispatcher(projectDefinition: ProjectDefinition): DispatcherType 
     [projectDefinitionActions.addClass]: addClassHandler,
     [projectDefinitionActions.updateClass]: updateClassHandler,
     [projectDefinitionActions.deleteClass]: deleteClassHandler,
+    [projectDefinitionActions.classMoved]: classMovedHandler,
   };
 
   return (type: symbol, payload: any) => handlers[type](projectDefinition, payload);

@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useState,
+  useEffect,
 } from "react";
 
 export type State = "ADDED" | "MODIFIED" | "REMOVED";
@@ -12,7 +13,7 @@ export type State = "ADDED" | "MODIFIED" | "REMOVED";
 type ChangeTrackerValues = {
   states: Record<string, State>;
   setStateForMS: (id: string, state: State) => any;
-  resetStates: () => any;
+  resetStates: (newStates?: Record<string, State>) => any;
 };
 
 const initialChangeTrackerValues: ChangeTrackerValues = {
@@ -36,32 +37,41 @@ export const ChangeTrackerContextProvider: FC<PropsWithChildren> = ({ children }
       switch (state) {
         case "REMOVED":
           if (currentState === "ADDED") {
-            delete states[id];
-            setStates({ ...states });
-          } else {
-            setStates({
-              ...states,
-              [id]: "REMOVED",
+            setStates((currentStates) => {
+              delete currentStates[id];
+              return { ...currentStates };
             });
+          } else {
+            setStates((currentStates) => ({
+              ...currentStates,
+              [id]: "REMOVED",
+            }));
           }
           break;
         case "MODIFIED":
           if (currentState && currentState !== "MODIFIED") return;
-          setStates({
-            ...states,
+          setStates((currentStates) => ({
+            ...currentStates,
             [id]: "MODIFIED",
-          });
+          }));
           break;
         case "ADDED":
-          setStates({ ...states, [id]: "ADDED" });
+          setStates((currentStates) => ({ ...currentStates, [id]: "ADDED" }));
       }
     },
     [states, setStates]
   );
 
-  const resetStates = useCallback(() => {
-    setStates({});
-  }, [setStates]);
+  const resetStates = useCallback(
+    (newStates: Record<string, State> = {}) => {
+      setStates({ ...newStates });
+    },
+    [setStates]
+  );
+
+  useEffect(() => {
+    console.log(states);
+  }, [states]);
 
   return (
     <ChangeTrackerContext.Provider value={{ states, setStateForMS, resetStates }}>

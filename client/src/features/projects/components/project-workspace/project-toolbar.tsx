@@ -74,6 +74,9 @@ export const ProjectToolbar: FC = () => {
     <>
       <div className="w-fit absolute top-4 z-10 select-none left-1/2 -translate-x-1/2">
         <div className="w-fit flex items-center gap-x-2 py-2 px-4 border rounded-md border-gray-100">
+          <div id="undo-redo-actions"></div>
+          <div className="border-r h-6 border-gray-300 mx-2"></div>
+
           <Button
             disabled={!isDirty}
             onClick={() => {
