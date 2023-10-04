@@ -53,6 +53,7 @@ type N1mblyType = Record<string, any>;
 export type N1mblyGeneratorInput = {
   services: N1mblyService[];
   types: Record<string, N1mblyType>;
+  plugins: string[];
   n1mblyInfo: N1mblyInfo;
 };
 
@@ -81,6 +82,7 @@ export function convertJSON(project: Project, microserviceId: string, inputJson:
     services: [],
     types: {},
     n1mblyInfo: { name: "", description: "", version: "", basePath: "" },
+    plugins: [],
   };
 
   const microserviceInfo = inputJson["microservices"]["nodes"].find((m: any) => m.id === microserviceId).data;
@@ -91,6 +93,7 @@ export function convertJSON(project: Project, microserviceId: string, inputJson:
     ...createTypesForRemoteServices(inputJson, microserviceId),
     ...createTypes(inputJson, microserviceId),
   };
+  outputJson.plugins = [];
 
   return outputJson;
 }
