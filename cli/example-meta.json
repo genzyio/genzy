@@ -309,6 +309,7 @@
       },
       "peraas": {
         "$isArray": true,
+        "$isOptional": true,
         "$typeName": "Peraa"
       }
     },
@@ -351,6 +352,7 @@
       },
       "account": {
         "$isArray": false,
+        "$isOptional": true,
         "$typeName": "Account"
       }
     },
