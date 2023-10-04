@@ -28,7 +28,7 @@
     "webpack-cli": "4.9.1"
   },
   "dependencies": {
-    "@n1mbly/api": "0.2.5",
+    "@n1mbly/api": "0.2.9",
     "zod": "^3.22.2",
     "zod-to-json-schema": "^3.21.4"
   }

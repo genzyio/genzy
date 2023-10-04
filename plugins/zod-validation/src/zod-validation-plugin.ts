@@ -1,19 +1,14 @@
 import type {
   BasicType,
   ComplexType,
-  MetaInfo,
   MetaTypesRegistry,
   N1mblyConfig,
-  N1mblyPlugin,
   N1mblyPluginParams,
-  ServiceMetaInfo,
 } from "@n1mbly/api";
+import { N1mblyPlugin } from "@n1mbly/api";
 import { ZodSchema, z } from "zod";
-import zodToJsonSchema from "zod-to-json-schema";
 
-export class ZodValidationPlugin implements N1mblyPlugin {
-  async beforeAll(params: N1mblyPluginParams) {}
-
+export class Plugin extends N1mblyPlugin {
   async beforeRouteRegister(
     pluginParams: N1mblyPluginParams & {
       serviceKey: string;
@@ -60,17 +55,6 @@ export class ZodValidationPlugin implements N1mblyPlugin {
       });
     });
   }
-
-  async afterRouteRegister(
-    params: N1mblyPluginParams & {
-      serviceKey: string;
-      serviceInstance: any;
-      n1mblyConfig: N1mblyConfig;
-      meta: ServiceMetaInfo & { types: MetaInfo["types"] };
-    }
-  ): Promise<void> {}
-
-  async afterAll(params: N1mblyPluginParams) {}
 }
 
 function complexTypeToZodSchema(

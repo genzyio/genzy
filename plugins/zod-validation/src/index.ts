@@ -1,1 +1,1 @@
-export { ZodValidationPlugin } from "./zod-validation-plugin";
+export { Plugin } from "./zod-validation-plugin";

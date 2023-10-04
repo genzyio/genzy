@@ -3,13 +3,14 @@ import {
   N1mblyPlugin,
   N1mblyConfig,
   ServiceMetaInfo,
-  MetaInfo,
-  N1mblyApi,
   MetaTypesRegistry,
   N1mblyPluginParams,
+  N1mblyContainer,
 } from "@n1mbly/api";
 
-export class ZodValidationPlugin implements N1mblyPlugin {
+export class Plugin extends N1mblyPlugin {
+  constructor(params?: { containers?: N1mblyContainer[] });
+
   beforeAll(params: N1mblyPluginParams): void | Promise<void>;
   beforeRouteRegister(
     params: N1mblyPluginParams & {
