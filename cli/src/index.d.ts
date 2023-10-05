@@ -2,6 +2,7 @@ import { MetaInfo, ServiceMetaInfo } from "./types.d";
 
 export declare type ExtendedMetaInfo = Omit<MetaInfo, "services"> & {
   services: ExtendedServiceInfo[];
+  plugins?: { name: string; services: string[] }[];
 };
 export declare type ExtendedServiceInfo = {
   type: "LocalService" | "RemoteProxy" | "Controller";

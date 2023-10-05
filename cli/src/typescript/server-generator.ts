@@ -170,7 +170,7 @@ function indexFileContentFrom({
       return !service.type || service.type === "Controller";
     }),
     info,
-    plugins: plugins.map((plugin) => ({
+    plugins: plugins?.map((plugin) => ({
       name: plugin.name
         .split("-")
         .map((x) => capitalizeFirstLetter(x))
@@ -179,7 +179,7 @@ function indexFileContentFrom({
         .join(""),
       package: plugin.name,
       services: plugin.services,
-    })),
+    })) ?? [],
   });
   return formatFileContent(content);
 }

@@ -16,7 +16,7 @@ import {
 export class {{ name }} {
 {% for action in actions %} {{ methods }}
 {% if action.httpMethod %}  @{{ action.httpMethod }}({% if action.httpMethod %}'{{ action.path }}'{% endif %}){% endif %}
-  async {{ action.name }}({% for param in action.params %}{% if param.source == "query" %}@Query('{{ param.name }}'){% endif %}{% if param.source == "path" %}@Path('{{ param.name }}'){% endif %}{% if param.source == "body" %}@Body(){% endif %} {{ param.name }}: {{ param.type }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{{ action.resultType }}> {
+  async {{ action.name }}({% for param in action.params %}{% if param.source == "query" %}@Query('{{ param.name }}'){% endif %}{% if param.source == "path" %}@Path('{{ param.name }}'){% endif %}{% if param.source == "body" %}@Body(){% endif %} {{ param.name }}: {{ param.typeAdapted.name }}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{{ action.resultType.name }}> {
     // @ts-ignore
     return null;
   }

@@ -1,3 +1,4 @@
+import { Plugin as ZodValidationPlugin } from "n1mbly-zod-validation";
 import {
   GenericType,
   N1mblyApi,
@@ -14,6 +15,7 @@ import {
   string,
   type,
   stringArray,
+  floatArray,
 } from "../../api/src";
 import { Get, Post, Controller, N1mblyContainer } from "../../client/src";
 
@@ -245,11 +247,72 @@ const modul = new N1mblyContainer().addLocalServices(
   UserCrudController
 );
 
-export const api = new N1mblyApi({
-  n1mblyInfo: {
-    version: "0.0.1-alpha1",
-    name: "Test Microservice",
-    description: "This microservice is used for random stuff.",
-    port: 3000,
-  },
-}).buildAppFrom(modul, noviModul);
+// export const api = new N1mblyApi({
+//   n1mblyInfo: {
+//     version: "0.0.1-alpha1",
+//     name: "Test Microservice",
+//     description: "This microservice is used for random stuff.",
+//     port: 3000,
+//   },
+// }).buildAppFrom(modul, noviModul);
+
+//////
+
+class Model {
+  @string() id: string;
+  @int() age: number;
+  @boolean() car: boolean;
+  @floatArray({ optional: true }) numbers: number[];
+}
+
+@Controller("/test")
+class ModelController {
+  private service: ModelService;
+
+  constructor({ services }: { services: { modelService: ModelService } }) {
+    this.service = services.modelService;
+  }
+
+  @Get("/:id")
+  @Returns(Model)
+  async getModelById(
+    @Path("id", { type: "string" }) id: string
+  ): Promise<Model> {
+    return this.service.getModelById(id);
+  }
+
+  @Post("/")
+  @Returns(Model)
+  async postModel(@Body({ type: Model }) model: Model): Promise<Model> {
+    return this.service.postModel(model);
+  }
+}
+
+class ModelService {
+  async getModelById(id: string): Promise<Model> {
+    return {
+      id: "pera",
+      age: 10,
+      car: true,
+      numbers: [1.2, 2.3, 3.4],
+    };
+  }
+
+  async postModel(model: Model): Promise<Model> {
+    return model;
+  }
+}
+
+const controllers = new N1mblyContainer().addLocalServices(ModelController);
+
+const services = new N1mblyContainer().addLocalServices(ModelService);
+
+controllers.addAccessToContainer("services", services);
+
+export const api = new N1mblyApi()
+  .addPlugin(new ZodValidationPlugin())
+  .buildAppFrom(controllers);
+
+// app.listen(4040, () => {
+//   console.log("Server started on port 4040");
+// });

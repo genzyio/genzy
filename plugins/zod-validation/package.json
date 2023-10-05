@@ -1,6 +1,7 @@
 {
   "name": "n1mbly-zod-validation",
-  "version": "0.0.1",
+  "version": "0.0.3",
+  "main": "build/index.js",
   "description": "N1mbly plugin for validation of API requests using Zod lib.",
   "types": "build/index.d.ts",
   "scripts": {

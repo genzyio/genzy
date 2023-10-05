@@ -137,16 +137,17 @@ function indexFileContentFrom({
       return service.type == "Controller";
     }),
     info,
-    plugins: plugins.map((plugin) => ({
-      name: plugin.name
-        .split("-")
-        .map((x) => capitalizeFirstLetter(x))
-        // replace all special characters with empty string
-        .map((x) => x.replaceAll(/[^a-zA-Z0-9]/g, ""))
-        .join(""),
-      package: plugin.name,
-      services: plugin.services,
-    })),
+    plugins:
+      plugins?.map((plugin) => ({
+        name: plugin.name
+          .split("-")
+          .map((x) => capitalizeFirstLetter(x))
+          // replace all special characters with empty string
+          .map((x) => x.replaceAll(/[^a-zA-Z0-9]/g, ""))
+          .join(""),
+        package: plugin.name,
+        services: plugin.services,
+      })) ?? [],
   });
   return formatFileContent(content);
 }
