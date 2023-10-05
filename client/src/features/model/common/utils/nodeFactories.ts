@@ -84,6 +84,7 @@ function createRemoteProxyNode({
 type CreatePlugableServiceNodeParam = {
   serviceId: string;
   microserviceId: string;
+  plugin: string;
   name: string;
   functions: ServiceFunction[];
 };
@@ -91,6 +92,7 @@ type CreatePlugableServiceNodeParam = {
 function createPlugableServiceNode({
   serviceId,
   microserviceId,
+  plugin,
   name,
   functions,
 }: CreatePlugableServiceNodeParam): Node<Service> {
@@ -99,12 +101,13 @@ function createPlugableServiceNode({
     position: { x: 25, y: 25 },
     data: {
       microserviceId: microserviceId,
+      plugin,
       name,
       host: "",
       basePath: "",
       functions,
       type: "PLUGABLE_SERVICE",
-    },
+    } as Service,
     type: "plugableServiceNode",
   };
 }

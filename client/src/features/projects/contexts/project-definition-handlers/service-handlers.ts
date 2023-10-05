@@ -82,13 +82,15 @@ const addRemoteProxiesHandler: HandlerType<{
 
 const addPlugableServiceHandler: HandlerType<{
   microserviceId: string;
+  plugin: string;
   serviceId: string;
   service: Pick<ExtendedService, "name" | "functions">;
-}> = (projectDefinition: ProjectDefinition, { microserviceId, serviceId, service }) => {
+}> = (projectDefinition: ProjectDefinition, { microserviceId, plugin, serviceId, service }) => {
   const serviceDiagram = projectDefinition.services[microserviceId];
   const newPlugableServiceNode = createPlugableServiceNode({
     serviceId,
     microserviceId,
+    plugin,
     name: service.name,
     functions: service.functions,
   });

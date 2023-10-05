@@ -93,7 +93,7 @@ export function convertJSON(project: Project, microserviceId: string, inputJson:
     ...createTypesForRemoteServices(inputJson, microserviceId),
     ...createTypes(inputJson, microserviceId),
   };
-  outputJson.plugins = [];
+  outputJson.plugins = createPlugins(inputJson, microserviceId);
 
   return outputJson;
 }
@@ -105,6 +105,23 @@ function createInfo(microservice: MicroserviceInfo): N1mblyInfo {
     version: microservice.version,
     basePath: microservice.basePath,
   };
+}
+
+function createPlugins(inputJson: GN1mblyOutput, microserviceId: string) {
+  const microserviceNode = inputJson["microservices"]["nodes"].find((m: any) => m.id === microserviceId);
+  const serviceDiagram = inputJson["services"][microserviceId]["nodes"];
+
+  const installedPlugins = microserviceNode.data.plugins || [];
+  const plugableServices = serviceDiagram.filter((node: any) => node.data.type === "PLUGABLE_SERVICE");
+
+  return installedPlugins.map((installedPlugin: any) => {
+    return {
+      name: installedPlugin.name,
+      services: plugableServices
+        .filter((node: any) => node.data.plugin === installedPlugin.name)
+        .map((node: any) => node.data.name),
+    };
+  });
 }
 
 function createServices(project: Project, inputJson: GN1mblyOutput, microserviceId: string): N1mblyService[] {

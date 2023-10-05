@@ -149,6 +149,7 @@ const installPluginHandler: HandlerType<{
         dispatcher(projectDefinitionActions.addPlugableService, {
           serviceId: formKey(plugableService.id, keyValues),
           microserviceId,
+          plugin: plugin.name,
           service: { name: plugableService.name, functions: plugableService.functions },
         });
       });
