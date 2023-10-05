@@ -1,4 +1,4 @@
-import { type FC, useState, useMemo } from "react";
+import { type FC, useState, useMemo, useEffect } from "react";
 import type { Dependency, NPMPackage, Version } from "../api/specific-plugin.contracts";
 import { usePlugin } from "../hooks/usePlugin";
 import { Select } from "../../../components/select";
@@ -14,6 +14,7 @@ import { projectDefinitionActions } from "../../projects/contexts/project-defini
 import { useMicroserviceContext } from "../../model/microservices/MicroserviceContext";
 import { useNotifications } from "../../../hooks/useNotifications";
 import { Loader } from "./loader";
+import { Events, eventEmitter } from "../events/plugin.events";
 
 type DependenciesProps = {
   depedencies: Dependency[];
@@ -108,6 +109,23 @@ export const SpecificPlugin: FC<{ pluginName: string }> = ({ pluginName }) => {
     [plugin, versionValue]
   );
 
+  useEffect(() => {
+    eventEmitter.subscribe(Events.PLUGIN_INSTALLED, () => {
+      notificator.success(`You have installed plugin ${pluginName}.`);
+      close();
+    });
+
+    eventEmitter.subscribe(Events.PLUGIN_UNINSTALLED, () => {
+      notificator.success(`You have uninstalled plugin ${pluginName}.`);
+      close();
+    });
+
+    return () => {
+      eventEmitter.unsubscribe(Events.PLUGIN_INSTALLED);
+      eventEmitter.unsubscribe(Events.PLUGIN_UNINSTALLED);
+    };
+  }, []);
+
   const installPlugin = () => {
     dispatcher(projectDefinitionActions.installPlugin, {
       microserviceId,
@@ -116,9 +134,6 @@ export const SpecificPlugin: FC<{ pluginName: string }> = ({ pluginName }) => {
         version: versionValue,
       },
     });
-
-    notificator.success(`You have installed plugin ${pluginName}.`);
-    close();
   };
 
   const updatePlugin = () => {
@@ -131,7 +146,9 @@ export const SpecificPlugin: FC<{ pluginName: string }> = ({ pluginName }) => {
     });
 
     notificator.success(`You have updated plugin ${pluginName}.`);
-    close();
+    setTimeout(() => {
+      close();
+    }, 1200);
   };
 
   const uninstallPlugin = () => {
@@ -142,9 +159,6 @@ export const SpecificPlugin: FC<{ pluginName: string }> = ({ pluginName }) => {
         version: versionValue,
       },
     });
-
-    notificator.success(`You have uninstalled plugin ${pluginName}.`);
-    close();
   };
 
   if (isFetching) {
