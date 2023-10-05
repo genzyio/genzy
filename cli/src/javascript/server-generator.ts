@@ -127,7 +127,7 @@ function indexFileContentFrom({
   services: ExtendedServiceInfo[];
   info: N1mblyInfo;
   nunjucks: Environment;
-  plugins: string[];
+  plugins: ExtendedMetaInfo["plugins"];
 }): Promise<string> {
   const content = nunjucks.render("index.njk", {
     services: services.filter((service) => {
@@ -138,13 +138,14 @@ function indexFileContentFrom({
     }),
     info,
     plugins: plugins.map((plugin) => ({
-      name: plugin
+      name: plugin.name
         .split("-")
         .map((x) => capitalizeFirstLetter(x))
         // replace all special characters with empty string
         .map((x) => x.replaceAll(/[^a-zA-Z0-9]/g, ""))
         .join(""),
-      package: plugin,
+      package: plugin.name,
+      services: plugin.services,
     })),
   });
   return formatFileContent(content);

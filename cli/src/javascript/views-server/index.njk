@@ -31,7 +31,7 @@ const app = new N1mblyApi({
   name: "{{info.name}}",
   description: "{{info.description}}",
   },
-}){% for plugin in plugins %}.addPlugin(new {{ plugin.name }}Plugin({ containers: [controllers, services] }))
+}){% for plugin in plugins %}.addPlugin(new {{ plugin.name }}Plugin({ containers: [services] }))
   {% endfor %}.buildAppFrom(controllers);
 
 const port = process.env.PORT || 3000 ;

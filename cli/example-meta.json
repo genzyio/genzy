@@ -1,5 +1,16 @@
 {
-  "plugins": ["n1mbly-zod-validation"],
+  "plugins": [
+    {
+      "name": "n1mbly-zod-validation",
+      "services": []
+    },
+    {
+      "name": "n1mbly-mariadb-repository",
+      "services": [
+        "MariaRepository"
+      ]
+    }
+  ],
   "services": [
     {
       "name": "AuthController",

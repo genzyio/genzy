@@ -2,7 +2,7 @@ import type { MetaInfo, ServiceMetaInfo } from "../../shared/types";
 
 export type ExtendedMetaInfo = Omit<MetaInfo, "services"> & {
   services: ExtendedServiceInfo[];
-  plugins: string[];
+  plugins: { name: string; services: string[] }[];
 };
 
 export type ExtendedServiceInfo = {
