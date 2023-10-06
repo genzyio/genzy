@@ -1,0 +1,44 @@
+{
+  "name": "app",
+  "type": "module",
+  "version": "1.0.0",
+  "source": "src/index.html",
+  "scripts": {
+    "start": "parcel --host 0.0.0.0",
+    "build": "parcel build src/index.html --public-url ./ --no-scope-hoist --no-optimize --no-cache --no-source-maps --detailed-report"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@headlessui/react": "^1.7.16",
+    "@heroicons/react": "^2.0.18",
+    "@tailwindcss/forms": "^0.5.4",
+    "@uidotdev/usehooks": "^2.2.0",
+    "autoprefixer": "^10.4.14",
+    "axios": "^1.4.0",
+    "flowbite": "^1.8.1",
+    "html-to-image": "^1.11.11",
+    "html2canvas": "^1.4.1",
+    "lodash.clonedeep": "^4.5.0",
+    "moment": "^2.29.4",
+    "postcss": "^8.4.23",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-query": "^3.39.3",
+    "react-router-dom": "^6.15.0",
+    "react-toastify": "^9.1.3",
+    "reactflow": "^11.7.4",
+    "tailwindcss": "^3.3.2",
+    "use-undoable": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/lodash.clonedeep": "^4.5.7",
+    "@types/react": "^18.2.7",
+    "@types/react-dom": "^18.2.4",
+    "buffer": "^6.0.3",
+    "parcel": "^2.8.3",
+    "parcel-reporter-static-files-copy": "^1.5.0",
+    "process": "^0.11.10"
+  }
+}
