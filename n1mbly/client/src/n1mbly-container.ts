@@ -37,21 +37,21 @@ export class N1mblyContainer extends Interceptable<InterceptorCallback> {
     this.serviceRegisters.push(() => {
       this.add(type);
     });
-    this.build();
+    this.compile();
     return this;
   }
   public addLocalServices(...types: Constructor[]): N1mblyContainer {
     this.serviceRegisters.push(() => {
       this.add(...types);
     });
-    this.build();
+    this.compile();
     return this;
   }
   public addRemoteService(origin: string, type: Constructor): N1mblyContainer {
     this.serviceRegisters.push(() => {
       this.addRemote(origin, type);
     });
-    this.build();
+    this.compile();
     return this;
   }
   public addRemoteServices(
@@ -61,7 +61,7 @@ export class N1mblyContainer extends Interceptable<InterceptorCallback> {
     this.serviceRegisters.push(() => {
       this.addRemote(origin, ...types);
     });
-    this.build();
+    this.compile();
     return this;
   }
 
@@ -109,7 +109,7 @@ export class N1mblyContainer extends Interceptable<InterceptorCallback> {
         ...container.getServices(),
       };
     });
-    this.build();
+    this.compile();
     return this;
   }
 
@@ -145,10 +145,12 @@ export class N1mblyContainer extends Interceptable<InterceptorCallback> {
     return this;
   }
 
-  private build() {
-    this.internalOnlyRegistry = new ServiceRegistry();
-    this.allServicesRegistry = new ServiceRegistry();
+  private compile() {
+    this.build();
+    this.build();
+  }
 
+  private build() {
     this.containerAccessRegisters.forEach((cb) => cb());
     try {
       this.serviceRegisters.forEach((cb) => cb());

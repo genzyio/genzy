@@ -45,6 +45,7 @@ const app = new N1mblyApi({
   version: "{{info.version}}",
   name: "{{info.name}}",
   description: "{{info.description}}",
+  basePath: "{{info.basePath}}",
   },
 }){% for plugin in plugins %}.addPlugin(new {{ plugin.name }}Plugin({ containers: [services] }))
   {% endfor %}.buildAppFrom(controllers);
