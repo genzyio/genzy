@@ -289,6 +289,10 @@ class ModelController {
 }
 
 class ModelService {
+  constructor(d) {
+    console.log(d);
+  }
+
   async getModelById(id: string): Promise<Model> {
     return {
       id: "pera",
@@ -303,9 +307,49 @@ class ModelService {
   }
 }
 
+class A {
+  constructor(d) {
+    console.log(d);
+  }
+}
+
+class B {
+  constructor(d) {
+    console.log(d);
+  }
+}
+
+class AB {
+  constructor(d) {
+    console.log(d);
+  }
+}
+
+class AC {
+  constructor(d) {
+    console.log(d);
+  }
+}
+
+class BC {
+  constructor(d) {
+    console.log(d);
+  }
+}
+
 const controllers = new N1mblyContainer().addLocalServices(ModelController);
 
-const services = new N1mblyContainer().addLocalServices(ModelService);
+const services = new N1mblyContainer()
+  .addLocalServices(ModelService, A, B)
+  .addLocalService(AB);
+
+const s = new N1mblyContainer().addLocalServices(AC);
+
+services.addAccessToContainer("s", s);
+
+const b = new N1mblyContainer().addLocalServices(BC);
+
+s.addAccessToContainer("b", b);
 
 controllers.addAccessToContainer("services", services);
 
