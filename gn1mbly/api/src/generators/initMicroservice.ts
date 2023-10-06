@@ -45,8 +45,7 @@ function initMicroserviceTsJs(project: Project, metadata: InitialN1mblyMetadata,
         license: "ISC",
         dependencies: {
           ...initialDependencies,
-          "@n1mbly/api": "0.2.10",
-          "@n1mbly/client": "0.2.0",
+          "@n1mbly/api": "0.2.12",
           dotenv: "16.3.1",
         },
         devDependencies: {

@@ -22,11 +22,15 @@ async function getPidIfPortIsTaken(port: number) {
 }
 
 function startMicroservice(projectPath: string, microserviceName: string, port: number) {
+  // Get the PATH environment variable and add the directory where npm is installed
+  const env = { ...process.env };
+  env.PATH = `${env.PATH}:${path.join(__dirname, "node_modules", ".bin")}`;
   const child_process = exec(
     "npm run watch",
     {
       cwd: path.join(projectPath, microserviceName),
       env: {
+        ...env,
         PORT: port.toString(),
       },
     },
@@ -42,7 +46,7 @@ async function startProject(project: Project, projectDefinition: any) {
     pidsPerProject[project.name] = {};
   }
 
-  for (const [microserviceId, port] of Object.entries(ports)) {
+  for (const [microserviceId, port] of Object.entries(ports ?? {})) {
     console.log(microserviceId, port);
     const existingPid = await getPidIfPortIsTaken(port);
     if (existingPid) {
@@ -60,7 +64,7 @@ async function startProject(project: Project, projectDefinition: any) {
 async function stopProject(project: Project) {
   const pids = pidsPerProject[project.name];
 
-  for (const [microserviceId, pid] of Object.entries(pids)) {
+  for (const [microserviceId, pid] of Object.entries(pids ?? {})) {
     terminate(pid, (err: any) => console.log(err));
     delete pids[microserviceId];
   }
