@@ -12,9 +12,12 @@ export class RedisService {
 
   set(key: string, value: string) {
     this.cache.set(key, value);
+    return value;
   }
 
   delete(key: string) {
+    const value = this.cache.get(key);
     this.cache.delete(key);
+    return value;
   }
 }

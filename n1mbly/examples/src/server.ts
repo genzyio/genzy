@@ -353,6 +353,8 @@ s.addAccessToContainer("b", b);
 
 controllers.addAccessToContainer("services", services);
 
+console.log("aaa", controllers.getServices())
+
 export const api = new N1mblyApi()
   .addPlugin(new ZodValidationPlugin())
   .buildAppFrom(controllers);

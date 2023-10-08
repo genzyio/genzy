@@ -286,4 +286,170 @@ describe("N1mblyContainer", () => {
 
     expect(result).toEqual("not null");
   });
+
+  it("should resolve a complex graph of deps", async () => {
+    class Service1 {
+      public service3: Service3;
+      public service2: Service2;
+
+      constructor(deps: { service2: Service2; service3: Service3 }) {
+        this.service2 = deps.service2;
+        this.service3 = deps.service3;
+      }
+
+      public getS1() {
+        return [1, 2, 3];
+      }
+    }
+
+    class Service2 {
+      public service3: Service3;
+
+      constructor(deps: { service3: Service3 }) {
+        this.service3 = deps.service3;
+      }
+
+      public getS2() {
+        return [1, 2, 3];
+      }
+    }
+
+    class Service3 {
+      public service1: Service1;
+
+      constructor(deps: { service1: Service1 }) {
+        this.service1 = deps.service1;
+      }
+
+      public getS3() {
+        return [1, 2, 3];
+      }
+    }
+
+    const services = new N1mblyContainer()
+      .addLocalServices(Service1, Service2, Service3)
+      .getAllServices();
+
+    expect(services).toHaveProperty("service1");
+    expect(services).toHaveProperty("service2");
+    expect(services).toHaveProperty("service3");
+
+    expect(services.service1.service2).toBe(services.service2);
+    expect(services.service1.service3).toBe(services.service3);
+    expect(services.service2.service3).toBe(services.service3);
+    expect(services.service3.service1).toBe(services.service1);
+
+    expect(typeof services.service1.getS1).toBe("function");
+    expect(typeof services.service2.getS2).toBe("function");
+    expect(typeof services.service3.getS3).toBe("function");
+
+    expect(typeof services.service3.service1.getS1).toBe("function");
+    expect(typeof services.service1.service2.getS2).toBe("function");
+    expect(typeof services.service2.service3.getS3).toBe("function");
+  });
+
+  it("should resolve a complex graph of deps using containers", async () => {
+    class Service1 {
+      public service3: Service3;
+      public service2: Service2;
+
+      constructor(deps: {
+        services: { service2: Service2; service3: Service3 };
+      }) {
+        this.service2 = deps.services.service2;
+        this.service3 = deps.services.service3;
+      }
+
+      public getS1() {
+        return [1, 2, 3];
+      }
+    }
+
+    class Service2 {
+      public service3: Service3;
+
+      constructor(deps: { service3: Service3 }) {
+        this.service3 = deps.service3;
+      }
+
+      public getS2() {
+        return [1, 2, 3];
+      }
+    }
+
+    class Service3 {
+      public service2: Service2;
+
+      constructor(deps: { service2: Service2 }) {
+        this.service2 = deps.service2;
+      }
+
+      public getS3() {
+        return [1, 2, 3];
+      }
+    }
+
+    const cont = new N1mblyContainer().addLocalServices(Service1);
+
+    const cont23 = new N1mblyContainer().addLocalServices(Service2, Service3);
+
+    cont.addAccessToContainer("services", cont23);
+
+    const contAllServices = cont.getAllServices();
+
+    expect(contAllServices).toHaveProperty("service1");
+    expect(contAllServices.services).toHaveProperty("service2");
+    expect(contAllServices.services).toHaveProperty("service3");
+
+    expect(typeof contAllServices.service1.getS1).toBe("function");
+    expect(typeof contAllServices.service1.service2.getS2).toBe("function");
+    expect(typeof contAllServices.service1.service3.getS3).toBe("function");
+
+    expect(typeof contAllServices.services.service2.getS2).toBe("function");
+    expect(typeof contAllServices.services.service3.getS3).toBe("function");
+
+    expect(typeof contAllServices.service1.service2.getS2).toBe("function");
+    expect(typeof contAllServices.services.service3.service2.getS2).toBe(
+      "function"
+    );
+    expect(typeof contAllServices.services.service2.service3.getS3).toBe(
+      "function"
+    );
+  });
+
+  it("should resolve a circular dep", async () => {
+    class Service2 {
+      public service3: Service3;
+
+      constructor(deps: { service3: Service3 }) {
+        this.service3 = deps.service3;
+      }
+
+      public getS2() {
+        return [1, 2, 3];
+      }
+    }
+
+    class Service3 {
+      public service2: Service2;
+
+      constructor(deps: { service2: Service2 }) {
+        this.service2 = deps.service2;
+      }
+
+      public getS3() {
+        return [1, 2, 3];
+      }
+    }
+
+    const cont = new N1mblyContainer().addLocalServices(Service2, Service3);
+
+    const contAllServices = cont.getAllServices();
+
+    expect(contAllServices).toHaveProperty("service2");
+    expect(contAllServices).toHaveProperty("service3");
+
+    expect(typeof contAllServices.service3.service2.getS2).toBe("function");
+    expect(typeof contAllServices.service2.service3.getS3).toBe("function");
+  });
 });

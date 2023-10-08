@@ -95,55 +95,57 @@ export class N1mblyApi extends Interceptable<InterceptorCallback> {
 
     containers.forEach((container) => {
       const serviceRegistry = container.getServices();
-      Object.keys(serviceRegistry).forEach((serviceKey) => {
-        const instance = serviceRegistry[serviceKey];
+      Object.keys(serviceRegistry)
+        .filter((x) => !x.startsWith("$"))
+        .forEach((serviceKey) => {
+          const instance = serviceRegistry[serviceKey];
 
-        // BEFORE ROUTE REGISTER
-        this.plugins.forEach((plugin) => {
-          plugin.beforeRouteRegister({
-            n1mblyApi: this,
-            app: this.app,
-            serviceKey,
-            serviceInstance: instance,
-            n1mblyConfig: combineN1mblyConfigs(
-              instance?.$nimbly_config ?? {},
-              instance?.$nimbly ?? {}
-            ),
+          // BEFORE ROUTE REGISTER
+          this.plugins.forEach((plugin) => {
+            plugin.beforeRouteRegister({
+              n1mblyApi: this,
+              app: this.app,
+              serviceKey,
+              serviceInstance: instance,
+              n1mblyConfig: combineN1mblyConfigs(
+                instance?.$nimbly_config ?? {},
+                instance?.$nimbly ?? {}
+              ),
+            });
+          });
+
+          const { service } = RegisterRoutesFor(
+            instance,
+            this.app,
+            this.interceptors,
+            this.errorRegistry,
+            this.n1mblyInfo.basePath
+          );
+          const { types, ...serviceMeta } = service;
+          // register service
+          this.meta.services.push(serviceMeta);
+          // register type
+          this.meta.types = {
+            ...this.meta.types,
+            ...types,
+            // TODO: handle name conflicts
+          };
+
+          // AFTER ROUTE REGISTER
+          this.plugins.forEach((plugin) => {
+            plugin.afterRouteRegister({
+              n1mblyApi: this,
+              app: this.app,
+              serviceKey,
+              serviceInstance: instance,
+              n1mblyConfig: combineN1mblyConfigs(
+                instance?.$nimbly_config ?? {},
+                instance?.$nimbly ?? {}
+              ),
+              meta: service,
+            });
           });
         });
-
-        const { service } = RegisterRoutesFor(
-          instance,
-          this.app,
-          this.interceptors,
-          this.errorRegistry,
-          this.n1mblyInfo.basePath
-        );
-        const { types, ...serviceMeta } = service;
-        // register service
-        this.meta.services.push(serviceMeta);
-        // register type
-        this.meta.types = {
-          ...this.meta.types,
-          ...types,
-          // TODO: handle name conflicts
-        };
-
-        // AFTER ROUTE REGISTER
-        this.plugins.forEach((plugin) => {
-          plugin.afterRouteRegister({
-            n1mblyApi: this,
-            app: this.app,
-            serviceKey,
-            serviceInstance: instance,
-            n1mblyConfig: combineN1mblyConfigs(
-              instance?.$nimbly_config ?? {},
-              instance?.$nimbly ?? {}
-            ),
-            meta: service,
-          });
-        });
-      });
     });
 
     this.app.get(`${this.n1mblyInfo.basePath}/meta`, (_, res) => {

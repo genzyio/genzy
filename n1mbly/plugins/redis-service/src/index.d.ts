@@ -29,3 +29,9 @@ export class Plugin extends N1mblyPlugin {
   ): void | Promise<void>;
   afterAll(params: N1mblyPluginParams): void | Promise<void>;
 }
+
+export class RedisService {
+  get(key: string): Promise<string>;
+  set(key: string, value: string): Promise<string>;
+  delete(key: string): Promise<string>;
+}

@@ -18,6 +18,23 @@ export const BUILT_IN_METHODS = [
   "$nimblyOrigin",
 ];
 
+export const BUILT_IN_PROPS = [
+  "_class_name_",
+  "$nimblyInterceptors",
+  "$nimblyOrigin",
+  "n1mblyConfig",
+  "n1mbly_config",
+  "$n1mbly_config",
+  "nimbly_config",
+  "$nimbly_config",
+  "$nimbly",
+  "$nimblyType",
+  "nodeType",
+  "hasAttribute",
+  "tagName",
+  "prototype",
+];
+
 export const PREFIX_TO_METHOD_REG = {
   get: "get",
   read: "get",

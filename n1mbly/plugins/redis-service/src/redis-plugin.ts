@@ -10,9 +10,8 @@ export class Plugin extends N1mblyPlugin {
   }
 
   beforeAll(params: N1mblyPluginParams): void | Promise<void> {
-    const redisContainer = new N1mblyContainer().addLocalService(RedisService);
     this.containers.forEach((container) => {
-      container.addAccessToContainer("redis", redisContainer);
+      container.addLocalService(RedisService);
     });
   }
 }

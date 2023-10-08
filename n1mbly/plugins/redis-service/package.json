@@ -1,6 +1,6 @@
 {
   "name": "n1mbly-redis-plugin",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "main": "build/index.js",
   "description": "N1mbly plugin for connecting to Redis and injecting a Redis service.",
   "types": "build/index.d.ts",

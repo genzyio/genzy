@@ -1,6 +1,6 @@
 {
   "name": "@n1mbly/client",
-  "version": "0.2.3",
+  "version": "0.2.15",
   "description": "N1mbly - focused on the domain.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
