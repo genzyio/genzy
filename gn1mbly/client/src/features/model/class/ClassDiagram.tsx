@@ -1,7 +1,6 @@
 import { type FC, useEffect, useState, useCallback, useMemo } from "react";
 import {
   Background,
-  Controls,
   MiniMap,
   ReactFlow,
   type Node,
@@ -9,6 +8,7 @@ import {
   useNodesState,
   useOnViewportChange,
   NodeProps,
+  SmoothStepEdge,
 } from "reactflow";
 import { Class } from "./models";
 import { useSequenceGenerator } from "../../../hooks/useStringSequence";
@@ -22,7 +22,6 @@ import { ClassNode } from "./ClassNode";
 import { RemovableNode } from "../common/components/RemovableNode";
 import { Button } from "../../../components/button";
 import { createPortal } from "react-dom";
-import { RemovableEdge } from "../common/components/RemovableEdge";
 import { ValidationContextProvider } from "../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 import nodeTypes from "../common/constants/nodeTypes";
@@ -38,7 +37,8 @@ type DiagramProps = {
 
 const localEdgeTypes = {
   ...edgeTypes,
-  removableEdge: RemovableEdge,
+  defaultEdge: SmoothStepEdge,
+  removableEdge: SmoothStepEdge,
 };
 
 export const ClassDiagram: FC<DiagramProps> = ({

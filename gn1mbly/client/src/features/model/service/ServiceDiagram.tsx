@@ -4,7 +4,6 @@ import ReactFlow, {
   useEdgesState,
   addEdge,
   Connection,
-  Controls,
   Background,
   MiniMap,
   type Node,
@@ -14,7 +13,6 @@ import ReactFlow, {
   type Viewport,
   useOnViewportChange,
   ConnectionMode,
-  updateEdge,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { type Service } from "./models";
@@ -23,7 +21,7 @@ import { ServiceDrawer } from "./ServiceDrawer";
 import { useProjectDefinitionContext } from "../../projects/contexts/project-definition.context";
 import { projectDefinitionActions } from "../../projects/contexts/project-definition.dispatcher";
 import { ConfirmationModal } from "../../../components/confirmation-modal";
-import { RemovableEdge } from "../common/components/RemovableEdge";
+import { RemovableEdge } from "../common/components/edges/removable/RemovableEdge";
 import { ServiceNode } from "./ServiceNode";
 import { RemovableNode } from "../common/components/RemovableNode";
 import { createPortal } from "react-dom";
@@ -34,6 +32,8 @@ import nodeTypes from "../common/constants/nodeTypes";
 import edgeTypes from "../common/constants/edgeTypes";
 import { CustomControls } from "../common/components/CustomControls";
 import { isNodeMoved } from "../common/utils/move.utils";
+import { SmoothStepConnectionLine } from "../common/components/edges/smooth-step/SmoothStepConnectionLine";
+import { FloatingEdge } from "../common/components/edges/floating/FloatingEdge";
 
 type DiagramProps = {
   microserviceId: string;
@@ -41,8 +41,6 @@ type DiagramProps = {
   edges?: any[];
   viewport: any;
 };
-
-let updateValidation = false;
 
 export const ServiceDiagram: FC<DiagramProps> = ({
   microserviceId,
@@ -62,8 +60,6 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   const [selected, setSelected] = useState<Node<Service, string>>();
 
   useEffect(() => {
-    if (selected) return;
-
     projectDefinition.services[microserviceId] = {
       ...projectDefinition.services[microserviceId],
       nodes: [...nodes],
@@ -97,7 +93,7 @@ export const ServiceDiagram: FC<DiagramProps> = ({
     const alreadyConnected = edges.some(
       (edge) => edge.target === connection.target && edge.source === connection.source
     );
-    if (alreadyConnected && !updateValidation) return false;
+    if (alreadyConnected) return false;
 
     return true;
   };
@@ -112,21 +108,6 @@ export const ServiceDiagram: FC<DiagramProps> = ({
       setEdges((edges) => addEdge(newEdge, edges));
     },
     [microserviceId, dispatcher, setEdges]
-  );
-
-  const onEdgeUpdate = useCallback(
-    (oldEdge: Edge, newConnection: Connection) => {
-      const changingSource = oldEdge.source !== newConnection.source;
-      const changingTarget = oldEdge.target !== newConnection.target;
-      if (changingSource || changingTarget) return;
-
-      dispatcher(projectDefinitionActions.updateDependencyHandles, {
-        microserviceId,
-        ...newConnection,
-      });
-      setEdges((edges) => updateEdge(oldEdge, newConnection, edges));
-    },
-    [microserviceId, dispatcher]
   );
 
   const nextName = () => {
@@ -221,6 +202,11 @@ export const ServiceDiagram: FC<DiagramProps> = ({
     [RemovableServiceNodeWrapper]
   );
 
+  const DefaultEdgeWrapper = useCallback((props: EdgeProps) => {
+    const { nodes, edges } = projectDefinition.services[microserviceId];
+    return <FloatingEdge nodes={nodes} edges={edges} {...props} label={undefined} />;
+  }, []);
+
   const RemovableEdgeWrapper = useCallback(
     (props: EdgeProps) => {
       const onRemove = (_, id: string) => {
@@ -231,7 +217,8 @@ export const ServiceDiagram: FC<DiagramProps> = ({
         setEdges((edges) => edges.filter((edge) => edge.id !== id));
       };
 
-      return <RemovableEdge onRemove={onRemove} {...props} />;
+      const { nodes, edges } = projectDefinition.services[microserviceId];
+      return <RemovableEdge nodes={nodes} edges={edges} onRemove={onRemove} {...props} />;
     },
     [microserviceId, dispatcher, setEdges]
   );
@@ -239,9 +226,10 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   const localEdgeTypes = useMemo(
     () => ({
       ...edgeTypes,
+      defaultEdge: DefaultEdgeWrapper,
       removableEdge: RemovableEdgeWrapper,
     }),
-    [RemovableEdgeWrapper]
+    [DefaultEdgeWrapper, RemovableEdgeWrapper]
   );
 
   const elem = document.getElementById("toolbar-actions");
@@ -271,9 +259,6 @@ export const ServiceDiagram: FC<DiagramProps> = ({
           onEdgesChange={onEdgesChange}
           isValidConnection={isValidConnection}
           onConnect={onConnect}
-          onEdgeUpdateStart={() => (updateValidation = true)}
-          onEdgeUpdateEnd={() => (updateValidation = false)}
-          onEdgeUpdate={onEdgeUpdate}
           nodeTypes={localNodeTypes}
           edgeTypes={localEdgeTypes}
           onNodeDragStart={(_, node) => setSelected(node)}
@@ -298,6 +283,7 @@ export const ServiceDiagram: FC<DiagramProps> = ({
           defaultViewport={initialViewport}
           deleteKeyCode={""}
           proOptions={{ account: "paid-sponsor", hideAttribution: true }}
+          connectionLineComponent={SmoothStepConnectionLine}
         >
           <MiniMap zoomable pannable />
           <CustomControls />

@@ -19,27 +19,6 @@ const addDependencyHandler: HandlerType<{
   return newDependencyEdge;
 };
 
-// Update
-
-const updateDependencyHandlesHandler: HandlerType<{
-  microserviceId: string;
-  source: string;
-  target: string;
-  sourceHandle: string;
-  targetHandle: string;
-}> = (
-  projectDefinition: ProjectDefinition,
-  { microserviceId, source, target, sourceHandle, targetHandle }
-) => {
-  const serviceDiagram = projectDefinition.services[microserviceId];
-  const dependencyNode = serviceDiagram.edges.find(
-    (edge) => edge.source === source && edge.target === target
-  );
-
-  dependencyNode.sourceHandle = sourceHandle;
-  dependencyNode.targetHandle = targetHandle;
-};
-
 // Remove
 
 const removeDependencyHandler: HandlerType<{
@@ -51,4 +30,4 @@ const removeDependencyHandler: HandlerType<{
   serviceDiagram.edges = serviceDiagram.edges.filter((edge) => edge.id !== dependencyId);
 };
 
-export { addDependencyHandler, updateDependencyHandlesHandler, removeDependencyHandler };
+export { addDependencyHandler, removeDependencyHandler };

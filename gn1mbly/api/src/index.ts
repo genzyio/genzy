@@ -11,6 +11,7 @@ import watchProjectRoutes from "./features/watch-project/watch-project.routes";
 import projectDefinitionRouters from "./features/project-definition/project-definition.routes";
 import projectScreenshotsRouters from "./features/project-screenshots/project-screenshots.routes";
 import recentlyOpenedRouters from "./features/recently-opened/recently-opened.routes";
+import imageStreamingRouters from "./features/image-streaming/image-streaming.routes";
 import fs from "fs";
 import path from "path";
 
@@ -48,7 +49,8 @@ export const startGn1mbly = (port: number | string) => {
     .use("/api", watchProjectRoutes)
     .use("/api", projectDefinitionRouters)
     .use("/api", projectScreenshotsRouters)
-    .use("/api", recentlyOpenedRouters);
+    .use("/api", recentlyOpenedRouters)
+    .use("/api", imageStreamingRouters);
 
   app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

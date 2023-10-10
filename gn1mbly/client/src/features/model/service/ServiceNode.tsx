@@ -40,7 +40,7 @@ export const ServiceNode: FC<ServiceNodeProps> = ({ data: service }) => {
                 <MethodChip method={fun.method} small />
               </span>
             )}
-            <span className="">{showRoute ? fun.route : fun.name}</span>
+            {showRoute ? <span>{fun.route || "/"}</span> : <span>{fun.name}</span>}
           </div>
         ))}
       </ConnectableNodeWrapper>

@@ -2,7 +2,6 @@ import { type FC, useCallback, useEffect, useMemo, useState } from "react";
 import ReactFlow, {
   Background,
   Connection,
-  Controls,
   MiniMap,
   addEdge,
   useEdgesState,
@@ -11,7 +10,6 @@ import ReactFlow, {
   type Edge,
   type Viewport,
   ConnectionMode,
-  updateEdge,
   useOnViewportChange,
   type EdgeProps,
   type NodeProps,
@@ -25,7 +23,7 @@ import { useProjectDefinitionContext } from "../../projects/contexts/project-def
 import { projectDefinitionActions } from "../../projects/contexts/project-definition.dispatcher";
 import { findArrayDiff } from "../../../utils/diff";
 import { ConfirmationModal } from "../../../components/confirmation-modal";
-import { RemovableEdge } from "../common/components/RemovableEdge";
+import { RemovableEdge } from "../common/components/edges/removable/RemovableEdge";
 import { RemovableNode } from "../common/components/RemovableNode";
 import { MicroserviceNode } from "./MicroserviceNode";
 import { createPortal } from "react-dom";
@@ -40,6 +38,8 @@ import nodeTypes from "../common/constants/nodeTypes";
 import edgeTypes from "../common/constants/edgeTypes";
 import { CustomControls } from "../common/components/CustomControls";
 import { isNodeMoved } from "../common/utils/move.utils";
+import { SmoothStepConnectionLine } from "../common/components/edges/smooth-step/SmoothStepConnectionLine";
+import { FloatingEdge } from "../common/components/edges/floating/FloatingEdge";
 
 type DiagramProps = {
   nodes?: any[];
@@ -47,8 +47,6 @@ type DiagramProps = {
   viewport: any;
   onMicroserviceDeleted: (microserviceId: string) => any;
 };
-
-let updateValidation = false;
 
 export const MicroservicesDiagram: FC<DiagramProps> = ({
   nodes: initialNodes,
@@ -82,8 +80,6 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   }, [selectedCommunication]);
 
   useEffect(() => {
-    if (selectedMicroservice) return;
-
     projectDefinition.microservices = {
       ...projectDefinition.microservices,
       nodes: [...nodes],
@@ -121,7 +117,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
     const alreadyConnected = edges.some(
       (edge) => edge.target === connection.target && edge.source === connection.source
     );
-    if (alreadyConnected && !updateValidation) return false;
+    if (alreadyConnected) return false;
 
     return true;
   };
@@ -133,18 +129,6 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
       setEdges((edges) => addEdge(newEdge, edges));
     },
     [dispatcher, setEdges]
-  );
-
-  const onEdgeUpdate = useCallback(
-    (oldEdge: Edge, newConnection: Connection) => {
-      const changingSource = oldEdge.source !== newConnection.source;
-      const changingTarget = oldEdge.target !== newConnection.target;
-      if (changingSource || changingTarget) return;
-
-      dispatcher(projectDefinitionActions.updateCommunicationHandles, newConnection);
-      setEdges((edges) => updateEdge(oldEdge, newConnection, edges));
-    },
-    [dispatcher]
   );
 
   // Handle Microservice Add
@@ -277,15 +261,21 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
     setSelectedCommunication(undefined);
   };
 
+  const DefaultEdgeWrapper = useCallback((props: EdgeProps) => {
+    const { nodes, edges } = projectDefinition.microservices;
+    return <FloatingEdge nodes={nodes} edges={edges} {...props} label={undefined} />;
+  }, []);
+
   const RemovableEdgeWrapper = useCallback(
     (props: EdgeProps) => {
+      const { nodes, edges } = projectDefinition.microservices;
       const onRemove = (_, id: string) => {
-        const edge = projectDefinition.microservices.edges.find((edge) => edge.id === id);
+        const edge = edges.find((edge) => edge.id === id);
         setSelectedCommunication(edge);
         setIsDeleteCommunicationModalOpen(true);
       };
 
-      return <RemovableEdge onRemove={onRemove} {...props} />;
+      return <RemovableEdge nodes={nodes} edges={edges} onRemove={onRemove} {...props} />;
     },
     [setSelectedCommunication, setIsDeleteCommunicationModalOpen]
   );
@@ -293,9 +283,10 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   const localEdgeTypes = useMemo(
     () => ({
       ...edgeTypes,
+      defaultEdge: DefaultEdgeWrapper,
       removableEdge: RemovableEdgeWrapper,
     }),
-    [RemovableEdgeWrapper]
+    [DefaultEdgeWrapper, RemovableEdgeWrapper]
   );
 
   const [isPluginsOpen, setIsPluginsOpen] = useState(false);
@@ -359,16 +350,14 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
           onEdgesChange={onEdgesChange}
           isValidConnection={isValidConnection}
           onConnect={onConnect}
-          onEdgeUpdateStart={() => (updateValidation = true)}
-          onEdgeUpdateEnd={() => (updateValidation = false)}
-          onEdgeUpdate={onEdgeUpdate}
           nodeTypes={localNodeTypes}
           edgeTypes={localEdgeTypes}
           onNodeDragStart={(_, node) => setSelectedMicroservice(node)}
           onNodeDragStop={(_, node) => {
-            if (isNodeMoved(selectedMicroservice, node) && node.type === "microserviceNode") {
+            if (isNodeMoved(selectedMicroservice, node)) {
               dispatcher(projectDefinitionActions.microserviceMoved, {
                 microserviceId: selectedMicroservice?.id,
+                type: selectedMicroservice?.type,
                 position: node.position,
                 positionAbsolute: node.positionAbsolute,
               });
@@ -393,6 +382,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
           defaultViewport={initialViewport}
           deleteKeyCode={""}
           proOptions={{ account: "paid-sponsor", hideAttribution: true }}
+          connectionLineComponent={SmoothStepConnectionLine}
         >
           <MiniMap zoomable pannable />
           <CustomControls />

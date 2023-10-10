@@ -11,18 +11,17 @@ type ImageNodeProps = NodeProps<{
 }>;
 
 export const ImageNode: FC<ImageNodeProps> = ({ id: nodeId, data: imageData }) => {
-  return (
-    <ConnectableNodeWrapper>
-      {imageData.showName && (
-        <h6 className="w-full text-center text-sm absolute -top-[30px]">{imageData.name}</h6>
-      )}
+  const imageUrl = `${(window as any)?.API_URL}/images?url=${imageData.url}`;
 
-      <img
-        src={imageData.url}
-        width={imageData.width}
-        height={imageData.height}
-        className="-my-2"
-      />
-    </ConnectableNodeWrapper>
+  return (
+    <div className="image-node">
+      <ConnectableNodeWrapper>
+        {imageData.showName && (
+          <h6 className="w-full text-center text-sm absolute -top-[30px]">{imageData.name}</h6>
+        )}
+
+        <img src={imageUrl} width={imageData.width} height={imageData.height} />
+      </ConnectableNodeWrapper>
+    </div>
   );
 };

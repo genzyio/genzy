@@ -75,8 +75,34 @@ const dbPluginMetadata: PluginMetadata = {
             } as any,
           ],
         },
+        {
+          id: "Redis_{{installingOnMicroserviceId}}_RedisService2",
+          name: "RedisService2",
+          functions: [
+            {
+              id: "Redis_Get",
+              name: "get",
+              returnType: "int",
+            } as any,
+            {
+              id: "Redis_Set",
+              name: "set",
+              returnType: "int",
+            } as any,
+            {
+              id: "Redis_Delete",
+              name: "delete",
+              returnType: "int",
+            } as any,
+          ],
+        },
       ],
-      dependencies: [],
+      dependencies: [
+        {
+          source: "Redis_{{installingOnMicroserviceId}}_RedisService",
+          target: "Redis_{{installingOnMicroserviceId}}_RedisService2",
+        },
+      ],
     },
   ],
   communications: [
@@ -176,6 +202,8 @@ const installPluginHandler: HandlerType<{
                 x: nodeMiddleX + 400 * cos - pluginMicroservice.width / 2,
                 y: nodeMiddleY + 400 * sin,
               },
+              width: pluginMicroservice.width,
+              height: pluginMicroservice.height,
               data: {
                 name: pluginMicroservice.name,
                 showName: pluginMicroservice.showName,

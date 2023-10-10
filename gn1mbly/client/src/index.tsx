@@ -30,6 +30,7 @@ const queryClient = new QueryClient({
   },
 });
 
+(window as any).API_URL = API_URL;
 axios.defaults.baseURL = API_URL;
 axios.defaults.withCredentials = false;
 

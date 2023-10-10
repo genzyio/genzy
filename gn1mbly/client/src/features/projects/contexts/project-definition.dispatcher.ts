@@ -1,47 +1,6 @@
 import { type ProjectDefinition } from "../models/project-definition.models";
 import { type HandlerType } from "./project-definition-handlers/types";
-import {
-  addMicroserviceHandler,
-  deleteMicroserviceHandler,
-  updateMicroserviceHandler,
-} from "./project-definition-handlers/microservice-handlers";
-import {
-  addServiceHandler,
-  addServicesHandler,
-  addRemoteProxyHandler,
-  addRemoteProxiesHandler,
-  addPlugableServiceHandler,
-  updateServiceHandler,
-  updateServicesHandler,
-  deleteServicesHandler,
-} from "./project-definition-handlers/service-handlers";
-import {
-  addClassHandler,
-  updateClassHandler,
-  deleteClassHandler,
-} from "./project-definition-handlers/class-handlers";
-import {
-  addCommunicationHandler,
-  removeCommunicationHandler,
-  removeServicesFromCommunicationHandler,
-  updateCommunicationHandler,
-  updateCommunicationHandlesHandler,
-} from "./project-definition-handlers/communication-handlers";
-import {
-  addDependencyHandler,
-  removeDependencyHandler,
-  updateDependencyHandlesHandler,
-} from "./project-definition-handlers/dependency-handlers";
-import {
-  installPluginHandler,
-  uninstallPluginHandler,
-  updatePluginHandler,
-} from "./project-definition-handlers/plugins-handlers";
-import {
-  microserviceMovedHandler,
-  serviceMovedHandler,
-  classMovedHandler,
-} from "./project-definition-handlers/diagram-handlers";
+import handlers from "./project-definition-handlers";
 
 export const projectDefinitionActions = {
   addMicroservice: Symbol("addMicroservice"),
@@ -55,7 +14,6 @@ export const projectDefinitionActions = {
 
   addCommunication: Symbol("addCommunication"),
   updateCommunication: Symbol("updateCommunication"),
-  updateCommunicationHandles: Symbol("updateCommunicationHandles"),
   removeServicesFromCommunication: Symbol("removeServicesFromCommunication"),
   removeCommunication: Symbol("removeCommunication"),
 
@@ -70,7 +28,6 @@ export const projectDefinitionActions = {
   serviceMoved: Symbol("serviceMoved"),
 
   addDependency: Symbol("addDependency"),
-  updateDependencyHandles: Symbol("updateDependencyHandles"),
   removeDependency: Symbol("removeDependency"),
 
   addClass: Symbol("addClass"),
@@ -82,44 +39,42 @@ export const projectDefinitionActions = {
 type DispatcherType = (type: symbol, payload: any) => any;
 
 function createDispatcher(projectDefinition: ProjectDefinition): DispatcherType {
-  const handlers: Record<symbol, HandlerType> = {
-    [projectDefinitionActions.addMicroservice]: addMicroserviceHandler,
-    [projectDefinitionActions.updateMicroservice]: updateMicroserviceHandler,
-    [projectDefinitionActions.deleteMicroservice]: deleteMicroserviceHandler,
-    [projectDefinitionActions.microserviceMoved]: microserviceMovedHandler,
+  const handlersMap: Record<symbol, HandlerType> = {
+    [projectDefinitionActions.addMicroservice]: handlers.addMicroserviceHandler,
+    [projectDefinitionActions.updateMicroservice]: handlers.updateMicroserviceHandler,
+    [projectDefinitionActions.deleteMicroservice]: handlers.deleteMicroserviceHandler,
+    [projectDefinitionActions.microserviceMoved]: handlers.microserviceMovedHandler,
 
-    [projectDefinitionActions.installPlugin]: installPluginHandler,
-    [projectDefinitionActions.updatePlugin]: updatePluginHandler,
-    [projectDefinitionActions.uninstallPlugin]: uninstallPluginHandler,
+    [projectDefinitionActions.installPlugin]: handlers.installPluginHandler,
+    [projectDefinitionActions.updatePlugin]: handlers.updatePluginHandler,
+    [projectDefinitionActions.uninstallPlugin]: handlers.uninstallPluginHandler,
 
-    [projectDefinitionActions.addCommunication]: addCommunicationHandler,
-    [projectDefinitionActions.updateCommunication]: updateCommunicationHandler,
-    [projectDefinitionActions.updateCommunicationHandles]: updateCommunicationHandlesHandler,
+    [projectDefinitionActions.addCommunication]: handlers.addCommunicationHandler,
+    [projectDefinitionActions.updateCommunication]: handlers.updateCommunicationHandler,
     [projectDefinitionActions.removeServicesFromCommunication]:
-      removeServicesFromCommunicationHandler,
-    [projectDefinitionActions.removeCommunication]: removeCommunicationHandler,
+      handlers.removeServicesFromCommunicationHandler,
+    [projectDefinitionActions.removeCommunication]: handlers.removeCommunicationHandler,
 
-    [projectDefinitionActions.addService]: addServiceHandler,
-    [projectDefinitionActions.addServices]: addServicesHandler,
-    [projectDefinitionActions.addRemoteProxy]: addRemoteProxyHandler,
-    [projectDefinitionActions.addRemoteProxies]: addRemoteProxiesHandler,
-    [projectDefinitionActions.addPlugableService]: addPlugableServiceHandler,
-    [projectDefinitionActions.updateService]: updateServiceHandler,
-    [projectDefinitionActions.updateServices]: updateServicesHandler,
-    [projectDefinitionActions.deleteServices]: deleteServicesHandler,
-    [projectDefinitionActions.serviceMoved]: serviceMovedHandler,
+    [projectDefinitionActions.addService]: handlers.addServiceHandler,
+    [projectDefinitionActions.addServices]: handlers.addServicesHandler,
+    [projectDefinitionActions.addRemoteProxy]: handlers.addRemoteProxyHandler,
+    [projectDefinitionActions.addRemoteProxies]: handlers.addRemoteProxiesHandler,
+    [projectDefinitionActions.addPlugableService]: handlers.addPlugableServiceHandler,
+    [projectDefinitionActions.updateService]: handlers.updateServiceHandler,
+    [projectDefinitionActions.updateServices]: handlers.updateServicesHandler,
+    [projectDefinitionActions.deleteServices]: handlers.deleteServicesHandler,
+    [projectDefinitionActions.serviceMoved]: handlers.serviceMovedHandler,
 
-    [projectDefinitionActions.addDependency]: addDependencyHandler,
-    [projectDefinitionActions.updateDependencyHandles]: updateDependencyHandlesHandler,
-    [projectDefinitionActions.removeDependency]: removeDependencyHandler,
+    [projectDefinitionActions.addDependency]: handlers.addDependencyHandler,
+    [projectDefinitionActions.removeDependency]: handlers.removeDependencyHandler,
 
-    [projectDefinitionActions.addClass]: addClassHandler,
-    [projectDefinitionActions.updateClass]: updateClassHandler,
-    [projectDefinitionActions.deleteClass]: deleteClassHandler,
-    [projectDefinitionActions.classMoved]: classMovedHandler,
+    [projectDefinitionActions.addClass]: handlers.addClassHandler,
+    [projectDefinitionActions.updateClass]: handlers.updateClassHandler,
+    [projectDefinitionActions.deleteClass]: handlers.deleteClassHandler,
+    [projectDefinitionActions.classMoved]: handlers.classMovedHandler,
   };
 
-  return (type: symbol, payload: any) => handlers[type](projectDefinition, payload);
+  return (type: symbol, payload: any) => handlersMap[type](projectDefinition, payload);
 }
 
 export { createDispatcher };

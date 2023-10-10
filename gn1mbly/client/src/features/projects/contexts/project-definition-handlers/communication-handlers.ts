@@ -56,20 +56,6 @@ const updateCommunicationHandler: HandlerType<{
   };
 };
 
-const updateCommunicationHandlesHandler: HandlerType<{
-  source: string;
-  target: string;
-  sourceHandle: string;
-  targetHandle: string;
-}> = (projectDefinition: ProjectDefinition, { source, target, sourceHandle, targetHandle }) => {
-  const communicationNode = projectDefinition.microservices.edges.find(
-    (edge) => edge.source === source && edge.target === target
-  );
-
-  communicationNode.sourceHandle = sourceHandle;
-  communicationNode.targetHandle = targetHandle;
-};
-
 // Remove
 
 const removeCommunicationHandler: HandlerType<{
@@ -107,7 +93,6 @@ const removeServicesFromCommunicationHandler: HandlerType<{
 export {
   addCommunicationHandler,
   updateCommunicationHandler,
-  updateCommunicationHandlesHandler,
   removeCommunicationHandler,
   removeServicesFromCommunicationHandler,
 };

@@ -24,6 +24,8 @@ function createChangeTrackingDispatcherWrapper(
       case projectDefinitionActions.updateCommunication:
       case projectDefinitionActions.removeServicesFromCommunication:
         break;
+      case projectDefinitionActions.microserviceMoved:
+        if (payload?.type !== "microserviceNode") break;
       default:
         setStateForMS(payload.microserviceId, "MODIFIED");
     }
