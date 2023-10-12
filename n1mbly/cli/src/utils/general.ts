@@ -142,8 +142,8 @@ export function adoptParams(
     name: p.name ?? "body",
     typeAdapted: typeAdapt(p.type),
     typeDecorator: adoptTypeToDecorator(p.type),
-    $isOptional: p.type.$isOptional,
-    $isArray: p.type.$isArray,
+    $isOptional: p.type?.$isOptional,
+    $isArray: p.type?.$isArray,
   }));
 }
 

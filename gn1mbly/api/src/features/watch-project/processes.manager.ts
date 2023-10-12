@@ -36,6 +36,8 @@ function startMicroservice(projectPath: string, microserviceName: string, port: 
     },
     (e, m) => console.log(e, m),
   );
+  child_process.stdout?.on("data", (data) => console.log(`PID: ${child_process.pid}, PORT: ${port}, LOG: ${data}`));
+  child_process.stderr?.on("data", (data) => console.error(`PID: ${child_process.pid}, PORT: ${port}, ERROR: ${data}`));
   return child_process.pid as number;
 }
 
