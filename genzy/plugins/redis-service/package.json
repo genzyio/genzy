@@ -31,7 +31,7 @@
   "dependencies": {
     "@genzy.io/api": "0.2.10"
   },
-  "ggenzyMetadata": {
+  "genzyMetadata": {
     "microservices": [
       {
         "id": "Redis{{installingOnMicroserviceId}}",

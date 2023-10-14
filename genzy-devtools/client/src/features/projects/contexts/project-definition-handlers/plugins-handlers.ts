@@ -154,7 +154,7 @@ function getPackageJson(plugin: Plugin) {
 
 function getMetadata(plugin: Plugin, packageJson: any) {
   if (plugin.name === "genzy-redis-plugin") {
-    return packageJson.ggenzyMetadata || dbPluginMetadata;
+    return packageJson.genzyMetadata || dbPluginMetadata;
   }
 
   return {

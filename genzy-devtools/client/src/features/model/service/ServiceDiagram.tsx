@@ -323,7 +323,7 @@ export const ServiceDiagram: FC<DiagramProps> = ({
             }
           );
         }}
-        title={"GGenzy"}
+        title={"Genzy"}
       >
         {selected && (
           <ValidationContextProvider>

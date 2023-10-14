@@ -24,12 +24,12 @@ import { Get, Post, Controller, GenzyContainer } from "../../client/src";
 
 // v3.4.6
 
-// ggenzy paket
+// genzy paket
 // expose API za registrovanje plugina
 
 // generisan kod paket (mikroservis proj)
 // u njega treba install pg-adapter
-// ovaj nema ggenzy instaliran
+// ovaj nema genzy instaliran
 
 // class PgAdapter {
 //   constructor(

@@ -237,7 +237,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
             }
           );
         }}
-        title={"GGenzy"}
+        title={"Genzy"}
       >
         {selectedClass && (
           <ValidationContextProvider>

@@ -1,4 +1,4 @@
-# GGenzy CLI
+# Genzy CLI
 
 ## Development Setup
 

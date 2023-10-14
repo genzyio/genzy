@@ -6,5 +6,5 @@ dotenv.config();
 
 export const config = {
   port: process.env.PORT,
-  userArtefactsPath: path.join(os.homedir(), '.ggenzy')
+  userArtefactsPath: path.join(os.homedir(), '.genzy')
 };

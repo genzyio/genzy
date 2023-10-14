@@ -1,11 +1,11 @@
 import { type Project } from "../features/projects/projects.models";
 import { getPorts } from "../features/watch-project/ports.manager";
 
-type GGenzyOutput = any;
+type GenzyOutput = any;
 
-type GGenzyClass = any;
+type GenzyClass = any;
 
-type GGenzyEdge = any;
+type GenzyEdge = any;
 
 export type GenzyInfo = {
   name: string;
@@ -32,12 +32,6 @@ type GenzyTypeInfo = {
   $isArray: boolean;
 };
 
-type GenzyParameter = {
-  name: string;
-  source?: string;
-  type: GenzyTypeInfo;
-};
-
 type Result = GenzyTypeInfo;
 
 type GenzyAction = {
@@ -59,25 +53,25 @@ export type GenzyGeneratorInput = {
 
 type MicroserviceInfo = GenzyInfo;
 
-type GGenzyParameter = {
+type GenzyParameter = {
   name: string;
   isCollection: boolean;
   source?: string;
-  type: string;
+  type: GenzyTypeInfo;
   id: string;
 };
 
-type GGenzyFunction = {
+type GenzyFunction = {
   name: string;
   method?: string;
   returnType: string;
   returnsCollection: boolean;
   route?: string;
   id: string;
-  params: GGenzyParameter[];
+  params: GenzyParameter[];
 };
 
-export function convertJSON(project: Project, microserviceId: string, inputJson: GGenzyOutput): GenzyGeneratorInput {
+export function convertJSON(project: Project, microserviceId: string, inputJson: GenzyOutput): GenzyGeneratorInput {
   const outputJson: GenzyGeneratorInput = {
     services: [],
     types: {},
@@ -107,7 +101,7 @@ function createInfo(microservice: MicroserviceInfo): GenzyInfo {
   };
 }
 
-function createPlugins(inputJson: GGenzyOutput, microserviceId: string) {
+function createPlugins(inputJson: GenzyOutput, microserviceId: string) {
   const microserviceNode = inputJson["microservices"]["nodes"].find((m: any) => m.id === microserviceId);
   const serviceDiagram = inputJson["services"][microserviceId]["nodes"];
 
@@ -124,7 +118,7 @@ function createPlugins(inputJson: GGenzyOutput, microserviceId: string) {
   });
 }
 
-function createServices(project: Project, inputJson: GGenzyOutput, microserviceId: string): GenzyService[] {
+function createServices(project: Project, inputJson: GenzyOutput, microserviceId: string): GenzyService[] {
   const services = inputJson["services"][microserviceId]["nodes"];
   const classes = inputJson["classes"][microserviceId]["nodes"];
   const edges = inputJson["services"][microserviceId]["edges"];
@@ -174,7 +168,7 @@ function createServices(project: Project, inputJson: GGenzyOutput, microserviceI
 
 function createRemoteProxyService(
   project: Project,
-  inputJson: GGenzyOutput,
+  inputJson: GenzyOutput,
   remoteMicroserviceId: string,
   serviceId: string,
 ): GenzyService {
@@ -192,13 +186,13 @@ function createRemoteProxyService(
   };
 }
 
-function createDependsOn(serviceId: string, services: any, edges: GGenzyEdge[]): GenzyServiceName[] {
+function createDependsOn(serviceId: string, services: any, edges: GenzyEdge[]): GenzyServiceName[] {
   return edges
     .filter((e: any) => e.source === serviceId)
     .map((e: any) => services.find((s: any) => s.id === e.target)?.data.name);
 }
 
-function createActions(serviceType: string, functions: GGenzyFunction[], classes: GGenzyClass[]): GenzyAction[] {
+function createActions(serviceType: string, functions: GenzyFunction[], classes: GenzyClass[]): GenzyAction[] {
   return functions.map((f: any) => {
     const params =
       serviceType !== "LocalService" ? createParams(true, f.params, classes) : createParams(false, f.params, classes);

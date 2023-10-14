@@ -1,5 +1,5 @@
 {
-  "name": "ggenzy-cli",
+  "name": "genzy-cli",
   "version": "1.0.0",
   "description": "",
   "scripts": {
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ggenzy-api": "file:../api/dist",
+    "genzy-api": "file:../api/dist",
     "yargs": "17.7.2"
   },
   "devDependencies": {

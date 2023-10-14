@@ -1,4 +1,4 @@
-# GGenzy API
+# Genzy API
 
 ## Development Setup
 

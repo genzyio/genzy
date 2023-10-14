@@ -1,6 +1,6 @@
 import yargs from "yargs";
 import { generateMicroservice, initializeProject, startMicroservice, stopMicroservice } from "./actions";
-import { startGgenzy } from "ggenzy-api";
+import { startGgenzy } from "genzy-api";
 
 main();
 

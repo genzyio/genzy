@@ -16,7 +16,7 @@ export function ProjectsModal() {
   return (
     <>
       <div className="h-full w-full">
-        <div className="mt-2 text-2xl text-center">Above and GGenzyeyond!</div>
+        <div className="mt-2 text-2xl text-center">Above and Genzyeyond!</div>
 
         <EmptyDiagram />
 
