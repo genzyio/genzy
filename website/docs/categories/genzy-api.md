@@ -9,7 +9,7 @@ import TabItem from '@theme/TabItem';
 
 ## What GenzyApi is
 
-GenzyApi is responsible for automatically creating a [RestAPI](https://en.wikipedia.org/wiki/Representational_state_transfer) from a set of [GenzyContainers](container.md).
+GenzyApi is responsible for automatically creating a [RestAPI](https://en.wikipedia.org/wiki/Representational_state_transfer) from a set of [GenzyContainers](genzy-container.md).
 
 It is also responsible for automatically building [OpenAPI](https://www.openapis.org/) documentation, and serving [SwaggerUI](https://swagger.io/) on route `/explorer`.
 
@@ -21,7 +21,7 @@ It is also responsible for automatically building [OpenAPI](https://www.openapis
   <TabItem value="cjs" label="CommonJS" default>
 
 ```js
-const { GenzyContainer, GenzyApi } = require('genzy-api');
+const { GenzyContainer, GenzyApi } = require("@genzy/api");
 
 class UserService {
   async createUser(user) {
@@ -35,17 +35,20 @@ class AccountService {
   }
 }
 
-const usersGenzyContainer = new GenzyContainer()
-  .addLocalServices(UserService, AccountService);
+const usersGenzyContainer = new GenzyContainer().addLocalServices(
+  UserService,
+  AccountService
+);
 
 const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
+
 </TabItem>
   <TabItem value="js" label="ES modules" default>
 
 ```js
-import { GenzyContainer, GenzyApi } from 'genzy-api';
+import { GenzyContainer, GenzyApi } from "@genzy/api";
 
 class UserService {
   async createUser(user) {
@@ -59,17 +62,20 @@ class AccountService {
   }
 }
 
-const usersGenzyContainer = new GenzyContainer()
-  .addLocalServices(UserService, AccountService);
+const usersGenzyContainer = new GenzyContainer().addLocalServices(
+  UserService,
+  AccountService
+);
 
 const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
+
 </TabItem>
   <TabItem value="ts" label="TypeScript" default>
 
 ```ts
-import { GenzyContainer, GenzyApi } from 'genzy-api';
+import { GenzyContainer, GenzyApi } from "@genzy/api";
 
 class UserService {
   async createUser(user): Promise<any> {
@@ -83,12 +89,15 @@ class AccountService {
   }
 }
 
-const usersGenzyContainer = new GenzyContainer()
-  .addLocalServices(UserService, AccountService);
+const usersGenzyContainer = new GenzyContainer().addLocalServices(
+  UserService,
+  AccountService
+);
 
 const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
+
   </TabItem>
 </Tabs>
 
@@ -104,7 +113,7 @@ An API can also be generated from a set of remote services, so that the API acts
   <TabItem value="cjs" label="CommonJS" default>
 
 ```js
-const { GenzyContainer, GenzyApi } = require('genzy-api');
+const { GenzyContainer, GenzyApi } = require("@genzy/api");
 
 class UserService {
   async createUser(user) {}
@@ -114,17 +123,21 @@ class AccountService {
   async getAllAccounts() {}
 }
 
-const usersGenzyContainer = new GenzyContainer()
-  .addRemoteServices('http://localhost:3000', UserService, AccountService);
+const usersGenzyContainer = new GenzyContainer().addRemoteServices(
+  "http://localhost:3000",
+  UserService,
+  AccountService
+);
 
 const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
+
 </TabItem>
   <TabItem value="js" label="ES modules" default>
 
 ```js
-import { GenzyContainer, GenzyApi } from 'genzy-api';
+import { GenzyContainer, GenzyApi } from "@genzy/api";
 
 class UserService {
   async createUser(user) {}
@@ -134,17 +147,21 @@ class AccountService {
   async getAllAccounts() {}
 }
 
-const usersGenzyContainer = new GenzyContainer()
-  .addRemoteServices('http://localhost:3000', UserService, AccountService);
+const usersGenzyContainer = new GenzyContainer().addRemoteServices(
+  "http://localhost:3000",
+  UserService,
+  AccountService
+);
 
 const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
+
 </TabItem>
   <TabItem value="ts" label="TypeScript" default>
 
 ```ts
-import { GenzyContainer, GenzyApi } from 'genzy-api';
+import { GenzyContainer, GenzyApi } from "@genzy/api";
 
 class UserService {
   async createUser(user): Promise<any> {}
@@ -154,12 +171,16 @@ class AccountService {
   async getAllAccounts(): Promise<any[]> {}
 }
 
-const usersGenzyContainer = new GenzyContainer()
-  .addRemoteServices('http://localhost:3000', UserService, AccountService);
+const usersGenzyContainer = new GenzyContainer().addRemoteServices(
+  "http://localhost:3000",
+  UserService,
+  AccountService
+);
 
 const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
+
   </TabItem>
 </Tabs>
 
@@ -171,19 +192,17 @@ app.listen(3000);
   <TabItem value="cjs" label="CommonJS" default>
 
 ```js
-const { GenzyContainer, GenzyApi } = require('genzy-api');
+const { GenzyContainer, GenzyApi } = require("@genzy/api");
 
 class UserService {
   $genzy = {
-    path: '/users',
+    path: "/users",
     createUser: {
-      httpMethod: 'POST',
-      path: '/',
-      params: [
-        { name: 'user', source: 'body' }
-      ]
-    }
-  }
+      httpMethod: "POST",
+      path: "/",
+      params: [{ name: "user", source: "body" }],
+    },
+  };
   async createUser(user) {
     return user;
   }
@@ -191,40 +210,41 @@ class UserService {
 
 class AccountService {
   $genzy = {
-    path: '/accounts',
+    path: "/accounts",
     getAllAccounts: {
-      method: 'GET',
-      path: '/'
-    }
-  }
+      method: "GET",
+      path: "/",
+    },
+  };
   async getAllAccounts() {
     return [];
   }
 }
 
-const usersGenzyContainer = new GenzyContainer()
-  .addLocalServices(UserService, AccountService);
+const usersGenzyContainer = new GenzyContainer().addLocalServices(
+  UserService,
+  AccountService
+);
 
 const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
+
 </TabItem>
   <TabItem value="js" label="ES modules" default>
 
 ```js
-import { GenzyContainer, GenzyApi } from 'genzy-api';
+import { GenzyContainer, GenzyApi } from "@genzy/api";
 
 class UserService {
   $genzy = {
-    path: '/users',
+    path: "/users",
     createUser: {
-      httpMethod: 'POST',
-      path: '/',
-      params: [
-        { name: 'user', source: 'body' }
-      ]
-    }
-  }
+      httpMethod: "POST",
+      path: "/",
+      params: [{ name: "user", source: "body" }],
+    },
+  };
   async createUser(user) {
     return user;
   }
@@ -232,30 +252,40 @@ class UserService {
 
 class AccountService {
   $genzy = {
-    path: '/accounts',
+    path: "/accounts",
     getAllAccounts: {
-      method: 'GET',
-      path: '/'
-    }
-  }
+      method: "GET",
+      path: "/",
+    },
+  };
   async getAllAccounts() {
     return [];
   }
 }
 
-const usersGenzyContainer = new GenzyContainer()
-  .addLocalServices(UserService, AccountService);
+const usersGenzyContainer = new GenzyContainer().addLocalServices(
+  UserService,
+  AccountService
+);
 
 const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
+
 </TabItem>
   <TabItem value="ts" label="TypeScript" default>
 
 ```ts
-import { GenzyContainer, GenzyApi, Controller, Get, Post, Body } from 'genzy-api';
+import {
+  GenzyContainer,
+  GenzyApi,
+  Controller,
+  Get,
+  Post,
+  Body,
+} from "@genzy/api";
 
-@Controller('/users')
+@Controller("/users")
 class UserService {
   @Post()
   async createUser(@Body() user): Promise<any> {
@@ -263,7 +293,7 @@ class UserService {
   }
 }
 
-@Controller('/accounts')
+@Controller("/accounts")
 class AccountService {
   @Get()
   async getAllAccounts(): Promise<any[]> {
@@ -271,12 +301,15 @@ class AccountService {
   }
 }
 
-const usersGenzyContainer = new GenzyContainer()
-  .addLocalServices(UserService, AccountService);
+const usersGenzyContainer = new GenzyContainer().addLocalServices(
+  UserService,
+  AccountService
+);
 
 const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
+
   </TabItem>
 </Tabs>
 

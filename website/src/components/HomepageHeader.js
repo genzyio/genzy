@@ -1,9 +1,9 @@
 import React from "react";
-import ThemedImage from '@theme/ThemedImage';
-import useBaseUrl from '@docusaurus/useBaseUrl';
-import Link from '@docusaurus/Link';
+import ThemedImage from "@theme/ThemedImage";
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import Link from "@docusaurus/Link";
 import styles from "./HomepageHeader.module.css";
-import Translate from '@docusaurus/Translate';
+import Translate from "@docusaurus/Translate";
 
 export default function HomepageHeader() {
   return (
@@ -20,25 +20,37 @@ export default function HomepageHeader() {
           />
         </div>
         <div className={styles.right}>
-          <h1 className="title">N1m<span className={styles.colorPrimary}>b</span>ly</h1>
-          <h4>Number 1 microservice <span className={styles.colorPrimary}>d</span>evelopment library.</h4>
+          <h1 className="title">
+            Gen<span className={styles.colorPrimary}>z</span>y
+          </h1>
+          <h4>
+            Web framework for building{" "}
+            <span className={styles.colorPrimary}>better</span> APIs{" "}
+            <span className={styles.colorPrimary}>faster</span>!
+          </h4>
           <p>
-            <Translate>Genzy is a JavaScript library that enables rapid development of web applications and puts the focus on implementing the business logic instead of spending much time and effort on configuration.</Translate>
+            <Translate>
+              Genzy is a JavaScript library that enables rapid development of
+              web applications and puts the focus on implementing the business
+              logic instead of spending much time and effort on configuration.
+            </Translate>
           </p>
           <div className={styles.buttons}>
             <Link
               className="button button--primary button--lg"
-              to="/docs/v1/getting-started/">
+              to="/docs/v1/getting-started/"
+            >
               <Translate>Get started</Translate>
             </Link>
             <Link
               className="button button--secondary button--lg"
-              to="/docs/v1/">
+              to="/docs/v1/"
+            >
               <Translate>Documentation</Translate>
             </Link>
           </div>
         </div>
       </div>
     </header>
-  )
+  );
 }

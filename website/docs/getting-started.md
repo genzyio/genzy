@@ -3,40 +3,66 @@ title: Getting Started
 slug: /getting-started/
 ---
 
-[![NPM](https://nodei.co/npm/genzy-client.png)](https://nodei.co/npm/genzy-client/)
-[![NPM](https://nodei.co/npm/genzy-api.png)](https://nodei.co/npm/genzy-api/)
-[![NPM](https://nodei.co/npm/genzy-cli.png)](https://nodei.co/npm/genzy-cli/)
+[![NPM](https://nodei.co/npm/@genzy/client.png)](https://nodei.co/npm/@genzy/client/)
+[![NPM](https://nodei.co/npm/@genzy/api.png)](https://nodei.co/npm/@genzy/api/)
+[![NPM](https://nodei.co/npm/@genzy/cli.png)](https://nodei.co/npm/@genzy/cli/)
 
 ## Setting up the server
 
 1. Initialize the project
+
 ```bash
 npm init -y
 ```
-2. [Install](./categories/02-Server/server-installation.md) `genzy-api` library
+
+2. [Install](./categories/02-Server/server-installation.md) `@genzy/api` library
+
 ```bash
-npm i -S genzy-api
+npm i -S @genzy/api
 ```
+
 3. Implement Example [service](./categories/06-Services/service-class.md)
+
 ```ts
 // example.ts
-import { Controller, Get, Post, Put, Delete, Query, Path, Body, string, number, boolean, type, Returns, ReturnsArrayOf } from "genzy-api";
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Query,
+  Path,
+  Body,
+  string,
+  number,
+  boolean,
+  type,
+  Returns,
+  ReturnsArrayOf,
+} from "@genzy/api";
 
 class Example {
-  @string name: string;
+  @string() name: string;
   @number age: number;
 }
 
-@Controller('/examples')
+@Controller("/examples")
 export class ExampleService {
   @Get()
   @ReturnsArrayOf(Example)
-  async getAll(@Query('pageNumber') @number pageNumber: number, @Query('pageSize') @number pageSize: number): Promise<Example[]> {
+  async getAll(
+    @Query("pageNumber") @number pageNumber: number,
+    @Query("pageSize") @number pageSize: number
+  ): Promise<Example[]> {
     return [];
   }
-  @Get('/:id')
+  @Get("/:id")
   @Returns(Example)
-  async getById(@Query('includeDetails') @boolean includeDetails: boolean, @Path('id') @string id: string): Promise<Example> {
+  async getById(
+    @Query("includeDetails") @boolean includeDetails: boolean,
+    @Path("id") @string() id: string
+  ): Promise<Example> {
     return;
   }
   @Post()
@@ -44,32 +70,36 @@ export class ExampleService {
   async add(@Body() @type(Example) example: Example): Promise<Example> {
     return example;
   }
-  @Put('/:id')
+  @Put("/:id")
   @Returns(Example)
-  async update(@Path('id') @string id: string, @Body() @type(Example) example: Example): Promise<Example> {
+  async update(
+    @Path("id") @string() id: string,
+    @Body() @type(Example) example: Example
+  ): Promise<Example> {
     return example;
   }
-  @Delete('/:id')
+  @Delete("/:id")
   @Returns(Example)
-  async delete(@Path('id') @string id: string): Promise<Example> {
+  async delete(@Path("id") @string() id: string): Promise<Example> {
     return;
   }
 }
 ```
-4. Create a [GenzyContainer](./categories/nimble.md) of services and the [GenzyApi](./categories/genzy-api.md)
+
+4. Create a [GenzyContainer](./categories/genzy-container.md) of services and the [GenzyApi](./categories/genzy-api.md)
+
 ```ts
 // index.ts
-import { GenzyContainer, GenzyApi } from "genzy-api";
+import { GenzyContainer, GenzyApi } from "@genzy/api";
 import { ExampleService } from "./example";
 
-const container = new GenzyContainer()
-  .ofLocal(ExampleService);
+const container = new GenzyContainer().ofLocal(ExampleService);
 
 const api = new GenzyApi({
   genzyInfo: {
-    name: 'Example Microservice',
-    version: '1.0.0',
-    description: 'This is an example microservice.'
+    name: "Example Microservice",
+    version: "1.0.0",
+    description: "This is an example microservice.",
   },
 }).from(container);
 
@@ -78,63 +108,69 @@ api.listen(PORT, () => console.log(`Started listening on ${PORT}`));
 
 type GenzyContainerServices = {
   exampleService: ExampleService;
-}
+};
 
 // The instances are available for custom usage
 const { exampleService } = usersGenzyContainer.services();
 ```
 
 :::info 5 routes have been registered
+
 - GET /api/examples
 - GET /api/examples/{id}
 - POST /api/examples
 - PUT /api/examples/{id}
 - DELETE /api/examples/{id}
-:::
+  :::
 
 ![img](/images/example_swagger.png)
 
 ## Setting up the client
 
 1. Initialize the project
+
 ```bash
 npm init -y
 ```
-2. [Install](./categories/03-Client/client-installation.md) `genzy-client` library
+
+2. [Install](./categories/03-Client/client-installation.md) `@genzy/client` library
+
 ```bash
-npm i -S genzy-client
+npm i -S @genzy/client
 ```
-3. [Install](./categories/05-CLI/cli-installation.md) `genzy-cli` CLI
+
+3. [Install](./categories/05-CLI/cli-installation.md) `@genzy/cli` CLI
+
 ```bash
-npm i -g genzy-cli
+npm i -g @genzy/cli
 ```
+
 4. [Generate](./categories/05-CLI/cli-usage.md#typescript) TypeScript client code
+
 ```bash
 genzy -l ts -h http://localhost:3000 -o ./services/example
 ```
+
 :::info 2 files have been generated
+
 - services/example/index.ts
 - services/example/ExampleService.ts
-:::
+  :::
 
 ```ts
 // services/example/index.ts
 
 // Auto-generated by Genzy Client CLI
-import { GenzyContainer } from 'genzy-client';
-import { ExampleService as ExampleServiceLocal } from './ExampleService';
+import { GenzyContainer } from "@genzy/client";
+import { ExampleService as ExampleServiceLocal } from "./ExampleService";
 
 const host = "http://localhost:3000";
 
 export type GenzyContainerServices = {
   exampleService: ExampleServiceLocal;
-  
 };
 
-export const {
-  exampleService,
-  
-}: GenzyContainerServices = new GenzyContainer()
+export const { exampleService }: GenzyContainerServices = new GenzyContainer()
   .ofRemote(ExampleServiceLocal, host)
   .services();
 ```
@@ -151,42 +187,45 @@ import {
   Delete,
   Query,
   Path,
-  Body
-} from 'genzy-client';
-
+  Body,
+} from "@genzy/client";
 
 export class Example {
   name: string;
-  age: number
+  age: number;
 }
 
-
-@Controller('/examples')
+@Controller("/examples")
 export class ExampleService {
- 
-  @Get('/')
-  async getAll(@Query('pageNumber') pageNumber: number, @Query('pageSize') pageSize: number) {}
- 
-  @Get('/:id')
-  async getById(@Query('includeDetails') includeDetails: string, @Path('id') id: boolean) {}
- 
-  @Post('/')
-  async add(@Body() body: Example) {}
- 
-  @Put('/:id')
-  async update(@Path('id') id: string, @Body() body: Example) {}
- 
-  @Delete('/:id')
-  async delete(@Path('id') id: string) {}
+  @Get("/")
+  async getAll(
+    @Query("pageNumber") pageNumber: number,
+    @Query("pageSize") pageSize: number
+  ) {}
 
+  @Get("/:id")
+  async getById(
+    @Query("includeDetails") includeDetails: string,
+    @Path("id") id: boolean
+  ) {}
+
+  @Post("/")
+  async add(@Body() body: Example) {}
+
+  @Put("/:id")
+  async update(@Path("id") id: string, @Body() body: Example) {}
+
+  @Delete("/:id")
+  async delete(@Path("id") id: string) {}
 }
 ```
 
 5. Use the ExampleService elsewhere
+
 ```ts
 // somewhere.ts
 
-import { exampleService } from './services/example';
+import { exampleService } from "./services/example";
 
 exampleService.getAll().then(console.log).catch(console.log);
 ```

@@ -26,14 +26,14 @@ To install the latest release:
   <TabItem value="npm" label="NPM" default>
 
 ```sh
-npm install -g genzy-cli
+npm install -g @genzy/cli
 ```
 
   </TabItem>
   <TabItem value="yarn" label="Yarn">
 
 ```sh
-yarn global add genzy-cli
+yarn global add @genzy/cli
 ```
   </TabItem>
 </Tabs>
@@ -44,14 +44,14 @@ To install a specific version:
   <TabItem value="npm" label="NPM" default>
 
 ```sh
-npm install -g genzy-cli@version
+npm install -g @genzy/cli@version
 ```
 
   </TabItem>
   <TabItem value="yarn" label="Yarn">
 
 ```sh
-yarn global add genzy-cli@version
+yarn global add @genzy/cli@version
 ```
 
   </TabItem>

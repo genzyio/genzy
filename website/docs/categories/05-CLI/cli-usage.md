@@ -10,7 +10,7 @@ import TabItem from '@theme/TabItem';
 
 ## Prerequisites
 
-You need to have [installed](cli-installation.md) the `genzy-cli` library in your project.
+You need to have [installed](cli-installation.md) the `@genzy/cli` library in your project.
 
 ## Syntax
 

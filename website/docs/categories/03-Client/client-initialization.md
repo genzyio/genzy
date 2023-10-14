@@ -8,7 +8,7 @@ slug: /client-initialization/
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Once you have [installed](client-installation.md) the `genzy-client` library, you can now init the API.
+Once you have [installed](client-installation.md) the `@genzy/client` library, you can now init the API.
 
 ## Initialization
 
@@ -18,7 +18,7 @@ Once you have [installed](client-installation.md) the `genzy-client` library, yo
   <TabItem value="cjs" label="CommonJS" default>
 
 ```js
-const { GenzyContainer } = require("genzy-client");
+const { GenzyContainer } = require("@genzy/client");
 
 class ExampleService {
   async get() {}
@@ -33,7 +33,7 @@ const { exampleService } = nimble.getAllServices();
   <TabItem value="mjs" label="ES modules">
 
 ```js
-import { GenzyContainer } from "genzy-client";
+import { GenzyContainer } from "@genzy/client";
 
 class ExampleService {
   async get() {}
@@ -48,7 +48,7 @@ const { exampleService } = nimble.getAllServices();
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { GenzyContainer } from "genzy-client";
+import { GenzyContainer } from "@genzy/client";
 
 class ExampleService {
   async get() {}

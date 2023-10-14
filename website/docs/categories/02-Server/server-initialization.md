@@ -8,7 +8,7 @@ slug: /server-initialization/
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Once you have [installed](server-installation.md) the `genzy-api` library, you can now init the API.
+Once you have [installed](server-installation.md) the `@genzy/api` library, you can now init the API.
 
 ## Initialization
 
@@ -18,7 +18,7 @@ Once you have [installed](server-installation.md) the `genzy-api` library, you c
   <TabItem value="cjs" label="CommonJS" default>
 
 ```js
-const { GenzyApi, GenzyContainer } = require('genzy-api');
+const { GenzyApi, GenzyContainer } = require('@genzy/api');
 
 const container = new GenzyContainer().addLocalServices(/* services */);
 
@@ -31,7 +31,7 @@ app.listen(3000);
   <TabItem value="mjs" label="ES modules">
 
 ```js
-import { GenzyApi, GenzyContainer } from 'genzy-api';
+import { GenzyApi, GenzyContainer } from '@genzy/api';
 
 const container = new GenzyContainer().addLocalServices(/* services */);
 
@@ -44,7 +44,7 @@ app.listen(3000);
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { GenzyApi, GenzyContainer } from 'genzy-api';
+import { GenzyApi, GenzyContainer } from '@genzy/api';
 
 const container = new GenzyContainer().addLocalServices(/* services */);
 
@@ -65,7 +65,7 @@ This implicitly starts a [Express Application](http://expressjs.com/en/4x/api.ht
 
 ```js
 const express = require("express");
-const { GenzyApi, GenzyContainer } = require('genzy-api');
+const { GenzyApi, GenzyContainer } = require('@genzy/api');
 
 const container = new GenzyContainer().addLocalServices(/* services */);
 
@@ -81,7 +81,7 @@ existingApp.listen(3000);
 
 ```js
 import * as express from 'express';
-import { GenzyApi, GenzyContainer } from 'genzy-api';
+import { GenzyApi, GenzyContainer } from '@genzy/api';
 
 const container = new GenzyContainer().addLocalServices(/* services */);
 
@@ -97,7 +97,7 @@ existingApp.listen(3000);
 
 ```ts
 import * as express from 'express';
-import { GenzyApi, GenzyContainer } from 'genzy-api';
+import { GenzyApi, GenzyContainer } from '@genzy/api';
 
 const container = new GenzyContainer().addLocalServices(/* services */);
 

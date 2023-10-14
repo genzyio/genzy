@@ -183,10 +183,10 @@ class ExampleService {
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { Controller, Get, Post, Put, Delete, Query, Path, Body, string, number, boolean, type, Returns, ReturnsArrayOf } from "genzy-client"; // or genzy-api
+import { Controller, Get, Post, Put, Delete, Query, Path, Body, string, number, boolean, type, Returns, ReturnsArrayOf } from "@genzy/client"; // or @genzy/api
 
 class Example {
-  @string name: string;
+  @string() name: string;
   @number age: number;
 }
 
@@ -199,7 +199,7 @@ class ExampleService {
   }
   @Get('/:id')
   @Returns(Example)
-  async getById(@Query('includeDetails') @boolean includeDetails: boolean, @Path('id') @string id: string): Promise<Example> {
+  async getById(@Query('includeDetails') @boolean includeDetails: boolean, @Path('id') @string() id: string): Promise<Example> {
     return {};
   }
   @Post()
@@ -209,12 +209,12 @@ class ExampleService {
   }
   @Put('/:id')
   @Returns(Example)
-  async update(@Path('id') @string id: string, @Body() @type(Example) example: Example): Promise<Example> {
+  async update(@Path('id') @string() id: string, @Body() @type(Example) example: Example): Promise<Example> {
     return example;
   }
   @Delete('/:id')
   @Returns(Example)
-  async delete(@Path('id') @string id: string): Promise<Example> {
+  async delete(@Path('id') @string() id: string): Promise<Example> {
     return { id };
   }
 }

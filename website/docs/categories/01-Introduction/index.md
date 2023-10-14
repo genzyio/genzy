@@ -20,7 +20,7 @@ Here's a basic example:
 
 #### Server
 ```js
-const { GenzyContainer, GenzyApi } = require('genzy-api');
+const { GenzyContainer, GenzyApi } = require('@genzy/api');
 
 class UserService {
   async createUser(user) {
@@ -60,7 +60,7 @@ app.listen(3000);
 
 #### Server
 ```js
-import { GenzyContainer, GenzyApi } from 'genzy-api';
+import { GenzyContainer, GenzyApi } from '@genzy/api';
 
 class UserService {
   async createUser(user) {
@@ -100,7 +100,7 @@ app.listen(3000);
 
 #### Server
 ```ts
-import { GenzyContainer, GenzyApi, Controller, Post, Get } from 'genzy-api';
+import { GenzyContainer, GenzyApi, Controller, Post, Get } from '@genzy/api';
 
 @Controller('/users')
 class UserService {
@@ -147,7 +147,7 @@ app.listen(3000);
 #### Client
 
 ```js
-const { GenzyContainer } = require('genzy-client');
+const { GenzyContainer } = require('@genzy/client');
 
 const host = 'http://localhost:3000';
 
@@ -182,7 +182,7 @@ const allAccounts = await accountService.getAllAccounts();
 #### Client
 
 ```js
-import { GenzyContainer } from 'genzy-client';
+import { GenzyContainer } from '@genzy/client';
 
 const host = 'http://localhost:3000';
 
@@ -217,7 +217,7 @@ const allAccounts = await accountService.getAllAccounts();
 #### Client
 
 ```ts
-import { GenzyContainer, Controller, Post, Get } from 'genzy-client';
+import { GenzyContainer, Controller, Post, Get } from '@genzy/client';
 
 const host = 'http://localhost:3000';
 
@@ -273,7 +273,7 @@ Client service proxy is automatically created based on the service classes passe
 
 ### Automatic JS/TS Client generation
 
-`genzy-client` package can be used to auto-generate client service files for the existing API.
+`@genzy/client` package can be used to auto-generate client service files for the existing API.
 
 ### Interceptors
 

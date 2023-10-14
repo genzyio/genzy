@@ -197,7 +197,7 @@ class ExampleService {
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { Controller, Get, Post, Put, Delete } from "genzy-client"; // or genzy-api
+import { Controller, Get, Post, Put, Delete } from "@genzy/client"; // or @genzy/api
 
 @Controller('/')
 class ExampleService {

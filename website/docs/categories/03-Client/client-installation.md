@@ -26,14 +26,14 @@ To install the latest release:
   <TabItem value="npm" label="NPM" default>
 
 ```sh
-npm install genzy-client
+npm install @genzy/client
 ```
 
   </TabItem>
   <TabItem value="yarn" label="Yarn">
 
 ```sh
-yarn add genzy-client
+yarn add @genzy/client
 ```
   </TabItem>
 </Tabs>
@@ -44,14 +44,14 @@ To install a specific version:
   <TabItem value="npm" label="NPM" default>
 
 ```sh
-npm install genzy-client@version
+npm install @genzy/client@version
 ```
 
   </TabItem>
   <TabItem value="yarn" label="Yarn">
 
 ```sh
-yarn add genzy-client@version
+yarn add @genzy/client@version
 ```
 
   </TabItem>
@@ -64,7 +64,7 @@ yarn add genzy-client@version
 A basic installation of the client includes 2 packages:
 
 ```
-genzy-client@1.2.3
+@genzy/client@1.2.3
 ├── axios@0.24.0
 └── blueimp-tmpl@3.20.0
 ```

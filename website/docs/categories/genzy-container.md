@@ -1,9 +1,8 @@
 ---
 title: GenzyContainer
 sidebar_position: 7
-slug: /nimble/
+slug: /genzy-container/
 ---
-
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
@@ -21,7 +20,7 @@ Local services are ones that are running in the same process as GenzyContainer.
   <TabItem value="cjs" label="CommonJS" default>
 
 ```js
-const { GenzyContainer } = require("genzy-client"); // or "genzy-api"
+const { GenzyContainer } = require("@genzy/client"); // or "@genzy/api"
 
 class UserService {
   async getAll() {
@@ -51,11 +50,11 @@ const container = new GenzyContainer().addLocalServices(UserService, AccountServ
 const { accountService } = nimble.getAllServices();
 ```
 
-  </TabItem>
+</TabItem>
   <TabItem value="mjs" label="ES modules">
 
 ```js
-import { GenzyContainer } from "genzy-client"; // or "genzy-api"
+import { GenzyContainer } from "@genzy/client"; // or "@genzy/api"
 
 class UserService {
   async getAll() {
@@ -85,11 +84,11 @@ const container = new GenzyContainer().addLocalServices(UserService, AccountServ
 const { accountService } = nimble.getAllServices();
 ```
 
-  </TabItem>
+</TabItem>
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { GenzyContainer } from "genzy-client"; // or "genzy-api"
+import { GenzyContainer } from "@genzy/client"; // or "@genzy/api"
 
 type GenzyContainerServices = {
   userService: UserService;
@@ -124,7 +123,7 @@ const container = new GenzyContainer().addLocalServices(UserService, AccountServ
 const { accountService }: GenzyContainerServices = nimble.getAllServices();
 ```
 
-  </TabItem>
+</TabItem>
 </Tabs>
 
 ## Remote Services
@@ -135,7 +134,7 @@ Remote services are, as the name suggests, running in a different process, or on
   <TabItem value="cjs" label="CommonJS" default>
 
 ```js
-const { GenzyContainer } = require("genzy-client"); // or "genzy-api"
+const { GenzyContainer } = require("@genzy/client"); // or "@genzy/api"
 
 class UserService {
   async getAll() {}
@@ -153,11 +152,11 @@ const container = new GenzyContainer()
 const { accountService } = nimble.getAllServices();
 ```
 
-  </TabItem>
+</TabItem>
   <TabItem value="mjs" label="ES modules">
 
 ```js
-import { GenzyContainer } from "genzy-client"; // or "genzy-api"
+import { GenzyContainer } from "@genzy/client"; // or "@genzy/api"
 
 class UserService {
   async getAll() {
@@ -177,11 +176,11 @@ const container = new GenzyContainer()
 const { accountService } = nimble.getAllServices();
 ```
 
-  </TabItem>
+</TabItem>
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { GenzyContainer } from "genzy-client"; // or "genzy-api"
+import { GenzyContainer } from "@genzy/client"; // or "@genzy/api"
 
 type GenzyContainerServices = {
   userService: UserService;
@@ -204,7 +203,7 @@ const container = new GenzyContainer()
 const { accountService }: GenzyContainerServices = nimble.getAllServices();
 ```
 
-  </TabItem>
+</TabItem>
 </Tabs>
 
 GenzyContainer implicitly creates a [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) for each service that gets the results of method calls over HTTP.
