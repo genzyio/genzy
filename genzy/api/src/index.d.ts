@@ -1,7 +1,57 @@
 export { Application, Request, Response, NextFunction } from "express";
 import { Application, Request, Response, NextFunction } from "express";
-import { GenzyContainer } from "@genzy.io/client";
-export { GenzyContainer } from "@genzy.io/client";
+
+// CLIENT
+export type CustomClientInterceptors<TInterceptorCallback> = {
+  [classKey: string]: {
+    [methodKey: string]: TInterceptorCallback;
+  };
+};
+
+export type ClientInterceptorCallback = ({
+  setHeader,
+  getHeader,
+  setBody,
+  getBody,
+}: {
+  setHeader: (key: string, value: string) => any;
+  getHeader: (key: string) => string;
+  setBody: (body: any) => any;
+  getBody: () => any;
+}) => any;
+
+interface Constructor {
+  new (...args: any[]);
+}
+
+export class GenzyContainer {
+  constructor();
+
+  public interceptAllCalls(callback: InterceptorCallback): GenzyContainer;
+  public interceptAllResults(callback: InterceptorCallback): GenzyContainer;
+  public interceptCalls(
+    customInterceptors: CustomInterceptors<InterceptorCallback>
+  ): GenzyContainer;
+  public interceptResults(
+    customInterceptors: CustomInterceptors<InterceptorCallback>
+  ): GenzyContainer;
+
+  public addAccessToContainer(
+    containerName: string,
+    container: GenzyContainer
+  ): GenzyContainer;
+  public addLocalService(type: Constructor): GenzyContainer;
+  public addLocalServices(...types: Constructor[]): GenzyContainer;
+  public addRemoteService(origin: string, type: Constructor): GenzyContainer;
+  public addRemoteServices(
+    origin: string,
+    ...types: Constructor[]
+  ): GenzyContainer;
+
+  public getServices(): any;
+  public getAllServices(): any;
+}
+//
 
 export type GenzyPluginParams = {
   genzyApi: GenzyApi;
@@ -45,10 +95,6 @@ export type CustomInterceptors<TInterceptorCallback> = {
 };
 
 export type ErrorRegistry = { [key: string]: number };
-
-interface Constructor {
-  new (...args: any[]);
-}
 
 export class GenzyApi {
   constructor();

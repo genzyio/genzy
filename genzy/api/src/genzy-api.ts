@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import * as cors from "cors";
 import * as swaggerUi from "swagger-ui-express";
 import { Application } from "express";
-import { GenzyContainer } from "@genzy.io/client";
+import { GenzyContainer } from "../../client";
 import { RegisterRoutesFor } from "./routes-handler";
 import {
   CustomInterceptors,

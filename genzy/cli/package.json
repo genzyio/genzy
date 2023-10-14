@@ -1,7 +1,7 @@
 {
   "name": "@genzy.io/cli",
-  "version": "0.2.37",
-  "description": "Genzy CLI used for client code generation.",
+  "version": "0.0.1-alpha",
+  "description": "Genzy CLI used for code generation.",
   "main": "bin/index.js",
   "scripts": {
     "start": "ts-node src",

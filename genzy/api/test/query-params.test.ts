@@ -1,4 +1,4 @@
-import { GenzyContainer } from "@genzy.io/client";
+import { GenzyContainer } from "../src";
 import { GenzyApi } from "../src/genzy-api";
 import { agent } from "supertest";
 import { Get, Query } from "../../shared/decorators";

@@ -1,7 +1,7 @@
 import * as express from "express";
 import * as cors from "cors";
 import { NextFunction, Request, Response } from "express";
-import { GenzyContainer } from "@genzy.io/client";
+import { GenzyContainer } from "../src";
 import { GenzyApi } from "../src/genzy-api";
 import { agent } from "supertest";
 

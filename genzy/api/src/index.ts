@@ -1,5 +1,5 @@
 export { Application, Request, Response, NextFunction } from "express";
-export { GenzyContainer } from "@genzy.io/client";
+export { GenzyContainer } from "../../client";
 export {
   Controller,
   Get,

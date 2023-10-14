@@ -1,4 +1,4 @@
-import { GenzyContainer } from "@genzy.io/client";
+import { GenzyContainer } from "../src";
 import { BASIC_TYPES, GenericType } from "../../shared/constants";
 import {
   Controller,
@@ -97,15 +97,15 @@ describe("Types", () => {
       .getAllServices();
 
     expect(test2Service.$genzy_config?.actions?.get).not.toBeUndefined();
-    expect(
-      test2Service.$genzy_config.actions.get.params[0].type
-    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.string));
-    expect(
-      test2Service.$genzy_config.actions.get.params[1].type
-    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.int, true, true));
-    expect(
-      test2Service.$genzy_config.actions.get.params[2].type
-    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.boolean));
+    expect(test2Service.$genzy_config.actions.get.params[0].type).toStrictEqual(
+      getBasicNonArrayType(BASIC_TYPES.string)
+    );
+    expect(test2Service.$genzy_config.actions.get.params[1].type).toStrictEqual(
+      getBasicNonArrayType(BASIC_TYPES.int, true, true)
+    );
+    expect(test2Service.$genzy_config.actions.get.params[2].type).toStrictEqual(
+      getBasicNonArrayType(BASIC_TYPES.boolean)
+    );
   });
 
   it("should support property in model", async () => {
@@ -153,22 +153,22 @@ describe("Types", () => {
       .getAllServices();
 
     expect(test3Service.$genzy_config?.actions?.get).not.toBeUndefined();
-    expect(
-      test3Service.$genzy_config.actions.get.params[0].type
-    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.string));
-    expect(
-      test3Service.$genzy_config.actions.get.params[1].type
-    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.int));
-    expect(
-      test3Service.$genzy_config.actions.get.params[2].type
-    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.boolean));
-    expect(
-      test3Service.$genzy_config.actions.get.params[3].type
-    ).toStrictEqual({
-      $isOptional: false,
-      $isArray: false,
-      $typeName: "Example",
-    });
+    expect(test3Service.$genzy_config.actions.get.params[0].type).toStrictEqual(
+      getBasicNonArrayType(BASIC_TYPES.string)
+    );
+    expect(test3Service.$genzy_config.actions.get.params[1].type).toStrictEqual(
+      getBasicNonArrayType(BASIC_TYPES.int)
+    );
+    expect(test3Service.$genzy_config.actions.get.params[2].type).toStrictEqual(
+      getBasicNonArrayType(BASIC_TYPES.boolean)
+    );
+    expect(test3Service.$genzy_config.actions.get.params[3].type).toStrictEqual(
+      {
+        $isOptional: false,
+        $isArray: false,
+        $typeName: "Example",
+      }
+    );
     expect(test3Service.$genzy_config.types.Example).toStrictEqual({
       ...(new Example() as any).$genzy_config?.types,
     });
@@ -180,22 +180,22 @@ describe("Types", () => {
       .getAllServices();
 
     expect(test4Service.$genzy_config?.actions?.get).not.toBeUndefined();
-    expect(
-      test4Service.$genzy_config.actions.get.params[0].type
-    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.string));
-    expect(
-      test4Service.$genzy_config.actions.get.params[1].type
-    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.int));
-    expect(
-      test4Service.$genzy_config.actions.get.params[2].type
-    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.boolean));
-    expect(
-      test4Service.$genzy_config.actions.get.params[3].type
-    ).toStrictEqual({
-      $isOptional: false,
-      $isArray: true,
-      $typeName: "Example",
-    });
+    expect(test4Service.$genzy_config.actions.get.params[0].type).toStrictEqual(
+      getBasicNonArrayType(BASIC_TYPES.string)
+    );
+    expect(test4Service.$genzy_config.actions.get.params[1].type).toStrictEqual(
+      getBasicNonArrayType(BASIC_TYPES.int)
+    );
+    expect(test4Service.$genzy_config.actions.get.params[2].type).toStrictEqual(
+      getBasicNonArrayType(BASIC_TYPES.boolean)
+    );
+    expect(test4Service.$genzy_config.actions.get.params[3].type).toStrictEqual(
+      {
+        $isOptional: false,
+        $isArray: true,
+        $typeName: "Example",
+      }
+    );
     expect(test4Service.$genzy_config.types.Example).toStrictEqual({
       ...(new Example() as any).$genzy_config?.types,
     });
@@ -207,29 +207,29 @@ describe("Types", () => {
       .getAllServices();
 
     expect(test5Service.$genzy_config?.actions?.get).not.toBeUndefined();
-    expect(
-      test5Service.$genzy_config.actions.get.params[0].type
-    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.string));
-    expect(
-      test5Service.$genzy_config.actions.get.params[1].type
-    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.int));
-    expect(
-      test5Service.$genzy_config.actions.get.params[2].type
-    ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.boolean));
-    expect(
-      test5Service.$genzy_config.actions.get.params[3].type
-    ).toStrictEqual({
-      $isOptional: false,
-      $isArray: true,
-      $typeName: "Example",
-    });
-    expect(
-      test5Service.$genzy_config.actions.get.params[4].type
-    ).toStrictEqual({
-      $isOptional: false,
-      $isArray: false,
-      $typeName: "Example",
-    });
+    expect(test5Service.$genzy_config.actions.get.params[0].type).toStrictEqual(
+      getBasicNonArrayType(BASIC_TYPES.string)
+    );
+    expect(test5Service.$genzy_config.actions.get.params[1].type).toStrictEqual(
+      getBasicNonArrayType(BASIC_TYPES.int)
+    );
+    expect(test5Service.$genzy_config.actions.get.params[2].type).toStrictEqual(
+      getBasicNonArrayType(BASIC_TYPES.boolean)
+    );
+    expect(test5Service.$genzy_config.actions.get.params[3].type).toStrictEqual(
+      {
+        $isOptional: false,
+        $isArray: true,
+        $typeName: "Example",
+      }
+    );
+    expect(test5Service.$genzy_config.actions.get.params[4].type).toStrictEqual(
+      {
+        $isOptional: false,
+        $isArray: false,
+        $typeName: "Example",
+      }
+    );
     expect(test5Service.$genzy_config.actions.get.result).toStrictEqual({
       $isArray: false,
       $typeName: "Example",
