@@ -9,7 +9,7 @@ namespace Genzy
     {
         public GenzyApi(IConfiguration configuration) : base(configuration)
         {
-            var genzy = new N1mble();
+            var genzy = new GenzyContainer();
             genzy.AddLocalService(typeof(ExampleModel));
             dynamic service = new object();
             genzy.Registry.Services.TryGetValue("ExampleModel", out service);

@@ -9,7 +9,7 @@ import TabItem from '@theme/TabItem';
 
 ## What GenzyApi is
 
-GenzyApi is responsible for automatically creating a [RestAPI](https://en.wikipedia.org/wiki/Representational_state_transfer) from a set of [Nimbles](nimble.md).
+GenzyApi is responsible for automatically creating a [RestAPI](https://en.wikipedia.org/wiki/Representational_state_transfer) from a set of [GenzyContainers](container.md).
 
 It is also responsible for automatically building [OpenAPI](https://www.openapis.org/) documentation, and serving [SwaggerUI](https://swagger.io/) on route `/explorer`.
 
@@ -21,7 +21,7 @@ It is also responsible for automatically building [OpenAPI](https://www.openapis
   <TabItem value="cjs" label="CommonJS" default>
 
 ```js
-const { Nimble, GenzyApi } = require('genzy-api');
+const { GenzyContainer, GenzyApi } = require('genzy-api');
 
 class UserService {
   async createUser(user) {
@@ -35,17 +35,17 @@ class AccountService {
   }
 }
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .addLocalServices(UserService, AccountService);
 
-const app = new GenzyApi().from(usersNimble);
+const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
 </TabItem>
   <TabItem value="js" label="ES modules" default>
 
 ```js
-import { Nimble, GenzyApi } from 'genzy-api';
+import { GenzyContainer, GenzyApi } from 'genzy-api';
 
 class UserService {
   async createUser(user) {
@@ -59,17 +59,17 @@ class AccountService {
   }
 }
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .addLocalServices(UserService, AccountService);
 
-const app = new GenzyApi().from(usersNimble);
+const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
 </TabItem>
   <TabItem value="ts" label="TypeScript" default>
 
 ```ts
-import { Nimble, GenzyApi } from 'genzy-api';
+import { GenzyContainer, GenzyApi } from 'genzy-api';
 
 class UserService {
   async createUser(user): Promise<any> {
@@ -83,10 +83,10 @@ class AccountService {
   }
 }
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .addLocalServices(UserService, AccountService);
 
-const app = new GenzyApi().from(usersNimble);
+const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
   </TabItem>
@@ -104,7 +104,7 @@ An API can also be generated from a set of remote services, so that the API acts
   <TabItem value="cjs" label="CommonJS" default>
 
 ```js
-const { Nimble, GenzyApi } = require('genzy-api');
+const { GenzyContainer, GenzyApi } = require('genzy-api');
 
 class UserService {
   async createUser(user) {}
@@ -114,17 +114,17 @@ class AccountService {
   async getAllAccounts() {}
 }
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .addRemoteServices('http://localhost:3000', UserService, AccountService);
 
-const app = new GenzyApi().from(usersNimble);
+const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
 </TabItem>
   <TabItem value="js" label="ES modules" default>
 
 ```js
-import { Nimble, GenzyApi } from 'genzy-api';
+import { GenzyContainer, GenzyApi } from 'genzy-api';
 
 class UserService {
   async createUser(user) {}
@@ -134,17 +134,17 @@ class AccountService {
   async getAllAccounts() {}
 }
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .addRemoteServices('http://localhost:3000', UserService, AccountService);
 
-const app = new GenzyApi().from(usersNimble);
+const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
 </TabItem>
   <TabItem value="ts" label="TypeScript" default>
 
 ```ts
-import { Nimble, GenzyApi } from 'genzy-api';
+import { GenzyContainer, GenzyApi } from 'genzy-api';
 
 class UserService {
   async createUser(user): Promise<any> {}
@@ -154,10 +154,10 @@ class AccountService {
   async getAllAccounts(): Promise<any[]> {}
 }
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .addRemoteServices('http://localhost:3000', UserService, AccountService);
 
-const app = new GenzyApi().from(usersNimble);
+const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
   </TabItem>
@@ -171,7 +171,7 @@ app.listen(3000);
   <TabItem value="cjs" label="CommonJS" default>
 
 ```js
-const { Nimble, GenzyApi } = require('genzy-api');
+const { GenzyContainer, GenzyApi } = require('genzy-api');
 
 class UserService {
   $genzy = {
@@ -202,17 +202,17 @@ class AccountService {
   }
 }
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .addLocalServices(UserService, AccountService);
 
-const app = new GenzyApi().from(usersNimble);
+const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
 </TabItem>
   <TabItem value="js" label="ES modules" default>
 
 ```js
-import { Nimble, GenzyApi } from 'genzy-api';
+import { GenzyContainer, GenzyApi } from 'genzy-api';
 
 class UserService {
   $genzy = {
@@ -243,17 +243,17 @@ class AccountService {
   }
 }
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .addLocalServices(UserService, AccountService);
 
-const app = new GenzyApi().from(usersNimble);
+const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
 </TabItem>
   <TabItem value="ts" label="TypeScript" default>
 
 ```ts
-import { Nimble, GenzyApi, Controller, Get, Post, Body } from 'genzy-api';
+import { GenzyContainer, GenzyApi, Controller, Get, Post, Body } from 'genzy-api';
 
 @Controller('/users')
 class UserService {
@@ -271,10 +271,10 @@ class AccountService {
   }
 }
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .addLocalServices(UserService, AccountService);
 
-const app = new GenzyApi().from(usersNimble);
+const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
   </TabItem>

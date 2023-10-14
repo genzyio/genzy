@@ -5,7 +5,7 @@ import { GenzyContainer } from '@genzy.io/client';
 const host = "{{ url }}";
 
 
-const nimble = new GenzyContainer()
+const container = new GenzyContainer()
 {% for service in services %}.addRemoteService(host, {{ service.name }}Local){% endfor %};
 
 

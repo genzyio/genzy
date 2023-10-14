@@ -19,7 +19,7 @@ export class GenzyApi {
   public interceptAll(callback: InterceptorCallback): GenzyApi;
   public interceptAllAfter(callback: InterceptorCallback): GenzyApi;
   public withErrors(errors: ErrorRegistry): GenzyApi;
-  public from(...nimbles: Nimble[]): Application;
+  public from(containers: GenzyContainer[]): Application;
 }
 ```
 
@@ -32,9 +32,9 @@ export class GenzyApi {
 - - `genzyInfo?` [`<GenzyInfo>`](#genzyinfo)
 - - `basePath?` [`<string>`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-### genzyApi.from(nimbles)
+### genzyApi.from(containers)
 
-- Creates a new [Express Application](http://expressjs.com/en/4x/api.html#app) from a set of Nimbles.
+- Creates a new [Express Application](http://expressjs.com/en/4x/api.html#app) from a set of GenzyContainers.
 
 - `nimbles` [`<Array>`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)
 

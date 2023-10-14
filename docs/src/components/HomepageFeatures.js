@@ -29,7 +29,7 @@ const FeatureList = [
     title: <Translate>Flexibility</Translate>,
     description: (
       <Translate>
-        Start with a monolithic application, group services into Nimbles and once you got the final picture of existing domains, scale to multiple servivces with ease in no time.
+        Start with a monolithic application, group services into GenzyContainers and once you got the final picture of existing domains, scale to multiple servivces with ease in no time.
       </Translate>
     ),
     icon: <Flexibility className={ styles.icon + ' ' + styles.padding  } />

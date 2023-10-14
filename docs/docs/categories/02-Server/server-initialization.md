@@ -18,11 +18,11 @@ Once you have [installed](server-installation.md) the `genzy-api` library, you c
   <TabItem value="cjs" label="CommonJS" default>
 
 ```js
-const { GenzyApi, Nimble } = require('genzy-api');
+const { GenzyApi, GenzyContainer } = require('genzy-api');
 
-const nimble = new Nimble().addLocalServices(/* services */);
+const container = new GenzyContainer().addLocalServices(/* services */);
 
-const app = new GenzyApi().from(nimble);
+const app = new GenzyApi().from(container);
 
 app.listen(3000);
 ```
@@ -31,11 +31,11 @@ app.listen(3000);
   <TabItem value="mjs" label="ES modules">
 
 ```js
-import { GenzyApi, Nimble } from 'genzy-api';
+import { GenzyApi, GenzyContainer } from 'genzy-api';
 
-const nimble = new Nimble().addLocalServices(/* services */);
+const container = new GenzyContainer().addLocalServices(/* services */);
 
-const app = new GenzyApi().from(nimble);
+const app = new GenzyApi().from(container);
 
 app.listen(3000);
 ```
@@ -44,11 +44,11 @@ app.listen(3000);
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { GenzyApi, Nimble } from 'genzy-api';
+import { GenzyApi, GenzyContainer } from 'genzy-api';
 
-const nimble = new Nimble().addLocalServices(/* services */);
+const container = new GenzyContainer().addLocalServices(/* services */);
 
-const app = new GenzyApi().from(nimble);
+const app = new GenzyApi().from(container);
 
 app.listen(3000);
 ```
@@ -65,13 +65,13 @@ This implicitly starts a [Express Application](http://expressjs.com/en/4x/api.ht
 
 ```js
 const express = require("express");
-const { GenzyApi, Nimble } = require('genzy-api');
+const { GenzyApi, GenzyContainer } = require('genzy-api');
 
-const nimble = new Nimble().addLocalServices(/* services */);
+const container = new GenzyContainer().addLocalServices(/* services */);
 
 const existingApp = express();
 
-const app = new GenzyApi({ app: existingApp }).from(nimble);
+const app = new GenzyApi({ app: existingApp }).from(container);
 
 existingApp.listen(3000);
 ```
@@ -81,13 +81,13 @@ existingApp.listen(3000);
 
 ```js
 import * as express from 'express';
-import { GenzyApi, Nimble } from 'genzy-api';
+import { GenzyApi, GenzyContainer } from 'genzy-api';
 
-const nimble = new Nimble().addLocalServices(/* services */);
+const container = new GenzyContainer().addLocalServices(/* services */);
 
 const existingApp = express();
 
-const app = new GenzyApi({ app: existingApp }).from(nimble);
+const app = new GenzyApi({ app: existingApp }).from(container);
 
 existingApp.listen(3000);
 ```
@@ -97,13 +97,13 @@ existingApp.listen(3000);
 
 ```ts
 import * as express from 'express';
-import { GenzyApi, Nimble } from 'genzy-api';
+import { GenzyApi, GenzyContainer } from 'genzy-api';
 
-const nimble = new Nimble().addLocalServices(/* services */);
+const container = new GenzyContainer().addLocalServices(/* services */);
 
 const existingApp = express();
 
-const app = new GenzyApi({ app: existingApp }).from(nimble);
+const app = new GenzyApi({ app: existingApp }).from(container);
 
 existingApp.listen(3000);
 ```

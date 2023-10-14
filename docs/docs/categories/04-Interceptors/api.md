@@ -10,20 +10,20 @@ Here is the list of API interceptor definition examples.
 
 ```js
 // Intercept all service handlers before they are called
-const usersNimble = new Nimble().ofLocal(UserService);
+const usersGenzyContainer = new GenzyContainer().ofLocal(UserService);
 const app = new GenzyApi()
   .interceptAll((req: Request, res: Response, next: NextFunction) => {
     if(isTokenValid(req.headers.Authorization)) next();
     else res.sendStatus(401);
   })
-  .from(usersNimble);
+  .from(usersGenzyContainer);
 ```
 
 ### Intercept Specific Before
 
 ```js
 // Intercept specific service handlers before they are called
-const usersNimble = new Nimble().ofLocal(UserService);
+const usersGenzyContainer = new GenzyContainer().ofLocal(UserService);
 const app = new GenzyApi()
   .intercept({
     userService: {
@@ -33,7 +33,7 @@ const app = new GenzyApi()
       }
     }
   })
-  .from(usersNimble);
+  .from(usersGenzyContainer);
 ```
 
 ### Intercept Specific Before - Interceptor Class
@@ -46,33 +46,33 @@ class UserServiceInterceptor {
     else res.sendStatus(401);
   }
 }
-const usersNimble = new Nimble().ofLocal(UserService);
+const usersGenzyContainer = new GenzyContainer().ofLocal(UserService);
 const app = new GenzyApi()
   .intercept({
     userService: {
       createUser: UserServiceInterceptor
     }
   })
-  .from(usersNimble);
+  .from(usersGenzyContainer);
 ```
 
 ### Intercept All After
 
 ```js
 // Intercept all service handlers after they are called
-const usersNimble = new Nimble().ofLocal(UserService);
+const usersGenzyContainer = new GenzyContainer().ofLocal(UserService);
 const app = new GenzyApi()
   .interceptAllAfter((req: Request, res: Response, next: NextFunction) => {
     res.body({ message: "Hello from Genzy." });
   })
-  .from(usersNimble);
+  .from(usersGenzyContainer);
 ```
 
 ### Intercept Specific After
 
 ```js
 // Intercept specific service handlers after they are called
-const usersNimble = new Nimble().ofLocal(UserService);
+const usersGenzyContainer = new GenzyContainer().ofLocal(UserService);
 const app = new GenzyApi()
   .interceptAfter({
     userService: {
@@ -82,7 +82,7 @@ const app = new GenzyApi()
       }
     }
   })
-  .from(usersNimble);
+  .from(usersGenzyContainer);
 ```
 
 ### Intercept Specific After - Interceptor Class
@@ -95,12 +95,12 @@ class UserServiceInterceptor {
     next();
   }
 }
-const usersNimble = new Nimble().ofLocal(UserService);
+const usersGenzyContainer = new GenzyContainer().ofLocal(UserService);
 const app = new GenzyApi()
   .interceptAfter({
     userService: {
       createUser: UserServiceInterceptor
     }
   })
-  .from(usersNimble);
+  .from(usersGenzyContainer);
 ```

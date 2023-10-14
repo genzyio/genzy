@@ -10,7 +10,7 @@ export type GenzyContainerServices = {
 
 const host = "{{ url }}";
 
-const nimble = new GenzyContainer(){% for service in services %}
+const container = new GenzyContainer(){% for service in services %}
   .addRemoteService(host, {{ service.name }}Local){% endfor %};
 
 export const {

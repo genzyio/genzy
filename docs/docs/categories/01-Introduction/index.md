@@ -20,7 +20,7 @@ Here's a basic example:
 
 #### Server
 ```js
-const { Nimble, GenzyApi } = require('genzy-api');
+const { GenzyContainer, GenzyApi } = require('genzy-api');
 
 class UserService {
   async createUser(user) {
@@ -49,10 +49,10 @@ class AccountService {
   }
 }
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .addLocalServices(UserService, AccountService);
 
-const app = new GenzyApi().from(usersNimble);
+const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
 </TabItem>
@@ -60,7 +60,7 @@ app.listen(3000);
 
 #### Server
 ```js
-import { Nimble, GenzyApi } from 'genzy-api';
+import { GenzyContainer, GenzyApi } from 'genzy-api';
 
 class UserService {
   async createUser(user) {
@@ -89,10 +89,10 @@ class AccountService {
   }
 }
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .addLocalServices(UserService, AccountService);
 
-const app = new GenzyApi().from(usersNimble);
+const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
 </TabItem>
@@ -100,7 +100,7 @@ app.listen(3000);
 
 #### Server
 ```ts
-import { Nimble, GenzyApi, Controller, Post, Get } from 'genzy-api';
+import { GenzyContainer, GenzyApi, Controller, Post, Get } from 'genzy-api';
 
 @Controller('/users')
 class UserService {
@@ -133,10 +133,10 @@ class AccountService {
   }
 }
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .addLocalServices(UserService, AccountService);
 
-const app = new GenzyApi().from(usersNimble);
+const app = new GenzyApi().from(usersGenzyContainer);
 app.listen(3000);
 ```
   </TabItem>
@@ -147,7 +147,7 @@ app.listen(3000);
 #### Client
 
 ```js
-const { Nimble } = require('genzy-client');
+const { GenzyContainer } = require('genzy-client');
 
 const host = 'http://localhost:3000';
 
@@ -160,11 +160,11 @@ class AccountService {
   async createAccount(account) {}
 }
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .addRemoteServices(host, UserService, AccountService);
 
 // The instances are available for custom usage
-const { userService, accountService } = usersNimble.getAllServices();
+const { userService, accountService } = usersGenzyContainer.getAllServices();
 
 // Use the services
 accountService.createAccount({
@@ -182,7 +182,7 @@ const allAccounts = await accountService.getAllAccounts();
 #### Client
 
 ```js
-import { Nimble } from 'genzy-client';
+import { GenzyContainer } from 'genzy-client';
 
 const host = 'http://localhost:3000';
 
@@ -195,11 +195,11 @@ class AccountService {
   async createAccount(account) {}
 }
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .addRemoteServices(host, UserService, AccountService);
 
 // The instances are available for custom usage
-const { userService, accountService } = usersNimble.getAllServices();
+const { userService, accountService } = usersGenzyContainer.getAllServices();
 
 // Use the services
 accountService.createAccount({
@@ -217,7 +217,7 @@ const allAccounts = await accountService.getAllAccounts();
 #### Client
 
 ```ts
-import { Nimble, Controller, Post, Get } from 'genzy-client';
+import { GenzyContainer, Controller, Post, Get } from 'genzy-client';
 
 const host = 'http://localhost:3000';
 
@@ -235,7 +235,7 @@ class AccountService {
   async createAccount(account) {}
 }
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .addRemoteServices(host, UserService, AccountService);
 
 type GenzyServices = {
@@ -244,7 +244,7 @@ type GenzyServices = {
 }
 
 // The instances are available for custom usage
-const { userService, accountService }: GenzyServices = usersNimble.getAllServices();
+const { userService, accountService }: GenzyServices = usersGenzyContainer.getAllServices();
 
 // Use the services
 accountService.createAccount({
@@ -265,11 +265,11 @@ Here are the features provided by Genzy:
 
 ### API
 
-Express Application is automatically created based on the service classes passed to the Nimble.
+Express Application is automatically created based on the service classes passed to the GenzyContainer.
 
 ### Client
 
-Client service proxy is automatically created based on the service classes passed to the Nimble.
+Client service proxy is automatically created based on the service classes passed to the GenzyContainer.
 
 ### Automatic JS/TS Client generation
 

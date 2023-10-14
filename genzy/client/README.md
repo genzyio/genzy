@@ -17,18 +17,18 @@ class AccountService {
   async createAccount(account) {}
 }
 ```
-4. Create a Nimble of remote services
+4. Create a GenzyContainer of remote services
 ```js
-import { Nimble } from 'genzy-client';
+import { GenzyContainer } from 'genzy-client';
 
 const host = 'http://localhost:3000';
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .ofRemote(UserService, host)
   .andRemote(AccountService, host);
 
 // The instances are available for custom usage
-const { userService, accountService } = usersNimble.services();
+const { userService, accountService } = usersGenzyContainer.services();
 
 // Use the services
 accountService.createAccount({
@@ -60,14 +60,14 @@ const allAccounts = await accountService.getAllAccounts();
 
 ```js
 // Intercept all service calls
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .ofRemote(UserService, host)
   .interceptAllCalls(({setHeader, getHeader, setBody, getBody}) => {
     setHeader('Authorization', 'Bearer <token>');
   });
 
 // Intercept only specific method calls
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .ofRemote(UserService, host)
   .interceptCalls({
     userService: {
@@ -83,14 +83,14 @@ class UserServiceCallInterceptor {
     setHeader('classCallInterceptor', 'Works!')
   }
 }
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .ofRemote(UserService, host)
   .interceptCalls({
     userService: UserServiceCallInterceptor
   });
 
 // Intercept all service results
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .ofRemote(UserService, host)
   .interceptAllResults(({setHeader, getHeader, setBody, getBody}) => {
     validateBody(getBody());
@@ -98,7 +98,7 @@ const usersNimble = new Nimble()
   });
 
 // Intercept only specific method results
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .ofRemote(UserService, host)
   .interceptResults({
     userService: {
@@ -114,7 +114,7 @@ class UserServiceResultInterceptor {
     setHeader('classResultInterceptor', 'Works!')
   }
 }
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .ofRemote(UserService, host)
   .interceptResults({
     userService: UserServiceResultInterceptor

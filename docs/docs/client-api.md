@@ -7,29 +7,29 @@ slug: /client-api/
 
 ## Reference
 
-The following is the `Nimble` class with all method signatures.
+The following is the `GenzyContainer` class with all method signatures.
 
 ```ts
-export class Nimble {
+export class GenzyContainer {
   constructor();
 
-  public addLocalService(type: Constructor): Nimble;
-  public addLocalServices(...types: Constructor): Nimble;
-  public addRemoteService(origin: string, type: Constructor): Nimble;
-  public addRemoteServices(origin: string, ...types: Constructor): Nimble;
+  public addLocalService(type: Constructor): GenzyContainer;
+  public addLocalServices(...types: Constructor): GenzyContainer;
+  public addRemoteService(origin: string, type: Constructor): GenzyContainer;
+  public addRemoteServices(origin: string, ...types: Constructor): GenzyContainer;
 
-  public interceptCalls(customInterceptors: CustomInterceptors<InterceptorCallback>): Nimble;
-  public interceptResults(customInterceptors: CustomInterceptors<InterceptorCallback>): Nimble;
-  public interceptAllCalls(callback: InterceptorCallback): Nimble;
-  public interceptAllResults(callback: InterceptorCallback): Nimble;
+  public interceptCalls(customInterceptors: CustomInterceptors<InterceptorCallback>): GenzyContainer;
+  public interceptResults(customInterceptors: CustomInterceptors<InterceptorCallback>): GenzyContainer;
+  public interceptAllCalls(callback: InterceptorCallback): GenzyContainer;
+  public interceptAllResults(callback: InterceptorCallback): GenzyContainer;
 
   public getAllServices(): any;
 }
 ```
 
-### new Nimble()
+### new GenzyContainer()
 
-- Creates a new instance of Nimble.
+- Creates a new instance of GenzyContainer.
 
 ### nimble.addLocalService(type)
 
@@ -81,7 +81,7 @@ export class Nimble {
 
 ### nimble.getAllServices()
 
-- Returns Nimble's service registry.
+- Returns GenzyContainer's service registry.
 
 ## Types
 

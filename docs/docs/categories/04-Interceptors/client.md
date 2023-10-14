@@ -9,7 +9,7 @@ Here is the list of Client interceptor definition examples.
 
 ```js
 // Intercept all service calls
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .ofRemote(UserService, host)
   .interceptAllCalls(({setHeader, getHeader, setBody, getBody}) => {
     setHeader('Authorization', 'Bearer <token>');
@@ -20,7 +20,7 @@ const usersNimble = new Nimble()
 
 ```js
 // Intercept only specific method calls
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .ofRemote(UserService, host)
   .interceptCalls({
     userService: {
@@ -40,7 +40,7 @@ class UserServiceCallInterceptor {
     setHeader('classCallInterceptor', 'Works!')
   }
 }
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .ofRemote(UserService, host)
   .interceptCalls({
     userService: UserServiceCallInterceptor
@@ -51,7 +51,7 @@ const usersNimble = new Nimble()
 
 ```js
 // Intercept all service results
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .ofRemote(UserService, host)
   .interceptAllResults(({setHeader, getHeader, setBody, getBody}) => {
     validateBody(getBody());
@@ -63,7 +63,7 @@ const usersNimble = new Nimble()
 
 ```js
 // Intercept only specific method results
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .ofRemote(UserService, host)
   .interceptResults({
     userService: {
@@ -83,7 +83,7 @@ class UserServiceResultInterceptor {
     setHeader('classResultInterceptor', 'Works!')
   }
 }
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .ofRemote(UserService, host)
   .interceptResults({
     userService: UserServiceResultInterceptor

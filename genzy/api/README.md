@@ -40,23 +40,23 @@ class AccountService {
   }
 }
 ```
-4. Create a Nimble of services
+4. Create a GenzyContainer of services
 ```js
-import { Nimble } from '@genzy.io/api';
+import { GenzyContainer } from '@genzy.io/api';
 
-const usersNimble = new Nimble()
+const usersGenzyContainer = new GenzyContainer()
   .ofLocal(UserService)
   .andLocal(AccountService);
 
 // The instances are available for custom usage
-const { userService, accountService } = usersNimble.services();
+const { userService, accountService } = usersGenzyContainer.services();
 ```
 
 5. Create the GenzyApi
 ```js
 import { GenzyApi } from '@genzy.io/api';
 
-const app = new GenzyApi().from(usersNimble);
+const app = new GenzyApi().from(usersGenzyContainer);
 
 app.listen(3000);
 ```
@@ -72,16 +72,16 @@ app.listen(3000);
 
 ```js
 // Intercept all service handlers before they are called
-const usersNimble = new Nimble().ofLocal(UserService);
+const usersGenzyContainer = new GenzyContainer().ofLocal(UserService);
 const app = new GenzyApi()
   .interceptAll((req: Request, res: Response, next: NextFunction) => {
     if(isTokenValid(req.headers.Authorization)) next();
     else res.sendStatus(401);
   })
-  .from(usersNimble);
+  .from(usersGenzyContainer);
 
 // Intercept specific service handlers before they are called
-const usersNimble = new Nimble().ofLocal(UserService);
+const usersGenzyContainer = new GenzyContainer().ofLocal(UserService);
 const app = new GenzyApi()
   .intercept({
     userService: {
@@ -91,7 +91,7 @@ const app = new GenzyApi()
       }
     }
   })
-  .from(usersNimble);
+  .from(usersGenzyContainer);
 
 // Intercept specific service handlers before they are called with Interceptor class
 class UserServiceInterceptor {
@@ -100,25 +100,25 @@ class UserServiceInterceptor {
     else res.sendStatus(401);
   }
 }
-const usersNimble = new Nimble().ofLocal(UserService);
+const usersGenzyContainer = new GenzyContainer().ofLocal(UserService);
 const app = new GenzyApi()
   .intercept({
     userService: {
       createUser: UserServiceInterceptor
     }
   })
-  .from(usersNimble);
+  .from(usersGenzyContainer);
 
 // Intercept all service handlers after they are called
-const usersNimble = new Nimble().ofLocal(UserService);
+const usersGenzyContainer = new GenzyContainer().ofLocal(UserService);
 const app = new GenzyApi()
   .interceptAllAfter((req: Request, res: Response, next: NextFunction) => {
     res.body({ message: "Hello from Genzy." });
   })
-  .from(usersNimble);
+  .from(usersGenzyContainer);
 
 // Intercept specific service handlers after they are called
-const usersNimble = new Nimble().ofLocal(UserService);
+const usersGenzyContainer = new GenzyContainer().ofLocal(UserService);
 const app = new GenzyApi()
   .interceptAfter({
     userService: {
@@ -128,7 +128,7 @@ const app = new GenzyApi()
       }
     }
   })
-  .from(usersNimble);
+  .from(usersGenzyContainer);
 
 // Intercept specific service handlers after they are called with Interceptor class
 class UserServiceInterceptor {
@@ -137,14 +137,14 @@ class UserServiceInterceptor {
     next();
   }
 }
-const usersNimble = new Nimble().ofLocal(UserService);
+const usersGenzyContainer = new GenzyContainer().ofLocal(UserService);
 const app = new GenzyApi()
   .interceptAfter({
     userService: {
       createUser: UserServiceInterceptor
     }
   })
-  .from(usersNimble);
+  .from(usersGenzyContainer);
 ```
 
 ## Error Status Code Mappings
@@ -166,7 +166,7 @@ const app = new GenzyApi()
     [BadLogicError.name]: 400,
     [InternalServerError.name]: 500,
   })
-  .from(usersNimble);
+  .from(usersGenzyContainer);
 ```
 
 # Steps for publishing new version

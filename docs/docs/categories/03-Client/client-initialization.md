@@ -18,13 +18,13 @@ Once you have [installed](client-installation.md) the `genzy-client` library, yo
   <TabItem value="cjs" label="CommonJS" default>
 
 ```js
-const { Nimble } = require("genzy-client");
+const { GenzyContainer } = require("genzy-client");
 
 class ExampleService {
   async get() {}
 }
 
-const nimble = new Nimble().addRemoteService("http://localhost:3000", ExampleService);
+const container = new GenzyContainer().addRemoteService("http://localhost:3000", ExampleService);
 
 const { exampleService } = nimble.getAllServices();
 ```
@@ -33,13 +33,13 @@ const { exampleService } = nimble.getAllServices();
   <TabItem value="mjs" label="ES modules">
 
 ```js
-import { Nimble } from "genzy-client";
+import { GenzyContainer } from "genzy-client";
 
 class ExampleService {
   async get() {}
 }
 
-const nimble = new Nimble().addRemoteService("http://localhost:3000", ExampleService);
+const container = new GenzyContainer().addRemoteService("http://localhost:3000", ExampleService);
 
 const { exampleService } = nimble.getAllServices();
 ```
@@ -48,13 +48,13 @@ const { exampleService } = nimble.getAllServices();
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { Nimble } from "genzy-client";
+import { GenzyContainer } from "genzy-client";
 
 class ExampleService {
   async get() {}
 }
 
-const nimble = new Nimble().addRemoteService("http://localhost:3000", ExampleService);
+const container = new GenzyContainer().addRemoteService("http://localhost:3000", ExampleService);
 
 type GenzyServices = {
   exampleService: ExampleService;

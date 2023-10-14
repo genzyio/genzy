@@ -3,17 +3,17 @@ using System.Collections.Generic;
 
 namespace Genzy.Models
 {
-    public class N1mble
+    public class GenzyContainer
     {
         public Registry Registry { get; } = new Registry();
 
-        public N1mble AddLocalService(Type service)
+        public GenzyContainer AddLocalService(Type service)
         {
             Registry.RegisterService(Activator.CreateInstance(service));
             return this;
         }
 
-        public N1mble AddLocalServices(List<Type> services)
+        public GenzyContainer AddLocalServices(List<Type> services)
         {
             foreach (var service in services)
             {
@@ -22,13 +22,13 @@ namespace Genzy.Models
             return this;
         }
 
-        public N1mble AddRemoteService(Type service, string origin, string basePath = "/api")
+        public GenzyContainer AddRemoteService(Type service, string origin, string basePath = "/api")
         {
             Registry.RegisterService(Activator.CreateInstance(service));
             return this;
         }
 
-        public N1mble AddRemoteServices(List<Type> services, string origin, string basePath = "/api")
+        public GenzyContainer AddRemoteServices(List<Type> services, string origin, string basePath = "/api")
         {
             foreach (var service in services)
             {
