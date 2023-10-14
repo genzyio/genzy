@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace N1mbly.Examples
+namespace Genzy.Examples
 {
     public class NestedModel2
     {

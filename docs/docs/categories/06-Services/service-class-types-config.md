@@ -7,7 +7,7 @@ slug: /service-class-types-config/
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-If you'd like `N1mbly` to be able to generate a detailed [OpenAPI](https://www.openapis.org/) documentation, with [SwaggerUI](https://swagger.io/) that includes [Type Definitions](https://swagger.io/docs/specification/data-models/data-types/), you can define types in a `$nimbly` property.
+If you'd like `Genzy` to be able to generate a detailed [OpenAPI](https://www.openapis.org/) documentation, with [SwaggerUI](https://swagger.io/) that includes [Type Definitions](https://swagger.io/docs/specification/data-models/data-types/), you can define types in a `$genzy` property.
 
 If you're using [TypeScript](https://www.typescriptlang.org/) you can define configuration using [TypeScript decorators](https://www.typescriptlang.org/docs/handbook/decorators.html).
 
@@ -32,7 +32,7 @@ const exampleArrayTypeDefinition = {
 };
 
 class ExampleService {
-  $nimbly = {
+  $genzy = {
     path: '/',
     getAll: {
       httpMethod: 'GET',
@@ -114,7 +114,7 @@ const exampleArrayTypeDefinition = {
 };
 
 class ExampleService {
-  $nimbly = {
+  $genzy = {
     path: '/',
     getAll: {
       httpMethod: 'GET',
@@ -183,7 +183,7 @@ class ExampleService {
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { Controller, Get, Post, Put, Delete, Query, Path, Body, string, number, boolean, type, Returns, ReturnsArrayOf } from "nimbly-client"; // or nimbly-api
+import { Controller, Get, Post, Put, Delete, Query, Path, Body, string, number, boolean, type, Returns, ReturnsArrayOf } from "genzy-client"; // or genzy-api
 
 class Example {
   @string name: string;
@@ -224,5 +224,5 @@ class ExampleService {
 </Tabs>
 
 :::important
-Types configuration is used at the server side, since it is used for telling `Nimbly` how to set up a detailed [OpenAPI](https://www.openapis.org/) documentation, with [SwaggerUI](https://swagger.io/) that includes [Type Definitions](https://swagger.io/docs/specification/data-models/data-types/).
+Types configuration is used at the server side, since it is used for telling `Genzy` how to set up a detailed [OpenAPI](https://www.openapis.org/) documentation, with [SwaggerUI](https://swagger.io/) that includes [Type Definitions](https://swagger.io/docs/specification/data-models/data-types/).
 :::

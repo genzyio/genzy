@@ -1,5 +1,5 @@
 import type { Environment } from "nunjucks";
-import { n1mblyConfigFrom } from "../../../shared/functions";
+import { genzyConfigFrom } from "../../../shared/functions";
 import type {
   MetaInfo,
   MetaTypesRegistry,
@@ -36,7 +36,7 @@ function controllerFileContentFrom({
 }): Promise<string> {
   const content = nunjucks.render("controller.njk", {
     ...service,
-    $nimbly: { ...n1mblyConfigFrom(service), types },
+    $genzy: { ...genzyConfigFrom(service), types },
     types,
   });
   return formatFileContent(content);

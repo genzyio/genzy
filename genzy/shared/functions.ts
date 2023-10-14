@@ -6,7 +6,7 @@ import {
 } from "./constants";
 import {
   Action,
-  N1mblyConfig,
+  GenzyConfig,
   Param,
   ParamSource,
   ServiceMetaInfo,
@@ -77,27 +77,27 @@ export function extractPathParamsFrom(fullRoutePath: string) {
   return [...fullRoutePath.matchAll(MatchPathParamsRegex)].map((r) => r[0]);
 }
 
-export function combineN1mblyConfigs(
-  nimbly: N1mblyConfig,
-  nimbly_config: N1mblyConfig
-): N1mblyConfig {
+export function combineGenzyConfigs(
+  genzy: GenzyConfig,
+  genzy_config: GenzyConfig
+): GenzyConfig {
   return {
-    path: nimbly.path ?? nimbly_config.path,
+    path: genzy.path ?? genzy_config.path,
     actions: {
-      ...(nimbly_config?.actions ?? {}),
-      ...(nimbly?.actions ?? {}),
+      ...(genzy_config?.actions ?? {}),
+      ...(genzy?.actions ?? {}),
     },
     types: {
-      ...(nimbly_config?.types ?? {}),
-      ...(nimbly?.types ?? {}),
+      ...(genzy_config?.types ?? {}),
+      ...(genzy?.types ?? {}),
     },
   };
 }
 
-export function n1mblyConfigFrom(
+export function genzyConfigFrom(
   serviceMetaInfo: ServiceMetaInfo
-): N1mblyConfig {
-  const result: N1mblyConfig = {
+): GenzyConfig {
+  const result: GenzyConfig = {
     path: serviceMetaInfo.path,
     actions: {},
   };

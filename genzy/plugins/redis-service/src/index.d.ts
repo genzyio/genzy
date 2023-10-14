@@ -1,33 +1,33 @@
 export { Application, Request, Response, NextFunction } from "express";
 import {
-  N1mblyPlugin,
-  N1mblyConfig,
+  GenzyPlugin,
+  GenzyConfig,
   ServiceMetaInfo,
   MetaTypesRegistry,
-  N1mblyPluginParams,
-  N1mblyContainer,
-} from "@n1mbly/api";
+  GenzyPluginParams,
+  GenzyContainer,
+} from "@genzy.io/api";
 
-export class Plugin extends N1mblyPlugin {
-  constructor(params?: { containers?: N1mblyContainer[] });
+export class Plugin extends GenzyPlugin {
+  constructor(params?: { containers?: GenzyContainer[] });
 
-  beforeAll(params: N1mblyPluginParams): void | Promise<void>;
+  beforeAll(params: GenzyPluginParams): void | Promise<void>;
   beforeRouteRegister(
-    params: N1mblyPluginParams & {
+    params: GenzyPluginParams & {
       serviceKey: string;
       serviceInstance: any;
-      n1mblyConfig: N1mblyConfig;
+      genzyConfig: GenzyConfig;
     }
   ): void | Promise<void>;
   afterRouteRegister(
-    params: N1mblyPluginParams & {
+    params: GenzyPluginParams & {
       serviceKey: string;
       serviceInstance: any;
-      n1mblyConfig: N1mblyConfig;
+      genzyConfig: GenzyConfig;
       meta: ServiceMetaInfo & { types: MetaTypesRegistry };
     }
   ): void | Promise<void>;
-  afterAll(params: N1mblyPluginParams): void | Promise<void>;
+  afterAll(params: GenzyPluginParams): void | Promise<void>;
 }
 
 export class RedisService {

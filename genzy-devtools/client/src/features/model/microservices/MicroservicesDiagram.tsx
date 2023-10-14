@@ -436,7 +436,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
             }
           );
         }}
-        title={"GN1mbly"}
+        title={"GGenzy"}
       >
         {selectedMicroservice && (
           <ValidationContextProvider>

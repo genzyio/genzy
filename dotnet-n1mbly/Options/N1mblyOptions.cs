@@ -1,6 +1,6 @@
-﻿namespace N1mbly.Options
+﻿namespace Genzy.Options
 {
-    public class N1mblyOptions
+    public class GenzyOptions
     {
         public bool AddMetaRoute { get; set; }
     }

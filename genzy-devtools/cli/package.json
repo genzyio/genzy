@@ -1,5 +1,5 @@
 {
-  "name": "gn1mbly-cli",
+  "name": "ggenzy-cli",
   "version": "1.0.0",
   "description": "",
   "scripts": {
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "gn1mbly-api": "file:../api/dist",
+    "ggenzy-api": "file:../api/dist",
     "yargs": "17.7.2"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 {
-  "name": "@n1mbly/api",
+  "name": "@genzy.io/api",
   "version": "0.2.25",
-  "description": "N1mbly - focused on the domain.",
+  "description": "Genzy - focused on the domain.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
@@ -13,7 +13,7 @@
     "access": "public"
   },
   "keywords": [],
-  "author": "@n1mbly",
+  "author": "@genzy.io",
   "license": "ISC",
   "devDependencies": {
     "@types/express": "4.17.13",
@@ -31,7 +31,7 @@
     "webpack-cli": "4.9.1"
   },
   "dependencies": {
-    "@n1mbly/client": "0.2.15",
+    "@genzy.io/client": "0.2.15",
     "cors": "2.8.5",
     "express": "4.17.1",
     "swagger-ui-express": "4.3.0"

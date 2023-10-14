@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using N1mbly.Common;
+using Genzy.Common;
 
-namespace N1mbly.Models.Interfaces
+namespace Genzy.Models.Interfaces
 {
     public interface IRemoteProxy
     {

@@ -58,7 +58,7 @@ export class Interceptable<TInterceptorCallback> {
   }
 }
 
-export type N1mblyInfo = {
+export type GenzyInfo = {
   version?: string;
   name?: string;
   description?: string;
@@ -71,7 +71,7 @@ export type Modify<T, R> = Omit<T, keyof R> & R;
 export type MetaInfo = {
   services: ServiceMetaInfo[];
   types: MetaTypesRegistry;
-  n1mblyInfo?: N1mblyInfo;
+  genzyInfo?: GenzyInfo;
 };
 
 export type MetaTypesRegistry = Record<string, ComplexTypeProperties>;
@@ -97,7 +97,7 @@ export type Param = {
   optional?: boolean;
 };
 
-export type N1mblyConfig = {
+export type GenzyConfig = {
   path?: string;
   actions: ActionConfig;
   types?: MetaTypesRegistry;

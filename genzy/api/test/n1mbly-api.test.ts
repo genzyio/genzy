@@ -1,8 +1,8 @@
 import * as express from "express";
 import * as cors from "cors";
 import { NextFunction, Request, Response } from "express";
-import { N1mblyContainer } from "@n1mbly/client";
-import { N1mblyApi } from "../src/n1mbly-api";
+import { GenzyContainer } from "@genzy.io/client";
+import { GenzyApi } from "../src/genzy-api";
 import { agent } from "supertest";
 
 const getAllResult = [1, 2, 3];
@@ -75,14 +75,14 @@ class AdditionalService {
   }
 }
 
-describe("N1mblyApi", () => {
-  it("should create n1mbly api", async () => {
-    const testContainer = new N1mblyContainer().addLocalServices(TestService);
-    const mainContainer = new N1mblyContainer()
+describe("GenzyApi", () => {
+  it("should create genzy api", async () => {
+    const testContainer = new GenzyContainer().addLocalServices(TestService);
+    const mainContainer = new GenzyContainer()
       .addLocalServices(AdditionalService)
       .addAccessToContainer("test", testContainer);
 
-    const app = new N1mblyApi().buildAppFrom(mainContainer);
+    const app = new GenzyApi().buildAppFrom(mainContainer);
 
     expect(app).toHaveProperty("listen");
     expect(app).toHaveProperty("use");
@@ -94,12 +94,12 @@ describe("N1mblyApi", () => {
     await agent(app).del("/api/test-service/delete-something").expect(404);
   });
 
-  it("should not register services that n1mbly container has access to the api", async () => {
-    const container = new N1mblyContainer().addLocalServices(
+  it("should not register services that genzy container has access to the api", async () => {
+    const container = new GenzyContainer().addLocalServices(
       TestService,
       AdditionalService
     );
-    const app = new N1mblyApi().buildAppFrom(container);
+    const app = new GenzyApi().buildAppFrom(container);
 
     expect(app).toHaveProperty("listen");
     expect(app).toHaveProperty("use");
@@ -111,10 +111,10 @@ describe("N1mblyApi", () => {
   });
 
   it("should register before interceptors for object", async () => {
-    const n1mbly = new N1mblyContainer().addLocalService(TestService);
+    const genzy = new GenzyContainer().addLocalService(TestService);
     const interceptorResult = { result: [{ test: "result" }] };
     const interceptorAddResult = { result: [{ test: "result" }] };
-    const app = new N1mblyApi()
+    const app = new GenzyApi()
       .intercept({
         testService: {
           getAll(req: Request, res: Response, next: NextFunction) {
@@ -129,7 +129,7 @@ describe("N1mblyApi", () => {
           },
         },
       })
-      .buildAppFrom(n1mbly);
+      .buildAppFrom(genzy);
 
     await agent(app)
       .get("/api/test-service/get-all")
@@ -142,9 +142,9 @@ describe("N1mblyApi", () => {
   });
 
   it("should register after interceptors for object", async () => {
-    const container = new N1mblyContainer().addLocalService(TestService);
+    const container = new GenzyContainer().addLocalService(TestService);
 
-    const app = new N1mblyApi()
+    const app = new GenzyApi()
       .interceptAfter({
         testService: {
           getAll(req: Request, res: Response, next: NextFunction) {
@@ -166,8 +166,8 @@ describe("N1mblyApi", () => {
   });
 
   it("should register interceptors for interceptor class", async () => {
-    const container = new N1mblyContainer().addLocalService(TestService);
-    const app = new N1mblyApi()
+    const container = new GenzyContainer().addLocalService(TestService);
+    const app = new GenzyApi()
       .intercept({
         testService: TestServiceInterceptor as any,
       })
@@ -181,9 +181,9 @@ describe("N1mblyApi", () => {
   });
 
   it("should register a global interceptor before function", async () => {
-    const container = new N1mblyContainer().addLocalService(TestService);
+    const container = new GenzyContainer().addLocalService(TestService);
     const interceptorResult = { test: "result" };
-    const app = new N1mblyApi()
+    const app = new GenzyApi()
       .interceptAll((req: Request, res: Response, next: NextFunction) => {
         res.status(201);
         res.json(interceptorResult);
@@ -197,8 +197,8 @@ describe("N1mblyApi", () => {
   });
 
   it("should register a global interceptor after function", async () => {
-    const container = new N1mblyContainer().addLocalService(TestService);
-    const app = new N1mblyApi()
+    const container = new GenzyContainer().addLocalService(TestService);
+    const app = new GenzyApi()
       .interceptAllAfter((req: Request, res: Response, next: NextFunction) => {
         res.status(201);
         next();
@@ -210,8 +210,8 @@ describe("N1mblyApi", () => {
   });
 
   it("should call after interceptor function last", async () => {
-    const container = new N1mblyContainer().addLocalService(TestService);
-    const app = new N1mblyApi()
+    const container = new GenzyContainer().addLocalService(TestService);
+    const app = new GenzyApi()
       .interceptAllAfter((req: Request, res: Response, next: NextFunction) => {
         res.status(201);
         next();
@@ -227,8 +227,8 @@ describe("N1mblyApi", () => {
   });
 
   it("should register error mappings", async () => {
-    const container = new N1mblyContainer().addLocalService(TestService);
-    const app = new N1mblyApi()
+    const container = new GenzyContainer().addLocalService(TestService);
+    const app = new GenzyApi()
       .withErrors({
         [BadLogicError.name]: 400,
         [InternalServerError.name]: 500,
@@ -248,8 +248,8 @@ describe("N1mblyApi", () => {
     existingApp.use(express.urlencoded({ extended: true }));
     existingApp.use(express.json());
     existingApp.use(cors({ origin: "*" }));
-    const container = new N1mblyContainer().addLocalService(TestService);
-    const app = new N1mblyApi({ app: existingApp })
+    const container = new GenzyContainer().addLocalService(TestService);
+    const app = new GenzyApi({ app: existingApp })
       .withErrors({
         [BadLogicError.name]: 400,
         [InternalServerError.name]: 500,

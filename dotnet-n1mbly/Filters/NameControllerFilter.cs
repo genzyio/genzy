@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace N1mbly.Filters
+namespace Genzy.Filters
 {
     public class NameControllerFilter : ControllerFeatureProvider
     {

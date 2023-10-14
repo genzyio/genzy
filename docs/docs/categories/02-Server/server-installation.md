@@ -26,14 +26,14 @@ To install the latest release:
   <TabItem value="npm" label="NPM" default>
 
 ```sh
-npm install nimbly-api
+npm install genzy-api
 ```
 
   </TabItem>
   <TabItem value="yarn" label="Yarn">
 
 ```sh
-yarn add nimbly-api
+yarn add genzy-api
 ```
   </TabItem>
 </Tabs>
@@ -44,14 +44,14 @@ To install a specific version:
   <TabItem value="npm" label="NPM" default>
 
 ```sh
-npm install nimbly-api@version
+npm install genzy-api@version
 ```
 
   </TabItem>
   <TabItem value="yarn" label="Yarn">
 
 ```sh
-yarn add nimbly-api@version
+yarn add genzy-api@version
 ```
 
   </TabItem>
@@ -64,9 +64,9 @@ yarn add nimbly-api@version
 A basic installation of the server includes 4 packages:
 
 ```
-nimbly-api@1.2.3
+genzy-api@1.2.3
 ├── cors@2.8.5
 ├── express@4.17.1
-├── nimbly-client@1.2.0
+├── genzy-client@1.2.0
 └── swagger-ui-express@4.3.0
 ```

@@ -1,5 +1,5 @@
-import { N1mblyContainer } from "@n1mbly/client";
-import { N1mblyApi } from "../src/n1mbly-api";
+import { GenzyContainer } from "@genzy.io/client";
+import { GenzyApi } from "../src/genzy-api";
 import { agent } from "supertest";
 import { RegisterRoutesFor } from "../src/routes-handler";
 import * as express from "express";
@@ -40,12 +40,12 @@ class Test3Service {
   ) {}
 }
 
-describe("N1mblyApi Meta Info", () => {
+describe("GenzyApi Meta Info", () => {
   it("should register meta path", async () => {
     const meta = RegisterRoutesFor(new TestService(), express());
 
-    const container = new N1mblyContainer().addLocalService(TestService);
-    const app = new N1mblyApi().buildAppFrom(container);
+    const container = new GenzyContainer().addLocalService(TestService);
+    const app = new GenzyApi().buildAppFrom(container);
 
     const { types, ...serviceMeta } = meta.service;
 
@@ -116,8 +116,8 @@ describe("N1mblyApi Meta Info", () => {
       "/api/v1"
     );
 
-    const container = new N1mblyContainer().addLocalService(TestService);
-    const app = new N1mblyApi({ basePath: "/api/v1" }).buildAppFrom(container);
+    const container = new GenzyContainer().addLocalService(TestService);
+    const app = new GenzyApi({ basePath: "/api/v1" }).buildAppFrom(container);
 
     const { types, ...serviceMeta } = meta.service;
 

@@ -1,4 +1,4 @@
-# GN1mbly API
+# GGenzy API
 
 ## Development Setup
 

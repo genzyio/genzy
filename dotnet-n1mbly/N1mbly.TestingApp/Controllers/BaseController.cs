@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-using N1mbly.Common;
-using N1mbly.Services.Interfaces;
+using Genzy.Common;
+using Genzy.Services.Interfaces;
 
-namespace N1mbly.Controllers
+namespace Genzy.Controllers
 {
     public class BaseController<T> : ResponseProvider where T : class
     {

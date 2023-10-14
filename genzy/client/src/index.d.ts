@@ -20,29 +20,29 @@ interface Constructor {
   new (...args: any[]);
 }
 
-export class N1mblyContainer {
+export class GenzyContainer {
   constructor();
 
-  public interceptAllCalls(callback: InterceptorCallback): N1mblyContainer;
-  public interceptAllResults(callback: InterceptorCallback): N1mblyContainer;
+  public interceptAllCalls(callback: InterceptorCallback): GenzyContainer;
+  public interceptAllResults(callback: InterceptorCallback): GenzyContainer;
   public interceptCalls(
     customInterceptors: CustomInterceptors<InterceptorCallback>
-  ): N1mblyContainer;
+  ): GenzyContainer;
   public interceptResults(
     customInterceptors: CustomInterceptors<InterceptorCallback>
-  ): N1mblyContainer;
+  ): GenzyContainer;
 
   public addAccessToContainer(
     containerName: string,
-    container: N1mblyContainer
-  ): N1mblyContainer;
-  public addLocalService(type: Constructor): N1mblyContainer;
-  public addLocalServices(...types: Constructor[]): N1mblyContainer;
-  public addRemoteService(origin: string, type: Constructor): N1mblyContainer;
+    container: GenzyContainer
+  ): GenzyContainer;
+  public addLocalService(type: Constructor): GenzyContainer;
+  public addLocalServices(...types: Constructor[]): GenzyContainer;
+  public addRemoteService(origin: string, type: Constructor): GenzyContainer;
   public addRemoteServices(
     origin: string,
     ...types: Constructor[]
-  ): N1mblyContainer;
+  ): GenzyContainer;
 
   public getServices(): any;
   public getAllServices(): any;

@@ -1,11 +1,11 @@
-# N1mbly API
+# Genzy API
 
-[![NPM](https://nodei.co/npm/@n1mbly/api.png)](https://nodei.co/npm/@n1mbly/api/)
+[![NPM](https://nodei.co/npm/@genzy.io/api.png)](https://nodei.co/npm/@genzy.io/api/)
 
 # Getting Started
 
 1. `npm init -y`
-2. `npm i -S @n1mbly/api`
+2. `npm i -S @genzy.io/api`
 3. Implement services
 ```js
 class UserService {
@@ -42,7 +42,7 @@ class AccountService {
 ```
 4. Create a Nimble of services
 ```js
-import { Nimble } from '@n1mbly/api';
+import { Nimble } from '@genzy.io/api';
 
 const usersNimble = new Nimble()
   .ofLocal(UserService)
@@ -52,11 +52,11 @@ const usersNimble = new Nimble()
 const { userService, accountService } = usersNimble.services();
 ```
 
-5. Create the NimblyApi
+5. Create the GenzyApi
 ```js
-import { NimblyApi } from '@n1mbly/api';
+import { GenzyApi } from '@genzy.io/api';
 
-const app = new NimblyApi().from(usersNimble);
+const app = new GenzyApi().from(usersNimble);
 
 app.listen(3000);
 ```
@@ -73,7 +73,7 @@ app.listen(3000);
 ```js
 // Intercept all service handlers before they are called
 const usersNimble = new Nimble().ofLocal(UserService);
-const app = new NimblyApi()
+const app = new GenzyApi()
   .interceptAll((req: Request, res: Response, next: NextFunction) => {
     if(isTokenValid(req.headers.Authorization)) next();
     else res.sendStatus(401);
@@ -82,7 +82,7 @@ const app = new NimblyApi()
 
 // Intercept specific service handlers before they are called
 const usersNimble = new Nimble().ofLocal(UserService);
-const app = new NimblyApi()
+const app = new GenzyApi()
   .intercept({
     userService: {
       createUser: (req: Request, res: Response, next: NextFunction) => {
@@ -101,7 +101,7 @@ class UserServiceInterceptor {
   }
 }
 const usersNimble = new Nimble().ofLocal(UserService);
-const app = new NimblyApi()
+const app = new GenzyApi()
   .intercept({
     userService: {
       createUser: UserServiceInterceptor
@@ -111,15 +111,15 @@ const app = new NimblyApi()
 
 // Intercept all service handlers after they are called
 const usersNimble = new Nimble().ofLocal(UserService);
-const app = new NimblyApi()
+const app = new GenzyApi()
   .interceptAllAfter((req: Request, res: Response, next: NextFunction) => {
-    res.body({ message: "Hello from Nimbly." });
+    res.body({ message: "Hello from Genzy." });
   })
   .from(usersNimble);
 
 // Intercept specific service handlers after they are called
 const usersNimble = new Nimble().ofLocal(UserService);
-const app = new NimblyApi()
+const app = new GenzyApi()
   .interceptAfter({
     userService: {
       createUser: (req: Request, res: Response, next: NextFunction) => {
@@ -138,7 +138,7 @@ class UserServiceInterceptor {
   }
 }
 const usersNimble = new Nimble().ofLocal(UserService);
-const app = new NimblyApi()
+const app = new GenzyApi()
   .interceptAfter({
     userService: {
       createUser: UserServiceInterceptor
@@ -161,7 +161,7 @@ class InternalServerError extends Error {
     super(message);
   }
 }
-const app = new NimblyApi()
+const app = new GenzyApi()
   .withErrors({
     [BadLogicError.name]: 400,
     [InternalServerError.name]: 500,

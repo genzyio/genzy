@@ -1,7 +1,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 
-namespace N1mbly.Common
+namespace Genzy.Common
 {
     public class ResponseProvider : ControllerBase
     {

@@ -2,7 +2,7 @@ import type { Environment } from "nunjucks";
 import type {
   ComplexTypeProperties,
   MetaTypesRegistry,
-  N1mblyInfo,
+  GenzyInfo,
 } from "../../../shared/types";
 import type { ExtendedMetaInfo, ExtendedServiceInfo } from "../types";
 import {
@@ -35,7 +35,7 @@ export async function generate({
     await indexFileContentFrom({
       nunjucks,
       services: meta.services,
-      info: meta.n1mblyInfo,
+      info: meta.genzyInfo,
       plugins: meta.plugins,
     })
   );
@@ -158,7 +158,7 @@ function indexFileContentFrom({
   plugins,
 }: {
   services: ExtendedServiceInfo[];
-  info: N1mblyInfo;
+  info: GenzyInfo;
   nunjucks: Environment;
   plugins: ExtendedMetaInfo["plugins"];
 }): Promise<string> {

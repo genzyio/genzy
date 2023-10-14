@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace N1mbly.Repositories.Interfaces
+namespace Genzy.Repositories.Interfaces
 {
     public interface IBaseRepository<T> where T : class
     {

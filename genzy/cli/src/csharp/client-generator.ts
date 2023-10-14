@@ -81,5 +81,5 @@ async function typesFileContentFrom({
 }
 
 function getNamespaceNameFrom(service: ServiceMetaInfo): string {
-  return `N1mbly.services.${service.name}`;
+  return `Genzy.services.${service.name}`;
 }

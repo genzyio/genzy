@@ -1,65 +1,65 @@
 import { type Project } from "../features/projects/projects.models";
 import { getPorts } from "../features/watch-project/ports.manager";
 
-type GN1mblyOutput = any;
+type GGenzyOutput = any;
 
-type GN1mblyClass = any;
+type GGenzyClass = any;
 
-type GN1mblyEdge = any;
+type GGenzyEdge = any;
 
-export type N1mblyInfo = {
+export type GenzyInfo = {
   name: string;
   description: string;
   version: string;
   basePath: string;
 };
 
-type N1mblyService = {
+type GenzyService = {
   name: string;
   type: string;
-  actions: N1mblyAction[];
+  actions: GenzyAction[];
   path?: string;
   dependsOn?: any;
   host?: string;
 };
 
-type N1mblyServiceName = string;
+type GenzyServiceName = string;
 
-type N1mblyTypeInfo = {
+type GenzyTypeInfo = {
   type?: string;
   $typeName?: string;
   $isOptional: boolean;
   $isArray: boolean;
 };
 
-type N1mblyParameter = {
+type GenzyParameter = {
   name: string;
   source?: string;
-  type: N1mblyTypeInfo;
+  type: GenzyTypeInfo;
 };
 
-type Result = N1mblyTypeInfo;
+type Result = GenzyTypeInfo;
 
-type N1mblyAction = {
+type GenzyAction = {
   name: string;
   httpMethod?: string;
   path?: string;
-  params: N1mblyParameter[];
+  params: GenzyParameter[];
   result: Result;
 };
 
-type N1mblyType = Record<string, any>;
+type GenzyType = Record<string, any>;
 
-export type N1mblyGeneratorInput = {
-  services: N1mblyService[];
-  types: Record<string, N1mblyType>;
+export type GenzyGeneratorInput = {
+  services: GenzyService[];
+  types: Record<string, GenzyType>;
   plugins: string[];
-  n1mblyInfo: N1mblyInfo;
+  genzyInfo: GenzyInfo;
 };
 
-type MicroserviceInfo = N1mblyInfo;
+type MicroserviceInfo = GenzyInfo;
 
-type GN1mblyParameter = {
+type GGenzyParameter = {
   name: string;
   isCollection: boolean;
   source?: string;
@@ -67,27 +67,27 @@ type GN1mblyParameter = {
   id: string;
 };
 
-type GN1mblyFunction = {
+type GGenzyFunction = {
   name: string;
   method?: string;
   returnType: string;
   returnsCollection: boolean;
   route?: string;
   id: string;
-  params: GN1mblyParameter[];
+  params: GGenzyParameter[];
 };
 
-export function convertJSON(project: Project, microserviceId: string, inputJson: GN1mblyOutput): N1mblyGeneratorInput {
-  const outputJson: N1mblyGeneratorInput = {
+export function convertJSON(project: Project, microserviceId: string, inputJson: GGenzyOutput): GenzyGeneratorInput {
+  const outputJson: GenzyGeneratorInput = {
     services: [],
     types: {},
-    n1mblyInfo: { name: "", description: "", version: "", basePath: "" },
+    genzyInfo: { name: "", description: "", version: "", basePath: "" },
     plugins: [],
   };
 
   const microserviceInfo = inputJson["microservices"]["nodes"].find((m: any) => m.id === microserviceId).data;
 
-  outputJson.n1mblyInfo = createInfo(microserviceInfo);
+  outputJson.genzyInfo = createInfo(microserviceInfo);
   outputJson.services = createServices(project, inputJson, microserviceId);
   outputJson.types = {
     ...createTypesForRemoteServices(inputJson, microserviceId),
@@ -98,7 +98,7 @@ export function convertJSON(project: Project, microserviceId: string, inputJson:
   return outputJson;
 }
 
-function createInfo(microservice: MicroserviceInfo): N1mblyInfo {
+function createInfo(microservice: MicroserviceInfo): GenzyInfo {
   return {
     name: microservice.name,
     description: microservice.description,
@@ -107,7 +107,7 @@ function createInfo(microservice: MicroserviceInfo): N1mblyInfo {
   };
 }
 
-function createPlugins(inputJson: GN1mblyOutput, microserviceId: string) {
+function createPlugins(inputJson: GGenzyOutput, microserviceId: string) {
   const microserviceNode = inputJson["microservices"]["nodes"].find((m: any) => m.id === microserviceId);
   const serviceDiagram = inputJson["services"][microserviceId]["nodes"];
 
@@ -124,7 +124,7 @@ function createPlugins(inputJson: GN1mblyOutput, microserviceId: string) {
   });
 }
 
-function createServices(project: Project, inputJson: GN1mblyOutput, microserviceId: string): N1mblyService[] {
+function createServices(project: Project, inputJson: GGenzyOutput, microserviceId: string): GenzyService[] {
   const services = inputJson["services"][microserviceId]["nodes"];
   const classes = inputJson["classes"][microserviceId]["nodes"];
   const edges = inputJson["services"][microserviceId]["edges"];
@@ -174,10 +174,10 @@ function createServices(project: Project, inputJson: GN1mblyOutput, microservice
 
 function createRemoteProxyService(
   project: Project,
-  inputJson: GN1mblyOutput,
+  inputJson: GGenzyOutput,
   remoteMicroserviceId: string,
   serviceId: string,
-): N1mblyService {
+): GenzyService {
   const classes = inputJson["classes"][remoteMicroserviceId]["nodes"];
   const remoteService = inputJson["services"][remoteMicroserviceId]["nodes"].find((n: any) => n.id === serviceId).data;
 
@@ -192,13 +192,13 @@ function createRemoteProxyService(
   };
 }
 
-function createDependsOn(serviceId: string, services: any, edges: GN1mblyEdge[]): N1mblyServiceName[] {
+function createDependsOn(serviceId: string, services: any, edges: GGenzyEdge[]): GenzyServiceName[] {
   return edges
     .filter((e: any) => e.source === serviceId)
     .map((e: any) => services.find((s: any) => s.id === e.target)?.data.name);
 }
 
-function createActions(serviceType: string, functions: GN1mblyFunction[], classes: GN1mblyClass[]): N1mblyAction[] {
+function createActions(serviceType: string, functions: GGenzyFunction[], classes: GGenzyClass[]): GenzyAction[] {
   return functions.map((f: any) => {
     const params =
       serviceType !== "LocalService" ? createParams(true, f.params, classes) : createParams(false, f.params, classes);
@@ -221,7 +221,7 @@ function createActions(serviceType: string, functions: GN1mblyFunction[], classe
   });
 }
 
-function createParams(isController: boolean, paramsInput: any, classes: any): N1mblyParameter[] {
+function createParams(isController: boolean, paramsInput: any, classes: any): GenzyParameter[] {
   const params: any[] = [];
 
   paramsInput.map((p: any) => {
@@ -294,7 +294,7 @@ function extractComplexTypesFromClass(_class: any) {
   return attributeTypes.filter((type) => !primitiveTypes.includes(type));
 }
 
-function createTypes(inputJson: any, microserviceId: string): Record<string, N1mblyType> {
+function createTypes(inputJson: any, microserviceId: string): Record<string, GenzyType> {
   const classes = inputJson["classes"][microserviceId]["nodes"];
   return classes.reduce((types: any, c: any) => {
     types[c.data.name] = createType(classes, c);
@@ -312,7 +312,7 @@ function createType(classes: any, type: any) {
   }, {});
 }
 
-function getTypeObject(classes: any, type: string, isOptional: boolean, isArray: boolean): N1mblyTypeInfo {
+function getTypeObject(classes: any, type: string, isOptional: boolean, isArray: boolean): GenzyTypeInfo {
   const typeObj: Record<string, string> = {};
   const typeName = getType(classes, type);
   typeName ? (typeObj["$typeName"] = typeName) : (typeObj["type"] = (type === "any" ? undefined : type) as string);

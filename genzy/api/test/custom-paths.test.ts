@@ -1,5 +1,5 @@
-import { N1mblyContainer } from "@n1mbly/client";
-import { N1mblyApi } from "../src/n1mbly-api";
+import { GenzyContainer } from "@genzy.io/client";
+import { GenzyApi } from "../src/genzy-api";
 import { agent } from "supertest";
 import { NextFunction, Request, Response } from "express";
 import {
@@ -10,12 +10,12 @@ import {
   Post,
   Put,
 } from "../../shared/decorators";
-import { N1mblyConfig } from "../../shared/types";
+import { GenzyConfig } from "../../shared/types";
 
 const getAllResult = [1, 2, 3];
 
 class TestService {
-  $nimbly: N1mblyConfig = {
+  $genzy: GenzyConfig = {
     path: "/tests",
     actions: {
       getAll: {
@@ -111,10 +111,10 @@ class RootService {
   }
 }
 
-describe("N1mblyApi Custom Paths", () => {
+describe("GenzyApi Custom Paths", () => {
   it("should register a custom root path", async () => {
-    const container = new N1mblyContainer().addLocalService(TestService);
-    const app = new N1mblyApi().buildAppFrom(container);
+    const container = new GenzyContainer().addLocalService(TestService);
+    const app = new GenzyApi().buildAppFrom(container);
 
     await agent(app).get("/api/test-service/get-all").expect(404);
     await agent(app).get("/api/tests").expect(200, getAllResult);
@@ -122,8 +122,8 @@ describe("N1mblyApi Custom Paths", () => {
   });
 
   it("should register interceptors for interceptor class", async () => {
-    const container = new N1mblyContainer().addLocalService(TestService);
-    const app = new N1mblyApi()
+    const container = new GenzyContainer().addLocalService(TestService);
+    const app = new GenzyApi()
       .intercept({
         testService: TestServiceInterceptor as any,
       })
@@ -134,8 +134,8 @@ describe("N1mblyApi Custom Paths", () => {
   });
 
   it("should register route with path param", async () => {
-    const container = new N1mblyContainer().addLocalService(TestService);
-    const app = new N1mblyApi()
+    const container = new GenzyContainer().addLocalService(TestService);
+    const app = new GenzyApi()
       .intercept({
         testService: TestServiceInterceptor as any,
       })
@@ -150,21 +150,21 @@ describe("N1mblyApi Custom Paths", () => {
   });
 
   it("should register a custom root path with annotation", async () => {
-    const container = new N1mblyContainer().addLocalService(AnnotatedService);
-    const app = new N1mblyApi().buildAppFrom(container);
+    const container = new GenzyContainer().addLocalService(AnnotatedService);
+    const app = new GenzyApi().buildAppFrom(container);
     await agent(app).get("/api/annotated-service/get").expect(404);
     await agent(app).get("/api/annotated/get").expect(200);
   });
 
   it("should register a custom method path with annotation", async () => {
-    const container = new N1mblyContainer().addLocalService(AnnotatedService);
-    const app = new N1mblyApi().buildAppFrom(container);
+    const container = new GenzyContainer().addLocalService(AnnotatedService);
+    const app = new GenzyApi().buildAppFrom(container);
     await agent(app).get("/api/annotated/testing").expect(200);
   });
 
   it("should work for all annotations", async () => {
-    const container = new N1mblyContainer().addLocalService(AnnotatedService);
-    const app = new N1mblyApi().buildAppFrom(container);
+    const container = new GenzyContainer().addLocalService(AnnotatedService);
+    const app = new GenzyApi().buildAppFrom(container);
     const id = "1234";
     const body = { test: "123", a: 1 };
     await agent(app).get("/api/annotated/testing").expect(200);
@@ -184,8 +184,8 @@ describe("N1mblyApi Custom Paths", () => {
   });
 
   it("should work with root path not passed", async () => {
-    const container = new N1mblyContainer().addLocalService(RootService);
-    const app = new N1mblyApi().buildAppFrom(container);
+    const container = new GenzyContainer().addLocalService(RootService);
+    const app = new GenzyApi().buildAppFrom(container);
     await agent(app).get("/api/test").expect(200);
     await agent(app).get("/api").expect(200);
   });

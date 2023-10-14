@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using N1mbly.Models;
+using Genzy.Models;
 using System;
 
-namespace N1mbly.Filters
+namespace Genzy.Filters
 {
-    public class UseN1mblyStartupFilter : IStartupFilter
+    public class UseGenzyStartupFilter : IStartupFilter
     {
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {

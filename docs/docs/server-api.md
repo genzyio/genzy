@@ -7,62 +7,62 @@ slug: /server-api/
 
 ## Reference
 
-The following is the `NimblyApi` class with all method signatures.
+The following is the `GenzyApi` class with all method signatures.
 
 ```ts
-export class NimblyApi {
+export class GenzyApi {
   constructor();
-  constructor(options: {app?: Application, nimblyInfo?: NimblyInfo, basePath?: string});
+  constructor(options: {app?: Application, genzyInfo?: GenzyInfo, basePath?: string});
 
-  public intercept(customInterceptors: CustomInterceptors<InterceptorCallback>): NimblyApi;
-  public interceptAfter(customInterceptors: CustomInterceptors<InterceptorCallback>): NimblyApi;
-  public interceptAll(callback: InterceptorCallback): NimblyApi;
-  public interceptAllAfter(callback: InterceptorCallback): NimblyApi;
-  public withErrors(errors: ErrorRegistry): NimblyApi;
+  public intercept(customInterceptors: CustomInterceptors<InterceptorCallback>): GenzyApi;
+  public interceptAfter(customInterceptors: CustomInterceptors<InterceptorCallback>): GenzyApi;
+  public interceptAll(callback: InterceptorCallback): GenzyApi;
+  public interceptAllAfter(callback: InterceptorCallback): GenzyApi;
+  public withErrors(errors: ErrorRegistry): GenzyApi;
   public from(...nimbles: Nimble[]): Application;
 }
 ```
 
-### new NimblyApi(options)
+### new GenzyApi(options)
 
-- Creates a new instance of NimblyApi.
+- Creates a new instance of GenzyApi.
 
 - `options` [`<Object>`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
 - - `app?` [`<Application>`](http://expressjs.com/en/4x/api.html#app)
-- - `nimblyInfo?` [`<NimblyInfo>`](#nimblyinfo)
+- - `genzyInfo?` [`<GenzyInfo>`](#genzyinfo)
 - - `basePath?` [`<string>`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
 
-### nimblyApi.from(nimbles)
+### genzyApi.from(nimbles)
 
 - Creates a new [Express Application](http://expressjs.com/en/4x/api.html#app) from a set of Nimbles.
 
 - `nimbles` [`<Array>`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)
 
-### nimblyApi.intercept(interceptors)
+### genzyApi.intercept(interceptors)
 
 - Registers a set of custom [API interceptors](#interceptorcallback) that execute `before` each request.
 
 - `interceptors` [`<CustomInterceptors>`](#custominterceptors)
 
-### nimblyApi.interceptAfter(interceptors)
+### genzyApi.interceptAfter(interceptors)
 
 - Registers a set of custom [API interceptors](#interceptorcallback) that execute `after` each request.
 
 - `interceptors` [`<CustomInterceptors>`](#custominterceptors)
 
-### nimblyApi.interceptAll(callback)
+### genzyApi.interceptAll(callback)
 
 - Registers a custom [API interceptor](#interceptorcallback) that executes `before` <i>all</i> requests.
 
 - `callback` [`<InterceptorCallback>`](#interceptorcallback)
 
-### nimblyApi.interceptAllAfter(callback)
+### genzyApi.interceptAllAfter(callback)
 
 - Registers a custom [API interceptor](#interceptorcallback) that executes `after` <i>all</i> requests.
 
 - `callback` [`<InterceptorCallback>`](#interceptorcallback)
 
-### nimblyApi.withErrors(errorRegistry)
+### genzyApi.withErrors(errorRegistry)
 
 - Registers a set of custom error status codes that set the response status based on the error that is thrown.
 
@@ -70,10 +70,10 @@ export class NimblyApi {
 
 ## Types
 
-### NimblyInfo
+### GenzyInfo
 
 ```ts
-type NimblyInfo = {
+type GenzyInfo = {
   version?: string;
   name?: string;
   description?: string;

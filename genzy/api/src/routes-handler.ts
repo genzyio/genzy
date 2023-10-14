@@ -2,7 +2,7 @@ import { Application, NextFunction, Request, Response } from "express";
 import { ErrorHandler, ErrorRegistry } from "./error-handler";
 import {
   camelToKebabCase,
-  combineN1mblyConfigs,
+  combineGenzyConfigs,
   formParamsOf,
   getHttpMethod,
   getMethodsOfClassInstance,
@@ -10,7 +10,7 @@ import {
 import {
   ComplexTypeReference,
   MetaTypesRegistry,
-  N1mblyConfig,
+  GenzyConfig,
   Param,
   RouteMetaInfo,
   ServiceMetaInfo,
@@ -24,9 +24,9 @@ export function RegisterRoutesFor(
   basePath: string = "/api"
 ): { service: ServiceMetaInfo & { types: MetaTypesRegistry } } {
   const serviceClassName = instance.constructor.name || instance._class_name_;
-  const meta: N1mblyConfig = combineN1mblyConfigs(
-    instance?.$nimbly_config ?? {},
-    instance?.$nimbly ?? {}
+  const meta: GenzyConfig = combineGenzyConfigs(
+    instance?.$genzy_config ?? {},
+    instance?.$genzy ?? {}
   );
   const rootPath =
     meta?.path != null
@@ -72,7 +72,7 @@ export function RegisterRoutesFor(
       }
 
       handlers.push((req: Request, res: Response, next: NextFunction) => {
-        res.json(res.locals._nimbly_result);
+        res.json(res.locals._genzy_result);
       });
 
       const fullRoutePath = `${basePath}${rootPath}${methodPath}`.replace(
@@ -128,14 +128,14 @@ function getServiceHandler(
     if (result instanceof Promise) {
       result
         .then((r) => {
-          res.locals._nimbly_result = r;
+          res.locals._genzy_result = r;
           next();
         })
         .catch((error: Error) => {
           ErrorHandler.forResponse(res).handleError(error, errorRegistry);
         });
     } else if (!!instance?.[method]) {
-      res.locals._nimbly_result = result;
+      res.locals._genzy_result = result;
       next();
     } else {
       res.status(500);

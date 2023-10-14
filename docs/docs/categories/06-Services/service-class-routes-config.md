@@ -7,7 +7,7 @@ slug: /service-class-routes-config/
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-If you'd like the service, and its methods to be registered on a different route paths and http methods from the default ones, you can customize them in a `$nimbly` property.
+If you'd like the service, and its methods to be registered on a different route paths and http methods from the default ones, you can customize them in a `$genzy` property.
 
 If you're using [TypeScript](https://www.typescriptlang.org/) you can define configuration using [TypeScript decorators](https://www.typescriptlang.org/docs/handbook/decorators.html).
 
@@ -20,7 +20,7 @@ If you're using decorators, make sure that you've set `"experimentalDecorators"`
 
 ```js
 class ExampleService {
-  $nimbly = {
+  $genzy = {
     path: '/',
     getAll: {
       httpMethod: 'GET',
@@ -67,7 +67,7 @@ class ExampleService {
 
 ```js
 class ExampleService {
-  $nimbly = {
+  $genzy = {
     path: '/',
     getAll: {
       httpMethod: 'GET',
@@ -113,7 +113,7 @@ class ExampleService {
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { Controller, Get, Post, Put, Delete } from "nimbly-client"; // or nimbly-api
+import { Controller, Get, Post, Put, Delete } from "genzy-client"; // or genzy-api
 
 @Controller('/')
 class ExampleService {
@@ -148,5 +148,5 @@ Using `:parameterName` in the route path registers a positional path parameter.
 :::
 
 :::important
-Configuration must be used both on the client and the server side, since it is used for telling `Nimbly` how and where to send the requests, or register the API routes.
+Configuration must be used both on the client and the server side, since it is used for telling `Genzy` how and where to send the requests, or register the API routes.
 :::

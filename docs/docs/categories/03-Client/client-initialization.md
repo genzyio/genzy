@@ -8,7 +8,7 @@ slug: /client-initialization/
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Once you have [installed](client-installation.md) the `nimbly-client` library, you can now init the API.
+Once you have [installed](client-installation.md) the `genzy-client` library, you can now init the API.
 
 ## Initialization
 
@@ -18,7 +18,7 @@ Once you have [installed](client-installation.md) the `nimbly-client` library, y
   <TabItem value="cjs" label="CommonJS" default>
 
 ```js
-const { Nimble } = require("nimbly-client");
+const { Nimble } = require("genzy-client");
 
 class ExampleService {
   async get() {}
@@ -33,7 +33,7 @@ const { exampleService } = nimble.getAllServices();
   <TabItem value="mjs" label="ES modules">
 
 ```js
-import { Nimble } from "nimbly-client";
+import { Nimble } from "genzy-client";
 
 class ExampleService {
   async get() {}
@@ -48,7 +48,7 @@ const { exampleService } = nimble.getAllServices();
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { Nimble } from "nimbly-client";
+import { Nimble } from "genzy-client";
 
 class ExampleService {
   async get() {}
@@ -56,11 +56,11 @@ class ExampleService {
 
 const nimble = new Nimble().addRemoteService("http://localhost:3000", ExampleService);
 
-type NimblyServices = {
+type GenzyServices = {
   exampleService: ExampleService;
 };
 
-const { exampleService }: NimblyServices = nimble.getAllServices();
+const { exampleService }: GenzyServices = nimble.getAllServices();
 ```
 
   </TabItem>

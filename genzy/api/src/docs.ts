@@ -3,18 +3,18 @@ import type {
   ComplexType,
   ComplexTypeReference,
   MetaInfo,
-  N1mblyInfo,
+  GenzyInfo,
   Param,
   RouteMetaInfo,
   ServiceMetaInfo,
 } from "../../shared/types";
 
-export const generateDocsFrom = (meta: MetaInfo, info: N1mblyInfo) => {
+export const generateDocsFrom = (meta: MetaInfo, info: GenzyInfo) => {
   const doc = {
     openapi: "3.0.0",
     info: {
       version: info?.version ?? "1.0.0",
-      title: info?.name ?? "Nimbly API",
+      title: info?.name ?? "Genzy API",
       description: info?.description ?? "",
     },
     servers: [{ url: info.basePath }],
@@ -47,7 +47,7 @@ export const generateDocsFrom = (meta: MetaInfo, info: N1mblyInfo) => {
 };
 
 const getPathFrom = (
-  info: N1mblyInfo,
+  info: GenzyInfo,
   serviceMetaInfo: ServiceMetaInfo,
   routeMetaInfo: RouteMetaInfo
 ) => {

@@ -16,9 +16,9 @@
     "nodemon": "^2.0.18",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.4",
-    "n1mbly-zod-validation": "0.0.3"
+    "genzy-zod-validation": "0.0.3"
   },
   "dependencies": {
-    "@n1mbly/cli": "file:../cli"
+    "@genzy.io/cli": "file:../cli"
   }
 }

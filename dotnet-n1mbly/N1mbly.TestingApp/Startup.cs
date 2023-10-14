@@ -4,15 +4,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using N1mbly.Extensions;
-using N1mbly.Repositories;
-using N1mbly.Repositories.Interfaces;
-using N1mbly.Services;
-using N1mbly.Services.Interfaces;
+using Genzy.Extensions;
+using Genzy.Repositories;
+using Genzy.Repositories.Interfaces;
+using Genzy.Services;
+using Genzy.Services.Interfaces;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
-namespace N1mbly
+namespace Genzy
 {
     public class Startup
     {
@@ -26,7 +26,7 @@ namespace N1mbly
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddN1mbly(options =>
+            services.AddGenzy(options =>
             {
                 options.AddMetaRoute = true;
             });
@@ -49,7 +49,7 @@ namespace N1mbly
             });
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "N1mbly", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Genzy", Version = "v1" });
             });
         }
 
@@ -62,7 +62,7 @@ namespace N1mbly
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "N1mbly v1");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Genzy v1");
                     c.RoutePrefix = "docs";
                 });
             }

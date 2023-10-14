@@ -11,7 +11,7 @@ import TabItem from '@theme/TabItem';
 
 Service class is a JavaScript class that implements an arbitrary piece of business logic. It's methods can have parameters, and can also return results.
 
-N1mbly can generate a Web API or an HTTP Client from any Service Class.
+Genzy can generate a Web API or an HTTP Client from any Service Class.
 
 ## Plain
 
@@ -91,7 +91,7 @@ class ExampleService {
 
 ## Configured
 
-If you'd like the service, and its methods to be registered on a different route path from the default ones, you can customize them in a `$nimbly` property.
+If you'd like the service, and its methods to be registered on a different route path from the default ones, you can customize them in a `$genzy` property.
 
 If you're using [TypeScript](https://www.typescriptlang.org/) you can define configuration using [TypeScript decorators](https://www.typescriptlang.org/docs/handbook/decorators.html).
 
@@ -104,7 +104,7 @@ If you're using decorators, make sure that you've set `"experimentalDecorators"`
 
 ```js
 class ExampleService {
-  $nimbly = {
+  $genzy = {
     path: '/',
     getAll: {
       httpMethod: 'GET',
@@ -151,7 +151,7 @@ class ExampleService {
 
 ```js
 class ExampleService {
-  $nimbly = {
+  $genzy = {
     path: '/',
     getAll: {
       httpMethod: 'GET',
@@ -197,7 +197,7 @@ class ExampleService {
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { Controller, Get, Post, Put, Delete } from "nimbly-client"; // or nimbly-api
+import { Controller, Get, Post, Put, Delete } from "genzy-client"; // or genzy-api
 
 @Controller('/')
 class ExampleService {
@@ -228,5 +228,5 @@ class ExampleService {
 </Tabs>
 
 :::important
-Configuration must be used both on the client and the server side, since it is used for telling `Nimbly` how and where to send the requests, or register the API routes.
+Configuration must be used both on the client and the server side, since it is used for telling `Genzy` how and where to send the requests, or register the API routes.
 :::

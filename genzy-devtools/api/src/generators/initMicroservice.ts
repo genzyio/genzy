@@ -1,15 +1,15 @@
-import { type N1mblyInfo } from "../utils/converter";
+import { type GenzyInfo } from "../utils/converter";
 import { type Project } from "../features/projects/projects.models";
 import { type Package } from "./plugins";
 import { exec } from "child_process";
 import path from "path";
 import fs from "fs";
 
-type InitialN1mblyMetadata = N1mblyInfo & {
+type InitialGenzyMetadata = GenzyInfo & {
   packages: Package[];
 };
 
-function initMicroserviceTsJs(project: Project, metadata: InitialN1mblyMetadata, lang: "ts" | "js" = "ts") {
+function initMicroserviceTsJs(project: Project, metadata: InitialGenzyMetadata, lang: "ts" | "js" = "ts") {
   const { name, version, description } = metadata;
   const microservicePath = path.join(project.path, name);
 
@@ -45,7 +45,7 @@ function initMicroserviceTsJs(project: Project, metadata: InitialN1mblyMetadata,
         license: "ISC",
         dependencies: {
           ...initialDependencies,
-          "@n1mbly/api": "0.2.25",
+          "@genzy.io/api": "0.2.25",
           dotenv: "16.3.1",
         },
         devDependencies: {
@@ -89,8 +89,8 @@ function initMicroserviceTsJs(project: Project, metadata: InitialN1mblyMetadata,
 
 function reinitializeMicroservicePackageJson(
   project: Project,
-  oldMetadata: InitialN1mblyMetadata,
-  newMetadata: InitialN1mblyMetadata,
+  oldMetadata: InitialGenzyMetadata,
+  newMetadata: InitialGenzyMetadata,
 ) {
   const { name, version, description } = newMetadata;
   const microservicePath = path.join(project.path, name);

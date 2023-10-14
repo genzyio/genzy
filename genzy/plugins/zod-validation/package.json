@@ -1,8 +1,8 @@
 {
-  "name": "n1mbly-zod-validation",
+  "name": "genzy-zod-validation",
   "version": "0.0.3",
   "main": "build/index.js",
-  "description": "N1mbly plugin for validation of API requests using Zod lib.",
+  "description": "Genzy plugin for validation of API requests using Zod lib.",
   "types": "build/index.d.ts",
   "scripts": {
     "prepublish": "([ -e build ] && rm -r build || [ -e . ]) && npm run build && cp src/index.d.ts build",
@@ -29,7 +29,7 @@
     "webpack-cli": "4.9.1"
   },
   "dependencies": {
-    "@n1mbly/api": "0.2.10",
+    "@genzy.io/api": "0.2.10",
     "zod": "^3.22.2",
     "zod-to-json-schema": "^3.21.4"
   }

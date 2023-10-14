@@ -7,19 +7,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 
-using N1mbly.Common;
+using Genzy.Common;
 
-using N1mblyController = N1mbly.Common.Controller;
+using GenzyController = Genzy.Common.Controller;
 
-namespace N1mbly
+namespace Genzy
 {
     public class GenericControllerProvider : IApplicationFeatureProvider<ControllerFeature>
     {
-        // Use to register controllers in runtime, register only controller with N1mbly attribute
+        // Use to register controllers in runtime, register only controller with Genzy attribute
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, ControllerFeature feature)
         {
             var currentAssembly = typeof(GenericControllerProvider).Assembly;
-            var candidates = currentAssembly.GetExportedTypes().Where(x => x.GetCustomAttributes<N1mblyController>().Any());
+            var candidates = currentAssembly.GetExportedTypes().Where(x => x.GetCustomAttributes<GenzyController>().Any());
 
             foreach (var candidate in candidates)
             {

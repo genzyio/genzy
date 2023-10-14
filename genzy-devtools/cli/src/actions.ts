@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-function generateMicroservice(projectPath: string, lang: string, n1mblyStructure: any) {}
+function generateMicroservice(projectPath: string, lang: string, genzyStructure: any) {}
 
 function initializeProject(projectPath: string, name: string) {
   fs.mkdirSync(projectPath);

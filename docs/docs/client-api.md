@@ -93,10 +93,10 @@ interface Constructor {
 }
 ```
 
-### NimblyInfo
+### GenzyInfo
 
 ```ts
-type NimblyInfo = {
+type GenzyInfo = {
   version?: string;
   name?: string;
   description?: string;

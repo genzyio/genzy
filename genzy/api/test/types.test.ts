@@ -1,4 +1,4 @@
-import { N1mblyContainer } from "@n1mbly/client";
+import { GenzyContainer } from "@genzy.io/client";
 import { BASIC_TYPES, GenericType } from "../../shared/constants";
 import {
   Controller,
@@ -84,44 +84,44 @@ function getBasicNonArrayType(
 
 describe("Types", () => {
   it("should be undefined", async () => {
-    const { test1Service } = new N1mblyContainer()
+    const { test1Service } = new GenzyContainer()
       .addLocalService(Test1Service)
       .getAllServices();
 
-    expect(test1Service.$nimbly_config?.types).toBe(undefined);
+    expect(test1Service.$genzy_config?.types).toBe(undefined);
   });
 
   it("should have param string", async () => {
-    const { test2Service } = new N1mblyContainer()
+    const { test2Service } = new GenzyContainer()
       .addLocalService(Test2Service)
       .getAllServices();
 
-    expect(test2Service.$nimbly_config?.actions?.get).not.toBeUndefined();
+    expect(test2Service.$genzy_config?.actions?.get).not.toBeUndefined();
     expect(
-      test2Service.$nimbly_config.actions.get.params[0].type
+      test2Service.$genzy_config.actions.get.params[0].type
     ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.string));
     expect(
-      test2Service.$nimbly_config.actions.get.params[1].type
+      test2Service.$genzy_config.actions.get.params[1].type
     ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.int, true, true));
     expect(
-      test2Service.$nimbly_config.actions.get.params[2].type
+      test2Service.$genzy_config.actions.get.params[2].type
     ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.boolean));
   });
 
   it("should support property in model", async () => {
     const model: any = new Model();
 
-    expect(model.$nimbly_config?.types).not.toBe(undefined);
-    expect(model.$nimbly_config?.types.test).toStrictEqual(
+    expect(model.$genzy_config?.types).not.toBe(undefined);
+    expect(model.$genzy_config?.types.test).toStrictEqual(
       getBasicNonArrayType(BASIC_TYPES.string)
     );
-    expect(model.$nimbly_config?.types.bool).toStrictEqual(
+    expect(model.$genzy_config?.types.bool).toStrictEqual(
       getBasicNonArrayType(BASIC_TYPES.boolean)
     );
-    expect(model.$nimbly_config?.types.num).toStrictEqual(
+    expect(model.$genzy_config?.types.num).toStrictEqual(
       getBasicNonArrayType(BASIC_TYPES.int)
     );
-    expect(model.$nimbly_config?.types.nums).toStrictEqual(
+    expect(model.$genzy_config?.types.nums).toStrictEqual(
       getBasicNonArrayType(BASIC_TYPES.int, false, true)
     );
   });
@@ -129,113 +129,113 @@ describe("Types", () => {
   it("should add meta info with @type", async () => {
     const model: any = new Model();
 
-    expect(model.$nimbly_config?.types).not.toBe(undefined);
-    expect(model.$nimbly_config?.types.type).not.toBe(undefined);
-    expect(model.$nimbly_config?.types.type.$isArray).toBe(false);
-    expect(model.$nimbly_config?.types.type.$typeName).toBe("Example");
+    expect(model.$genzy_config?.types).not.toBe(undefined);
+    expect(model.$genzy_config?.types.type).not.toBe(undefined);
+    expect(model.$genzy_config?.types.type.$isArray).toBe(false);
+    expect(model.$genzy_config?.types.type.$typeName).toBe("Example");
   });
 
   it("should support type decorator", async () => {
     const model: any = new Model();
     const example: any = new Example();
 
-    expect(model.$nimbly_config?.types).not.toBe(undefined);
-    expect(model.$nimbly_config?.types.type).toStrictEqual({
-      ...example.$nimbly_config.types,
+    expect(model.$genzy_config?.types).not.toBe(undefined);
+    expect(model.$genzy_config?.types.type).toStrictEqual({
+      ...example.$genzy_config.types,
       $isArray: false,
       $typeName: "Example",
     });
   });
 
   it("should support type decorator in the list addLocalService params", async () => {
-    const { test3Service } = new N1mblyContainer()
+    const { test3Service } = new GenzyContainer()
       .addLocalService(Test3Service)
       .getAllServices();
 
-    expect(test3Service.$nimbly_config?.actions?.get).not.toBeUndefined();
+    expect(test3Service.$genzy_config?.actions?.get).not.toBeUndefined();
     expect(
-      test3Service.$nimbly_config.actions.get.params[0].type
+      test3Service.$genzy_config.actions.get.params[0].type
     ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.string));
     expect(
-      test3Service.$nimbly_config.actions.get.params[1].type
+      test3Service.$genzy_config.actions.get.params[1].type
     ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.int));
     expect(
-      test3Service.$nimbly_config.actions.get.params[2].type
+      test3Service.$genzy_config.actions.get.params[2].type
     ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.boolean));
     expect(
-      test3Service.$nimbly_config.actions.get.params[3].type
+      test3Service.$genzy_config.actions.get.params[3].type
     ).toStrictEqual({
       $isOptional: false,
       $isArray: false,
       $typeName: "Example",
     });
-    expect(test3Service.$nimbly_config.types.Example).toStrictEqual({
-      ...(new Example() as any).$nimbly_config?.types,
+    expect(test3Service.$genzy_config.types.Example).toStrictEqual({
+      ...(new Example() as any).$genzy_config?.types,
     });
   });
 
   it("should support array decorator in the list addLocalService params", async () => {
-    const { test4Service } = new N1mblyContainer()
+    const { test4Service } = new GenzyContainer()
       .addLocalService(Test4Service)
       .getAllServices();
 
-    expect(test4Service.$nimbly_config?.actions?.get).not.toBeUndefined();
+    expect(test4Service.$genzy_config?.actions?.get).not.toBeUndefined();
     expect(
-      test4Service.$nimbly_config.actions.get.params[0].type
+      test4Service.$genzy_config.actions.get.params[0].type
     ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.string));
     expect(
-      test4Service.$nimbly_config.actions.get.params[1].type
+      test4Service.$genzy_config.actions.get.params[1].type
     ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.int));
     expect(
-      test4Service.$nimbly_config.actions.get.params[2].type
+      test4Service.$genzy_config.actions.get.params[2].type
     ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.boolean));
     expect(
-      test4Service.$nimbly_config.actions.get.params[3].type
+      test4Service.$genzy_config.actions.get.params[3].type
     ).toStrictEqual({
       $isOptional: false,
       $isArray: true,
       $typeName: "Example",
     });
-    expect(test4Service.$nimbly_config.types.Example).toStrictEqual({
-      ...(new Example() as any).$nimbly_config?.types,
+    expect(test4Service.$genzy_config.types.Example).toStrictEqual({
+      ...(new Example() as any).$genzy_config?.types,
     });
   });
 
   it("should support root type decorator in @Controller", async () => {
-    const { test5Service } = new N1mblyContainer()
+    const { test5Service } = new GenzyContainer()
       .addLocalService(Test5Service)
       .getAllServices();
 
-    expect(test5Service.$nimbly_config?.actions?.get).not.toBeUndefined();
+    expect(test5Service.$genzy_config?.actions?.get).not.toBeUndefined();
     expect(
-      test5Service.$nimbly_config.actions.get.params[0].type
+      test5Service.$genzy_config.actions.get.params[0].type
     ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.string));
     expect(
-      test5Service.$nimbly_config.actions.get.params[1].type
+      test5Service.$genzy_config.actions.get.params[1].type
     ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.int));
     expect(
-      test5Service.$nimbly_config.actions.get.params[2].type
+      test5Service.$genzy_config.actions.get.params[2].type
     ).toStrictEqual(getBasicNonArrayType(BASIC_TYPES.boolean));
     expect(
-      test5Service.$nimbly_config.actions.get.params[3].type
+      test5Service.$genzy_config.actions.get.params[3].type
     ).toStrictEqual({
       $isOptional: false,
       $isArray: true,
       $typeName: "Example",
     });
     expect(
-      test5Service.$nimbly_config.actions.get.params[4].type
+      test5Service.$genzy_config.actions.get.params[4].type
     ).toStrictEqual({
       $isOptional: false,
       $isArray: false,
       $typeName: "Example",
     });
-    expect(test5Service.$nimbly_config.actions.get.result).toStrictEqual({
+    expect(test5Service.$genzy_config.actions.get.result).toStrictEqual({
       $isArray: false,
       $typeName: "Example",
     });
-    expect(test5Service.$nimbly_config.types.Example).toStrictEqual({
-      ...(new Example() as any).$nimbly_config?.types,
+    expect(test5Service.$genzy_config.types.Example).toStrictEqual({
+      ...(new Example() as any).$genzy_config?.types,
     });
   });
 });

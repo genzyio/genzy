@@ -2,19 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <PackageId>N1mbly</PackageId>
+    <PackageId>Genzy</PackageId>
     <Version>0.0.3-beta</Version>
-    <Authors>@n1mbly</Authors>
+    <Authors>@genzy.io</Authors>
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Company>n1mbly</Company>
-    <Product>N1mbly</Product>
-    <Description>N1mbly is a .NET library that enables rapid development of web applications and puts the focus on implementing the business logic instead of spending much time and effort on configuration.
+    <Company>genzy</Company>
+    <Product>Genzy</Product>
+    <Description>Genzy is a .NET library that enables rapid development of web applications and puts the focus on implementing the business logic instead of spending much time and effort on configuration.
 </Description>
-    <Copyright>N1mbly 2022</Copyright>
+    <Copyright>Genzy 2022</Copyright>
     <PackageLicenseExpression>ISC</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/n1mbly/n1mbly-dotnet</RepositoryUrl>
-    <PackageProjectUrl>https://bjelicaluka.github.io/nimbly/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/genzy/genzy-dotnet</RepositoryUrl>
+    <PackageProjectUrl>https://bjelicaluka.github.io/genzy/</PackageProjectUrl>
     <PackageIcon>logo.png</PackageIcon>
     <PackageIconUrl />
   </PropertyGroup>

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace N1mbly.Models
+namespace Genzy.Models
 {
     public class N1mble
     {

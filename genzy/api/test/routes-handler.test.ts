@@ -21,7 +21,7 @@ const app = {
 
 const invokeRequestHandler = (route: string, body: any, params?: any) => {
   const res = {
-    locals: { _nimbly_result: null },
+    locals: { _genzy_result: null },
     json: jest.fn(),
     status: jest.fn(),
     send: jest.fn(),
@@ -34,7 +34,7 @@ const invokeRequestHandler = (route: string, body: any, params?: any) => {
 };
 
 class TestService {
-  $nimbly = {
+  $genzy = {
     path: "/tests",
     actions: {
       deleteSomething: {
@@ -73,7 +73,7 @@ describe("RegisterRoutesFor", () => {
 
     await new Promise((r) => setTimeout(r, 200));
 
-    expect(res.locals._nimbly_result).toStrictEqual(
+    expect(res.locals._genzy_result).toStrictEqual(
       await testServiceInstance.getAll()
     );
   });
@@ -93,7 +93,7 @@ describe("RegisterRoutesFor", () => {
 
     await new Promise((r) => setTimeout(r, 200));
 
-    expect(res.locals._nimbly_result).toStrictEqual(
+    expect(res.locals._genzy_result).toStrictEqual(
       await testServiceInstance.addSomething(arg)
     );
   });
@@ -113,7 +113,7 @@ describe("RegisterRoutesFor", () => {
 
     await new Promise((r) => setTimeout(r, 200));
 
-    expect(res.locals._nimbly_result).toStrictEqual(
+    expect(res.locals._genzy_result).toStrictEqual(
       await testServiceInstance.updateSomething(arg)
     );
   });
@@ -135,7 +135,7 @@ describe("RegisterRoutesFor", () => {
 
     await new Promise((r) => setTimeout(r, 200));
 
-    expect(res.locals._nimbly_result).toStrictEqual(
+    expect(res.locals._genzy_result).toStrictEqual(
       await testServiceInstance.deleteSomething(id, secArg)
     );
   });

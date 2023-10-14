@@ -19,26 +19,26 @@ import type {
 
 export function Controller(path: string = "/", rootTypeClass?: new () => any) {
   return function (target: any): void {
-    if (!target.prototype.$nimbly_config) target.prototype.$nimbly_config = {};
-    target.prototype.$nimbly_config = JSON.parse(
-      JSON.stringify(target.prototype.$nimbly_config)
+    if (!target.prototype.$genzy_config) target.prototype.$genzy_config = {};
+    target.prototype.$genzy_config = JSON.parse(
+      JSON.stringify(target.prototype.$genzy_config)
     );
-    target.prototype.$nimbly_config.path = path;
+    target.prototype.$genzy_config.path = path;
 
     if (rootTypeClass) {
       const rootTypeInstance = new rootTypeClass();
       const rootTypeName =
         rootTypeInstance.constructor.name || rootTypeInstance._class_name_;
 
-      if (!target.prototype.$nimbly_config.types) {
-        target.prototype.$nimbly_config.types = {};
+      if (!target.prototype.$genzy_config.types) {
+        target.prototype.$genzy_config.types = {};
       }
       registerType(target.prototype, {
         $typeName: rootTypeName,
-        ...(rootTypeInstance.$nimbly_config?.types ?? {}),
+        ...(rootTypeInstance.$genzy_config?.types ?? {}),
       });
 
-      const actionConfig = target.prototype.$nimbly_config
+      const actionConfig = target.prototype.$genzy_config
         .actions as ActionConfig;
       Object.keys(actionConfig).forEach((methodName) => {
         const action = actionConfig[methodName];
@@ -100,12 +100,12 @@ const typeDecorator =
 
     const isComplex = typeof type === "function";
 
-    if (!target.$nimbly_config) target.$nimbly_config = { actions: {} };
-    target.$nimbly_config = JSON.parse(JSON.stringify(target.$nimbly_config));
+    if (!target.$genzy_config) target.$genzy_config = { actions: {} };
+    target.$genzy_config = JSON.parse(JSON.stringify(target.$genzy_config));
     if (isComplex && typeName !== GenericType.name) {
       const instance = new (type as new () => any)();
       typeName = instance.constructor.name || instance._class_name_;
-      typeProps = { ...(instance.$nimbly_config?.types ?? {}) };
+      typeProps = { ...(instance.$genzy_config?.types ?? {}) };
 
       (type as any) = {
         $typeName: typeName,
@@ -116,25 +116,25 @@ const typeDecorator =
 
     if (parameterIndex === undefined || typeof parameterIndex !== "number") {
       if (typeKey === "result") {
-        if (!target.$nimbly_config.actions[propertyKey]) {
-          target.$nimbly_config.actions[propertyKey] = {};
+        if (!target.$genzy_config.actions[propertyKey]) {
+          target.$genzy_config.actions[propertyKey] = {};
         }
         // TODO: check if type is complex and register it - otherwise add it as basic type (ex. line 132)
         if (type && isComplex) {
-          target.$nimbly_config.actions[propertyKey].result = type;
+          target.$genzy_config.actions[propertyKey].result = type;
           registerType(target, { ...(type as any), ...typeProps } as any);
         } else {
-          target.$nimbly_config.actions[propertyKey].result = {
+          target.$genzy_config.actions[propertyKey].result = {
             type,
             $isArray: isArray,
           };
         }
       } else {
         // if it's a decorator for class prop
-        if (!target.$nimbly_config.types) {
-          target.$nimbly_config.types = {};
+        if (!target.$genzy_config.types) {
+          target.$genzy_config.types = {};
         }
-        target.$nimbly_config.types[propertyKey] = isComplex
+        target.$genzy_config.types[propertyKey] = isComplex
           ? {
               ...(type as any),
               ...typeProps,
@@ -142,13 +142,13 @@ const typeDecorator =
           : { type, $isOptional: options.optional, $isArray: isArray };
       }
     } else {
-      if (!target.$nimbly_config.actions[propertyKey]) {
-        target.$nimbly_config.actions[propertyKey] = {};
+      if (!target.$genzy_config.actions[propertyKey]) {
+        target.$genzy_config.actions[propertyKey] = {};
       }
-      if (!target.$nimbly_config.actions[propertyKey].params) {
-        target.$nimbly_config.actions[propertyKey].params = [];
+      if (!target.$genzy_config.actions[propertyKey].params) {
+        target.$genzy_config.actions[propertyKey].params = [];
       }
-      const params: Param[] = target.$nimbly_config.actions[propertyKey].params;
+      const params: Param[] = target.$genzy_config.actions[propertyKey].params;
       const existingIndex = params.findIndex(
         (p: any) => p.index === parameterIndex
       );
@@ -193,8 +193,8 @@ function registerType(target: any, type: ComplexType) {
   });
 
   if (isTypeComplex(type) && type.$typeName !== GenericType.name) {
-    target.$nimbly_config.types = {
-      ...(target.$nimbly_config.types ?? {}),
+    target.$genzy_config.types = {
+      ...(target.$genzy_config.types ?? {}),
       [typeName]: typeProps,
     };
   }
@@ -291,15 +291,15 @@ function paramDecorator(
       ...(options ?? {}),
     };
 
-    if (!target.$nimbly_config) target.$nimbly_config = { actions: {} };
-    if (!target.$nimbly_config.actions[propertyKey]) {
-      target.$nimbly_config.actions[propertyKey] = {};
+    if (!target.$genzy_config) target.$genzy_config = { actions: {} };
+    if (!target.$genzy_config.actions[propertyKey]) {
+      target.$genzy_config.actions[propertyKey] = {};
     }
-    if (!target.$nimbly_config.actions[propertyKey].params) {
-      target.$nimbly_config.actions[propertyKey].params = [];
+    if (!target.$genzy_config.actions[propertyKey].params) {
+      target.$genzy_config.actions[propertyKey].params = [];
     }
-    target.$nimbly_config = JSON.parse(JSON.stringify(target.$nimbly_config));
-    const params: Param[] = target.$nimbly_config.actions[propertyKey].params;
+    target.$genzy_config = JSON.parse(JSON.stringify(target.$genzy_config));
+    const params: Param[] = target.$genzy_config.actions[propertyKey].params;
     if (source === "body") {
       const index = params.findIndex((p) => p.source === "body");
       if (index > -1) {
@@ -344,12 +344,12 @@ const pathDecorator = (
   body: boolean = false
 ) =>
   function (target: any, propertyKey: string): void {
-    if (!target.$nimbly_config) target.$nimbly_config = { actions: {} };
-    if (!target.$nimbly_config.actions[propertyKey]) {
-      target.$nimbly_config.actions[propertyKey] = {};
+    if (!target.$genzy_config) target.$genzy_config = { actions: {} };
+    if (!target.$genzy_config.actions[propertyKey]) {
+      target.$genzy_config.actions[propertyKey] = {};
     }
-    target.$nimbly_config = JSON.parse(JSON.stringify(target.$nimbly_config));
-    const existing = target.$nimbly_config.actions[propertyKey];
+    target.$genzy_config = JSON.parse(JSON.stringify(target.$genzy_config));
+    const existing = target.$genzy_config.actions[propertyKey];
     const existingParams = existing.params ?? [];
     if (body) {
       const bodyParam = existingParams.find(
@@ -362,7 +362,7 @@ const pathDecorator = (
         if (!bodyParam.source) bodyParam.source = "body";
       }
     }
-    target.$nimbly_config.actions[propertyKey] = {
+    target.$genzy_config.actions[propertyKey] = {
       ...existing,
       path: path.replace("//", "/"),
       httpMethod,

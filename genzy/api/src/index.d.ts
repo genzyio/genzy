@@ -1,33 +1,33 @@
 export { Application, Request, Response, NextFunction } from "express";
 import { Application, Request, Response, NextFunction } from "express";
-import { N1mblyContainer } from "@n1mbly/client";
-export { N1mblyContainer } from "@n1mbly/client";
+import { GenzyContainer } from "@genzy.io/client";
+export { GenzyContainer } from "@genzy.io/client";
 
-export type N1mblyPluginParams = {
-  n1mblyApi: N1mblyApi;
+export type GenzyPluginParams = {
+  genzyApi: GenzyApi;
   app: Application;
 };
 
-export abstract class N1mblyPlugin {
-  constructor(params?: { containers?: N1mblyContainer[] });
+export abstract class GenzyPlugin {
+  constructor(params?: { containers?: GenzyContainer[] });
 
-  beforeAll(params: N1mblyPluginParams): Promise<void> | void;
+  beforeAll(params: GenzyPluginParams): Promise<void> | void;
   beforeRouteRegister(
-    params: N1mblyPluginParams & {
+    params: GenzyPluginParams & {
       serviceKey: string;
       serviceInstance: any;
-      n1mblyConfig: N1mblyConfig;
+      genzyConfig: GenzyConfig;
     }
   ): Promise<void> | void;
   afterRouteRegister(
-    params: N1mblyPluginParams & {
+    params: GenzyPluginParams & {
       serviceKey: string;
       serviceInstance: any;
-      n1mblyConfig: N1mblyConfig;
+      genzyConfig: GenzyConfig;
       meta: ServiceMetaInfo & { types: MetaInfo["types"] };
     }
   ): Promise<void> | void;
-  afterAll(params: N1mblyPluginParams): Promise<void> | void;
+  afterAll(params: GenzyPluginParams): Promise<void> | void;
 }
 
 export class GenericType {}
@@ -50,25 +50,25 @@ interface Constructor {
   new (...args: any[]);
 }
 
-export class N1mblyApi {
+export class GenzyApi {
   constructor();
   constructor(options: {
     app?: Application;
-    n1mblyInfo?: N1mblyInfo;
+    genzyInfo?: GenzyInfo;
     basePath?: string;
   });
 
-  public addPlugin(plugin: N1mblyPlugin): N1mblyApi;
+  public addPlugin(plugin: GenzyPlugin): GenzyApi;
   public intercept(
     customInterceptors: CustomInterceptors<InterceptorCallback>
-  ): N1mblyApi;
+  ): GenzyApi;
   public interceptAfter(
     customInterceptors: CustomInterceptors<InterceptorCallback>
-  ): N1mblyApi;
-  public interceptAll(callback: InterceptorCallback): N1mblyApi;
-  public interceptAllAfter(callback: InterceptorCallback): N1mblyApi;
-  public withErrors(errors: ErrorRegistry): N1mblyApi;
-  public buildAppFrom(...containers: N1mblyContainer[]): Application;
+  ): GenzyApi;
+  public interceptAll(callback: InterceptorCallback): GenzyApi;
+  public interceptAllAfter(callback: InterceptorCallback): GenzyApi;
+  public withErrors(errors: ErrorRegistry): GenzyApi;
+  public buildAppFrom(...containers: GenzyContainer[]): Application;
 }
 
 export function Controller(
@@ -144,7 +144,7 @@ export function ReturnsArrayOf(
 
 // TYPES
 
-export type N1mblyInfo = {
+export type GenzyInfo = {
   version?: string;
   name?: string;
   description?: string;
@@ -157,7 +157,7 @@ export type Modify<T, R> = Omit<T, keyof R> & R;
 export type MetaInfo = {
   services: ServiceMetaInfo[];
   types: MetaTypesRegistry;
-  n1mblyInfo?: N1mblyInfo;
+  genzyInfo?: GenzyInfo;
 };
 
 export type MetaTypesRegistry = Record<string, ComplexTypeProperties>;
@@ -183,7 +183,7 @@ export type Param = {
   optional?: boolean;
 };
 
-export type N1mblyConfig = {
+export type GenzyConfig = {
   path?: string;
   actions: ActionConfig;
   types?: MetaTypesRegistry;

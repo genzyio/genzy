@@ -4,14 +4,14 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-using N1mbly.Common;
-using N1mbly.Models.Interfaces;
+using Genzy.Common;
+using Genzy.Models.Interfaces;
 using Newtonsoft.Json;
 
-using HttpMethod = N1mbly.Common.HttpMethod;
+using HttpMethod = Genzy.Common.HttpMethod;
 using NetHttpMethod = System.Net.Http.HttpMethod;
 
-namespace N1mbly.Models
+namespace Genzy.Models
 {
     public class RemoteProxy : IRemoteProxy
     {

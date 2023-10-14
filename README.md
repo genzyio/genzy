@@ -1,9 +1,9 @@
-# N1mbly
+# Genzy
 
 A simple framework for building better API-s faster.
 
-[![NPM](https://nodei.co/npm/@n1mbly/client.png)](https://nodei.co/npm/@n1mbly/client/)
-[![NPM](https://nodei.co/npm/@n1mbly/api.png)](https://nodei.co/npm/@n1mbly/api/)
+[![NPM](https://nodei.co/npm/@genzy.io/client.png)](https://nodei.co/npm/@genzy.io/client/)
+[![NPM](https://nodei.co/npm/@genzy.io/api.png)](https://nodei.co/npm/@genzy.io/api/)
 
 # Table of contents
 
@@ -38,7 +38,7 @@ Here's a way to ceate a simple API and generate the client code for accessing it
 }
 ```
 
-5. `npm i -S @n1mbly/api`
+5. `npm i -S @genzy.io/api`
 6. Implement services
 
 ```ts
@@ -64,7 +64,7 @@ class AccountService {
 }
 
 // models
-import { string, boolean } from "@n1mbly/api";
+import { string, boolean } from "@genzy.io/api";
 
 class Account {
   @string() username: string;
@@ -105,7 +105,7 @@ class UserRepository {
 4. Create a controller
 
 ```ts
-import { Controller, Post } from "@n1mbly/api";
+import { Controller, Post } from "@genzy.io/api";
 
 @Controller("/account")
 class AccountController {
@@ -126,11 +126,11 @@ class AccountController {
 5. Create a Container of controllers and services
 
 ```js
-import { N1mblyContainer } from "@n1mbly/api";
+import { GenzyContainer } from "@genzy.io/api";
 
-const controllers = new N1mblyContainer().addLocalServices(AccountController);
+const controllers = new GenzyContainer().addLocalServices(AccountController);
 
-const services = new N1mblyContainer().addLocalServices(
+const services = new GenzyContainer().addLocalServices(
   UserService,
   AccountService,
   UserRepository
@@ -146,11 +146,11 @@ const { userService, accountService, userRepository } = services.getServices();
 5. Create the API
 
 ```js
-import { N1mblyApi } from "@n1mbly/api";
+import { GenzyApi } from "@genzy.io/api";
 
 // returns Express Application
-const app = new N1mblyApi({
-  n1mblyInfo: {
+const app = new GenzyApi({
+  genzyInfo: {
     name: "Account API",
     version: "0.0.1",
     description: "This API is used for creating accounts.",
@@ -166,7 +166,7 @@ app.listen(3000);
 ```bash
 # POST /api/account route is registered
 # you can go to /explorer and use Swagger UI
-# there is also a special /api/meta route used by N1mbly to generate code
+# there is also a special /api/meta route used by Genzy to generate code
 ```
 
 ## Generating the client
@@ -175,20 +175,20 @@ Once you've created the API, the client code for accessing it can be automatical
 
 In your client project:
 
-1. `npm i -S @n1mbly/client`
-2. `npm i -g @n1mbly/cli`
+1. `npm i -S @genzy.io/client`
+2. `npm i -g @genzy.io/cli`
 3. To generate the client code for accessing the API run:
 
 ```bash
-n1mbly -l ts -o ./src/account-client -h http://localhost:3000/api
+genzy -l ts -o ./src/account-client -h http://localhost:3000/api
 ```
 
 ```ts
-import { N1mblyContainer } from "@n1mbly/client";
+import { GenzyContainer } from "@genzy.io/client";
 
 const host = "http://localhost:3000";
 
-const container = new N1mblyContainer().addRemoteService(
+const container = new GenzyContainer().addRemoteService(
   AccountController,
   host
 );
@@ -218,15 +218,15 @@ Here are examples of two different plugins:
 
 - Zod validation that registers interceptors
 
-1. `npm i -S n1mbly-zod-validation`
+1. `npm i -S genzy-zod-validation`
 
 ```ts
-import { Plugin as N1mblyZodValidationPlugin } from "n1mbly-zod-validation";
+import { Plugin as GenzyZodValidationPlugin } from "genzy-zod-validation";
 
 // ...
 
-const app = new N1mblyApi()
-  .addPlugin(new N1mblyZodValidationPlugin())
+const app = new GenzyApi()
+  .addPlugin(new GenzyZodValidationPlugin())
   .buildAppFrom(controllers);
 
 // now types of request parameters (path, query and body) get validated
@@ -236,10 +236,10 @@ const app = new N1mblyApi()
 
 - Redis Cache access that registers a service to passed containers
 
-1. `npm i -S n1mbly-redis-plugin`
+1. `npm i -S genzy-redis-plugin`
 
 ```ts
-import { Plugin as N1mblyRedisPlugin, RedisService } from "n1mbly-redis-plugin";
+import { Plugin as GenzyRedisPlugin, RedisService } from "genzy-redis-plugin";
 
 class TestService {
   private redisService: RedisService;
@@ -256,12 +256,12 @@ class TestService {
   }
 }
 
-const controllers = new N1mblyContainer();
+const controllers = new GenzyContainer();
 
-const services = new N1mblyContainer().addLocalService(TestService);
+const services = new GenzyContainer().addLocalService(TestService);
 
-const app = new N1mblyApi()
-  .addPlugin(new N1mblyRedisPlugin({ containers: [services] }))
+const app = new GenzyApi()
+  .addPlugin(new GenzyRedisPlugin({ containers: [services] }))
   .buildAppFrom(controllers);
 
 // now TestService has access to RedisService that is automatically injected
@@ -273,7 +273,7 @@ A mechanism for intercepting API requests and it's results. It can be used for t
 
 ```ts
 // Intercept all service handlers before they are called
-const app = new N1mblyApi()
+const app = new GenzyApi()
   .interceptAll((req: Request, res: Response, next: NextFunction) => {
     if (isTokenValid(req.headers.Authorization)) next();
     else res.sendStatus(401);
@@ -281,8 +281,8 @@ const app = new N1mblyApi()
   .buildAppFrom(controllers);
 
 // Intercept specific service handlers before they are called
-const container = new N1mblyContainer().addLocalService(UserService);
-const app = new N1mblyApi()
+const container = new GenzyContainer().addLocalService(UserService);
+const app = new GenzyApi()
   .intercept({
     accountController: {
       create: (req: Request, res: Response, next: NextFunction) => {
@@ -300,8 +300,8 @@ class AccountControllerInterceptor {
     else res.sendStatus(401);
   }
 }
-const container = new N1mblyContainer().addLocalService(UserService);
-const app = new N1mblyApi()
+const container = new GenzyContainer().addLocalService(UserService);
+const app = new GenzyApi()
   .intercept({
     accountController: {
       create: AccountControllerInterceptor,
@@ -310,16 +310,16 @@ const app = new N1mblyApi()
   .buildAppFrom(controllers);
 
 // Intercept all service handlers after they are called
-const container = new N1mblyContainer().addLocalService(UserService);
-const app = new N1mblyApi()
+const container = new GenzyContainer().addLocalService(UserService);
+const app = new GenzyApi()
   .interceptAllAfter((req: Request, res: Response, next: NextFunction) => {
-    res.body({ message: "Hello from N1mbly." });
+    res.body({ message: "Hello from Genzy." });
   })
   .buildAppFrom(controllers);
 
 // Intercept specific service handlers after they are called
-const container = new N1mblyContainer().addLocalService(UserService);
-const app = new N1mblyApi()
+const container = new GenzyContainer().addLocalService(UserService);
+const app = new GenzyApi()
   .interceptAfter({
     accountController: {
       create: (req: Request, res: Response, next: NextFunction) => {
@@ -337,8 +337,8 @@ class AccountControllerInterceptor {
     next();
   }
 }
-const container = new N1mblyContainer().addLocalService(UserService);
-const app = new N1mblyApi()
+const container = new GenzyContainer().addLocalService(UserService);
+const app = new GenzyApi()
   .interceptAfter({
     accountController: {
       create: AccountControllerInterceptor,
@@ -353,14 +353,14 @@ A mechanism for intercepting client API calls and it's results. It can be used f
 
 ```ts
 // Intercept all service calls
-const container = new N1mblyContainer()
+const container = new GenzyContainer()
   .addRemoteService(UserService, host)
   .interceptAllCalls(({ setHeader, getHeader, setBody, getBody }) => {
     setHeader("Authorization", "Bearer <token>");
   });
 
 // Intercept only specific method calls
-const container = new N1mblyContainer()
+const container = new GenzyContainer()
   .addRemoteService(UserService, host)
   .interceptCalls({
     accountController: {
@@ -376,14 +376,14 @@ class AccountControllerCallInterceptor {
     setHeader("classCallInterceptor", "Works!");
   }
 }
-const container = new N1mblyContainer()
+const container = new GenzyContainer()
   .addRemoteService(UserService, host)
   .interceptCalls({
     accountController: AccountControllerCallInterceptor,
   });
 
 // Intercept all service results
-const container = new N1mblyContainer()
+const container = new GenzyContainer()
   .addRemoteService(UserService, host)
   .interceptAllResults(({ setHeader, getHeader, setBody, getBody }) => {
     validateBody(getBody());
@@ -391,7 +391,7 @@ const container = new N1mblyContainer()
   });
 
 // Intercept only specific method results
-const container = new N1mblyContainer()
+const container = new GenzyContainer()
   .addRemoteService(UserService, host)
   .interceptResults({
     accountController: {
@@ -407,7 +407,7 @@ class AccountControllerResultInterceptor {
     setHeader("classResultInterceptor", "Works!");
   }
 }
-const container = new N1mblyContainer()
+const container = new GenzyContainer()
   .addRemoteService(UserService, host)
   .interceptResults({
     accountController: AccountControllerResultInterceptor,
@@ -429,7 +429,7 @@ class InternalServerError extends Error {
     super(message);
   }
 }
-const app = new N1mblyApi()
+const app = new GenzyApi()
   .withErrors({
     [BadLogicError.name]: 400,
     [InternalServerError.name]: 500,
@@ -444,33 +444,33 @@ The only requirement is that the plugin needs to expose the Plugin class. The cl
 ```ts
 export { Application, Request, Response, NextFunction } from "express";
 import {
-  N1mblyPlugin,
-  N1mblyConfig,
+  GenzyPlugin,
+  GenzyConfig,
   ServiceMetaInfo,
   MetaTypesRegistry,
-  N1mblyPluginParams,
-  N1mblyContainer,
-} from "@n1mbly/api";
+  GenzyPluginParams,
+  GenzyContainer,
+} from "@genzy.io/api";
 
-export class Plugin extends N1mblyPlugin {
-  constructor(params?: { containers?: N1mblyContainer[] });
+export class Plugin extends GenzyPlugin {
+  constructor(params?: { containers?: GenzyContainer[] });
 
-  beforeAll(params: N1mblyPluginParams): void | Promise<void>;
+  beforeAll(params: GenzyPluginParams): void | Promise<void>;
   beforeRouteRegister(
-    params: N1mblyPluginParams & {
+    params: GenzyPluginParams & {
       serviceKey: string;
       serviceInstance: any;
-      n1mblyConfig: N1mblyConfig;
+      genzyConfig: GenzyConfig;
     }
   ): void | Promise<void>;
   afterRouteRegister(
-    params: N1mblyPluginParams & {
+    params: GenzyPluginParams & {
       serviceKey: string;
       serviceInstance: any;
-      n1mblyConfig: N1mblyConfig;
+      genzyConfig: GenzyConfig;
       meta: ServiceMetaInfo & { types: MetaTypesRegistry };
     }
   ): void | Promise<void>;
-  afterAll(params: N1mblyPluginParams): void | Promise<void>;
+  afterAll(params: GenzyPluginParams): void | Promise<void>;
 }
 ```

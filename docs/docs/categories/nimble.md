@@ -21,7 +21,7 @@ Local services are ones that are running in the same process as Nimble.
   <TabItem value="cjs" label="CommonJS" default>
 
 ```js
-const { Nimble } = require("nimbly-client"); // or "nimbly-api"
+const { Nimble } = require("genzy-client"); // or "genzy-api"
 
 class UserService {
   async getAll() {
@@ -55,7 +55,7 @@ const { accountService } = nimble.getAllServices();
   <TabItem value="mjs" label="ES modules">
 
 ```js
-import { Nimble } from "nimbly-client"; // or "nimbly-api"
+import { Nimble } from "genzy-client"; // or "genzy-api"
 
 class UserService {
   async getAll() {
@@ -89,7 +89,7 @@ const { accountService } = nimble.getAllServices();
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { Nimble } from "nimbly-client"; // or "nimbly-api"
+import { Nimble } from "genzy-client"; // or "genzy-api"
 
 type NimbleServices = {
   userService: UserService;
@@ -135,7 +135,7 @@ Remote services are, as the name suggests, running in a different process, or on
   <TabItem value="cjs" label="CommonJS" default>
 
 ```js
-const { Nimble } = require("nimbly-client"); // or "nimbly-api"
+const { Nimble } = require("genzy-client"); // or "genzy-api"
 
 class UserService {
   async getAll() {}
@@ -157,7 +157,7 @@ const { accountService } = nimble.getAllServices();
   <TabItem value="mjs" label="ES modules">
 
 ```js
-import { Nimble } from "nimbly-client"; // or "nimbly-api"
+import { Nimble } from "genzy-client"; // or "genzy-api"
 
 class UserService {
   async getAll() {
@@ -181,7 +181,7 @@ const { accountService } = nimble.getAllServices();
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { Nimble } from "nimbly-client"; // or "nimbly-api"
+import { Nimble } from "genzy-client"; // or "genzy-api"
 
 type NimbleServices = {
   userService: UserService;

@@ -1,21 +1,21 @@
 using Microsoft.Extensions.Configuration;
 
-using N1mbly.Examples;
-using N1mbly.Models;
+using Genzy.Examples;
+using Genzy.Models;
 
-namespace N1mbly
+namespace Genzy
 {
-    public class N1mblyApi : Startup
+    public class GenzyApi : Startup
     {
-        public N1mblyApi(IConfiguration configuration) : base(configuration)
+        public GenzyApi(IConfiguration configuration) : base(configuration)
         {
-            var n1mbly = new N1mble();
-            n1mbly.AddLocalService(typeof(ExampleModel));
+            var genzy = new N1mble();
+            genzy.AddLocalService(typeof(ExampleModel));
             dynamic service = new object();
-            n1mbly.Registry.Services.TryGetValue("ExampleModel", out service);
-            System.Console.WriteLine($"Value from ExampleModel controller -- {service.GetName()} -- by using N1mbly");
+            genzy.Registry.Services.TryGetValue("ExampleModel", out service);
+            System.Console.WriteLine($"Value from ExampleModel controller -- {service.GetName()} -- by using Genzy");
             // TODO: Get service
-            // TODO: Register routes (routes with n1mbly decorators will be automatically added, register only ones inside addLocalService/addRemoteService)
+            // TODO: Register routes (routes with genzy decorators will be automatically added, register only ones inside addLocalService/addRemoteService)
             // TODO: Add swagger
         }
     }

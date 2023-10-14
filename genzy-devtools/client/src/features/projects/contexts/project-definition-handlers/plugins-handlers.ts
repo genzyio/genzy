@@ -153,8 +153,8 @@ function getPackageJson(plugin: Plugin) {
 }
 
 function getMetadata(plugin: Plugin, packageJson: any) {
-  if (plugin.name === "n1mbly-redis-plugin") {
-    return packageJson.gn1mblyMetadata || dbPluginMetadata;
+  if (plugin.name === "genzy-redis-plugin") {
+    return packageJson.ggenzyMetadata || dbPluginMetadata;
   }
 
   return {

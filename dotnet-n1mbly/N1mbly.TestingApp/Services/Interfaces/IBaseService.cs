@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using N1mbly.Common;
+using Genzy.Common;
 
-namespace N1mbly.Services.Interfaces
+namespace Genzy.Services.Interfaces
 {
     public interface IBaseService<T> where T : class
     {

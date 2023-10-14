@@ -1,7 +1,7 @@
 {
-  "name": "@n1mbly/client",
+  "name": "@genzy.io/client",
   "version": "0.2.15",
-  "description": "N1mbly - focused on the domain.",
+  "description": "Genzy - focused on the domain.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
@@ -14,7 +14,7 @@
     "access": "public"
   },
   "keywords": [],
-  "author": "@n1mbly",
+  "author": "@genzy.io",
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^27.0.3",

@@ -2,23 +2,23 @@ import type {
   BasicType,
   ComplexType,
   MetaTypesRegistry,
-  N1mblyConfig,
-  N1mblyPluginParams,
-} from "@n1mbly/api";
-import { N1mblyPlugin } from "@n1mbly/api";
+  GenzyConfig,
+  GenzyPluginParams,
+} from "@genzy.io/api";
+import { GenzyPlugin } from "@genzy.io/api";
 import { ZodSchema, z } from "zod";
 
-export class Plugin extends N1mblyPlugin {
+export class Plugin extends GenzyPlugin {
   async beforeRouteRegister(
-    pluginParams: N1mblyPluginParams & {
+    pluginParams: GenzyPluginParams & {
       serviceKey: string;
       serviceInstance: any;
-      n1mblyConfig: N1mblyConfig;
+      genzyConfig: GenzyConfig;
     }
   ) {
     // for all actions for every type, define zod schema
-    Object.keys(pluginParams.n1mblyConfig.actions).forEach((methodName) => {
-      const methodParams = pluginParams.n1mblyConfig.actions[methodName].params;
+    Object.keys(pluginParams.genzyConfig.actions).forEach((methodName) => {
+      const methodParams = pluginParams.genzyConfig.actions[methodName].params;
       methodParams.forEach((param) => {
         if (!param.type) {
           return;
@@ -36,13 +36,13 @@ export class Plugin extends N1mblyPlugin {
           );
         } else {
           const complexTypeProps =
-            pluginParams.n1mblyConfig.types[param.type.$typeName];
+            pluginParams.genzyConfig.types[param.type.$typeName];
           if (!complexTypeProps) {
             return;
           }
           const zodSchema = complexTypeToZodSchema(
             { ...param.type, ...complexTypeProps } as ComplexType,
-            pluginParams.n1mblyConfig.types
+            pluginParams.genzyConfig.types
           );
           addInterceptorsFor(
             pluginParams,
@@ -91,13 +91,13 @@ function complexTypeToZodSchema(
 }
 
 function addInterceptorsFor(
-  params: N1mblyPluginParams,
+  params: GenzyPluginParams,
   serviceName: string,
   methodName: string,
   source: "body" | "path" | "query",
   zodSchema: ZodSchema
 ) {
-  params.n1mblyApi.intercept({
+  params.genzyApi.intercept({
     [serviceName]: {
       [methodName]: (req, res, next) => {
         const value =

@@ -1,4 +1,4 @@
-// this forces the main function in @n1mbly/cli to run only when the file is executed directly
+// this forces the main function in @genzy.io/cli to run only when the file is executed directly
 process.env.DONT_RUN_MAIN = "true";
 
 import express, { type Express } from "express";
@@ -17,7 +17,7 @@ import path from "path";
 
 import "./features/watch-project/projects.events";
 
-export const startGn1mbly = (port: number | string) => {
+export const startGgenzy = (port: number | string) => {
   ensureArtefactsFolderExist();
 
   const app: Express = express();
@@ -58,5 +58,5 @@ export const startGn1mbly = (port: number | string) => {
 };
 
 if (config.port) {
-  startGn1mbly(config.port);
+  startGgenzy(config.port);
 }

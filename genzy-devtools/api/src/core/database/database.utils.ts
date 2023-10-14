@@ -2,7 +2,7 @@ import path from "path";
 import { Database } from "sqlite3";
 import { config } from "../../config";
 
-const filePath = path.join(config.userArtefactsPath, "gn1mbly.sql");
+const filePath = path.join(config.userArtefactsPath, "ggenzy.sql");
 
 function createDbConnection() {
   const db = new Database(filePath, (error) => {

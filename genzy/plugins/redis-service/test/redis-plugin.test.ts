@@ -1,15 +1,15 @@
 import { Plugin } from "../src";
 import { RedisService } from "../src/redis-service";
-import { N1mblyContainer } from "@n1mbly/client";
+import { GenzyContainer } from "@genzy.io/client";
 import {
   Body,
   Controller,
   Delete,
   Get,
-  N1mblyApi,
+  GenzyApi,
   Post,
   Query,
-} from "@n1mbly/api";
+} from "@genzy.io/api";
 import { agent } from "supertest";
 
 @Controller("/cache")
@@ -38,10 +38,10 @@ class CacheController {
 
 describe("Plugin", () => {
   it("should register service instance before all", async () => {
-    const n1mbly = new N1mblyContainer().addLocalService(CacheController);
-    const app = new N1mblyApi()
-      .addPlugin(new Plugin({ containers: [n1mbly] }))
-      .buildAppFrom(n1mbly);
+    const genzy = new GenzyContainer().addLocalService(CacheController);
+    const app = new GenzyApi()
+      .addPlugin(new Plugin({ containers: [genzy] }))
+      .buildAppFrom(genzy);
 
     await agent(app).get("/api/cache?key=perisimus").expect(200, "");
     await agent(app)

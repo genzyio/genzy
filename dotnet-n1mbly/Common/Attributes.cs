@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace N1mbly.Common
+namespace Genzy.Common
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class Controller : Attribute

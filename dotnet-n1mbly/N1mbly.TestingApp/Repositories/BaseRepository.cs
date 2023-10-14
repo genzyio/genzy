@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-using N1mbly.Repositories.Interfaces;
+using Genzy.Repositories.Interfaces;
 
-namespace N1mbly.Repositories
+namespace Genzy.Repositories
 {
     public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
     {

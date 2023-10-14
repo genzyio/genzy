@@ -1,11 +1,11 @@
 {
   "plugins": [
     {
-      "name": "n1mbly-zod-validation",
+      "name": "genzy-zod-validation",
       "services": []
     },
     {
-      "name": "n1mbly-mariadb-repository",
+      "name": "genzy-mariadb-repository",
       "services": [
         "MariaRepository"
       ]
@@ -391,7 +391,7 @@
       }
     }
   },
-  "n1mblyInfo": {
+  "genzyInfo": {
     "basePath": "/api",
     "version": "0.0.1-alpha1",
     "name": "Test Microservice",

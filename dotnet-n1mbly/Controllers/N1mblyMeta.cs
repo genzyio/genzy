@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 
-using N1mbly.Models;
+using Genzy.Models;
 
-namespace N1mbly.Controllers
+namespace Genzy.Controllers
 {
     [Route("api/meta")]
-    public class N1mblyMeta
+    public class GenzyMeta
     {
-        public N1mblyMeta()
+        public GenzyMeta()
         { }
 
         [HttpGet]

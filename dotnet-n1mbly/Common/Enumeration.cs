@@ -1,4 +1,4 @@
-namespace N1mbly.Common
+namespace Genzy.Common
 {
     public enum ErrorType
     {

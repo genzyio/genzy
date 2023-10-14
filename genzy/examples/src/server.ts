@@ -1,7 +1,7 @@
-import { Plugin as ZodValidationPlugin } from "n1mbly-zod-validation";
+import { Plugin as ZodValidationPlugin } from "genzy-zod-validation";
 import {
   GenericType,
-  N1mblyApi,
+  GenzyApi,
   arrayOf,
   Body,
   boolean,
@@ -17,19 +17,19 @@ import {
   stringArray,
   floatArray,
 } from "../../api/src";
-import { Get, Post, Controller, N1mblyContainer } from "../../client/src";
+import { Get, Post, Controller, GenzyContainer } from "../../client/src";
 
 // import pg from "pg"; // v2.1.0
 // jos 3 npr
 
 // v3.4.6
 
-// gn1mbly paket
+// ggenzy paket
 // expose API za registrovanje plugina
 
 // generisan kod paket (mikroservis proj)
 // u njega treba install pg-adapter
-// ovaj nema gn1mbly instaliran
+// ovaj nema ggenzy instaliran
 
 // class PgAdapter {
 //   constructor(
@@ -99,7 +99,7 @@ import { Get, Post, Controller, N1mblyContainer } from "../../client/src";
 //   }
 // }
 
-// class PgAdapterPlugin implements N1mblyPlugin {
+// class PgAdapterPlugin implements GenzyPlugin {
 //   register() {
 //     // implement registration logic
 //     // support register before and after all
@@ -107,8 +107,8 @@ import { Get, Post, Controller, N1mblyContainer } from "../../client/src";
 // }
 
 // // mikroservis
-// n1mbly.register(PgAdapterPlugin, {
-//   configure(n1mbly) {
+// genzy.register(PgAdapterPlugin, {
+//   configure(genzy) {
 //     //
 //   }
 // })
@@ -119,7 +119,7 @@ class NoviServis {
   }
 }
 
-const noviModul = new N1mblyContainer().addLocalServices(NoviServis);
+const noviModul = new GenzyContainer().addLocalServices(NoviServis);
 
 class Peraa {
   @string() hello: string;
@@ -241,14 +241,14 @@ class PeraCrudController extends CrudController {
   }
 }
 
-const modul = new N1mblyContainer().addLocalServices(
+const modul = new GenzyContainer().addLocalServices(
   AuthController,
   PeraCrudController,
   UserCrudController
 );
 
-// export const api = new N1mblyApi({
-//   n1mblyInfo: {
+// export const api = new GenzyApi({
+//   genzyInfo: {
 //     version: "0.0.1-alpha1",
 //     name: "Test Microservice",
 //     description: "This microservice is used for random stuff.",
@@ -337,17 +337,17 @@ class BC {
   }
 }
 
-const controllers = new N1mblyContainer().addLocalServices(ModelController);
+const controllers = new GenzyContainer().addLocalServices(ModelController);
 
-const services = new N1mblyContainer()
+const services = new GenzyContainer()
   .addLocalServices(ModelService, A, B)
   .addLocalService(AB);
 
-const s = new N1mblyContainer().addLocalServices(AC);
+const s = new GenzyContainer().addLocalServices(AC);
 
 services.addAccessToContainer("s", s);
 
-const b = new N1mblyContainer().addLocalServices(BC);
+const b = new GenzyContainer().addLocalServices(BC);
 
 s.addAccessToContainer("b", b);
 
@@ -355,7 +355,7 @@ controllers.addAccessToContainer("services", services);
 
 console.log("aaa", controllers.getServices())
 
-export const api = new N1mblyApi()
+export const api = new GenzyApi()
   .addPlugin(new ZodValidationPlugin())
   .buildAppFrom(controllers);
 

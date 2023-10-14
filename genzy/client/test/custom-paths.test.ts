@@ -2,14 +2,14 @@ import realAxios from "axios";
 import { RemoteProxyOf } from "../src/remote-proxy";
 import { ServiceRegistry } from "../src/service-registry";
 import { Get, Controller, Post, Put } from "../../shared/decorators";
-import { N1mblyConfig } from "../../shared/types";
+import { GenzyConfig } from "../../shared/types";
 
 jest.mock("axios");
 
 const axios = realAxios as jest.Mocked<typeof realAxios>;
 
 class TestService {
-  $nimbly: N1mblyConfig = {
+  $genzy: GenzyConfig = {
     path: "/tests",
     actions: {
       getAll: {

@@ -1,10 +1,10 @@
-# N1mbly Zod API Validation Plugin
+# Genzy Zod API Validation Plugin
 
-[![NPM](https://nodei.co/npm/n1mbly-zod-validation.png)](https://nodei.co/npm/n1mbly-zod-validation/)
+[![NPM](https://nodei.co/npm/genzy-zod-validation.png)](https://nodei.co/npm/genzy-zod-validation/)
 
 # Getting Started
 
-1. `npm i -S n1mbly-zod-validation`
+1. `npm i -S genzy-zod-validation`
 2. Implement services
 
 ```ts

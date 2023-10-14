@@ -1,4 +1,4 @@
-export { N1mblyContainer } from "./n1mbly-container";
+export { GenzyContainer } from "./genzy-container";
 export {
   Delete,
   Get,

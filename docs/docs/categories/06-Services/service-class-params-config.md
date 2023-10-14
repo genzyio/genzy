@@ -7,7 +7,7 @@ slug: /service-class-params-config/
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-If you'd like the service methods to be able to receive [query](https://en.wikipedia.org/wiki/Query_string) and/or [path](https://rapidapi.com/blog/api-glossary/parameters/path/) parameters, you can customize them in a `$nimbly` property.
+If you'd like the service methods to be able to receive [query](https://en.wikipedia.org/wiki/Query_string) and/or [path](https://rapidapi.com/blog/api-glossary/parameters/path/) parameters, you can customize them in a `$genzy` property.
 
 If you're using [TypeScript](https://www.typescriptlang.org/) you can define configuration using [TypeScript decorators](https://www.typescriptlang.org/docs/handbook/decorators.html).
 
@@ -20,7 +20,7 @@ If you're using decorators, make sure that you've set `"experimentalDecorators"`
 
 ```js
 class ExampleService {
-  $nimbly = {
+  $genzy = {
     path: '/',
     getAll: {
       httpMethod: 'GET',
@@ -85,7 +85,7 @@ class ExampleService {
 
 ```js
 class ExampleService {
-  $nimbly = {
+  $genzy = {
     path: '/',
     getAll: {
       httpMethod: 'GET',
@@ -149,7 +149,7 @@ class ExampleService {
   <TabItem value="ts" label="TypeScript">
 
 ```ts
-import { Controller, Get, Post, Put, Delete, Query, Path, Body } from "nimbly-client"; // or nimbly-api
+import { Controller, Get, Post, Put, Delete, Query, Path, Body } from "genzy-client"; // or genzy-api
 
 @Controller('/')
 class ExampleService {
@@ -180,5 +180,5 @@ class ExampleService {
 </Tabs>
 
 :::important
-Configuration must be used both on the client and the server side, since it is used for telling `N1mbly` how and where to send the requests, or register the API routes.
+Configuration must be used both on the client and the server side, since it is used for telling `Genzy` how and where to send the requests, or register the API routes.
 :::

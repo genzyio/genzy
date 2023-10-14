@@ -3,45 +3,45 @@ import { NextFunction, Request, Response } from "express";
 import * as cors from "cors";
 import * as swaggerUi from "swagger-ui-express";
 import { Application } from "express";
-import { N1mblyContainer } from "@n1mbly/client";
+import { GenzyContainer } from "@genzy.io/client";
 import { RegisterRoutesFor } from "./routes-handler";
 import {
   CustomInterceptors,
   Interceptable,
-  type N1mblyConfig,
+  type GenzyConfig,
   type MetaInfo,
-  type N1mblyInfo,
+  type GenzyInfo,
   type ServiceMetaInfo,
 } from "../../shared/types";
 import { ErrorRegistry } from "./error-handler";
 import { generateDocsFrom } from "./docs";
-import { combineN1mblyConfigs } from "../../shared/functions";
+import { combineGenzyConfigs } from "../../shared/functions";
 
-type N1mblyPluginParams = {
-  n1mblyApi: N1mblyApi;
+type GenzyPluginParams = {
+  genzyApi: GenzyApi;
   app: Application;
 };
 
-export abstract class N1mblyPlugin {
-  constructor(params?: { containers?: N1mblyContainer[] }) {}
+export abstract class GenzyPlugin {
+  constructor(params?: { containers?: GenzyContainer[] }) {}
 
-  beforeAll(params: N1mblyPluginParams): Promise<void> | void {}
+  beforeAll(params: GenzyPluginParams): Promise<void> | void {}
   beforeRouteRegister(
-    params: N1mblyPluginParams & {
+    params: GenzyPluginParams & {
       serviceKey: string;
       serviceInstance: any;
-      n1mblyConfig: N1mblyConfig;
+      genzyConfig: GenzyConfig;
     }
   ): Promise<void> | void {}
   afterRouteRegister(
-    params: N1mblyPluginParams & {
+    params: GenzyPluginParams & {
       serviceKey: string;
       serviceInstance: any;
-      n1mblyConfig: N1mblyConfig;
+      genzyConfig: GenzyConfig;
       meta: ServiceMetaInfo & { types: MetaInfo["types"] };
     }
   ): Promise<void> | void {}
-  afterAll(params: N1mblyPluginParams): Promise<void> | void {}
+  afterAll(params: GenzyPluginParams): Promise<void> | void {}
 }
 
 type InterceptorCallback = (
@@ -50,27 +50,27 @@ type InterceptorCallback = (
   next: NextFunction
 ) => any;
 
-export class N1mblyApi extends Interceptable<InterceptorCallback> {
+export class GenzyApi extends Interceptable<InterceptorCallback> {
   private app: Application;
   private errorRegistry: ErrorRegistry = {};
-  private n1mblyInfo?: N1mblyInfo;
+  private genzyInfo?: GenzyInfo;
   private meta: MetaInfo = {
     services: [],
     types: {},
   };
-  private plugins: N1mblyPlugin[] = [];
+  private plugins: GenzyPlugin[] = [];
 
   constructor({
     app,
-    n1mblyInfo,
+    genzyInfo,
     basePath = "/api",
   }: {
     app?: Application;
-    n1mblyInfo?: Omit<N1mblyInfo, "basePath">;
+    genzyInfo?: Omit<GenzyInfo, "basePath">;
     basePath?: string;
   } = {}) {
     super();
-    this.n1mblyInfo = !!n1mblyInfo ? { basePath, ...n1mblyInfo } : { basePath };
+    this.genzyInfo = !!genzyInfo ? { basePath, ...genzyInfo } : { basePath };
     if (!app) {
       this.app = express();
       this.app.use(express.urlencoded({ extended: true }));
@@ -79,18 +79,18 @@ export class N1mblyApi extends Interceptable<InterceptorCallback> {
     } else {
       this.app = app;
     }
-    this.meta.n1mblyInfo = this.n1mblyInfo;
+    this.meta.genzyInfo = this.genzyInfo;
   }
 
-  public addPlugin(plugin: N1mblyPlugin): N1mblyApi {
+  public addPlugin(plugin: GenzyPlugin): GenzyApi {
     this.plugins.push(plugin);
     return this;
   }
 
-  public buildAppFrom(...containers: N1mblyContainer[]): Application {
+  public buildAppFrom(...containers: GenzyContainer[]): Application {
     // BEFORE ALL
     this.plugins.forEach((plugin) => {
-      plugin.beforeAll({ n1mblyApi: this, app: this.app });
+      plugin.beforeAll({ genzyApi: this, app: this.app });
     });
 
     containers.forEach((container) => {
@@ -103,13 +103,13 @@ export class N1mblyApi extends Interceptable<InterceptorCallback> {
           // BEFORE ROUTE REGISTER
           this.plugins.forEach((plugin) => {
             plugin.beforeRouteRegister({
-              n1mblyApi: this,
+              genzyApi: this,
               app: this.app,
               serviceKey,
               serviceInstance: instance,
-              n1mblyConfig: combineN1mblyConfigs(
-                instance?.$nimbly_config ?? {},
-                instance?.$nimbly ?? {}
+              genzyConfig: combineGenzyConfigs(
+                instance?.$genzy_config ?? {},
+                instance?.$genzy ?? {}
               ),
             });
           });
@@ -119,7 +119,7 @@ export class N1mblyApi extends Interceptable<InterceptorCallback> {
             this.app,
             this.interceptors,
             this.errorRegistry,
-            this.n1mblyInfo.basePath
+            this.genzyInfo.basePath
           );
           const { types, ...serviceMeta } = service;
           // register service
@@ -134,13 +134,13 @@ export class N1mblyApi extends Interceptable<InterceptorCallback> {
           // AFTER ROUTE REGISTER
           this.plugins.forEach((plugin) => {
             plugin.afterRouteRegister({
-              n1mblyApi: this,
+              genzyApi: this,
               app: this.app,
               serviceKey,
               serviceInstance: instance,
-              n1mblyConfig: combineN1mblyConfigs(
-                instance?.$nimbly_config ?? {},
-                instance?.$nimbly ?? {}
+              genzyConfig: combineGenzyConfigs(
+                instance?.$genzy_config ?? {},
+                instance?.$genzy ?? {}
               ),
               meta: service,
             });
@@ -148,17 +148,17 @@ export class N1mblyApi extends Interceptable<InterceptorCallback> {
         });
     });
 
-    this.app.get(`${this.n1mblyInfo.basePath}/meta`, (_, res) => {
+    this.app.get(`${this.genzyInfo.basePath}/meta`, (_, res) => {
       res.status(200).send(this.meta);
     });
 
     const options = {
       explorer: true,
       swaggerOptions: {
-        url: `${this.n1mblyInfo.basePath}/swagger.json`,
+        url: `${this.genzyInfo.basePath}/swagger.json`,
       },
     };
-    const swaggerDocument = generateDocsFrom(this.meta, this.n1mblyInfo);
+    const swaggerDocument = generateDocsFrom(this.meta, this.genzyInfo);
     this.app.get(options.swaggerOptions.url, (req, res) =>
       res.json(swaggerDocument)
     );
@@ -171,7 +171,7 @@ export class N1mblyApi extends Interceptable<InterceptorCallback> {
 
     // AFTER ALL
     this.plugins.forEach((plugin) => {
-      plugin.afterAll({ n1mblyApi: this, app: this.app });
+      plugin.afterAll({ genzyApi: this, app: this.app });
     });
 
     return this.app;
@@ -179,29 +179,29 @@ export class N1mblyApi extends Interceptable<InterceptorCallback> {
 
   public intercept(
     customInterceptors: CustomInterceptors<InterceptorCallback>
-  ): N1mblyApi {
+  ): GenzyApi {
     this.interceptCustom(customInterceptors, "beforeCustomInterceptors");
     return this;
   }
 
   public interceptAfter(
     customInterceptors: CustomInterceptors<InterceptorCallback>
-  ): N1mblyApi {
+  ): GenzyApi {
     this.interceptCustom(customInterceptors, "afterCustomInterceptors");
     return this;
   }
 
-  public interceptAll(callback: InterceptorCallback): N1mblyApi {
+  public interceptAll(callback: InterceptorCallback): GenzyApi {
     this.interceptors.beforeInterceptors.push(callback);
     return this;
   }
 
-  public interceptAllAfter(callback: InterceptorCallback): N1mblyApi {
+  public interceptAllAfter(callback: InterceptorCallback): GenzyApi {
     this.interceptors.afterInterceptors.push(callback);
     return this;
   }
 
-  public withErrors(errors: ErrorRegistry): N1mblyApi {
+  public withErrors(errors: ErrorRegistry): GenzyApi {
     this.errorRegistry = { ...this.errorRegistry, ...errors };
     return this;
   }

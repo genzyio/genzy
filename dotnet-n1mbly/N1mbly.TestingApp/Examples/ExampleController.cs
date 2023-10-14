@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-using N1mbly.Common;
-using N1mbly.Models;
-using N1mbly.Models.Interfaces;
-using N1mbly.Services.Randomservice;
+using Genzy.Common;
+using Genzy.Models;
+using Genzy.Models.Interfaces;
+using Genzy.Services.Randomservice;
 
-using HttpMethod = N1mbly.Common.HttpMethod;
+using HttpMethod = Genzy.Common.HttpMethod;
 
-namespace N1mbly.Examples
+namespace Genzy.Examples
 {
     [ApiController]
     [Route("api-example/v1")]

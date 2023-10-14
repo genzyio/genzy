@@ -1,7 +1,7 @@
 {
-  "name": "@n1mbly/cli",
+  "name": "@genzy.io/cli",
   "version": "0.2.37",
-  "description": "N1mbly CLI used for client code generation.",
+  "description": "Genzy CLI used for client code generation.",
   "main": "bin/index.js",
   "scripts": {
     "start": "ts-node src",
@@ -13,10 +13,10 @@
     "access": "public"
   },
   "keywords": [],
-  "author": "@n1mbly",
+  "author": "@genzy.io",
   "license": "ISC",
   "bin": {
-    "n1mbly": "bin/index.js"
+    "genzy": "bin/index.js"
   },
   "dependencies": {
     "axios": "0.27.2",

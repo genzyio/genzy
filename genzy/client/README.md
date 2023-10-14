@@ -1,11 +1,11 @@
-# Nimbly Client
+# Genzy Client
 
-[![NPM](https://nodei.co/npm/nimbly-client.png)](https://nodei.co/npm/nimbly-client/)
+[![NPM](https://nodei.co/npm/genzy-client.png)](https://nodei.co/npm/genzy-client/)
 
 # Getting started:
 
 1. `npm init -y`
-2. `npm i -S nimbly-client`
+2. `npm i -S genzy-client`
 3. Define services
 ```js
 class UserService {
@@ -19,7 +19,7 @@ class AccountService {
 ```
 4. Create a Nimble of remote services
 ```js
-import { Nimble } from 'nimbly-client';
+import { Nimble } from 'genzy-client';
 
 const host = 'http://localhost:3000';
 

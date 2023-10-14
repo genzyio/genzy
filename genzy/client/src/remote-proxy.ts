@@ -3,10 +3,10 @@ import { ServiceRegistry } from "./service-registry";
 import {
   getHttpMethod,
   camelToKebabCase,
-  combineN1mblyConfigs,
+  combineGenzyConfigs,
   formParamsOf,
 } from "../../shared/functions";
-import { N1mblyConfig, Param } from "../../shared/types";
+import { GenzyConfig, Param } from "../../shared/types";
 
 function applyInterceptors(
   target: any,
@@ -23,12 +23,12 @@ function applyInterceptors(
   const setBody = (v: any) => (bodyHolder.data = v);
   const getBody = () => bodyHolder.data;
   const interceptors = [];
-  if (target.$nimblyInterceptors?.[`${type}Interceptors`]) {
-    interceptors.push(...target.$nimblyInterceptors?.[`${type}Interceptors`]);
+  if (target.$genzyInterceptors?.[`${type}Interceptors`]) {
+    interceptors.push(...target.$genzyInterceptors?.[`${type}Interceptors`]);
   }
-  if (target.$nimblyInterceptors?.[`${type}CustomInterceptors`][className]) {
+  if (target.$genzyInterceptors?.[`${type}CustomInterceptors`][className]) {
     interceptors.push(
-      ...(target.$nimblyInterceptors?.[`${type}CustomInterceptors`][className][
+      ...(target.$genzyInterceptors?.[`${type}CustomInterceptors`][className][
         methodName
       ] || [])
     );
@@ -44,9 +44,9 @@ const remoteCallHandler = {
     if (typeof target[method] === "function") {
       return function (...args) {
         return new Promise((res, rej) => {
-          const meta: N1mblyConfig = combineN1mblyConfigs(
-            target?.$nimbly_config ?? {},
-            target?.$nimbly ?? {}
+          const meta: GenzyConfig = combineGenzyConfigs(
+            target?.$genzy_config ?? {},
+            target?.$genzy ?? {}
           );
           const rootPath =
             meta?.path != null ? meta?.path : `/${camelToKebabCase(className)}`;
@@ -91,7 +91,7 @@ const remoteCallHandler = {
             ...(Object.values(queryParams).filter((v) => v != null).length
               ? { params: queryParams }
               : {}),
-            url: `${target.$nimblyOrigin.replace(/\/$/g, "")}${fullPath}`,
+            url: `${target.$genzyOrigin.replace(/\/$/g, "")}${fullPath}`,
           })
             .then((r) => {
               const [_, data] = applyInterceptors(
@@ -128,7 +128,7 @@ export function RemoteProxyOf<T>(
 ): T {
   const creator = new Proxy(type, constructHandler);
   const instance = new Proxy(new creator(serviceRegistry), remoteCallHandler);
-  instance.$nimblyOrigin = new URL(origin).toString();
-  instance.$nimblyInterceptors = interceptors;
+  instance.$genzyOrigin = new URL(origin).toString();
+  instance.$genzyInterceptors = interceptors;
   return instance;
 }

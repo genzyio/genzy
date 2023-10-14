@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using N1mbly.Common;
-using N1mbly.Repositories.Interfaces;
-using N1mbly.Services.Interfaces;
+using Genzy.Common;
+using Genzy.Repositories.Interfaces;
+using Genzy.Services.Interfaces;
 
-namespace N1mbly.Services
+namespace Genzy.Services
 {
     public class BaseService<T> : IBaseService<T> where T : class
     {

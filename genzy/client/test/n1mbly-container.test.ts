@@ -1,4 +1,4 @@
-import { N1mblyContainer } from "../src/n1mbly-container";
+import { GenzyContainer } from "../src/genzy-container";
 import realAxios from "axios";
 
 jest.mock("axios");
@@ -52,12 +52,12 @@ class AnotherServiceResultInterceptor {
   }
 }
 
-describe("N1mblyContainer", () => {
+describe("GenzyContainer", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it("should ceate a N1mblyContainer", async () => {
+  it("should ceate a GenzyContainer", async () => {
     const {
       anotherService,
       exampleService,
@@ -66,7 +66,7 @@ describe("N1mblyContainer", () => {
       anotherService: AnotherService;
       exampleService: ExampleService;
       testService: TestService;
-    } = new N1mblyContainer()
+    } = new GenzyContainer()
       .addLocalServices(ExampleService, TestService)
       .addRemoteService(origin, AnotherService)
       .getAllServices();
@@ -85,12 +85,12 @@ describe("N1mblyContainer", () => {
     ).toEqual(await exampleService.get());
   });
 
-  it("should have access to services from another container N1mblyContainer and handle circular deps", async () => {
-    const anotherContainer = new N1mblyContainer().addRemoteService(
+  it("should have access to services from another container GenzyContainer and handle circular deps", async () => {
+    const anotherContainer = new GenzyContainer().addRemoteService(
       origin,
       AnotherService
     );
-    const container = new N1mblyContainer()
+    const container = new GenzyContainer()
       .addAccessToContainer("another", anotherContainer)
       .addLocalServices(ExampleService, TestService);
 
@@ -134,7 +134,7 @@ describe("N1mblyContainer", () => {
       anotherService,
     }: {
       anotherService: AnotherService;
-    } = new N1mblyContainer()
+    } = new GenzyContainer()
       .addLocalService(ExampleService)
       .addRemoteService(origin, AnotherService)
       .addLocalService(TestService)
@@ -161,7 +161,7 @@ describe("N1mblyContainer", () => {
       anotherService,
     }: {
       anotherService: AnotherService;
-    } = new N1mblyContainer()
+    } = new GenzyContainer()
       .addLocalService(ExampleService)
       .addRemoteService(origin, AnotherService)
       .addLocalService(TestService)
@@ -193,7 +193,7 @@ describe("N1mblyContainer", () => {
       anotherService,
     }: {
       anotherService: AnotherService;
-    } = new N1mblyContainer()
+    } = new GenzyContainer()
       .addLocalService(ExampleService)
       .addRemoteService(origin, AnotherService)
       .addLocalService(TestService)
@@ -220,7 +220,7 @@ describe("N1mblyContainer", () => {
       anotherService,
     }: {
       anotherService: AnotherService;
-    } = new N1mblyContainer()
+    } = new GenzyContainer()
       .addLocalService(ExampleService)
       .addRemoteService(origin, AnotherService)
       .addLocalService(TestService)
@@ -241,7 +241,7 @@ describe("N1mblyContainer", () => {
       anotherService,
     }: {
       anotherService: AnotherService;
-    } = new N1mblyContainer()
+    } = new GenzyContainer()
       .addLocalService(ExampleService)
       .addRemoteService(origin, AnotherService)
       .addLocalService(TestService)
@@ -266,7 +266,7 @@ describe("N1mblyContainer", () => {
       anotherService,
     }: {
       anotherService: AnotherService;
-    } = new N1mblyContainer()
+    } = new GenzyContainer()
       .addLocalService(ExampleService)
       .addRemoteService(origin, AnotherService)
       .addLocalService(TestService)
@@ -326,7 +326,7 @@ describe("N1mblyContainer", () => {
       }
     }
 
-    const services = new N1mblyContainer()
+    const services = new GenzyContainer()
       .addLocalServices(Service1, Service2, Service3)
       .getAllServices();
 
@@ -389,9 +389,9 @@ describe("N1mblyContainer", () => {
       }
     }
 
-    const cont = new N1mblyContainer().addLocalServices(Service1);
+    const cont = new GenzyContainer().addLocalServices(Service1);
 
-    const cont23 = new N1mblyContainer().addLocalServices(Service2, Service3);
+    const cont23 = new GenzyContainer().addLocalServices(Service2, Service3);
 
     cont.addAccessToContainer("services", cont23);
 
@@ -442,7 +442,7 @@ describe("N1mblyContainer", () => {
       }
     }
 
-    const cont = new N1mblyContainer().addLocalServices(Service2, Service3);
+    const cont = new GenzyContainer().addLocalServices(Service2, Service3);
 
     const contAllServices = cont.getAllServices();
 

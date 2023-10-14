@@ -1,4 +1,4 @@
-# GN1mbly CLI
+# GGenzy CLI
 
 ## Development Setup
 

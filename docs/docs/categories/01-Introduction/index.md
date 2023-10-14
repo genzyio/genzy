@@ -7,9 +7,9 @@ slug: /
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-## What N1mbly is
+## What Genzy is
 
-N1mbly is a JavaScript library that enables rapid development of web applications.
+Genzy is a JavaScript library that enables rapid development of web applications.
 
 It is built on top of the [Express](https://expressjs.com/) framework and provides additional features like automatic routes registration, client code generation and [OpenAPI](https://www.openapis.org/) documentation, along with [SwaggerUI](https://swagger.io/).
 
@@ -20,7 +20,7 @@ Here's a basic example:
 
 #### Server
 ```js
-const { Nimble, NimblyApi } = require('nimbly-api');
+const { Nimble, GenzyApi } = require('genzy-api');
 
 class UserService {
   async createUser(user) {
@@ -52,7 +52,7 @@ class AccountService {
 const usersNimble = new Nimble()
   .addLocalServices(UserService, AccountService);
 
-const app = new NimblyApi().from(usersNimble);
+const app = new GenzyApi().from(usersNimble);
 app.listen(3000);
 ```
 </TabItem>
@@ -60,7 +60,7 @@ app.listen(3000);
 
 #### Server
 ```js
-import { Nimble, NimblyApi } from 'nimbly-api';
+import { Nimble, GenzyApi } from 'genzy-api';
 
 class UserService {
   async createUser(user) {
@@ -92,7 +92,7 @@ class AccountService {
 const usersNimble = new Nimble()
   .addLocalServices(UserService, AccountService);
 
-const app = new NimblyApi().from(usersNimble);
+const app = new GenzyApi().from(usersNimble);
 app.listen(3000);
 ```
 </TabItem>
@@ -100,7 +100,7 @@ app.listen(3000);
 
 #### Server
 ```ts
-import { Nimble, NimblyApi, Controller, Post, Get } from 'nimbly-api';
+import { Nimble, GenzyApi, Controller, Post, Get } from 'genzy-api';
 
 @Controller('/users')
 class UserService {
@@ -136,7 +136,7 @@ class AccountService {
 const usersNimble = new Nimble()
   .addLocalServices(UserService, AccountService);
 
-const app = new NimblyApi().from(usersNimble);
+const app = new GenzyApi().from(usersNimble);
 app.listen(3000);
 ```
   </TabItem>
@@ -147,7 +147,7 @@ app.listen(3000);
 #### Client
 
 ```js
-const { Nimble } = require('nimbly-client');
+const { Nimble } = require('genzy-client');
 
 const host = 'http://localhost:3000';
 
@@ -182,7 +182,7 @@ const allAccounts = await accountService.getAllAccounts();
 #### Client
 
 ```js
-import { Nimble } from 'nimbly-client';
+import { Nimble } from 'genzy-client';
 
 const host = 'http://localhost:3000';
 
@@ -217,7 +217,7 @@ const allAccounts = await accountService.getAllAccounts();
 #### Client
 
 ```ts
-import { Nimble, Controller, Post, Get } from 'nimbly-client';
+import { Nimble, Controller, Post, Get } from 'genzy-client';
 
 const host = 'http://localhost:3000';
 
@@ -238,13 +238,13 @@ class AccountService {
 const usersNimble = new Nimble()
   .addRemoteServices(host, UserService, AccountService);
 
-type NimblyServices = {
+type GenzyServices = {
   userService: UserService,
   accountService: AccountService
 }
 
 // The instances are available for custom usage
-const { userService, accountService }: NimblyServices = usersNimble.getAllServices();
+const { userService, accountService }: GenzyServices = usersNimble.getAllServices();
 
 // Use the services
 accountService.createAccount({
@@ -261,7 +261,7 @@ const allAccounts = await accountService.getAllAccounts();
 
 ## Features
 
-Here are the features provided by N1mbly:
+Here are the features provided by Genzy:
 
 ### API
 
@@ -273,7 +273,7 @@ Client service proxy is automatically created based on the service classes passe
 
 ### Automatic JS/TS Client generation
 
-`nimbly-client` package can be used to auto-generate client service files for the existing API.
+`genzy-client` package can be used to auto-generate client service files for the existing API.
 
 ### Interceptors
 

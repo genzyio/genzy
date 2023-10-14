@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
-using N1mbly.Common;
+using Genzy.Common;
 
-namespace N1mbly.Models
+namespace Genzy.Models
 {
     public static class Meta
     {

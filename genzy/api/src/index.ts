@@ -1,5 +1,5 @@
 export { Application, Request, Response, NextFunction } from "express";
-export { N1mblyContainer } from "@n1mbly/client";
+export { GenzyContainer } from "@genzy.io/client";
 export {
   Controller,
   Get,
@@ -24,4 +24,4 @@ export {
   ReturnsArrayOf,
 } from "../../shared/decorators";
 export { GenericType } from "../../shared/constants";
-export { N1mblyApi, N1mblyPlugin } from "./n1mbly-api";
+export { GenzyApi, GenzyPlugin } from "./genzy-api";

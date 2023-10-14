@@ -19,7 +19,7 @@ export declare class Interceptable<TInterceptorCallback> {
     protected interceptors: Interceptors<TInterceptorCallback>;
     protected interceptCustom(customInterceptors: CustomInterceptors<TInterceptorCallback>, customInterceptorsKey: CustomInterceptorKey): void;
 }
-export declare type N1mblyInfo = {
+export declare type GenzyInfo = {
     version?: string;
     name?: string;
     description?: string;
@@ -29,7 +29,7 @@ export declare type Modify<T, R> = Omit<T, keyof R> & R;
 export declare type MetaInfo = {
     services: ServiceMetaInfo[];
     types: MetaTypesRegistry;
-    n1mblyInfo?: N1mblyInfo;
+    genzyInfo?: GenzyInfo;
 };
 export declare type MetaTypesRegistry = Record<string, ComplexTypeProperties>;
 export declare type ServiceMetaInfo = {
@@ -50,7 +50,7 @@ export declare type Param = {
     type?: Type;
     optional?: boolean;
 };
-export declare type N1mblyConfig = {
+export declare type GenzyConfig = {
     path?: string;
     actions: ActionConfig;
     types?: MetaTypesRegistry;

@@ -11,7 +11,7 @@ Here is the list of API interceptor definition examples.
 ```js
 // Intercept all service handlers before they are called
 const usersNimble = new Nimble().ofLocal(UserService);
-const app = new NimblyApi()
+const app = new GenzyApi()
   .interceptAll((req: Request, res: Response, next: NextFunction) => {
     if(isTokenValid(req.headers.Authorization)) next();
     else res.sendStatus(401);
@@ -24,7 +24,7 @@ const app = new NimblyApi()
 ```js
 // Intercept specific service handlers before they are called
 const usersNimble = new Nimble().ofLocal(UserService);
-const app = new NimblyApi()
+const app = new GenzyApi()
   .intercept({
     userService: {
       createUser: (req: Request, res: Response, next: NextFunction) => {
@@ -47,7 +47,7 @@ class UserServiceInterceptor {
   }
 }
 const usersNimble = new Nimble().ofLocal(UserService);
-const app = new NimblyApi()
+const app = new GenzyApi()
   .intercept({
     userService: {
       createUser: UserServiceInterceptor
@@ -61,9 +61,9 @@ const app = new NimblyApi()
 ```js
 // Intercept all service handlers after they are called
 const usersNimble = new Nimble().ofLocal(UserService);
-const app = new NimblyApi()
+const app = new GenzyApi()
   .interceptAllAfter((req: Request, res: Response, next: NextFunction) => {
-    res.body({ message: "Hello from Nimbly." });
+    res.body({ message: "Hello from Genzy." });
   })
   .from(usersNimble);
 ```
@@ -73,7 +73,7 @@ const app = new NimblyApi()
 ```js
 // Intercept specific service handlers after they are called
 const usersNimble = new Nimble().ofLocal(UserService);
-const app = new NimblyApi()
+const app = new GenzyApi()
   .interceptAfter({
     userService: {
       createUser: (req: Request, res: Response, next: NextFunction) => {
@@ -96,7 +96,7 @@ class UserServiceInterceptor {
   }
 }
 const usersNimble = new Nimble().ofLocal(UserService);
-const app = new NimblyApi()
+const app = new GenzyApi()
   .interceptAfter({
     userService: {
       createUser: UserServiceInterceptor

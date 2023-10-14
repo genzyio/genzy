@@ -1,8 +1,8 @@
 {
-  "name": "n1mbly-redis-plugin",
+  "name": "genzy-redis-plugin",
   "version": "0.0.4",
   "main": "build/index.js",
-  "description": "N1mbly plugin for connecting to Redis and injecting a Redis service.",
+  "description": "Genzy plugin for connecting to Redis and injecting a Redis service.",
   "types": "build/index.d.ts",
   "scripts": {
     "prepublish": "([ -e build ] && rm -r build || [ -e . ]) && npm run build && cp src/index.d.ts build",
@@ -29,9 +29,9 @@
     "webpack-cli": "4.9.1"
   },
   "dependencies": {
-    "@n1mbly/api": "0.2.10"
+    "@genzy.io/api": "0.2.10"
   },
-  "gn1mblyMetadata": {
+  "ggenzyMetadata": {
     "microservices": [
       {
         "id": "Redis{{installingOnMicroserviceId}}",

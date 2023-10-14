@@ -1,9 +1,9 @@
-import { N1mblyContainer } from "../../client/src";
+import { GenzyContainer } from "../../client/src";
 import { Get, Post, Controller } from "../../client/src";
 import { Query } from "../../shared/decorators";
 
 class TestService {
-  $nimbly = {
+  $genzy = {
     rootPath: "/tests",
     get: {
       method: "GET",
@@ -34,15 +34,15 @@ class NoviServis {
   async getNesto() {}
 }
 
-export type NimblyServices = {
+export type GenzyServices = {
   testService: TestService;
   decoratedService: DecoratedService;
   noviServis: NoviServis;
 };
 
 const origin = "http://localhost:3030/api";
-export const { testService, decoratedService, noviServis }: NimblyServices =
-  new N1mblyContainer()
+export const { testService, decoratedService, noviServis }: GenzyServices =
+  new GenzyContainer()
     .addRemoteServices(origin, TestService, DecoratedService, NoviServis)
     .getAllServices();
 

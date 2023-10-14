@@ -3,21 +3,21 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
-  title: "N1mbly",
+  title: "Genzy",
   tagline: "Focused on the domain.",
-  url: "https://n1mbly.github.io",
+  url: "https://genzy.github.io",
   baseUrl: "/docs/",
   onBrokenLinks: "warn",
   onBrokenMarkdownLinks: "warn",
   favicon: "images/logo-new-dark.svg",
-  organizationName: "n1mbly",
+  organizationName: "genzy",
   projectName: "docs",
   themeConfig: {
     navbar: {
-      title: "N1mbly",
+      title: "Genzy",
       hideOnScroll: true,
       logo: {
-        alt: "N1mbly logo",
+        alt: "Genzy logo",
         src: "images/logo-new.svg",
         srcDark: "images/logo-new-dark.svg",
       },
@@ -51,7 +51,7 @@ module.exports = {
           position: "right",
         },
         {
-          href: "https://github.com/n1mbly",
+          href: "https://github.com/genzy",
           position: "right",
           className: "header-github-link",
         },
@@ -59,7 +59,7 @@ module.exports = {
     },
     footer: {
       style: "dark",
-      copyright: `Copyright © ${new Date().getFullYear()} n1mbly`,
+      copyright: `Copyright © ${new Date().getFullYear()} genzy`,
     },
     prism: {
       theme: lightCodeTheme,

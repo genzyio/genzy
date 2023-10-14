@@ -1,17 +1,17 @@
 import { Plugin } from "../src";
-import { N1mblyContainer } from "@n1mbly/client";
+import { GenzyContainer } from "@genzy.io/client";
 import {
   Body,
   Controller,
   Get,
-  N1mblyApi,
+  GenzyApi,
   Path,
   Post,
   Put,
   Query,
   int,
   string,
-} from "@n1mbly/api";
+} from "@genzy.io/api";
 import { agent } from "supertest";
 
 class Test {
@@ -47,10 +47,10 @@ class TestController {
 
 describe("Plugin", () => {
   it("should register before interceptors for object", async () => {
-    const n1mbly = new N1mblyContainer().addLocalService(TestController);
-    const app = new N1mblyApi()
+    const genzy = new GenzyContainer().addLocalService(TestController);
+    const app = new GenzyApi()
       .addPlugin(new Plugin())
-      .buildAppFrom(n1mbly);
+      .buildAppFrom(genzy);
 
     await agent(app).get("/api/tests?filter=1").expect(400);
     await agent(app).get("/api/tests?filter=asdf&filter=fdsa").expect(400);

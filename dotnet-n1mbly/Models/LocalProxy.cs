@@ -1,4 +1,4 @@
-namespace N1mbly.Models
+namespace Genzy.Models
 {
     public class LocalProxy
     {

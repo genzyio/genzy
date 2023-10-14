@@ -1,6 +1,6 @@
 import type { Environment } from "nunjucks";
-import type { MetaTypesRegistry, N1mblyInfo } from "../../../shared/types";
-import { lowerFirstLetter, n1mblyConfigFrom } from "../../../shared/functions";
+import type { MetaTypesRegistry, GenzyInfo } from "../../../shared/types";
+import { lowerFirstLetter, genzyConfigFrom } from "../../../shared/functions";
 import {
   capitalizeFirstLetter,
   formatFileContent,
@@ -26,7 +26,7 @@ export async function generate({
     `${dirPath}/index.js`,
     await indexFileContentFrom({
       nunjucks,
-      info: meta.n1mblyInfo,
+      info: meta.genzyInfo,
       services: meta.services,
       plugins: meta.plugins,
     })
@@ -88,7 +88,7 @@ async function controllerFileContentFrom({
     dependencies: service.dependencies?.map((dependency) =>
       lowerFirstLetter(dependency)
     ),
-    $nimbly: { ...n1mblyConfigFrom(service), types },
+    $genzy: { ...genzyConfigFrom(service), types },
     types,
     existingMethodsNotInMeta,
   });
@@ -111,7 +111,7 @@ async function serviceFileContentFrom({
     dependencies: service.dependencies?.map((dependency) =>
       lowerFirstLetter(dependency)
     ),
-    $nimbly: { ...n1mblyConfigFrom(service), types },
+    $genzy: { ...genzyConfigFrom(service), types },
     types,
     existingMethodsNotInMeta,
   });
@@ -125,7 +125,7 @@ function indexFileContentFrom({
   plugins,
 }: {
   services: ExtendedServiceInfo[];
-  info: N1mblyInfo;
+  info: GenzyInfo;
   nunjucks: Environment;
   plugins: ExtendedMetaInfo["plugins"];
 }): Promise<string> {

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace N1mbly
+namespace Genzy
 {
     public class Program
     {
@@ -14,7 +14,7 @@ namespace N1mbly
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<N1mblyApi>();
+                    webBuilder.UseStartup<GenzyApi>();
                 });
     }
 }

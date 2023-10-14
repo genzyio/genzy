@@ -1,6 +1,6 @@
 import yargs from "yargs";
 import { generateMicroservice, initializeProject, startMicroservice, stopMicroservice } from "./actions";
-import { startGn1mbly } from "gn1mbly-api";
+import { startGgenzy } from "ggenzy-api";
 
 main();
 
@@ -18,7 +18,7 @@ async function main() {
         }),
       (cmd) => {
         console.log(cmd);
-        startGn1mbly(cmd.port);
+        startGgenzy(cmd.port);
       },
     )
     .command(
