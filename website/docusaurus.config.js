@@ -5,8 +5,8 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 module.exports = {
   title: "Genzy",
   tagline: "Focused on the domain.",
-  url: "https://genzy.github.io",
-  baseUrl: "/docs/",
+  url: "https://genzy.io",
+  baseUrl: "/",
   onBrokenLinks: "warn",
   onBrokenMarkdownLinks: "warn",
   favicon: "images/logo-new-dark.svg",
@@ -51,7 +51,7 @@ module.exports = {
           position: "right",
         },
         {
-          href: "https://github.com/genzy",
+          href: "https://github.com/genzyio/genzy",
           position: "right",
           className: "header-github-link",
         },
@@ -59,7 +59,7 @@ module.exports = {
     },
     footer: {
       style: "dark",
-      copyright: `Copyright © ${new Date().getFullYear()} genzy`,
+      copyright: `Copyright © ${new Date().getFullYear()} genzy.io`,
     },
     prism: {
       theme: lightCodeTheme,
