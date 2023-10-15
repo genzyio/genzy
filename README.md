@@ -4,6 +4,7 @@ A simple framework for building better API-s faster.
 
 [![NPM](https://nodei.co/npm/@genzy.io/client.png)](https://nodei.co/npm/@genzy.io/client/)
 [![NPM](https://nodei.co/npm/@genzy.io/api.png)](https://nodei.co/npm/@genzy.io/api/)
+[![NPM](https://nodei.co/npm/@genzy.io/api.png)](https://nodei.co/npm/@genzy.io/cli/)
 
 # Table of contents
 

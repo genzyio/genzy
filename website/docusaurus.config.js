@@ -30,7 +30,7 @@ module.exports = {
         },
         {
           type: "doc",
-          docId: "categories/Introduction/index",
+          docId: "framework/Introduction/index",
           position: "left",
           label: "Documentation",
         },
@@ -68,23 +68,24 @@ module.exports = {
   },
   presets: [
     [
-      "@docusaurus/preset-classic",
-      {
+      "classic",
+      /** @type {import('@docusaurus/preset-classic').Options} */
+      ({
         docs: {
           sidebarPath: require.resolve("./sidebars.js"),
           showLastUpdateTime: true,
           lastVersion: "current",
           versions: {
             current: {
-              label: "1.x",
-              path: "v1",
+              label: "0.0.1-alpha",
+              path: "0.0.1-alpha",
             },
           },
         },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
-      },
+      }),
     ],
   ],
   plugins: [require.resolve("docusaurus-lunr-search")],
