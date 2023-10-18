@@ -20,7 +20,3 @@
 .padding {
   padding: 1.5em
 }
-
-html[data-theme='dark'] .icon {
-  fill: white;
-}

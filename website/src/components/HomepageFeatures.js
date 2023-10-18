@@ -46,9 +46,14 @@ const FeatureList = [
 function Feature({ title, description, icon }) {
   return (
     <div className={clsx("col col--4")}>
-      <div className={clsx(styles.feature, "text--center padding-horiz--md")}>
-        {icon}
-        <h3>{title}</h3>
+      <div
+        className={
+          clsx(styles.feature, "text--center padding-horiz--md") +
+          " flex flex-col items-center justify-center"
+        }
+      >
+        <span className="shrink-0 fill-brand-dark dark:fill-white">{icon}</span>
+        <h3 className="font-bold text-lg mb-3">{title}</h3>
         <p>{description}</p>
       </div>
     </div>

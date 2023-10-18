@@ -3,7 +3,7 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
-  title: "Genzy",
+  title: "genzy.io",
   tagline: "Focused on the domain.",
   url: "https://genzy.io",
   baseUrl: "/",
@@ -14,10 +14,10 @@ module.exports = {
   projectName: "docs",
   themeConfig: {
     navbar: {
-      title: "Genzy",
+      title: "genzy",
       hideOnScroll: true,
       logo: {
-        alt: "Genzy logo",
+        alt: "genzy logo",
         src: "images/logo-new.svg",
         srcDark: "images/logo-new-dark.svg",
       },
@@ -88,5 +88,18 @@ module.exports = {
       }),
     ],
   ],
-  plugins: [require.resolve("docusaurus-lunr-search")],
+  plugins: [
+    require.resolve("docusaurus-lunr-search"),
+    async function myPlugin(context, options) {
+      return {
+        name: "docusaurus-tailwindcss",
+        configurePostCss(postcssOptions) {
+          // Appends TailwindCSS and AutoPrefixer.
+          postcssOptions.plugins.push(require("tailwindcss"));
+          postcssOptions.plugins.push(require("autoprefixer"));
+          return postcssOptions;
+        },
+      };
+    },
+  ],
 };
