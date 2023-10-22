@@ -10,29 +10,37 @@ type InitialGenzyMetadata = GenzyInfo & {
 };
 
 function initMicroserviceTsJs(project: Project, metadata: InitialGenzyMetadata, lang: "ts" | "js" = "ts") {
-  const { name, version, description } = metadata;
-  const microservicePath = path.join(project.path, name);
-
+  const microservicePath = path.join(project.path, metadata.name);
   !fs.existsSync(microservicePath) && fs.mkdirSync(microservicePath);
 
-  const initialDependencies = metadata.packages.reduce(
-    (packages: Record<string, string>, { name, version }: Package) => {
-      packages[name] = version;
-      return packages;
-    },
-    {},
-  );
+  writePackageJson(microservicePath, metadata, lang);
+  if (lang === "ts") writeTsConfig(microservicePath);
 
+  writeEnvFileIfNotExisting(microservicePath);
+  makeSRCFolderIfNotExisting(microservicePath);
+  runNPMInstall(microservicePath);
+}
+
+function writePackageJson(basePath: string, metadata: InitialGenzyMetadata, lang: "ts" | "js") {
+  const { name, version, description, packages } = metadata;
+
+  const initialDependencies = packages.reduce((packages: Record<string, string>, { name, version }: Package) => {
+    packages[name] = version;
+    return packages;
+  }, {});
+
+  const packageJsonPath = path.join(basePath, "package.json");
   fs.writeFileSync(
-    path.join(microservicePath, "package.json"),
+    packageJsonPath,
     JSON.stringify(
       {
         name,
         version,
         description,
-        main: "index.js",
+        main: `index.${lang}`,
+        ...(lang === "js" ? { type: "module" } : {}),
         scripts: {
-          start: "ts-node src",
+          start: `${lang === "ts" ? "ts-node" : "node"} src`,
           watch: `nodemon --watch ../ --exec ${
             lang === "ts" ? "./node_modules/.bin/ts-node" : "node"
           } ./src/index.${lang} server --ext ${lang},json`,
@@ -40,12 +48,12 @@ function initMicroserviceTsJs(project: Project, metadata: InitialGenzyMetadata, 
             lang === "ts" ? "./node_modules/.bin/ts-node" : "node"
           } ./src/index.${lang} client --ext ${lang},json`,
         },
-        keywords: [],
+        keywords: ["genzy.io"],
         author: "",
         license: "ISC",
         dependencies: {
           ...initialDependencies,
-          "@genzy.io/api": "0.2.25",
+          "@genzy.io/api": "0.0.1-alpha",
           dotenv: "16.3.1",
         },
         devDependencies: {
@@ -57,85 +65,40 @@ function initMicroserviceTsJs(project: Project, metadata: InitialGenzyMetadata, 
       2,
     ),
   );
+}
 
-  if (lang === "ts") {
-    fs.writeFileSync(
-      path.join(microservicePath, "tsconfig.json"),
-      JSON.stringify(
-        {
-          compilerOptions: {
-            sourceMap: true,
-            target: "es6",
-            outDir: "build",
-            module: "commonjs",
-            experimentalDecorators: true,
-          },
-          include: ["src/**/*.ts"],
+function writeTsConfig(basePath: string) {
+  fs.writeFileSync(
+    path.join(basePath, "tsconfig.json"),
+    JSON.stringify(
+      {
+        compilerOptions: {
+          sourceMap: true,
+          target: "es6",
+          outDir: "build",
+          module: "commonjs",
+          experimentalDecorators: true,
         },
-        null,
-        2,
-      ),
-    );
-  }
-
-  const microserviceEnvPath = path.join(microservicePath, ".env");
-  !fs.existsSync(microserviceEnvPath) && fs.writeFileSync(microserviceEnvPath, "PORT=3000");
-
-  const microserviceSourcePath = path.join(microservicePath, "src");
-  !fs.existsSync(microserviceSourcePath) && fs.mkdirSync(microserviceSourcePath);
-
-  exec("npm install", { cwd: microservicePath });
-}
-
-function reinitializeMicroservicePackageJson(
-  project: Project,
-  oldMetadata: InitialGenzyMetadata,
-  newMetadata: InitialGenzyMetadata,
-) {
-  const { name, version, description } = newMetadata;
-  const microservicePath = path.join(project.path, name);
-  const packageJsonPath = path.join(microservicePath, "package.json");
-  const packageJsonContent = fs.readFileSync(packageJsonPath).toString();
-  const packageJson = JSON.parse(packageJsonContent);
-
-  packageJson.name = name;
-  packageJson.version = version;
-  packageJson.description = description;
-  packageJson.dependencies = computeNewPackagesObject(
-    packageJson.dependencies,
-    oldMetadata.packages || [],
-    newMetadata.packages || [],
-  );
-
-  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-
-  exec("npm install", { cwd: microservicePath });
-}
-
-function computeNewPackagesObject(
-  currentPackagesObject: Record<string, string>,
-  oldPackages: Package[],
-  newPackages: Package[],
-) {
-  const { added, modified, removed } = findPackagesDiff(oldPackages, newPackages);
-
-  added.forEach((newPackage) => (currentPackagesObject[newPackage.name] = newPackage.version));
-  modified.forEach((updatedPackage) => (currentPackagesObject[updatedPackage.name] = updatedPackage.version));
-  removed.forEach((removedPackage) => delete currentPackagesObject[removedPackage.name]);
-
-  return currentPackagesObject;
-}
-
-function findPackagesDiff(oldPackages: Package[], newPackages: Package[]) {
-  return {
-    added: newPackages.filter((newPackage) => oldPackages.every((oldPackage) => oldPackage.name !== newPackage.name)),
-    modified: newPackages.filter((newPackage) =>
-      oldPackages.some(
-        (oldPackage) => newPackage.name === oldPackage.name && newPackage.version !== oldPackage.version,
-      ),
+        include: ["src/**/*.ts"],
+      },
+      null,
+      2,
     ),
-    removed: oldPackages.filter((oldPackage) => newPackages.every((newPackage) => oldPackage.name !== newPackage.name)),
-  };
+  );
 }
 
-export { initMicroserviceTsJs, reinitializeMicroservicePackageJson };
+function writeEnvFileIfNotExisting(basePath: string) {
+  const microserviceEnvPath = path.join(basePath, ".env");
+  !fs.existsSync(microserviceEnvPath) && fs.writeFileSync(microserviceEnvPath, "PORT=3000");
+}
+
+function makeSRCFolderIfNotExisting(basePath: string) {
+  const microserviceSourcePath = path.join(basePath, "src");
+  !fs.existsSync(microserviceSourcePath) && fs.mkdirSync(microserviceSourcePath);
+}
+
+function runNPMInstall(runOnPath: string) {
+  exec("npm install", { cwd: runOnPath });
+}
+
+export { initMicroserviceTsJs };

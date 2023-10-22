@@ -1,5 +1,6 @@
 import { type Project } from "../projects/projects.models";
-import { initMicroserviceTsJs, reinitializeMicroservicePackageJson } from "../../generators/initMicroservice";
+import { initMicroserviceTsJs } from "../../generators/initMicroservice";
+import { reinitializeMicroservicePackageJson } from "../../generators/reinitializeMicroservice";
 import { generateMicroserviceCode } from "../../generators/generateMicroserviceCode";
 import { convertJSON } from "../../utils/converter";
 import { allocatePorts, removePorts } from "../watch-project/ports.manager";

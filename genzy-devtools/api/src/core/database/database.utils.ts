@@ -38,6 +38,18 @@ function createTables(db: Database) {
   `);
 }
 
-const dbConnection = createDbConnection();
+const database: { connection: Database } = {
+  connection: null as any,
+};
 
-export default dbConnection;
+const databaseProxy: { connection: Database } = new Proxy(database, {
+  get: function (target: any, property: keyof typeof database) {
+    if (property === "connection" && !target.connection) {
+      target.connection = createDbConnection();
+    }
+
+    return target[property];
+  },
+});
+
+export default databaseProxy;

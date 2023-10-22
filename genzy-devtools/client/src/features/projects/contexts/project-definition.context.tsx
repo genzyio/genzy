@@ -63,8 +63,8 @@ export const ProjectDefinitionContextProvider: FC<PropsWithChildren> = ({ childr
   const dispatcher = useMemo(() => createDispatcher(projectDefinition), [projectDefinition]);
 
   const changeTrackingDispatcher = useMemo(
-    () => createChangeTrackingDispatcherWrapper(dispatcher, setStateForMS),
-    [dispatcher, setStateForMS]
+    () => createChangeTrackingDispatcherWrapper(projectDefinition, dispatcher, setStateForMS),
+    [projectDefinition, dispatcher, setStateForMS]
   );
 
   const multiLevelDispatcher = useCallback(
