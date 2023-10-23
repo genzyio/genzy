@@ -12,7 +12,7 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "prepublish": "docusaurus build && rm -r ../docs && mv ./build ../docs"
+    "prepublish": "docusaurus build && rm -r ../docs && cp CNAME ./build && mv ./build ../docs"
   },
   "dependencies": {
     "@docusaurus/core": "2.4.3",
