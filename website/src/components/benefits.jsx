@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import styles from "./HomepageFeatures.module.css";
+import styles from "./benefits.module.css";
 import Translate from "@docusaurus/Translate";
 import Automate from "./images/engineering.svg";
 import Rapid from "./images/clock.svg";
@@ -22,10 +22,9 @@ const FeatureList = [
     title: <Translate>Automation</Translate>,
     description: (
       <Translate>
-        Genzy is able to automatically generate a Rest API with OpenAPI
-        documentation and SwaggerUI just from the plain service classes that are
-        provided. It also automatically generates the client code, supports
-        custom configuration and more!
+        Let Genzy's automation take the wheel, ensuring efficiency and
+        eliminating manual configurations. Simplify your workflow and
+        concentrate on your core tasks.
       </Translate>
     ),
     icon: <Automate className={styles.icon + " " + styles.padding} />,
@@ -34,25 +33,25 @@ const FeatureList = [
     title: <Translate>Flexibility</Translate>,
     description: (
       <Translate>
-        Start with a monolithic application, group services into GenzyContainers
-        and once you got the final picture of existing domains, scale to
-        multiple servivces with ease in no time.
+        With Genzy, you're in control. Whether you're looking to enhance your
+        existing project or build an entire application from scratch, Genzy
+        adapts to your needs, making every use case a breeze.
       </Translate>
     ),
     icon: <Flexibility className={styles.icon + " " + styles.padding} />,
   },
 ];
 
-function Feature({ title, description, icon }) {
+function Benefit({ title, description, icon }) {
   return (
     <div className={clsx("col col--4")}>
       <div
         className={
           clsx(styles.feature, "text--center padding-horiz--md") +
-          " flex flex-col items-center justify-center"
+          " flex flex-col items-center justify-center mt-5"
         }
       >
-        <span className="shrink-0 fill-brand-dark dark:fill-white">{icon}</span>
+        <span className="shrink-0 fill-brand-light">{icon}</span>
         <h3 className="font-bold text-lg mb-3">{title}</h3>
         <p>{description}</p>
       </div>
@@ -60,13 +59,13 @@ function Feature({ title, description, icon }) {
   );
 }
 
-export default function HomepageFeatures() {
+export default function Benefits() {
   return (
     <section className={styles.features}>
       <div className="container">
         <div className="row">
           {FeatureList.map((props, idx) => (
-            <Feature key={idx} {...props} />
+            <Benefit key={idx} {...props} />
           ))}
         </div>
       </div>

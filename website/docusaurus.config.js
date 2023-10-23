@@ -57,6 +57,11 @@ module.exports = {
         },
       ],
     },
+    colorMode: {
+      defaultMode: "dark",
+      disableSwitch: true,
+      respectPrefersColorScheme: false,
+    },
     footer: {
       style: "dark",
       copyright: `Copyright © ${new Date().getFullYear()} genzy.io`,

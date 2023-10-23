@@ -6,7 +6,7 @@ module.exports = {
       colors: {
         brand: {
           primary: "#03dea4",
-          "primary-light": "#04f7b5",
+          "primary-light": "#04ffbf",
           accent: "#1cdaff",
           dark: "#292929",
           light: "#f5f5f5",

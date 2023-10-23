@@ -1,14 +1,16 @@
-import React from 'react';
-import Layout from '@theme/Layout';
-import HomepageHeader from "../components/HomepageHeader";
-import HomepageFeatures from '../components/HomepageFeatures';
+import React from "react";
+import Layout from "@theme/Layout";
+import HomepageHeader from "../components/header";
+import Benefits from "../components/benefits";
+import Features from "../components/features";
 
 export default function Home() {
   return (
     <Layout>
       <HomepageHeader />
       <main>
-        <HomepageFeatures />
+        <Benefits />
+        <Features />
       </main>
     </Layout>
   );
