@@ -1,5 +1,5 @@
 import { type FC, type PropsWithChildren } from "react";
-import { ArrowDown } from "../../../../components/icons/arrow-down";
+import { ArrowUp } from "../../../../components/icons/arrows";
 
 type ClosableWrapperProps = PropsWithChildren & {
   className?: string;
@@ -17,7 +17,7 @@ export const ClosableWrapper: FC<ClosableWrapperProps> = ({
     <div className={className}>
       {!hidden ? (
         <div className="absolute right-7 cursor-pointer" onClick={onClick}>
-          <ArrowDown />
+          <ArrowUp />
         </div>
       ) : (
         <></>

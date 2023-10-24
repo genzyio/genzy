@@ -1,6 +1,9 @@
 import { useMemo, type FC, useState } from "react";
 import { useRecentlyOpenedProjects } from "../../hooks/useRecenltyOpenedProjects";
-import { RecentlyOpenedListItem } from "./recenlty-opened-list-item";
+import {
+  RecentlyOpenedListItem,
+  type RecentlyOpenedListItemOption,
+} from "./recently-opened-list-item";
 import { useAction } from "../../../../hooks/useAction";
 import { deleteRecentlyOpened, modifyRecentlyOpened } from "../../api/recently-opened.actions";
 import { type RecentlyOpenedProject } from "../../models/recently-opened.models";
@@ -11,6 +14,8 @@ import { deleteProject } from "../../api/project.actions";
 import { useQueryClient } from "react-query";
 import { ConfirmationModal } from "../../../../components/confirmation-modal";
 import { useProjectNavigation } from "../../hooks/useProjectNavigation";
+import { BookmarkSlashIcon, ClipboardDocumentIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { Accordion } from "../../../../components/accordion";
 
 export const RecentlyOpenedList: FC = () => {
   const { recentlyOpenedProjects } = useRecentlyOpenedProjects();
@@ -77,11 +82,11 @@ export const RecentlyOpenedList: FC = () => {
   function renderProjectList(
     projects: RecentlyOpenedProject[],
     filterCondition: (project: RecentlyOpenedProject) => boolean,
-    onRemoveProject: (project: RecentlyOpenedProject) => any
+    optionsFactory: (project: RecentlyOpenedProject) => RecentlyOpenedListItemOption[]
   ) {
     return (
       <ul role="list" className="divide-y divide-gray-100">
-        {projects.filter(filterCondition).map((project) => (
+        {projects.filter(filterCondition).map((project, i, projects) => (
           <RecentlyOpenedListItem
             key={project.name}
             recentlyOpenedProject={project}
@@ -89,9 +94,8 @@ export const RecentlyOpenedList: FC = () => {
               openProject(project.name);
               modifyRecentlyOpenedAction(project.name);
             }}
-            onRemoveProject={() => {
-              onRemoveProject(project);
-            }}
+            options={optionsFactory(project)}
+            optionDirection={projects.length === i + 1 ? "top" : "bottom"}
           />
         ))}
       </ul>
@@ -99,27 +103,43 @@ export const RecentlyOpenedList: FC = () => {
   }
 
   return (
-    <>
+    <div className="mt-10">
       {hasRecentProjects && (
-        <>
-          <p className="font-bold">Recently opened</p>
+        <Accordion title="Recently opened" titleClassName="font-bold" initiallyOpen={true}>
           {renderProjectList(
             recentlyOpenedProjects,
             (project: RecentlyOpenedProject) => !!project.openedAt,
-            (project: RecentlyOpenedProject) => deleteRecentlyOpenedAction(project.name)
+            (project: RecentlyOpenedProject) => [
+              {
+                label: <OptionLabel title="Remove from list" icon={BookmarkSlashIcon} />,
+                onClick: () => deleteRecentlyOpenedAction(project.name),
+              },
+              {
+                label: <OptionLabel title="Copy path" icon={ClipboardDocumentIcon} />,
+                onClick: () => navigator.clipboard.writeText(project.path),
+              },
+            ]
           )}
-        </>
+        </Accordion>
       )}
 
       {hasOtherProjects && (
-        <>
-          <p className="font-bold mt-2">Other</p>
+        <Accordion className="mt-5" title="Other" titleClassName="font-bold" initiallyOpen={true}>
           {renderProjectList(
             recentlyOpenedProjects,
             (project: RecentlyOpenedProject) => !project.openedAt,
-            (project: RecentlyOpenedProject) => openDeleteModal(project)
+            (project: RecentlyOpenedProject) => [
+              {
+                label: <OptionLabel title="Delete" icon={TrashIcon} />,
+                onClick: () => openDeleteModal(project),
+              },
+              {
+                label: <OptionLabel title="Copy path" icon={ClipboardDocumentIcon} />,
+                onClick: () => navigator.clipboard.writeText(project.path),
+              },
+            ]
           )}
-        </>
+        </Accordion>
       )}
 
       {isDeleteModalOpen && (
@@ -144,6 +164,20 @@ export const RecentlyOpenedList: FC = () => {
           />
         </ConfirmationModal>
       )}
-    </>
+    </div>
+  );
+};
+
+type OptionLabelProps = {
+  title: string;
+  icon: React.ElementType;
+};
+
+const OptionLabel: FC<OptionLabelProps> = ({ icon: Icon, title }) => {
+  return (
+    <div className="flex space-x-1 items-center">
+      <Icon className="-ml-2 h-4 w-4" />
+      <div>{title}</div>
+    </div>
   );
 };

@@ -18,6 +18,14 @@
   width: 4.25rem;
 }
 
+.w-18 {
+  width: 4.5rem;
+}
+
+.h-18 {
+  height: 4.5rem;
+}
+
 .border-gray-100 {
   border-color: rgb(243 244 246);
 }
