@@ -9,13 +9,37 @@ export class {{name}}
   {
   {% for field_name, props in type %}
     {% if props.$typeName %}
-      {% if props.$isArray %}@arrayOf({{props.$typeName}}{% if props.$isOptional %}, { optional: true }{% endif %})
-      {% else %}@type({{props.$typeName}}{% if props.$isOptional %}, { optional: true }{% endif %})
-      {% endif %}
+      {% if props.$isArray -%}
+        @arrayOf({{props.$typeName}}
+      {%- else -%}
+        @type({{props.$typeName}}
+      {%- endif %}
+      {% if props.$isOptional -%}
+        , { optional: true }
+      {%- endif %})
     {% else %}
-      @{{props.type}}{% if props.$isArray %}Array{% endif %}({% if props.$isOptional %}{% raw %}{{% endraw %} optional: true {% raw %}}{% endraw %}{% endif %})
+      @{{props.type}}
+      {%- if props.$isArray -%}
+        Array
+      {%- endif -%}
+      (
+        {%- if props.$isOptional -%}
+          { optional: true }
+        {%- endif -%}
+      )
     {% endif %}
-    {{field_name}}{% if props.$isOptional %}?{% endif %}: {% if props.type == "int" or props.type == "float" %}number{% else %}{{props.type or props.$typeName}}{% if props.$isArray %}[]{% endif %}{% endif %};
+    {{field_name}}
+    {%- if props.$isOptional -%}
+      ?
+    {%- endif -%}: 
+      {%- if props.type == "int" or props.type == "float" -%}
+        number
+      {% else -%}
+        {{props.type or props.$typeName}}
+      {%- endif -%}
+      {%- if props.$isArray -%}
+        []
+      {%- endif -%};
   {% endfor %}
-  }
+}
 
