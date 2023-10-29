@@ -16,8 +16,8 @@ import {
   type,
   stringArray,
   floatArray,
-} from "../../api/src";
-import { Get, Post, Controller, GenzyContainer } from "../../client/src";
+} from "../../sdk/api/src";
+import { Get, Post, Controller, GenzyContainer } from "../../sdk/client/src";
 
 // import pg from "pg"; // v2.1.0
 // jos 3 npr
@@ -353,7 +353,7 @@ s.addAccessToContainer("b", b);
 
 controllers.addAccessToContainer("services", services);
 
-console.log("aaa", controllers.getServices())
+console.log("aaa", controllers.getServices());
 
 export const api = new GenzyApi()
   .addPlugin(new ZodValidationPlugin())

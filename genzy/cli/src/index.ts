@@ -1,67 +1,24 @@
-"use strict";
 import * as yargs from "yargs";
+import axios from "axios";
+import * as fs from "fs";
+import {
+  type ExtendedMetaInfo,
+  type MetaInfo,
+  generateJSServer,
+  generateJSClient,
+  generateTSServer,
+  generateTSClient,
+  generateCSharpClient,
+} from "@genzy.io/generator";
+import { startGenzy } from "@genzy.io/devtools-api";
+import { hideBin } from "yargs/helpers";
 
-import { fetchMeta, readMetaFromFile } from "./utils/general";
-
-import { generate as generateJS } from "./javascript/client-generator";
-import { generate as generateTS } from "./typescript/client-generator";
-import { generate as generateCS } from "./csharp/client-generator";
-
-import { generate as generateServerJS } from "./javascript/server-generator";
-import { generate as generateServerTS } from "./typescript/server-generator";
-
-import type { ExtendedMetaInfo } from "./types";
-import { createEnv } from "./env.utils";
-
-export async function generateJSClient(
-  meta: ExtendedMetaInfo,
-  dirPath: string,
-  host: string
-): Promise<void> {
-  const env = createEnv(false, "js");
-  return generateJS({ meta, url: host, dirPath, nunjucks: env });
-}
-
-export async function generateTSClient(
-  meta: ExtendedMetaInfo,
-  dirPath: string,
-  host: string
-): Promise<void> {
-  const env = createEnv(false, "ts");
-  return generateTS({ meta, url: host, dirPath, nunjucks: env });
-}
-
-export async function generateCSharpClient(
-  meta: ExtendedMetaInfo,
-  dirPath: string,
-  host: string
-): Promise<void> {
-  const env = createEnv(false, "cs");
-  return generateCS({ meta, url: host, dirPath, nunjucks: env });
-}
-
-export async function generateJSServer(
-  meta: ExtendedMetaInfo,
-  dirPath: string
-): Promise<void> {
-  const env = createEnv(true, "js");
-  return generateServerJS({ meta, dirPath, nunjucks: env });
-}
-
-export async function generateTSServer(
-  meta: ExtendedMetaInfo,
-  dirPath: string
-): Promise<void> {
-  const env = createEnv(true, "ts");
-  return generateServerTS({ meta, dirPath, nunjucks: env });
-}
-
-main();
-
-async function main() {
-  const options = process.env.DONT_RUN_MAIN
-    ? undefined
-    : (yargs
+yargs(hideBin(process.argv))
+  .command(
+    "generate",
+    "generate code",
+    (yargs) => {
+      return yargs
         .usage("Usage: -l <language> -h <host> -o <out_dir> -f -server")
         .option("l", {
           alias: "language",
@@ -93,44 +50,78 @@ async function main() {
           describe: "Output directory",
           type: "string",
           demandOption: true,
-        }).argv as any);
-
-  if (!options) {
-    return;
-  }
-  if (!options.filePath && !options.host) {
-    console.log("You must provide either a host or a file path.");
-    return;
-  }
-
-  const meta = (await (options.filePath
-    ? readMetaFromFile(options.filePath)
-    : fetchMeta(options.host))) as ExtendedMetaInfo;
-
-  switch (options.language) {
-    case "js":
-      if (options.isServer) {
-        generateJSServer(meta, options.outDir);
-      } else {
-        generateJSClient(meta, options.outDir, options.host);
+        });
+    },
+    async (options) => {
+      if (!options) {
+        return;
       }
-      break;
-    case "ts":
-      if (options.isServer) {
-        generateTSServer(meta, options.outDir);
-      } else {
-        generateTSClient(meta, options.outDir, options.host);
+      if (!options.f && !options.h) {
+        console.log("You must provide either a host or a file path.");
+        return;
       }
-      break;
-    case "cs":
-      if (options.isServer) {
-        throw new Error(
-          "There is no support for generating CS server code yet!"
-        );
+
+      const meta = (await (options.f
+        ? readMetaFromFile(options.f)
+        : fetchMeta(options.h))) as ExtendedMetaInfo;
+
+      switch (options.language) {
+        case "js":
+          if (options.isServer) {
+            generateJSServer(meta, options.o);
+          } else {
+            generateJSClient(meta, options.o, options.h);
+          }
+          break;
+        case "ts":
+          if (options.isServer) {
+            generateTSServer(meta, options.o);
+          } else {
+            generateTSClient(meta, options.o, options.h);
+          }
+          break;
+        case "cs":
+          if (options.isServer) {
+            throw new Error(
+              "There is no support for generating CS server code yet!"
+            );
+          }
+          generateCSharpClient(meta, options.o, options.h);
+          break;
+        default:
+          break;
       }
-      generateCSharpClient(meta, options.outDir, options.host);
-      break;
-    default:
-      break;
-  }
+    }
+  )
+  .command(
+    "dev [path]",
+    "start DevTools server",
+    (yargs) => {
+      return yargs
+        .positional("path", {
+          describe: "path of the genzy project directory",
+          default: ".",
+        })
+        .option("p", {
+          alias: "port",
+          describe: "Port to bint to",
+          default: 3000,
+        });
+    },
+    async (options) => {
+      console.log("TODO: PATH = ", options.path, " PORT = ", options.p);
+      startGenzy(options.p);
+    }
+  )
+  .demandCommand(1)
+  .parse();
+
+export async function fetchMeta(url: string): Promise<MetaInfo> {
+  return (await axios.get(`${url}/meta`)).data;
+}
+
+export async function readMetaFromFile(filePath: string): Promise<MetaInfo> {
+  return new Promise((resolve) => {
+    resolve(JSON.parse(fs.readFileSync(filePath, "utf8")));
+  });
 }

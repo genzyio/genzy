@@ -1,6 +1,6 @@
-import { GenzyContainer } from "../../client/src";
-import { Get, Post, Controller } from "../../client/src";
-import { Query } from "../../shared/decorators";
+import { GenzyContainer } from "../../sdk/client/src";
+import { Get, Post, Controller } from "../../sdk/client/src";
+import { Query } from "../../sdk/shared/decorators";
 
 class TestService {
   $genzy = {

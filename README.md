@@ -1,5 +1,4 @@
-
-# <img src="image/README/1697639259822.png" width="20" height="20" />  genzy.io
+# <img src="image/README/1697639259822.png" width="20" height="20" /> genzy.io
 
 A simple framework for building better API-s faster.
 
@@ -157,7 +156,7 @@ const app = new GenzyApi({
     version: "0.0.1",
     description: "This API is used for creating accounts.",
   },
-})..buildAppFrom(controllers);
+}).buildAppFrom(controllers);
 
 // start the server
 app.listen(3000);

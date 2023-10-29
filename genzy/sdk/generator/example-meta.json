@@ -1,0 +1,401 @@
+{
+  "plugins": [
+    {
+      "name": "genzy-zod-validation",
+      "services": []
+    },
+    {
+      "name": "genzy-mariadb-repository",
+      "services": [
+        "MariaRepository"
+      ]
+    }
+  ],
+  "services": [
+    {
+      "name": "AuthController",
+      "dependencies": [
+        "NoviServis"
+      ],
+      "actions": [
+        {
+          "httpMethod": "get",
+          "name": "getLoggedInUser",
+          "path": "/",
+          "params": [],
+          "result": {
+            "$typeName": "User",
+            "$isArray": false
+          }
+        },
+        {
+          "httpMethod": "post",
+          "name": "logIn",
+          "path": "/login",
+          "params": [
+            {
+              "name": "body",
+              "source": "body",
+              "type": {
+                "$typeName": "User",
+                "$isArray": false
+              }
+            }
+          ],
+          "result": {
+            "$typeName": "User",
+            "$isArray": false
+          }
+        }
+      ],
+      "path": "/auth"
+    },
+    {
+      "name": "PeraCrudController",
+      "actions": [
+        {
+          "httpMethod": "get",
+          "name": "findOne",
+          "path": "/:id",
+          "params": [
+            {
+              "name": "id",
+              "source": "path",
+              "type": {
+                "type": "string",
+                "$isOptional": false
+              }
+            }
+          ],
+          "result": {
+            "$typeName": "Pera",
+            "$isArray": false
+          }
+        },
+        {
+          "httpMethod": "get",
+          "name": "peraJaje",
+          "path": "/pera-jaje",
+          "params": [],
+          "result": {
+            "type": "string",
+            "$isArray": true
+          }
+        },
+        {
+          "httpMethod": "get",
+          "name": "findMany",
+          "path": "/",
+          "params": [],
+          "result": {
+            "$typeName": "Pera",
+            "$isArray": true
+          }
+        },
+        {
+          "httpMethod": "post",
+          "name": "create",
+          "path": "/",
+          "params": [
+            {
+              "name": "body",
+              "source": "body",
+              "type": {
+                "$typeName": "Pera",
+                "$isArray": false
+              }
+            }
+          ],
+          "result": {
+            "$typeName": "Pera",
+            "$isArray": false
+          }
+        },
+        {
+          "httpMethod": "put",
+          "name": "update",
+          "path": "/:id",
+          "params": [
+            {
+              "name": "id",
+              "source": "path",
+              "type": {
+                "type": "string",
+                "$isOptional": false
+              }
+            },
+            {
+              "source": "body",
+              "type": {
+                "$typeName": "Pera",
+                "$isArray": false
+              }
+            }
+          ],
+          "result": {
+            "$typeName": "Pera",
+            "$isArray": false
+          }
+        },
+        {
+          "httpMethod": "delete",
+          "name": "delete",
+          "path": "/:id",
+          "params": [
+            {
+              "name": "id",
+              "source": "path",
+              "type": {
+                "type": "string",
+                "$isOptional": false
+              }
+            },
+            {
+              "name": "q",
+              "source": "query",
+              "type": {
+                "type": "string",
+                "$isOptional": true,
+                "$isArray": true
+              }
+            }
+          ],
+          "result": {
+            "$typeName": "Pera",
+            "$isArray": false
+          }
+        }
+      ],
+      "path": "/peras"
+    },
+    {
+      "name": "UserCrudController",
+      "dependencies": [],
+      "actions": [
+        {
+          "httpMethod": "get",
+          "name": "findOne",
+          "path": "/:id",
+          "params": [
+            {
+              "name": "id",
+              "source": "path",
+              "type": {
+                "type": "string",
+                "$isOptional": false
+              }
+            }
+          ],
+          "result": {
+            "$typeName": "User",
+            "$isArray": false
+          }
+        },
+        {
+          "httpMethod": "get",
+          "name": "findMany",
+          "path": "/",
+          "params": [],
+          "result": {
+            "$typeName": "User",
+            "$isArray": true
+          }
+        },
+        {
+          "httpMethod": "post",
+          "name": "create",
+          "path": "/",
+          "params": [
+            {
+              "name": "body",
+              "source": "body",
+              "type": {
+                "$typeName": "User",
+                "$isArray": false
+              }
+            }
+          ],
+          "result": {
+            "$typeName": "User",
+            "$isArray": false
+          }
+        },
+        {
+          "httpMethod": "put",
+          "name": "update",
+          "path": "/:id",
+          "params": [
+            {
+              "name": "id",
+              "source": "path",
+              "type": {
+                "type": "string",
+                "$isOptional": false
+              }
+            },
+            {
+              "source": "body",
+              "type": {
+                "$typeName": "User",
+                "$isArray": false
+              }
+            }
+          ],
+          "result": {
+            "$typeName": "User",
+            "$isArray": false
+          }
+        },
+        {
+          "httpMethod": "delete",
+          "name": "delete",
+          "path": "/:id",
+          "params": [
+            {
+              "name": "id",
+              "source": "path",
+              "type": {
+                "type": "string",
+                "$isOptional": false
+              }
+            },
+            {
+              "name": "q",
+              "source": "query",
+              "type": {
+                "type": "string",
+                "$isOptional": true,
+                "$isArray": true
+              }
+            }
+          ],
+          "result": {
+            "$typeName": "User",
+            "$isArray": false
+          }
+        }
+      ],
+      "path": "/users"
+    },
+    {
+      "name": "NoviServis",
+      "type": "LocalService",
+      "actions": [
+        {
+          "name": "getNesto",
+          "params": [
+            {
+              "name": "nesto",
+              "type": {
+                "$typeName": "Pera",
+                "$isOptional": true,
+                "$isArray": true
+              }
+            }
+          ],
+          "result": {
+            "$typeName": "Pera"
+          }
+        }
+      ]
+    }
+  ],
+  "types": {
+    "Peraa": {
+      "hello": {
+        "type": "string",
+        "$isOptional": false,
+        "$isArray": false
+      }
+    },
+    "Test": {
+      "username": {
+        "type": "string",
+        "$isOptional": false,
+        "$isArray": false
+      },
+      "password": {
+        "type": "string",
+        "$isOptional": false,
+        "$isArray": false
+      },
+      "peraas": {
+        "$isArray": true,
+        "$isOptional": true,
+        "$typeName": "Peraa"
+      }
+    },
+    "Account": {
+      "username": {
+        "type": "string",
+        "$isOptional": false,
+        "$isArray": false
+      },
+      "password": {
+        "type": "string",
+        "$isOptional": false,
+        "$isArray": false
+      },
+      "tests": {
+        "$isArray": true,
+        "$typeName": "Test"
+      }
+    },
+    "User": {
+      "name": {
+        "type": "string",
+        "$isOptional": false,
+        "$isArray": false
+      },
+      "surname": {
+        "type": "string",
+        "$isOptional": false,
+        "$isArray": false
+      },
+      "age": {
+        "type": "int",
+        "$isOptional": true,
+        "$isArray": false
+      },
+      "roles": {
+        "type": "string",
+        "$isOptional": false,
+        "$isArray": true
+      },
+      "account": {
+        "$isArray": false,
+        "$isOptional": true,
+        "$typeName": "Account"
+      }
+    },
+    "Pera": {
+      "username": {
+        "type": "string",
+        "$isOptional": false,
+        "$isArray": false
+      },
+      "password": {
+        "type": "string",
+        "$isOptional": false,
+        "$isArray": false
+      },
+      "car": {
+        "type": "boolean",
+        "$isOptional": false,
+        "$isArray": false
+      },
+      "test": {
+        "type": "string",
+        "$isOptional": true,
+        "$isArray": true
+      }
+    }
+  },
+  "genzyInfo": {
+    "basePath": "/api",
+    "version": "0.0.1-alpha1",
+    "name": "Test Microservice",
+    "description": "This microservice is used for random stuff.",
+    "port": 3000
+  }
+}
