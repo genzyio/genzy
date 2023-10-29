@@ -1,0 +1,14 @@
+{
+  "name": "genzy.io",
+  "version": "0.0.0",
+  "description": "Genzy - build better APIs faster.",
+  "scripts": {},
+  "keywords": [
+    "genzy",
+    "api",
+    "rest",
+    "documentation"
+  ],
+  "author": "bjelicaluka",
+  "license": "ISC"
+}
