@@ -13,21 +13,19 @@ import {
   string, int, float, boolean, type, arrayOf
 } from '@genzy.io/api';
 {% for name, fields in types %}
-import { {{name}} } from "./types/{{name}}";
+  import { {{name}} } from "./types/{{name}}";
 {% endfor %}
 {% if extends %}
-import {
-{{extends}}
-} from "./{{extends}}";
+  import { {{extends}} } from "./{{extends}}";
 {% endif %}
 {% if dependencies | length %}
-import { GenzyControllersContainerDeps } from ".";
+  import { GenzyControllersContainerDeps } from ".";
 {% endif %}
 
 {% if path != null %}@Controller('{{ path }}'){% endif %}
 export class {{ name }} {% if extends %} extends {{ extends }} {% endif %} {
 {% if dependencies | length %}
-  {% for dependency in dependencies %}
+  {% for dependency in dependencies -%}
     private {{dependency}}: GenzyControllersContainerDeps["services"]["{{dependency}}"];
   {% endfor %}
   constructor(deps: GenzyControllersContainerDeps) {
@@ -38,17 +36,30 @@ export class {{ name }} {% if extends %} extends {{ extends }} {% endif %} {
 {% endif %}
 {% for action in actions %} {{ methods }}
 {% if action.httpMethod %}  @{{ action.httpMethod }}({% if action.httpMethod %}'{{ action.path }}'{% endif %}){% endif %}
-  {% if action.resultDecorator %}{{ action.resultDecorator | safe }}{% endif %}
-  async {{ action.name }}({% for param in action.params %}
-    {% if param.source == "query" %}
-      @Query('{{ param.name }}', { {% if param.typeAdapted.name != "any" %}type: {% if param.typeAdapted.isComplex %} {{ param.typeAdapted.name }} {% else %} "{{ param.type.type }}" {% endif %}, {% endif %} {% if param.$isOptional %}optional: true {% endif %} {% if param.$isArray %}, array: true {% endif %}})
-    {% endif %}
-    {% if param.source == "path" %}
-      @Path('{{ param.name }}', { {% if param.typeAdapted.name != "any" %}type: {% if param.typeAdapted.isComplex %} {{ param.typeAdapted.name }} {% else %} "{{ param.type.type }}" {% endif %}, {% endif %} {% if param.$isOptional %}optional: true {% endif %} {% if param.$isArray %}, array: true {% endif %}})
-    {% endif %}
-    {% if param.source == "body" %}
-      @Body({ {% if param.typeAdapted.name != "any" %}type: {{ param.typeAdapted.name }}, {% endif %} {% if param.$isOptional %}optional: true {% endif %} {% if param.$isArray %}, array: true {% endif %}})
-    {% endif %} {{ param.name }}{% if param.$isOptional %}?{% endif %}: {{ param.typeAdapted.name }}{% if param.$isArray %}[]{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}): Promise<{{ action.resultType.name }}{% if action.result.$isArray %}[]{% endif %}>
+  {% if action.resultDecorator -%}
+    {{ action.resultDecorator | safe -}}
+  {%- endif -%}
+  async {{ action.name }}(
+    {%- for param in action.params -%}
+    {% if param.source == "query" or param.source == "path" -%}
+      @{{param.source | capitalize}}('{{ param.name }}', { 
+        {%- if param.typeAdapted.name != "any" -%} type: 
+          {%- if param.typeAdapted.isComplex -%}
+            {{ param.typeAdapted.name }} 
+          {%- else -%} 
+            "{{ param.type.type }}" 
+          {% endif %}, 
+       {% endif %} 
+    {% elif param.source == "body" -%}
+      @Body({ {% if param.typeAdapted.name != "any" -%} type: {{ param.typeAdapted.name }}, {%- endif %} 
+    {% endif -%} 
+    {% if param.$isOptional -%}optional: true{% endif %} 
+    {% if param.$isArray -%}, array: true {%- endif %}})
+    {{ param.name }}
+    {%- if param.$isOptional %}?{% endif %}: {{ param.typeAdapted.name }}
+    {%- if param.$isArray %}[]{% endif %}
+    {%- if not loop.last %}, {% endif %}
+    {%- endfor -%}): Promise<{{ action.resultType.name }}{% if action.result.$isArray %}[]{% endif %}>
   {% if action.existingBody %}
     {{ action.existingBody | safe }}
   {% else %}
