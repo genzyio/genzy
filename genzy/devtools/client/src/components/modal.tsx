@@ -47,11 +47,11 @@ export const Modal: FC<ModalProps> = ({ title, isOpen, isLarge = false, onClose,
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                     <Dialog.Title
                       as="h3"
-                      className="text-xl font-medium leading-6 mb-4 text-center"
+                      className="text-xl font-medium leading-6 mb-4 text-center text-gray-300"
                     >
                       {title}
                     </Dialog.Title>
-                    <div className="mt-2">{children}</div>
+                    <div className="mt-2 text-gray-300">{children}</div>
                   </div>
                 </div>
               </Dialog.Panel>

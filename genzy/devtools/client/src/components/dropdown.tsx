@@ -42,7 +42,7 @@ export const DropDownMenu: FC<DropDownMenuProps> = ({
       >
         <Menu.Items
           className={classNames(
-            `absolute right-0 z-10 mt-2 ${sizeClassMap[size]} origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none `,
+            `absolute right-0 z-10 mt-2 ${sizeClassMap[size]} origin-top-right rounded-md bg-brand-node-dark shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none border-[1px] border-gray-500`,
             direction === "top" ? "bottom-full" : ""
           )}
         >
@@ -64,8 +64,8 @@ export const DropdownItemLink: FC<DropdownItemLinkProps> = ({ href, children }) 
         <a
           href={href}
           className={classNames(
-            "font-medium text-gray-800",
-            active ? "bg-gray-100" : "",
+            "font-medium text-gray-300",
+            active ? "bg-gray-500" : "",
             "block px-4 py-2 text-sm"
           )}
         >
@@ -87,8 +87,8 @@ export const DropdownItemHandler: FC<DropdownItemHandlerProps> = ({ onClick, chi
         <p
           onClick={onClick}
           className={classNames(
-            "font-medium text-gray-800 cursor-pointer",
-            active ? "bg-gray-100" : "",
+            "font-medium text-gray-300 cursor-pointer",
+            active ? "bg-gray-500" : "",
             "block px-4 py-2 text-sm"
           )}
         >

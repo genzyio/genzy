@@ -8,7 +8,6 @@ function getProjectScreenshotUrl(projectName: string) {
 
 async function saveProjectScreenshot(projectName: string) {
   toBlob(document.querySelector(".react-flow") as HTMLElement, {
-    backgroundColor: "white",
     filter: (node) => {
       const notContainsClass = (className: string) => !node?.classList?.contains(className);
       return notContainsClass("react-flow__minimap") && notContainsClass("react-flow__controls");

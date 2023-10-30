@@ -40,9 +40,9 @@ const LoadingPlugin: FC = () => {
 
   return (
     <div className="space-y-2">
-      <LoadingRow color={"gray-200"} height={20} width={nameWidth} />
-      <LoadingRow color={"gray-200"} width={descriptionWidth} />
-      <LoadingRow color={"gray-100"} width={versionWidth} />
+      <LoadingRow color={"gray-500"} height={20} width={nameWidth} />
+      <LoadingRow color={"gray-500"} width={descriptionWidth} />
+      <LoadingRow color={"gray-400"} width={versionWidth} />
     </div>
   );
 };

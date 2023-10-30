@@ -27,7 +27,7 @@ type KeywordChipProps = {
 const KeywordChip: FC<KeywordChipProps> = ({ keyword }) => {
   return (
     <div
-      className={`border bg-gray-100 border-gray-300 rounded-md px-0.5 py-0.5 text-center text-xs flex items-center`}
+      className={`border bg-gray-500 border-gray-300 rounded-md px-0.5 py-0.5 text-center text-xs flex items-center`}
     >
       {keyword}
     </div>

@@ -5,11 +5,11 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "dev": "nodemon --watch ../ --exec ts-node src/index.ts --ext ts,json",
     "start": "npm run build:client && tsc && npm run copy-to-dist && node dist",
     "build": "npm run build:client && tsc --declaration && npm run copy-to-dist",
     "build:client": "cd ../client && npm run build && rm -rf ../api/public 2> /dev/null && cp -r dist ../api/public",
-    "copy-to-dist": "rm -rf ./dist/public 2> /dev/null && cp -r public dist/public",
+    "copy-to-dist": "rm -rf ./dist/public 2> /dev/null && cp -r public dist/public && rm -rf ./dist/res 2> /dev/null && cp -r res dist/res",
     "prepublish": "npm run build",
     "test": "jest"
   },

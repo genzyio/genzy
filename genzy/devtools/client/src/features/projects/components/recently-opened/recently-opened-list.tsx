@@ -5,7 +5,7 @@ import {
   type RecentlyOpenedListItemOption,
 } from "./recently-opened-list-item";
 import { useAction } from "../../../../hooks/useAction";
-import { deleteRecentlyOpened, modifyRecentlyOpened } from "../../api/recently-opened.actions";
+import { deleteRecentlyOpened } from "../../api/recently-opened.actions";
 import { type RecentlyOpenedProject } from "../../models/recently-opened.models";
 import { Checkbox } from "../../../../components/checkbox";
 import { useNotifications } from "../../../../hooks/useNotifications";
@@ -28,11 +28,6 @@ export const RecentlyOpenedList: FC = () => {
   const hasOtherProjects = useMemo(() => {
     return recentlyOpenedProjects.some((project) => !project.openedAt);
   }, [recentlyOpenedProjects]);
-
-  const modifyRecentlyOpenedAction = useAction<string>(modifyRecentlyOpened, {
-    onSuccess: () => {},
-    onError: (error) => {},
-  });
 
   const notificator = useNotifications();
 
@@ -85,14 +80,13 @@ export const RecentlyOpenedList: FC = () => {
     optionsFactory: (project: RecentlyOpenedProject) => RecentlyOpenedListItemOption[]
   ) {
     return (
-      <ul role="list" className="divide-y divide-gray-100">
+      <ul role="list" className="divide-y divide-gray-500">
         {projects.filter(filterCondition).map((project, i, projects) => (
           <RecentlyOpenedListItem
             key={project.name}
             recentlyOpenedProject={project}
             onViewProject={() => {
               openProject(project.name);
-              modifyRecentlyOpenedAction(project.name);
             }}
             options={optionsFactory(project)}
             optionDirection={projects.length === i + 1 ? "top" : "bottom"}

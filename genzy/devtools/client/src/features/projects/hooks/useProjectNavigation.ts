@@ -1,5 +1,7 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAction } from "../../../hooks/useAction";
+import { modifyRecentlyOpened } from "../api/recently-opened.actions";
 
 type ProjectNavigation = {
   openProject: (projectName: string) => void;
@@ -8,12 +10,17 @@ type ProjectNavigation = {
 
 const useProjectNavigation = (): ProjectNavigation => {
   const navigate = useNavigate();
+  const modifyRecentlyOpenedAction = useAction<string>(modifyRecentlyOpened, {
+    onSuccess: () => {},
+    onError: (error) => {},
+  });
 
   const openProject = useCallback(
     (projectName: string) => {
       navigate(`/projects/${projectName}`);
+      modifyRecentlyOpenedAction(projectName);
     },
-    [navigate]
+    [navigate, modifyRecentlyOpenedAction]
   );
 
   const closeProject = useCallback(() => {

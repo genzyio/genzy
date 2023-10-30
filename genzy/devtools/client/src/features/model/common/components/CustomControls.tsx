@@ -6,7 +6,6 @@ import { ControlsStyled } from "../../../../components/diagram";
 
 function toImage(projectName: string) {
   toPng(document.querySelector(".react-flow") as HTMLElement, {
-    backgroundColor: "white",
     filter: (node) => {
       const notContainsClass = (className: string) => !node?.classList?.contains(className);
       return notContainsClass("react-flow__minimap") && notContainsClass("react-flow__controls");

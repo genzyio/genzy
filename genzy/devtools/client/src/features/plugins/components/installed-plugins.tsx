@@ -24,8 +24,8 @@ const Plugin: FC<PluginProps> = ({ name, version }) => {
     return (
       <div className="space-y-2">
         <div className="font-medium text-xl">{name}</div>
-        <LoadingRow color={"gray-200"} width={descriptionWidth} />
-        <LoadingRow color={"gray-100"} width={versionWidth} />
+        <LoadingRow color={"gray-500"} width={descriptionWidth} />
+        <LoadingRow color={"gray-400"} width={versionWidth} />
       </div>
     );
   }
