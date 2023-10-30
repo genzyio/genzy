@@ -25,7 +25,7 @@ export const Drawer: FC<
   return (
     <div
       className={
-        "fixed overflow-hidden z-30 inset-0 bg-gray-400 bg-opacity-25 transform ease-in-out" +
+        "fixed overflow-hidden z-30 inset-0 bg-brand-node-dark bg-opacity-25 transform ease-in-out" +
         (isOpen
           ? "transition-opacity opacity-100 duration-500 translate-x-0"
           : `transition-all delay-100 opacity-0 duration-1000 ${
@@ -35,9 +35,11 @@ export const Drawer: FC<
     >
       <div
         className={
-          `border-l w-full ${large ? "md:max-w-4xl" : "sm:w-4/5 md:w-3/5 lg:w-3/5 xl:max-w-xl"} ${
+          `border-l border-brand-node-gray w-full ${
+            large ? "md:max-w-4xl" : "sm:w-4/5 md:w-3/5 lg:w-3/5 xl:max-w-xl"
+          } ${
             side === "left" ? "left-0" : "right-0"
-          } absolute bg-white h-full shadow-xl delay-400 duration-500 ease-in-out transition-all transform` +
+          } absolute bg-brand-node-dark h-full shadow-xl delay-400 duration-500 ease-in-out transition-all transform` +
           (isOpen ? "translate-x-0" : "translate-x-full")
         }
       >
@@ -45,11 +47,11 @@ export const Drawer: FC<
           <div
             className={`flex ${
               side === "left" ? "flex-row-reverse" : "flex-row"
-            } pl-4 pr-6 pt-8 pb-2 font-bold text-2xl text-blue-900 justify-between`}
+            } pl-4 pr-6 pt-8 pb-2 font-bold text-2xl text-gray-300 justify-between`}
           >
             {title && typeof title === "string" ? <span className="ml-3">{title}</span> : title}
             <button
-              className="bg-white rounded-md text-blue-900 hover:text-blue-500"
+              className="rounded-md text-gray-300 hover:text-gray-200"
               onClick={() => handleClose()}
             >
               <XMark className="h-6 w-6" />

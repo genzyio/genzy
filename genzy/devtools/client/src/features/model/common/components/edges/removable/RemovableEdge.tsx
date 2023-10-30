@@ -23,7 +23,7 @@ export const RemovableEdge: FC<RemovableEdge> = ({
       <RemovableButton
         onRemove={(event) => onRemove(event, id)}
         translateX={labelX}
-        translateY={labelY}
+        translateY={labelY + 2.5}
       />
     ),
     [id, onRemove]

@@ -123,7 +123,7 @@ export const EditMethod: FC<EditMethodProps> = ({ method, onChange, onDelete, na
           </div>
         </div>
         <div className="mt-4 flex space-x-3 items-center">
-          <label className="font-medium leading-6 text-gray-900">Return options:</label>
+          <label className="font-medium leading-6">Return options:</label>
           <Checkbox
             label="Array"
             checked={method.returnsCollection}

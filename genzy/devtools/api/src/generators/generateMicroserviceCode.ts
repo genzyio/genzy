@@ -1,6 +1,6 @@
 import { type GenzyGeneratorInput } from "../utils/converter";
 import { type Project } from "../features/projects/projects.models";
-import { generateJSServer, generateTSServer } from "@genzy.io/cli";
+import { generateJSServer, generateTSServer } from "@genzy.io/generator";
 import path from "path";
 
 function generateMicroserviceCode(project: Project, input: GenzyGeneratorInput, lang: "ts" | "js" = "ts") {

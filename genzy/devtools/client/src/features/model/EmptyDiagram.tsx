@@ -7,7 +7,9 @@ export const EmptyDiagram: FC = () => {
   return (
     <>
       <div className="h-full w-full">
-        <ReactFlow style={{}} proOptions={{ account: "paid-sponsor", hideAttribution: true }}>
+        <ReactFlow style={{
+          backgroundColor: "#000",
+        }} proOptions={{ account: "paid-sponsor", hideAttribution: true }}>
           <Background size={0} />
         </ReactFlow>
       </div>

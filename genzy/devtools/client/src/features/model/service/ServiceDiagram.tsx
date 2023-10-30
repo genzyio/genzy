@@ -1,14 +1,12 @@
 import { type FC, useCallback, useEffect, useState, useMemo } from "react";
-import ReactFlow, {
+import {
   useNodesState,
   useEdgesState,
   addEdge,
   Connection,
   Background,
-  MiniMap,
   type Node,
   type NodeProps,
-  type Edge,
   type EdgeProps,
   type Viewport,
   useOnViewportChange,
@@ -34,6 +32,8 @@ import { CustomControls } from "../common/components/CustomControls";
 import { isNodeMoved } from "../common/utils/move.utils";
 import { SmoothStepConnectionLine } from "../common/components/edges/smooth-step/SmoothStepConnectionLine";
 import { FloatingEdge } from "../common/components/edges/floating/FloatingEdge";
+import { MiniMapStyled, ReactFlowStyled, darkTheme } from "../../../components/diagram";
+import { ThemeProvider } from "styled-components";
 
 type DiagramProps = {
   microserviceId: string;
@@ -248,10 +248,10 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   }, [elem, handleServiceAdd]);
 
   return (
-    <>
+    <ThemeProvider theme={darkTheme}>
       {portal}
       <div className="h-full w-full">
-        <ReactFlow
+        <ReactFlowStyled
           className="validationflow"
           nodes={nodes}
           edges={edges}
@@ -285,10 +285,10 @@ export const ServiceDiagram: FC<DiagramProps> = ({
           proOptions={{ account: "paid-sponsor", hideAttribution: true }}
           connectionLineComponent={SmoothStepConnectionLine}
         >
-          <MiniMap zoomable pannable />
+          <MiniMapStyled zoomable pannable />
           <CustomControls />
           <Background size={0} />
-        </ReactFlow>
+        </ReactFlowStyled>
       </div>
 
       <ConfirmationModal
@@ -323,7 +323,7 @@ export const ServiceDiagram: FC<DiagramProps> = ({
             }
           );
         }}
-        title={"Genzy"}
+        title={"Service"}
       >
         {selected && (
           <ValidationContextProvider>
@@ -337,6 +337,6 @@ export const ServiceDiagram: FC<DiagramProps> = ({
           </ValidationContextProvider>
         )}
       </Drawer>
-    </>
+    </ThemeProvider>
   );
 };

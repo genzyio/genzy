@@ -5,10 +5,10 @@ import { MethodChip } from "./MethodChip";
 import { ConnectableNodeWrapper } from "../common/components/ConnectableNodeWrapper";
 
 const colors = {
-  LOCAL: "border-green-300",
-  CONTROLLER: "border-red-300",
-  REMOTE_PROXY: "border-blue-300",
-  API_INTEGRATION: "border-yellow-300",
+  LOCAL: "border-green-500",
+  CONTROLLER: "border-red-500",
+  REMOTE_PROXY: "border-blue-500",
+  API_INTEGRATION: "border-yellow-500",
 } as const;
 
 type ServiceNodeProps = NodeProps<Service>;
@@ -24,11 +24,11 @@ export const ServiceNode: FC<ServiceNodeProps> = ({ data: service }) => {
 
   return (
     <div
-      className={`p-4 rounded-lg border-2 bg-white ${colors[service.type]} flex flex-col gap-y-2`}
+      className={`p-4 rounded-lg border-2 bg-brand-node-dark ${colors[service.type]} flex flex-col gap-y-2`}
     >
       <ConnectableNodeWrapper>
         <div className="text-center w-full mb-2">
-          <p className="text-xs text-gray-500">{SERVICE_TYPE_DISPLAY_NAME[service.type]}</p>
+          <p className="text-xs text-gray-400">{SERVICE_TYPE_DISPLAY_NAME[service.type]}</p>
 
           <h2 className="text-xl">{service.name}</h2>
           {!!url && url !== "/" && <h6 className="text-center text-xs text-gray-500">{url}</h6>}

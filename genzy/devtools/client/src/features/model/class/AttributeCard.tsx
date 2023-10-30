@@ -12,9 +12,9 @@ type AttributeCardProps = {
 export const AttributeCard: FC<AttributeCardProps> = ({ attribute, onEdit, onDelete }) => {
   return (
     <div className="flex items-center w-full">
-      <AttributePreview className="text-gray-500 font-thin flex-1" attribute={attribute} />
+      <AttributePreview className="font-thin flex-1" attribute={attribute} />
       <div className="space-x-1">
-        <OperationalButton color="indigo-700" border="left" onClick={onEdit}>
+        <OperationalButton color="gray-300" border="left" onClick={onEdit}>
           Edit
         </OperationalButton>
         <OperationalButton color="red-500" border="right" onClick={onDelete}>

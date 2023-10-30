@@ -1,8 +1,6 @@
 import { type FC, useEffect, useState, useCallback, useMemo } from "react";
 import {
   Background,
-  MiniMap,
-  ReactFlow,
   type Node,
   type Viewport,
   useNodesState,
@@ -28,6 +26,8 @@ import nodeTypes from "../common/constants/nodeTypes";
 import edgeTypes from "../common/constants/edgeTypes";
 import { CustomControls } from "../common/components/CustomControls";
 import { isNodeMoved } from "../common/utils/move.utils";
+import { ThemeProvider } from "styled-components";
+import { MiniMapStyled, ReactFlowStyled, darkTheme } from "../../../components/diagram";
 
 type DiagramProps = {
   microserviceId: string;
@@ -170,10 +170,10 @@ export const ClassDiagram: FC<DiagramProps> = ({
   }, [elem, handleClassAdd]);
 
   return (
-    <>
+    <ThemeProvider theme={darkTheme}>
       {portal}
       <div className="h-full w-full">
-        <ReactFlow
+        <ReactFlowStyled
           className="validationflow"
           nodes={nodes}
           onNodesChange={onNodesChange}
@@ -200,10 +200,10 @@ export const ClassDiagram: FC<DiagramProps> = ({
           deleteKeyCode={""}
           proOptions={{ account: "paid-sponsor", hideAttribution: true }}
         >
-          <MiniMap zoomable pannable />
+          <MiniMapStyled zoomable pannable />
           <CustomControls />
           <Background size={0} />
-        </ReactFlow>
+        </ReactFlowStyled>
       </div>
       <ConfirmationModal
         title={`Delete ${selectedClass?.data.name}`}
@@ -237,7 +237,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
             }
           );
         }}
-        title={"Genzy"}
+        title={"Class"}
       >
         {selectedClass && (
           <ValidationContextProvider>
@@ -253,6 +253,6 @@ export const ClassDiagram: FC<DiagramProps> = ({
           </ValidationContextProvider>
         )}
       </Drawer>
-    </>
+    </ThemeProvider>
   );
 };

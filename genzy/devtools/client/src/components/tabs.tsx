@@ -66,23 +66,26 @@ export const Tabs: FC<TabsProps> = ({
   }, [nextActiveTab]);
 
   const navigation = (
-    <div key={`navigation_${tabs?.length}`} className={navigationContainerClassName}>
-      <ul className="flex flex-wrap gap-x-1 -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+    <div
+      key={`navigation_${tabs?.length}`}
+      className={`${navigationContainerClassName} bg-[#262929]`}
+    >
+      <ul className="flex flex-wrap gap-x-1 -mb-px text-sm font-medium text-center text-gray-300">
         {tabs?.map((tab: { props: TabProps }, i: number) => {
           return (
             <li key={tab.props.id || tab.props.title} onClick={() => onTabChange(tab.props, i)}>
               <p
                 className={`inline-flex items-center justify-center px-2 py-2 group cursor-pointer rounded-t-lg ${
                   i === activeTab
-                    ? "text-blue-600 border-b-2 border-blue-600 active dark:text-blue-500 dark:border-blue-500"
-                    : "border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                    ? "text-gray-300 border-b-2 border-gray-300 active"
+                    : "border-b-2 border-transparent hover:text-gray-400 hover:border-gray-400"
                 }`}
               >
                 {tab.props.icon || <></>}
                 {tab.props.title}
                 {tab.props.onClose && (
                   <span
-                    className="px-2 hover:text-gray-900 dark:hover:text-gray-900"
+                    className="px-2 hover:text-gray-100"
                     onClick={(e) => {
                       e.stopPropagation();
                       onTabClose(tab.props, i);

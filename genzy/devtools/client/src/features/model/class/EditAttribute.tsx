@@ -87,7 +87,7 @@ export const EditAttribute: FC<EditAttributeProps> = ({
           </div>
         </div>
         <div className="mt-4 flex space-x-3 items-center">
-          <label className="font-medium leading-6 text-gray-900">Attribute options:</label>
+          <label className="font-medium leading-6">Attribute options:</label>
           <Checkbox label="Array" checked={attribute.isCollection} onChange={changeIsCollection} />
           <Checkbox label="Optional" checked={attribute.isOptional} onChange={changeIsOptional} />
         </div>

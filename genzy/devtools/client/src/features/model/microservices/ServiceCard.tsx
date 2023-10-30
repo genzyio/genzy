@@ -17,7 +17,7 @@ export const ServiceCardCard: FC<ServiceCardProps> = ({ service, onEdit, onDelet
       </div>
       <div className="text-lg flex-1">{service.name}</div>
       <div className="space-x-1">
-        <OperationalButton color="indigo-700" border="left" onClick={onEdit}>
+        <OperationalButton color="gray-300" border="left" onClick={onEdit}>
           Edit
         </OperationalButton>
         <OperationalButton color="red-500" border="right" onClick={onDelete}>

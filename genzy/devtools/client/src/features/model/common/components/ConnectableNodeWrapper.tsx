@@ -9,7 +9,7 @@ export const ConnectableNodeWrapper: FC<PropsWithChildren> = ({ children }) => {
         id="top"
         position={Position.Top}
         style={{
-          background: "#555",
+          background: "#04F7B5", // brand-primary
           width: "1rem",
           height: "1rem",
           top: -10,
@@ -22,7 +22,7 @@ export const ConnectableNodeWrapper: FC<PropsWithChildren> = ({ children }) => {
         id="bottom"
         position={Position.Bottom}
         style={{
-          background: "#555",
+          background: "#04F7B5", // brand-primary
           width: "1rem",
           height: "1rem",
           bottom: -10,

@@ -1,6 +1,5 @@
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { type FC, MouseEvent } from "react";
-
-import "./removable_button.css";
 
 type RemovableButtonProps = {
   onRemove: (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => any;
@@ -20,7 +19,7 @@ export const RemovableButton: FC<RemovableButtonProps> = ({ onRemove, translateX
       className="nodrag nopan"
     >
       <button className="edgebutton" onClick={(event) => onRemove(event)}>
-        ×
+        <XMarkIcon className="h-5 w-5" />
       </button>
     </div>
   );

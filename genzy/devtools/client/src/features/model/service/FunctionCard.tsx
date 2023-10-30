@@ -39,7 +39,7 @@ export const FunctionCard: FC<FunctionCardProps> = ({
         </div>
         <div className="space-x-1">
           {onEdit && (
-            <OperationalButton color="indigo-700" border="left" onClick={onEdit}>
+            <OperationalButton color="gray-300" border="left" onClick={onEdit}>
               Edit
             </OperationalButton>
           )}

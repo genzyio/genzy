@@ -56,7 +56,7 @@ export const EditParameters: FC<EditParametersProps> = ({
             </div>
           </div>
           <div className="mt-4 flex space-x-3 items-center">
-            <label className="font-medium leading-6 text-gray-900">Parameter options:</label>
+            <label className="font-medium leading-6">Parameter options:</label>
             <Checkbox
               label="Array"
               checked={param.isCollection}

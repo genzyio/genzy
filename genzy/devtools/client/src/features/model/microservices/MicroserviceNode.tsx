@@ -27,10 +27,12 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
   const microserviceActive = isMicroserviceActive(microserviceId);
 
   return (
-    <div className={`p-4 rounded-lg border-2 bg-white border-gray-600 flex flex-col gap-y-2`}>
+    <div
+      className={`p-4 rounded-lg border-2 bg-brand-node-dark border-gray-500 flex flex-col gap-y-2`}
+    >
       <ConnectableNodeWrapper>
         <div>
-          <h6 className="w-full text-center text-sm text-gray-700">{microservice.basePath}</h6>
+          <h6 className="w-full text-center text-sm">{microservice.basePath}</h6>
           <h2 className="w-full text-center text-xl mb-2">
             {microservice.name}{" "}
             <span className="text-base">

@@ -1,6 +1,7 @@
 import { type FC, MouseEvent, type ElementType } from "react";
 import { type NodeProps } from "reactflow";
 import { useWatchModeContext } from "../../../projects/contexts/watch-mode.context";
+import { RemovableButton } from "./edges/removable/RemovableButton";
 
 type RemovableNode = NodeProps<any> & {
   element: ElementType;
@@ -27,9 +28,7 @@ export const RemovableNode: FC<RemovableNode> = ({
         className="nodrag nopan absolute right-[2%] top-1 z-10"
         hidden={microserviceActive}
       >
-        <button className="edgebutton" onClick={(event) => onRemove(event, id)}>
-          x
-        </button>
+        <RemovableButton onRemove={(event) => onRemove(event, id)} translateX={-12.5} translateY={15} />
       </div>
 
       <NodeElement id={id} type={type} {...restOfProps} />

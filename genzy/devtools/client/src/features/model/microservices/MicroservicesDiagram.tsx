@@ -1,8 +1,7 @@
 import { type FC, useCallback, useEffect, useMemo, useState } from "react";
-import ReactFlow, {
+import {
   Background,
   Connection,
-  MiniMap,
   addEdge,
   useEdgesState,
   useNodesState,
@@ -36,10 +35,12 @@ import { useProjectContext } from "../../projects/contexts/project.context";
 import { MicroserviceContextProvider } from "./MicroserviceContext";
 import nodeTypes from "../common/constants/nodeTypes";
 import edgeTypes from "../common/constants/edgeTypes";
-import { CustomControls } from "../common/components/CustomControls";
 import { isNodeMoved } from "../common/utils/move.utils";
 import { SmoothStepConnectionLine } from "../common/components/edges/smooth-step/SmoothStepConnectionLine";
 import { FloatingEdge } from "../common/components/edges/floating/FloatingEdge";
+import { ThemeProvider } from "styled-components";
+import { MiniMapStyled, ReactFlowStyled, darkTheme } from "../../../components/diagram";
+import { CustomControls } from "../common/components/CustomControls";
 
 type DiagramProps = {
   nodes?: any[];
@@ -323,7 +324,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   }, [elem, handleMicroserviceAdd]);
 
   return (
-    <>
+    <ThemeProvider theme={darkTheme}>
       {portal}
 
       <MicroserviceContextProvider>
@@ -342,7 +343,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
       </MicroserviceContextProvider>
 
       <div className="h-full w-full">
-        <ReactFlow
+        <ReactFlowStyled
           className="validationflow"
           nodes={nodes}
           edges={edges}
@@ -384,10 +385,10 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
           proOptions={{ account: "paid-sponsor", hideAttribution: true }}
           connectionLineComponent={SmoothStepConnectionLine}
         >
-          <MiniMap zoomable pannable />
+          <MiniMapStyled zoomable pannable />
           <CustomControls />
           <Background size={0} />
-        </ReactFlow>
+        </ReactFlowStyled>
       </div>
 
       <ConfirmationModal
@@ -436,7 +437,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
             }
           );
         }}
-        title={"Genzy"}
+        title={"Microservice"}
       >
         {selectedMicroservice && (
           <ValidationContextProvider>
@@ -461,6 +462,6 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
           />
         )}
       </Drawer>
-    </>
+    </ThemeProvider>
   );
 };

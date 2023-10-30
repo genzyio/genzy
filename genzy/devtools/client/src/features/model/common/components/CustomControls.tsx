@@ -1,7 +1,8 @@
 import { type FC } from "react";
-import { ControlButton, Controls } from "reactflow";
+import { ControlButton } from "reactflow";
 import { useProjectContext } from "../../../projects/contexts/project.context";
 import { toPng } from "html-to-image";
+import { ControlsStyled } from "../../../../components/diagram";
 
 function toImage(projectName: string) {
   toPng(document.querySelector(".react-flow") as HTMLElement, {
@@ -26,12 +27,12 @@ export const CustomControls: FC = () => {
   const { project } = useProjectContext();
 
   return (
-    <Controls>
+    <ControlsStyled>
       <ControlButton>
         <div style={{ fontSize: 14 }} onClick={() => toImage(project.name)}>
           &#128247;
         </div>
       </ControlButton>
-    </Controls>
+    </ControlsStyled>
   );
 };

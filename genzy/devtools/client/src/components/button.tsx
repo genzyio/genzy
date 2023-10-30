@@ -28,8 +28,8 @@ export const Button: FC<ButtonProps> = ({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={`${className} ${paddings} inline-flex justify-center rounded-md bg-indigo-600 font-medium shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-        disabled ? "text-gray-200" : "text-white"
+      className={`${className} ${paddings} inline-flex justify-center rounded-md text-gray-300 border border-gray-600 bg-brand-node-gray font-medium shadow-sm hover:bg-opacity-70 focus:outline-none focus:ring-2 focus:ring-brand-node-gray focus:ring-offset-2 ${
+        disabled ? "opacity-75" : ""
       } select-none`}
     >
       {children}
