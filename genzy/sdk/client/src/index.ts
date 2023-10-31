@@ -9,4 +9,4 @@ export {
   Query,
   Path,
   Body,
-} from "../../../shared/decorators";
+} from "../../shared/decorators";

@@ -1,8 +1,8 @@
 import { ServiceRegistry, getRefProxy } from "./service-registry";
 import { RemoteProxyOf } from "./remote-proxy";
 import { LocalProxyOf } from "./local-proxy";
-import { CustomInterceptors, Interceptable } from "../../../shared/types";
-import { lowerFirstLetter } from "../../../shared/functions";
+import { CustomInterceptors, Interceptable } from "../../shared/types";
+import { lowerFirstLetter } from "../../shared/functions";
 
 interface Constructor {
   new (...args: any[]);
@@ -14,11 +14,11 @@ type InterceptorCallback = ({
   setBody,
   getBody,
 }: {
-  setHeader: (key: string, value: string) => any;
+  setHeader: (key: string, value: string) => void;
   getHeader: (key: string) => string;
-  setBody: (body: any) => any;
+  setBody: (body: any) => void;
   getBody: () => any;
-}) => any;
+}) => Promise<void> | void;
 
 export class GenzyContainer extends Interceptable<InterceptorCallback> {
   private allServicesRegistry: ServiceRegistry;

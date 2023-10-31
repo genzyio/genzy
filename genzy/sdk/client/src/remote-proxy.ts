@@ -5,10 +5,10 @@ import {
   camelToKebabCase,
   combineGenzyConfigs,
   formParamsOf,
-} from "../../../shared/functions";
-import { GenzyConfig, Param } from "../../../shared/types";
+} from "../../shared/functions";
+import { GenzyConfig, Param } from "../../shared/types";
 
-function applyInterceptors(
+async function applyInterceptors(
   target: any,
   className: string,
   methodName: string,
@@ -33,7 +33,10 @@ function applyInterceptors(
       ] || [])
     );
   }
-  interceptors.forEach((cb) => cb({ setHeader, setBody, getHeader, getBody }));
+  for (let i = 0; i < interceptors.length; i++) {
+    const cb = interceptors[i];
+    await cb({ setHeader, setBody, getHeader, getBody });
+  }
   return [headersHolder, bodyHolder.data];
 }
 
@@ -43,7 +46,7 @@ const remoteCallHandler = {
     if (method === "_class_name_") return className;
     if (typeof target[method] === "function") {
       return function (...args) {
-        return new Promise((res, rej) => {
+        return new Promise(async (res, rej) => {
           const meta: GenzyConfig = combineGenzyConfigs(
             target?.$genzy_config ?? {},
             target?.$genzy ?? {}
@@ -69,7 +72,7 @@ const remoteCallHandler = {
             (p) => p.source === "body"
           );
           const body = bodyParamIndex !== -1 ? args[bodyParamIndex] : null;
-          const [headers, data] = applyInterceptors(
+          const [headers, data] = await applyInterceptors(
             target,
             className,
             method,
@@ -93,8 +96,8 @@ const remoteCallHandler = {
               : {}),
             url: `${target.$genzyOrigin.replace(/\/$/g, "")}${fullPath}`,
           })
-            .then((r) => {
-              const [_, data] = applyInterceptors(
+            .then(async (r) => {
+              const [_, data] = await applyInterceptors(
                 target,
                 className,
                 method,

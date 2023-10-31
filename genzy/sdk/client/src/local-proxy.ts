@@ -1,4 +1,3 @@
-import { lowerFirstLetter } from "../../../shared/functions";
 import { ServiceRegistry } from "./service-registry";
 
 const localCallHandler = {

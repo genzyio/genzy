@@ -1,4 +1,4 @@
-import { BUILT_IN_METHODS, BUILT_IN_PROPS } from "../../../shared/constants";
+import { BUILT_IN_METHODS, BUILT_IN_PROPS } from "../../shared/constants";
 
 export class ServiceRegistry {
   private registry: object = getRefProxy();

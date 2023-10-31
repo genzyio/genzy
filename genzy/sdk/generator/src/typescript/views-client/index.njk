@@ -16,4 +16,4 @@ const container = new GenzyContainer(){% for service in services %}
 export const {
   {% for service in services %}{{ service.name.charAt(0).toLowerCase() + service.name.slice(1) }},
   {% endfor %}
-}: GenzyContainerServices = nimble.getAllServices();
+}: GenzyContainerServices = container.getAllServices();

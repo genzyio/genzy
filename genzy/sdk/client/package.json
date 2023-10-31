@@ -1,6 +1,6 @@
 {
   "name": "@genzy.io/client",
-  "version": "0.0.1-alpha",
+  "version": "0.0.1-alpha-1",
   "description": "Genzy - focused on the domain.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

@@ -126,7 +126,7 @@ export function adoptParams(
 ) {
   return params.map((p) => ({
     ...p,
-    name: p.name ?? "body",
+    name: p.name || "body",
     typeAdapted: typeAdapt(p.type),
     typeDecorator: adoptTypeToDecorator(p.type),
     $isOptional: p.type?.$isOptional,

@@ -1,6 +1,6 @@
 {
   "name": "genzy",
-  "version": "0.0.1-alpha-7",
+  "version": "0.0.1-alpha-12",
   "description": "Genzy - build better APIs faster.",
   "main": "dist/index.js",
   "bin": {
@@ -25,7 +25,7 @@
   "license": "ISC",
   "dependencies": {
     "@genzy.io/devtools-api": "0.0.1-alpha-4",
-    "@genzy.io/generator": "0.0.1-alpha-1",
+    "@genzy.io/generator": "0.0.1-alpha-6",
     "axios": "1.6.0",
     "yargs": "17.5.1"
   },
