@@ -17,7 +17,10 @@ import path from "path";
 
 import "./features/watch-project/projects.events";
 
-export const startGenzy = (port: number | string) => {
+import { openProject } from "./features/projects/commands/open-project";
+export { createProject } from "./features/projects/commands/create-project";
+
+export const startGenzy = (port: number | string, defaultProjectPath: string = "") => {
   ensureArtefactsFolderExist();
 
   const app: Express = express();
@@ -51,6 +54,15 @@ export const startGenzy = (port: number | string) => {
     .use("/api", projectScreenshotsRouters)
     .use("/api", recentlyOpenedRouters)
     .use("/api", imageStreamingRouters);
+
+  openProject(defaultProjectPath)
+    .then((result) => {
+      const defaultProjectName = typeof result === "string" ? result : "";
+      app.get("/api/preferences/projects/default", (_, res) => {
+        res.status(200).send(defaultProjectName);
+      });
+    })
+    .catch(() => {});
 
   app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

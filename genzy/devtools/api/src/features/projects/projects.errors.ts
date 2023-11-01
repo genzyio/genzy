@@ -1,29 +1,52 @@
-function projectDoesNotExistError(projectName: string) {
+import { type Error } from "../../core/types/error";
+
+function projectDoesNotExistError(projectName: string): Error {
   return {
-    error: "ProjectDoesNotExist",
+    type: "ProjectDoesNotExist",
     message: `Project '${projectName}' does not exist.`,
   };
 }
 
-function pathNotFound(projectPath: string) {
+function pathNotFound(projectPath: string): Error {
   return {
-    error: "PathNotFound",
+    type: "PathNotFound",
     message: `Path '${projectPath}' does not exist on the file system.`,
   };
 }
 
-function projectAlreadyExists(projectName: string) {
+function projectAlreadyExists(projectName: string): Error {
   return {
-    error: "ProjectAlreadyExists",
+    type: "ProjectAlreadyExists",
     message: `Project '${projectName}' already exists.`,
   };
 }
 
-function projectJsonDoesNotExist(projectPath: string) {
+function projectCreateFails(projectName: string, errorMessage: string): Error {
   return {
-    error: "ProjectJsonDoesNotExist",
+    type: "ProjectCreateFails",
+    message: `${projectName} not created due to: ${errorMessage}.`,
+  };
+}
+
+function projectJsonDoesNotExist(projectPath: string): Error {
+  return {
+    type: "ProjectJsonDoesNotExist",
     message: `Path '${projectPath}' does not contain file project.json.`,
   };
 }
 
-export { projectDoesNotExistError, pathNotFound, projectAlreadyExists, projectJsonDoesNotExist };
+function pathToOpenNoValid(): Error {
+  return {
+    type: "PathToOpenNoValid",
+    message: `Path to open should be directory or should ends with 'package.json'.`,
+  };
+}
+
+export {
+  projectDoesNotExistError,
+  pathNotFound,
+  projectAlreadyExists,
+  projectCreateFails,
+  projectJsonDoesNotExist,
+  pathToOpenNoValid,
+};

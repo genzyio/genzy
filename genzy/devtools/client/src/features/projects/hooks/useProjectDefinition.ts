@@ -3,7 +3,7 @@ import { type ProjectDefinition } from "../models/project-definition.models";
 import { getProjectDefinition } from "../api/project-definition.actions";
 
 export function useProjectDefinition(projectName: string, dependencies: any[] = []) {
-  const { data, isFetching } = useQuery(
+  const { data, isFetching, isError } = useQuery(
     [`projects/${projectName}/definition`, ...dependencies],
     () => getProjectDefinition(projectName),
     {
@@ -14,5 +14,6 @@ export function useProjectDefinition(projectName: string, dependencies: any[] = 
   return {
     projectDefinition: (data?.data ?? {}) as ProjectDefinition,
     isFetching,
+    isError,
   };
 }

@@ -3,11 +3,12 @@ import { ToastContainer, type ToastContainerProps } from "react-toastify";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { API_URL } from "./url";
 import axios from "axios";
-
-import "react-toastify/dist/ReactToastify.css";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 import { ProjectsModal } from "./projects-modal";
 import { ProjectWorkspace } from "./project-workspace";
+import { ProjectsBase } from "./projects-base";
+
+import "react-toastify/dist/ReactToastify.css";
 
 const toastrOptions: ToastContainerProps = {
   position: "bottom-right",
@@ -44,12 +45,16 @@ const router = createHashRouter([
     element: <ProjectWorkspace />,
   },
   {
-    path: "/",
+    path: "/projects",
     element: <ProjectsModal />,
   },
   {
+    path: "/",
+    element: <ProjectsBase />,
+  },
+  {
     path: "*",
-    element: <ProjectsModal />,
+    element: <ProjectsBase />,
   },
 ]);
 

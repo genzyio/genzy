@@ -3,15 +3,11 @@ import path from "path";
 import { Router, type Request, type Response } from "express";
 import { type CreateProject, type ImportProject } from "./projects.models";
 import eventEmitter from "../../core/events/events.utils";
-import { ProjectCreated, ProjectDeleted } from "./projects.events";
+import { ProjectDeleted } from "./projects.events";
 import { projectsRepo } from "./projects.repo";
-import {
-  pathNotFound,
-  projectAlreadyExists,
-  projectDoesNotExistError,
-  projectJsonDoesNotExist,
-} from "./projects.errors";
+import { projectAlreadyExists, projectDoesNotExistError, projectJsonDoesNotExist } from "./projects.errors";
 import { trimCharactersFromEnd } from "../../core/utils/string";
+import { createProject } from "./commands/create-project";
 
 const projectRouters = Router();
 
@@ -34,26 +30,22 @@ projectRouters.get("/projects/:name", async (req: Request, res: Response) => {
 projectRouters.post("/projects", async (req: Request, res: Response) => {
   const project: CreateProject = req.body;
 
-  if (!fs.existsSync(project.path)) {
-    return res.status(404).send(pathNotFound(project.path));
-  }
+  const error = await createProject(project);
+  if (error) {
+    switch (error.type) {
+      case "PathNotFound":
+        res.status(404);
+        break;
+      case "ProjectAlreadyExists":
+        res.status(409);
+        break;
+      default:
+        res.status(500);
+    }
 
-  const existingProject = await projectsRepo.getByName(project.name);
-  if (existingProject) {
-    return res.status(409).send(projectAlreadyExists(project.name));
+    res.send(error);
+    return;
   }
-
-  const newProject: CreateProject = {
-    name: project.name,
-    path: path.join(project.path, project.name),
-  };
-  await projectsRepo
-    .add(newProject)
-    .then((_) => {
-      eventEmitter.emit(ProjectCreated, newProject);
-      console.log(`${project.name} is created.`);
-    })
-    .catch((error) => console.log(`${project.name} not created due to: ${error.message}.`));
 
   return res.status(201).send();
 });

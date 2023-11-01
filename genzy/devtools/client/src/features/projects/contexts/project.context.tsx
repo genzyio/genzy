@@ -8,45 +8,39 @@ import {
 } from "react";
 import { type Project } from "../models/project.models";
 import { useProject } from "../hooks/useProjects";
-import { useParams } from "react-router-dom";
 import { useProjectNavigation } from "../hooks/useProjectNavigation";
+import { EmptyDiagram } from "../../model/EmptyDiagram";
 
 type ProjectContextValues = {
   project: Project;
   isOpened: boolean;
 };
 
-const initialProjectContextValues: ProjectContextValues = {
-  project: { name: "", path: "", createdAt: "" },
-  isOpened: false,
-};
-
 const ProjectContext = createContext<ProjectContextValues | null>(null);
 
 export const useProjectContext = () => useContext(ProjectContext);
 
-export const ProjectContextProvider: FC<PropsWithChildren> = ({ children }) => {
-  const urlParams = useParams();
+type ProjectContextProviderProps = PropsWithChildren & {
+  projectName: string;
+};
+
+export const ProjectContextProvider: FC<ProjectContextProviderProps> = ({
+  projectName: initialProjectName,
+  children,
+}) => {
   const { closeProject } = useProjectNavigation();
 
-  const [projectName, setProjectName] = useState(initialProjectContextValues.project.name);
+  const [projectName] = useState(initialProjectName);
   const { project, isFetching, isError } = useProject(projectName);
   const isOpened = !!projectName && Object.keys(project).length > 0;
 
-  useEffect(() => {
-    const { projectName: initialProjectName } = urlParams;
-    if (!initialProjectName) return;
+  if (isFetching) {
+    return <EmptyDiagram />;
+  }
 
-    setProjectName(initialProjectName);
-  }, [urlParams]);
-
-  useEffect(() => {
-    if (!isError) return;
+  if (isError) {
     closeProject();
-  }, [isError]);
-
-  if (isFetching || isError) {
-    return <></>;
+    return <EmptyDiagram />;
   }
 
   return (

@@ -1,6 +1,8 @@
-function recentlyOpenedDoesNotExistError(projectName: string) {
+import { type Error } from "../../core/types/error";
+
+function recentlyOpenedDoesNotExistError(projectName: string): Error {
   return {
-    error: "RecentlyOpenedDoesNotExist",
+    type: "RecentlyOpenedDoesNotExist",
     message: `Project '${projectName}' was not opened recently.`,
   };
 }

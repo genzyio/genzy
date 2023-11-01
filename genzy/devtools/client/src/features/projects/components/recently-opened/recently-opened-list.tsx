@@ -175,9 +175,9 @@ type OptionLabelProps = {
 
 const OptionLabel: FC<OptionLabelProps> = ({ icon: Icon, title }) => {
   return (
-    <div className="flex space-x-1 items-center">
+    <span className="flex space-x-1 items-center">
       <Icon className="-ml-2 h-4 w-4" />
-      <div>{title}</div>
-    </div>
+      <span>{title}</span>
+    </span>
   );
 };

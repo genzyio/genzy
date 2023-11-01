@@ -21,6 +21,8 @@ import { useDirtyCheckContext } from "../../model/common/contexts/dirty-check-co
 import { createChangeTrackingDispatcherWrapper } from "./change-tracker.dispatcher";
 import { Button } from "../../../components/button";
 import useUndoable from "use-undoable";
+import { useProjectNavigation } from "../hooks/useProjectNavigation";
+import { EmptyDiagram } from "../../model/EmptyDiagram";
 
 type ProjectDefinitionContextValues = {
   projectDefinition: ProjectDefinition;
@@ -50,10 +52,11 @@ export const useProjectDefinitionContext = () => useContext(ProjectDefinitionCon
 
 export const ProjectDefinitionContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const { project } = useProjectContext();
+  const { closeProject } = useProjectNavigation();
   const { setCurrentState } = useDirtyCheckContext();
   const { triggerAutoSave } = useAutoSaveContext();
   const { setStateForMS } = useChangeTrackerContext();
-  const { projectDefinition, isFetching } = useProjectDefinition(project?.name);
+  const { projectDefinition, isFetching, isError } = useProjectDefinition(project?.name);
 
   const [executeOnUndoRedo, setExecuteOnUndoRedo] = useState(() => () => {});
 
@@ -93,7 +96,12 @@ export const ProjectDefinitionContextProvider: FC<PropsWithChildren> = ({ childr
   );
 
   if (isFetching) {
-    return <></>;
+    return <EmptyDiagram />;
+  }
+
+  if (isError) {
+    closeProject();
+    return <EmptyDiagram />;
   }
 
   return (

@@ -17,7 +17,7 @@ const useProjectNavigation = (): ProjectNavigation => {
   );
 
   const closeProject = useCallback(() => {
-    navigate("/");
+    navigate("/projects");
   }, [navigate]);
 
   return {
