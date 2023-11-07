@@ -62,7 +62,7 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
             </Button>
           )}
           <Button type="button">
-            <Link to={`/projects/${project.name}/plugins/${microserviceId}`} replace>
+            <Link to={`/projects/${project.name}/microservices/${microserviceId}/plugins`} replace>
               Plugins
             </Link>
           </Button>

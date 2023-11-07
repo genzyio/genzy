@@ -8,6 +8,9 @@ import { ProjectsModal } from "./projects-modal";
 import { ProjectWorkspace } from "./project-workspace";
 import { ProjectsBase } from "./projects-base";
 import { PluginsModal } from "./plugins-modal";
+import { PluginTabsPage, SpecificPluginPage } from "./features/plugins/components/plugins-pages";
+
+import "react-toastify/dist/ReactToastify.css";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -42,8 +45,30 @@ const router = createHashRouter([
     element: <ProjectWorkspace />,
     children: [
       {
-        path: "plugins/:microserviceId",
+        path: "microservices/:microserviceId/plugins",
         element: <PluginsModal />,
+        children: [
+          {
+            path: "specific/:pluginName",
+            element: <SpecificPluginPage />,
+          },
+          {
+            path: "installed",
+            element: <PluginTabsPage initialTab={"installed"} />,
+          },
+          {
+            path: "search",
+            element: <PluginTabsPage initialTab={"search"} />,
+          },
+          {
+            path: "",
+            element: <PluginTabsPage initialTab={"search"} />,
+          },
+          {
+            path: "*",
+            element: <PluginTabsPage initialTab={"search"} />,
+          },
+        ],
       },
     ],
   },

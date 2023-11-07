@@ -5,7 +5,7 @@ import { useMicroserviceContext } from "../../model/microservices/MicroserviceCo
 import { useProjectDefinitionContext } from "../../projects/contexts/project-definition.context";
 import { useSpecificPluginVersion } from "../hooks/useSpecificPluginVersion";
 import { LoadingRow } from "./loading-row";
-import { usePluginsModalContext } from "../context/plugins-modal.context";
+import { usePluginsNavigation } from "../hooks/usePluginsNavigation";
 
 type PluginProps = {
   name: string;
@@ -13,7 +13,7 @@ type PluginProps = {
 };
 
 const Plugin: FC<PluginProps> = ({ name, version }) => {
-  const { setSpecificPlugin } = usePluginsModalContext();
+  const { openSpecificPlugin } = usePluginsNavigation();
 
   const { plugin, isFetching } = useSpecificPluginVersion(name, version);
   const [descriptionWidth] = useState(Math.floor(Math.random() * 71 + 30));
@@ -34,7 +34,7 @@ const Plugin: FC<PluginProps> = ({ name, version }) => {
     <div className="space-y-1">
       <div
         className="font-medium text-xl cursor-pointer hover:underline"
-        onClick={() => setSpecificPlugin(name)}
+        onClick={() => openSpecificPlugin(name)}
       >
         {name}
       </div>

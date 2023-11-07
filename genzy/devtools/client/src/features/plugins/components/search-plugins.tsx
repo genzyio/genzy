@@ -6,18 +6,18 @@ import { useSearch } from "../hooks/useSearch";
 import { KeywordsList } from "./keywords";
 import moment from "moment";
 import { LoadingRow } from "./loading-row";
-import { usePluginsModalContext } from "../context/plugins-modal.context";
 import { useIsPluginInstalled } from "../hooks/useIsPluginInstalled";
+import { usePluginsNavigation } from "../hooks/usePluginsNavigation";
 
 const Plugin: FC<NPMPackageInfo> = ({ name, description, keywords, publisher, version, date }) => {
-  const { setSpecificPlugin } = usePluginsModalContext();
+  const { openSpecificPlugin } = usePluginsNavigation();
   const { isInstalled } = useIsPluginInstalled(name);
 
   return (
     <div className="space-y-1">
       <div
         className="font-medium text-xl cursor-pointer hover:underline"
-        onClick={() => setSpecificPlugin(name)}
+        onClick={() => openSpecificPlugin(name)}
       >
         {name} <span className="text-base">{isInstalled ? " (Installed)" : ""}</span>
       </div>

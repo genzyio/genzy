@@ -13,10 +13,12 @@ export const RemoteProxyNode: FC<RemoteProxyNodeProps> = ({ id: serviceId, data:
   const realService = serviceDiagram.nodes.find((node) => node.id === serviceId).data;
 
   return (
-    <div className={`p-4 rounded-lg border-2 bg-white border-blue-300 flex flex-col gap-y-2`}>
+    <div
+      className={`p-4 rounded-lg border-2 bg-brand-node-dark border-blue-300 flex flex-col gap-y-2`}
+    >
       <ConnectableNodeWrapper>
         <div className="text-center w-full mb-2">
-          <p className="text-xs text-gray-500">{SERVICE_TYPE_DISPLAY_NAME[service.type]}</p>
+          <p className="text-xs text-gray-400">{SERVICE_TYPE_DISPLAY_NAME[service.type]}</p>
           <h2 className="text-xl">{realService.name}</h2>
         </div>
         {realService.functions.map((fun) => (

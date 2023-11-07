@@ -9,12 +9,12 @@ import { Section } from "./section";
 import moment from "moment";
 import { useIsPluginInstalled } from "../hooks/useIsPluginInstalled";
 import { useProjectDefinitionContext } from "../../projects/contexts/project-definition.context";
-import { usePluginsModalContext } from "../context/plugins-modal.context";
 import { projectDefinitionActions } from "../../projects/contexts/project-definition.dispatcher";
 import { useMicroserviceContext } from "../../model/microservices/MicroserviceContext";
 import { useNotifications } from "../../../hooks/useNotifications";
 import { Loader } from "./loader";
 import { Events, eventEmitter } from "../events/plugin.events";
+import { useOutletContext } from "react-router-dom";
 
 type DependenciesProps = {
   depedencies: Dependency[];
@@ -93,7 +93,7 @@ export const SpecificPlugin: FC<{ pluginName: string }> = ({ pluginName }) => {
   const notificator = useNotifications();
   const { microserviceId } = useMicroserviceContext();
   const { dispatcher } = useProjectDefinitionContext();
-  const { close } = usePluginsModalContext();
+  const [close] = useOutletContext<[() => any]>();
   const { isInstalled, installedVersion } = useIsPluginInstalled(pluginName);
 
   const { plugin, isFetching } = usePlugin(pluginName);

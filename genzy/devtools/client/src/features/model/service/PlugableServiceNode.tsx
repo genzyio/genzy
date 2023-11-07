@@ -10,10 +10,12 @@ export const PlugableServiceNode: FC<PlugableServiceNodeProps> = ({
   data: service,
 }) => {
   return (
-    <div className={`p-4 rounded-lg border-2 bg-white border-amber-500 flex flex-col gap-y-2`}>
+    <div
+      className={`p-4 rounded-lg border-2 bg-brand-node-dark border-amber-500 flex flex-col gap-y-2`}
+    >
       <ConnectableNodeWrapper>
         <div className="text-center w-full mb-2">
-          <p className="text-xs text-gray-500">{SERVICE_TYPE_DISPLAY_NAME[service.type]}</p>
+          <p className="text-xs text-gray-400">{SERVICE_TYPE_DISPLAY_NAME[service.type]}</p>
           <h2 className="text-xl">{service.name}</h2>
         </div>
         {service.functions.map((fun) => (
