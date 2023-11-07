@@ -140,11 +140,12 @@ export const EditMethod: FC<EditMethodProps> = ({ method, onChange, onDelete, na
         />
 
         <div className="flex justify-between mt-5">
-          <button onClick={handleAddParameter} className="mt-2">
+          <button onClick={handleAddParameter} className="mt-2 hover:text-gray-400">
             Add Parameter
           </button>
 
           <button
+            className="hover:text-gray-400"
             onClick={() => {
               setPreview(true);
               setValidityFor(method.id, true);

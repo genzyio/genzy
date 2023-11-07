@@ -94,6 +94,7 @@ export const EditAttribute: FC<EditAttributeProps> = ({
 
         <div className="flex justify-end">
           <button
+            className="hover:text-gray-400"
             onClick={() => {
               setPreview(true);
               setValidityFor(attribute.id, true);

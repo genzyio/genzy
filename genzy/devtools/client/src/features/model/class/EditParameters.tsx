@@ -73,7 +73,10 @@ export const EditParameters: FC<EditParametersProps> = ({
 
           <div className="flex items-center mt-2">
             <div className="ml-auto">
-              <button onClick={() => onDeleteParameter(index)} className="text-red-500">
+              <button
+                onClick={() => onDeleteParameter(index)}
+                className="text-red-500 hover:text-red-600"
+              >
                 Delete
               </button>
             </div>

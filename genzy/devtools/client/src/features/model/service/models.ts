@@ -7,9 +7,9 @@ export const HTTP_METHOD = {
 type HTTPMethod = keyof typeof HTTP_METHOD;
 
 export const PARAM_SOURCE = {
-  BODY: "body",
   PATH: "path",
   QUERY: "query",
+  BODY: "body",
 } as const;
 type ParamSource = keyof typeof PARAM_SOURCE;
 

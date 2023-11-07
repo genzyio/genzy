@@ -246,9 +246,13 @@ export const EditFunction: FC<EditFunctionProps> = ({
           ))}
         </div>
         <div className="flex justify-between mt-5">
-          <button onClick={handleAddParam}>Add parameter</button>
+          <button className="hover:text-gray-400" onClick={handleAddParam}>
+            Add parameter
+          </button>
 
-          <button onClick={onCancel}>Cancel</button>
+          <button className="hover:text-gray-400" onClick={onCancel}>
+            Cancel
+          </button>
         </div>
       </ClosableWrapper>
     </RoundCard>

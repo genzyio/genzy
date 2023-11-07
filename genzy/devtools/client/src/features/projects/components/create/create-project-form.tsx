@@ -51,7 +51,7 @@ export const CreateProjectForm: FC<CreateProjectFormProps> = ({ onSaved, onCance
       </div>
 
       <div className="mt-6 flex items-center justify-end gap-x-6">
-        <button onClick={onCancel} type="button" className="text-sm leading-6">
+        <button onClick={onCancel} type="button" className="text-sm leading-6 hover:text-gray-400">
           Cancel
         </button>
         <Button type="submit">Create</Button>

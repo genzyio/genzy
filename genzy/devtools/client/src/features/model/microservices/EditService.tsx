@@ -75,6 +75,7 @@ export const EditService: FC<EditFunctionProps> = ({ service, onChange, onDelete
 
         <div className="flex justify-end space-x-2 mt-5">
           <button
+            className="hover:text-gray-400"
             onClick={() => {
               setPreview(true);
               setValidityFor(service.id, true);

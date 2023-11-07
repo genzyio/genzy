@@ -31,6 +31,7 @@ export const primitiveTypes = ["any", "int", "float", "boolean", "string"];
 const primitiveTypeOptions = primitiveTypes.map((type) => ({
   label: type,
   value: type,
+  category: "Primitive",
 }));
 
 export const TypesContextProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -41,6 +42,7 @@ export const TypesContextProvider: FC<PropsWithChildren> = ({ children }) => {
       const classTypeOptions = classNodes?.map((classNode) => ({
         label: classNode.data.name,
         value: classNode.id,
+        category: "User Defined",
       }));
 
       setTypesPerMicroservice({

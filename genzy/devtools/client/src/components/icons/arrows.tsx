@@ -8,7 +8,7 @@ export const ArrowDown: FC<ArrowDownProps> = ({ className = "w-3 h-3 shrink-0" }
   return (
     <svg
       data-accordion-icon
-      className={`rotate-180 ${className}`}
+      className={`rotate-180 ${className} hover:text-gray-200 `}
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
@@ -33,7 +33,7 @@ export const ArrowUp: FC<ArrowUpProps> = ({ className = "w-3 h-3 shrink-0" }) =>
   return (
     <svg
       data-accordion-icon
-      className={className}
+      className={`${className} hover:text-gray-200 `}
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
