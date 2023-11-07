@@ -1,6 +1,7 @@
 import * as yargs from "yargs";
 import axios from "axios";
 import * as fs from "fs";
+import * as path from "path";
 import {
   type ExtendedMetaInfo,
   type MetaInfo,
@@ -82,9 +83,7 @@ yargs(hideBin(process.argv))
           break;
         case "cs":
           if (options.isServer) {
-            throw new Error(
-              "There is no support for generating CS server code yet!"
-            );
+            throw new Error("There is no support for generating CS server code yet!");
           }
           generateCSharpClient(meta, options.o, options.h);
           break;
@@ -94,8 +93,22 @@ yargs(hideBin(process.argv))
     }
   )
   .command(
-    "dev [path]",
+    "dev",
     "start DevTools server",
+    (yargs) => {
+      return yargs.option("p", {
+        alias: "port",
+        describe: "Port to bint to",
+        default: 3000,
+      });
+    },
+    async (options) => {
+      startGenzy(options.p);
+    }
+  )
+  .command(
+    "open [path]",
+    "start DevTools server with the default project",
     (yargs) => {
       return yargs
         .positional("path", {
@@ -109,12 +122,35 @@ yargs(hideBin(process.argv))
         });
     },
     async (options) => {
-      console.log("TODO: PATH = ", options.path, " PORT = ", options.p);
-      startGenzy(options.p);
+      // const absolutePath = getAbsolutePath(options.path);
+      // startGenzy(options.p, absolutePath);
+    }
+  )
+  .command(
+    "create [name] [path]",
+    "create a genzy project on the given path",
+    (yargs) => {
+      return yargs
+        .positional("name", {
+          describe: "name of the genzy project",
+          default: ".",
+        })
+        .positional("path", {
+          describe: "path of the genzy project base directory",
+          default: ".",
+        });
+    },
+    async (options) => {
+      // const absolutePath = getAbsolutePath(options.path);
+      // createProject({ name: options.name, path:  absolutePath });
     }
   )
   .demandCommand(1)
   .parse();
+
+function getAbsolutePath(relativePath: string) {
+  return path.resolve(relativePath).replace("/", path.sep).replace("\\", path.sep);
+}
 
 export async function fetchMeta(url: string): Promise<MetaInfo> {
   return (await axios.get(`${url}/meta`)).data;
