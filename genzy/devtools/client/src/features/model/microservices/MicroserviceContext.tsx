@@ -2,18 +2,24 @@ import { type FC, type PropsWithChildren, createContext, useContext, useState } 
 
 type MicroserviceContextValues = {
   microserviceId: string;
-  setMicroserviceId: (microserviceId: string) => any;
 };
 
 const MicroserviceContext = createContext<MicroserviceContextValues | null>(null);
 
 export const useMicroserviceContext = () => useContext(MicroserviceContext);
 
-export const MicroserviceContextProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [microserviceId, setMicroserviceId] = useState("");
+type MicroserviceContextProviderProps = PropsWithChildren & {
+  microserviceId: string;
+};
+
+export const MicroserviceContextProvider: FC<MicroserviceContextProviderProps> = ({
+  microserviceId: initialMicroserviceId,
+  children,
+}) => {
+  const [microserviceId] = useState(initialMicroserviceId);
 
   return (
-    <MicroserviceContext.Provider value={{ microserviceId, setMicroserviceId }}>
+    <MicroserviceContext.Provider value={{ microserviceId }}>
       {children}
     </MicroserviceContext.Provider>
   );

@@ -28,10 +28,9 @@ export function PluginsModal() {
 
   return (
     <>
-      <MicroserviceContextProvider>
+      <MicroserviceContextProvider microserviceId={microserviceId}>
         <PluginModal
           key={microserviceId}
-          microserviceId={microserviceId}
           isOpen={true}
           isLarge={true}
           onClose={() => {

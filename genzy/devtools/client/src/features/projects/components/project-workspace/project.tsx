@@ -8,7 +8,6 @@ import { type Node, ReactFlowProvider } from "reactflow";
 import { type Microservice } from "../../../model/microservices/models";
 import { ProjectToolbar } from "./project-toolbar";
 import { TypesContextProvider } from "../../../model/class/TypesContext";
-import { MicroserviceContextProvider } from "../../../model/microservices/MicroserviceContext";
 import { MicroserviceNodeContextProvider } from "../../../model/microservices/MicroserviceNodeContext";
 import { MicroserviceDiagramWrapper } from "./wrappers/MicroserviceDiagramWrapper";
 import { ClassDiagramWrapper } from "./wrappers/ClassDiagramWrapper";
@@ -169,44 +168,42 @@ export const Project: FC = () => {
           onServicesClick={addServiceDiagram}
           onDocsClick={addDocs}
         >
-          <MicroserviceContextProvider>
-            <TypesContextProvider>
-              {!isDocsActive && <ProjectToolbar />}
+          <TypesContextProvider>
+            {!isDocsActive && <ProjectToolbar />}
 
-              <Tabs
-                onInit={setTabsInstance}
-                invert={true}
-                navigationContainerClassName="border-b border-gray-100"
+            <Tabs
+              onInit={setTabsInstance}
+              invert={true}
+              navigationContainerClassName="border-b border-gray-100"
+            >
+              <Tab
+                title="Microservices"
+                onChange={() => {
+                  setSearchParams({});
+                  setIsDocsActive(false);
+                }}
               >
-                <Tab
-                  title="Microservices"
-                  onChange={() => {
-                    setSearchParams({});
-                    setIsDocsActive(false);
-                  }}
-                >
-                  <MicroserviceDiagramWrapper onMicroserviceDeleted={removeTabsForMicroservice} />
-                </Tab>
+                <MicroserviceDiagramWrapper onMicroserviceDeleted={removeTabsForMicroservice} />
+              </Tab>
 
-                {tabs.map((t) => {
-                  return (
-                    <Tab
-                      id={t.id}
-                      key={t.title}
-                      title={t.title}
-                      onChange={({ id }) => {
-                        setSearchParams({ activeTab: id });
-                        setIsDocsActive(t.id.endsWith("/docs"));
-                      }}
-                      onClose={({ id }) => setTabs((tabs) => tabs.filter((tab) => tab.id !== id))}
-                    >
-                      {t.children}
-                    </Tab>
-                  );
-                })}
-              </Tabs>
-            </TypesContextProvider>
-          </MicroserviceContextProvider>
+              {tabs.map((t) => {
+                return (
+                  <Tab
+                    id={t.id}
+                    key={t.title}
+                    title={t.title}
+                    onChange={({ id }) => {
+                      setSearchParams({ activeTab: id });
+                      setIsDocsActive(t.id.endsWith("/docs"));
+                    }}
+                    onClose={({ id }) => setTabs((tabs) => tabs.filter((tab) => tab.id !== id))}
+                  >
+                    {t.children}
+                  </Tab>
+                );
+              })}
+            </Tabs>
+          </TypesContextProvider>
         </MicroserviceNodeContextProvider>
       </ReactFlowProvider>
     </>

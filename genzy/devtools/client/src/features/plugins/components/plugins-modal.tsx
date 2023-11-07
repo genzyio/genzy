@@ -40,20 +40,9 @@ const ModalBody: FC = () => {
   );
 };
 
-type PluginsModalProps = Omit<ModalProps, "title" | "children"> & { microserviceId: string };
+type PluginsModalProps = Omit<ModalProps, "title" | "children">;
 
-export const PluginModal: FC<PluginsModalProps> = ({
-  microserviceId,
-  isOpen,
-  isLarge,
-  onClose,
-}) => {
-  const { setMicroserviceId } = useMicroserviceContext();
-  useEffect(() => {
-    setMicroserviceId(microserviceId);
-    return () => setMicroserviceId("");
-  });
-
+export const PluginModal: FC<PluginsModalProps> = ({ isOpen, isLarge, onClose }) => {
   return (
     <PluginsModalContextProvider close={onClose}>
       <Modal title="Plugins" isOpen={isOpen} isLarge={isLarge} onClose={onClose}>
