@@ -42,6 +42,14 @@
   background-color: rgb(209 213 219);
 }
 
+.border-gray-400 {
+  border-color: rgb(156 163 175);
+}
+
+.bg-gray-400 {
+  background-color: rgb(156 163 175);
+}
+
 .border-amber-500 {
   border-color: rgb(245 158 11);
 }

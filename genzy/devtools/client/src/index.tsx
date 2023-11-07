@@ -7,6 +7,7 @@ import { createHashRouter, RouterProvider } from "react-router-dom";
 import { ProjectsModal } from "./projects-modal";
 import { ProjectWorkspace } from "./project-workspace";
 import { ProjectsBase } from "./projects-base";
+import { PluginsModal } from "./plugins-modal";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -39,10 +40,12 @@ const router = createHashRouter([
   {
     path: "/projects/:projectName",
     element: <ProjectWorkspace />,
-  },
-  {
-    path: "/projects/:projectName/plugins/:microserviceId",
-    element: <ProjectWorkspace />,
+    children: [
+      {
+        path: "plugins/:microserviceId",
+        element: <PluginsModal />,
+      },
+    ],
   },
   {
     path: "/projects",

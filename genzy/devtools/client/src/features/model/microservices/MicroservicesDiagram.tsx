@@ -29,10 +29,8 @@ import { createPortal } from "react-dom";
 import { Button } from "../../../components/button";
 import { ValidationContextProvider } from "../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
-import { PluginModal } from "../../plugins/components/plugins-modal";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useProjectContext } from "../../projects/contexts/project.context";
-import { MicroserviceContextProvider } from "./MicroserviceContext";
 import nodeTypes from "../common/constants/nodeTypes";
 import edgeTypes from "../common/constants/edgeTypes";
 import { isNodeMoved } from "../common/utils/move.utils";
@@ -290,25 +288,6 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
     [DefaultEdgeWrapper, RemovableEdgeWrapper]
   );
 
-  const [isPluginsOpen, setIsPluginsOpen] = useState(false);
-  const location = useLocation();
-  const params = useParams();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const { microserviceId } = params;
-    const microserviceNode = nodes.find((node) => node.id === microserviceId);
-    if (!microserviceNode) {
-      setIsPluginsOpen(false);
-      setSelectedMicroservice(undefined);
-      location.pathname.includes("/plugins/") && navigate(`/projects/${project.name}`);
-      return;
-    }
-
-    setIsPluginsOpen(true);
-    setSelectedMicroservice(microserviceNode);
-  }, [location, params]);
-
   const elem = document.getElementById("toolbar-actions");
   const portal = useMemo(() => {
     if (elem) {
@@ -326,21 +305,6 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   return (
     <ThemeProvider theme={darkTheme}>
       {portal}
-
-      <MicroserviceContextProvider>
-        <PluginModal
-          key={selectedMicroservice?.id}
-          microserviceId={selectedMicroservice?.id}
-          isOpen={isPluginsOpen}
-          isLarge={true}
-          onClose={() => {
-            setIsPluginsOpen(false);
-            setNodes([...projectDefinition.microservices.nodes]);
-            setEdges([...projectDefinition.microservices.edges]);
-            navigate(`/projects/${project.name}`);
-          }}
-        />
-      </MicroserviceContextProvider>
 
       <div className="h-full w-full">
         <ReactFlowStyled
@@ -462,6 +426,15 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
           />
         )}
       </Drawer>
+
+      <Outlet
+        context={[
+          () => {
+            setNodes([...projectDefinition.microservices.nodes]);
+            setEdges([...projectDefinition.microservices.edges]);
+          },
+        ]}
+      />
     </ThemeProvider>
   );
 };

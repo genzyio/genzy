@@ -152,9 +152,10 @@ function getPackageJson(plugin: Plugin) {
   });
 }
 
+// TODO: Add genzy plugins and remove (g)n1mbly from here.
 function getMetadata(plugin: Plugin, packageJson: any) {
-  if (plugin.name === "genzy-redis-plugin") {
-    return packageJson.genzyMetadata || dbPluginMetadata;
+  if (plugin.name === "genzy-redis-plugin" || plugin.name === "n1mbly-redis-plugin") {
+    return packageJson.genzyMetadata || packageJson.gn1mblyMetadata || dbPluginMetadata;
   }
 
   return {
