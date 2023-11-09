@@ -1,6 +1,7 @@
 import { type FC } from "react";
 import { type NodeProps } from "reactflow";
 import { ConnectableNodeWrapper } from "../common/components/ConnectableNodeWrapper";
+import { getImageProxyUrl } from "../../../utils/proxy-image";
 
 type ImageNodeProps = NodeProps<{
   name: string;
@@ -11,8 +12,6 @@ type ImageNodeProps = NodeProps<{
 }>;
 
 export const ImageNode: FC<ImageNodeProps> = ({ id: nodeId, data: imageData }) => {
-  const imageUrl = `${(window as any)?.API_URL}/images?url=${imageData.url}`;
-
   return (
     <div className="image-node">
       <ConnectableNodeWrapper>
@@ -20,7 +19,11 @@ export const ImageNode: FC<ImageNodeProps> = ({ id: nodeId, data: imageData }) =
           <h6 className="w-full text-center text-sm absolute -top-[30px]">{imageData.name}</h6>
         )}
 
-        <img src={imageUrl} width={imageData.width} height={imageData.height} />
+        <img
+          src={getImageProxyUrl(imageData.url)}
+          width={imageData.width}
+          height={imageData.height}
+        />
       </ConnectableNodeWrapper>
     </div>
   );
