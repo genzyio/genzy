@@ -1,7 +1,6 @@
-import { useState, type FC } from "react";
+import { type FC, useState } from "react";
 import { type Microservice, type Language, type Service } from "./models";
 import { TextField } from "../../../components/text-field";
-import { Select } from "../../../components/select";
 import { Button } from "../../../components/button";
 import { IDENTIFIER_REGEX } from "../../../patterns";
 import { EditService } from "./EditService";
@@ -11,6 +10,7 @@ import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 import { useWatchModeContext } from "../../projects/contexts/watch-mode.context";
 import { useChangeTrackerContext } from "../../projects/contexts/change-tracker-context";
 import { Languages } from "./constants";
+import { LanguagesListitem } from "./LanguagesListbox";
 
 type MicroserviceDrawerProps = {
   microserviceId: string;
@@ -137,12 +137,10 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
 
           <TextField value={version} onChange={handleMicroserviceVersionUpdate} label="Version" />
 
-          <Select
-            label="Language"
-            placeholder=""
+          <LanguagesListitem
+            className="w-[10em]"
             disabled={!microserviceNotSavedYet}
             value={language}
-            options={LanguageOptions}
             onChange={handleMicroserviceLanguageUpdate}
           />
         </div>

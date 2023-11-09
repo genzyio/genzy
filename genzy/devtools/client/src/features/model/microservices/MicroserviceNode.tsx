@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { useProjectContext } from "../../projects/contexts/project.context";
 import { useWatchModeContext } from "../../projects/contexts/watch-mode.context";
 import { getImageProxyUrl } from "../../../utils/proxy-image";
+import { LanguageIcons } from "./constants";
 
 type MicroserviceNodeProps = NodeProps<Microservice>;
 
@@ -15,12 +16,6 @@ const colors = {
   CONTROLLER: "border-red-500",
   LOCAL: "border-green-300",
   API_INTEGRATION: "border-yellow-300",
-} as const;
-
-// TODO: Save icons in public/static folder.
-const languageIcons = {
-  ts: "https://cdn-icons-png.flaticon.com/512/5968/5968381.png",
-  js: "https://www.freepnglogos.com/uploads/javascript-png/javascript-vector-logo-yellow-png-transparent-javascript-vector-12.png",
 } as const;
 
 export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
@@ -46,7 +41,7 @@ export const MicroserviceNode: FC<MicroserviceNodeProps> = ({
               <span>
                 {!!microservice.language && (
                   <img
-                    src={getImageProxyUrl(languageIcons[microservice.language])}
+                    src={getImageProxyUrl(LanguageIcons[microservice.language])}
                     height={16}
                     width={16}
                   />
