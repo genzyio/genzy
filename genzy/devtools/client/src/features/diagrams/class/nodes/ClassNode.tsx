@@ -1,8 +1,8 @@
 import { type FC } from "react";
 import { type NodeProps } from "reactflow";
-import { type Class } from "./models";
-import { AttributePreview } from "./AttributePreview";
-import { MethodPreview } from "./MethodPreview";
+import { type Class } from "../models";
+import { AttributePreview } from "../class-drawer/attributes/AttributePreview";
+import { MethodPreview } from "../class-drawer/methods/MethodPreview";
 
 type ClassNodeProps = NodeProps<Class>;
 

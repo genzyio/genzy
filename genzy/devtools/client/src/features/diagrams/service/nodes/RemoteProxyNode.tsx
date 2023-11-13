@@ -1,9 +1,9 @@
 import { type FC } from "react";
 import { type NodeProps } from "reactflow";
-import { SERVICE_TYPE_DISPLAY_NAME, type Service } from "./models";
-import { MethodChip } from "./MethodChip";
-import { ConnectableNodeWrapper } from "../common/components/ConnectableNodeWrapper";
-import { useProjectDefinitionContext } from "../../project-workspace/contexts/project-definition.context";
+import { SERVICE_TYPE_DISPLAY_NAME, type Service } from "../models";
+import { MethodChip } from "../MethodChip";
+import { ConnectableNodeWrapper } from "../../common/components/ConnectableNodeWrapper";
+import { useProjectDefinitionContext } from "../../../project-workspace/contexts/project-definition.context";
 
 type RemoteProxyNodeProps = NodeProps<Service>;
 

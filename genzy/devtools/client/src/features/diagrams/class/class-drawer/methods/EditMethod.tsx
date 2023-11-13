@@ -1,17 +1,17 @@
 import { type FC, useState, useCallback } from "react";
-import { type DataType, type Method, type Parameter } from "./models";
+import { type DataType, type Method, type Parameter } from "../../models";
 import { MethodCard } from "./MethodCard";
-import { IDENTIFIER_REGEX } from "../../../patterns";
-import { TextField } from "../../../core/components/text-field";
-import { Select } from "../../../core/components/select";
-import { Checkbox } from "../../../core/components/checkbox";
+import { IDENTIFIER_REGEX } from "../../../../../patterns";
+import { TextField } from "../../../../../core/components/text-field";
+import { Select } from "../../../../../core/components/select";
+import { Checkbox } from "../../../../../core/components/checkbox";
 import { EditParameters } from "./EditParameters";
-import { useTypesContext } from "./TypesContext";
-import { useMicroserviceContext } from "../common/contexts/microservice.context";
-import { RoundCard } from "../common/components/RoundCard";
-import { useSequenceGenerator } from "../../../core/hooks/useStringSequence";
-import { ClosableWrapper } from "../common/components/ClosableWrapper";
-import { useValidationContext } from "../common/contexts/validation-context";
+import { useTypesContext } from "../../TypesContext";
+import { useMicroserviceContext } from "../../../common/contexts/microservice.context";
+import { RoundCard } from "../../../common/components/RoundCard";
+import { useSequenceGenerator } from "../../../../../core/hooks/useStringSequence";
+import { ClosableWrapper } from "../../../common/components/ClosableWrapper";
+import { useValidationContext } from "../../../common/contexts/validation-context";
 import cloneDeep from "lodash.clonedeep";
 
 type EditMethodProps = {

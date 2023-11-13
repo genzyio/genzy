@@ -1,7 +1,7 @@
 import { type FC } from "react";
-import { type Method, type Parameter } from "./models";
-import { useMicroserviceContext } from "../common/contexts/microservice.context";
-import { useTypesContext } from "./TypesContext";
+import { type Method, type Parameter } from "../../models";
+import { useMicroserviceContext } from "../../../common/contexts/microservice.context";
+import { useTypesContext } from "../../TypesContext";
 
 type MethodPreviewProps = {
   className?: string;

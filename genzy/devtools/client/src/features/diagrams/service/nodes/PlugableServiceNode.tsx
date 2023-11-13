@@ -1,7 +1,7 @@
 import { type FC } from "react";
 import { type NodeProps } from "reactflow";
-import { SERVICE_TYPE_DISPLAY_NAME, type Service } from "./models";
-import { ConnectableNodeWrapper } from "../common/components/ConnectableNodeWrapper";
+import { SERVICE_TYPE_DISPLAY_NAME, type Service } from "../models";
+import { ConnectableNodeWrapper } from "../../common/components/ConnectableNodeWrapper";
 
 type PlugableServiceNodeProps = NodeProps<Service>;
 

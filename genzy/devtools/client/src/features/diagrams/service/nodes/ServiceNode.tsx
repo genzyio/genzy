@@ -1,8 +1,8 @@
 import { type FC } from "react";
 import { type NodeProps } from "reactflow";
-import { SERVICE_TYPE_DISPLAY_NAME, type Service } from "./models";
-import { MethodChip } from "./MethodChip";
-import { ConnectableNodeWrapper } from "../common/components/ConnectableNodeWrapper";
+import { SERVICE_TYPE_DISPLAY_NAME, type Service } from "../models";
+import { MethodChip } from "../MethodChip";
+import { ConnectableNodeWrapper } from "../../common/components/ConnectableNodeWrapper";
 
 const colors = {
   LOCAL: "border-green-500",
@@ -24,7 +24,9 @@ export const ServiceNode: FC<ServiceNodeProps> = ({ data: service }) => {
 
   return (
     <div
-      className={`p-4 rounded-lg border-2 bg-brand-node-dark ${colors[service.type]} flex flex-col gap-y-2`}
+      className={`p-4 rounded-lg border-2 bg-brand-node-dark ${
+        colors[service.type]
+      } flex flex-col gap-y-2`}
     >
       <ConnectableNodeWrapper>
         <div className="text-center w-full mb-2">

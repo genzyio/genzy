@@ -1,10 +1,10 @@
 import { type FC } from "react";
-import { type ServiceType, type ServiceFunction } from "./models";
-import { useToggle } from "../../../core/hooks/useToggle";
-import { MethodChip } from "./MethodChip";
-import { useTypesContext } from "../class/TypesContext";
-import { useMicroserviceContext } from "../common/contexts/microservice.context";
-import { OperationalButton } from "../common/components/OperationalButton";
+import { type ServiceType, type ServiceFunction } from "../models";
+import { useToggle } from "../../../../core/hooks/useToggle";
+import { MethodChip } from "../MethodChip";
+import { useTypesContext } from "../../class/TypesContext";
+import { useMicroserviceContext } from "../../common/contexts/microservice.context";
+import { OperationalButton } from "../../common/components/OperationalButton";
 
 type FunctionCardProps = {
   function: ServiceFunction;

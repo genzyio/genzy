@@ -1,15 +1,15 @@
 import { type FC, useState } from "react";
-import { type Attribute, type DataType } from "./models";
+import { type Attribute, type DataType } from "../../models";
 import { AttributeCard } from "./AttributeCard";
-import { IDENTIFIER_REGEX } from "../../../patterns";
-import { TextField } from "../../../core/components/text-field";
-import { Select } from "../../../core/components/select";
-import { Checkbox } from "../../../core/components/checkbox";
-import { useMicroserviceContext } from "../common/contexts/microservice.context";
-import { useTypesContext } from "./TypesContext";
-import { RoundCard } from "../common/components/RoundCard";
-import { ClosableWrapper } from "../common/components/ClosableWrapper";
-import { useValidationContext } from "../common/contexts/validation-context";
+import { IDENTIFIER_REGEX } from "../../../../../patterns";
+import { TextField } from "../../../../../core/components/text-field";
+import { Select } from "../../../../../core/components/select";
+import { Checkbox } from "../../../../../core/components/checkbox";
+import { useMicroserviceContext } from "../../../common/contexts/microservice.context";
+import { useTypesContext } from "../../TypesContext";
+import { RoundCard } from "../../../common/components/RoundCard";
+import { ClosableWrapper } from "../../../common/components/ClosableWrapper";
+import { useValidationContext } from "../../../common/contexts/validation-context";
 import cloneDeep from "lodash.clonedeep";
 
 type EditAttributeProps = {

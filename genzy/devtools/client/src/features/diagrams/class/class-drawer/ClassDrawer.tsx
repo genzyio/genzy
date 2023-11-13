@@ -1,13 +1,13 @@
 import { useState, type FC } from "react";
-import { Attribute, Class, DataType, Method, Parameter } from "./models";
-import { useSequenceGenerator } from "../../../core/hooks/useStringSequence";
-import { TextField } from "../../../core/components/text-field";
-import { IDENTIFIER_REGEX } from "../../../patterns";
-import { Button } from "../../../core/components/button";
-import { EditAttribute } from "./EditAttribute";
-import { EditMethod } from "./EditMethod";
-import { useValidationContext } from "../common/contexts/validation-context";
-import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
+import { Attribute, Class, DataType, Method, Parameter } from "../models";
+import { useSequenceGenerator } from "../../../../core/hooks/useStringSequence";
+import { TextField } from "../../../../core/components/text-field";
+import { IDENTIFIER_REGEX } from "../../../../patterns";
+import { Button } from "../../../../core/components/button";
+import { EditAttribute } from "./attributes/EditAttribute";
+import { EditMethod } from "./methods/EditMethod";
+import { useValidationContext } from "../../common/contexts/validation-context";
+import { useDirtyCheckContext } from "../../common/contexts/dirty-check-context";
 
 type ClassDrawerProps = {
   classId: string;

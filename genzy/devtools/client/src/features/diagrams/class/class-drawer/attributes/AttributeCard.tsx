@@ -1,7 +1,7 @@
 import { type FC } from "react";
-import { type Attribute } from "./models";
+import { type Attribute } from "../../models";
 import { AttributePreview } from "./AttributePreview";
-import { OperationalButton } from "../common/components/OperationalButton";
+import { OperationalButton } from "../../../common/components/OperationalButton";
 
 type AttributeCardProps = {
   attribute: Attribute;

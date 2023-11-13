@@ -15,12 +15,12 @@ import {
 import "reactflow/dist/style.css";
 import { type Service } from "./models";
 import { Drawer } from "../../../core/components/drawer";
-import { ServiceDrawer } from "./ServiceDrawer";
+import { ServiceDrawer } from "./service-drawer/ServiceDrawer";
 import { useProjectDefinitionContext } from "../../project-workspace/contexts/project-definition.context";
 import { projectDefinitionActions } from "../../project-workspace/contexts/project-definition.dispatcher";
 import { ConfirmationModal } from "../../../core/components/confirmation-modal";
 import { RemovableEdge } from "../common/components/edges/removable/RemovableEdge";
-import { ServiceNode } from "./ServiceNode";
+import { ServiceNode } from "./nodes/ServiceNode";
 import { RemovableNode } from "../common/components/RemovableNode";
 import { createPortal } from "react-dom";
 import { Button } from "../../../core/components/button";

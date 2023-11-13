@@ -1,7 +1,7 @@
 import { type FC } from "react";
-import { type Attribute } from "./models";
-import { useMicroserviceContext } from "../common/contexts/microservice.context";
-import { useTypesContext } from "./TypesContext";
+import { type Attribute } from "../../models";
+import { useMicroserviceContext } from "../../../common/contexts/microservice.context";
+import { useTypesContext } from "../../TypesContext";
 
 type AttributePreview = {
   className?: string;

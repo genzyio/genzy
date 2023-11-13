@@ -1,7 +1,7 @@
 import { type FC } from "react";
-import { type Method } from "./models";
+import { type Method } from "../../models";
 import { MethodPreview } from "./MethodPreview";
-import { OperationalButton } from "../common/components/OperationalButton";
+import { OperationalButton } from "../../../common/components/OperationalButton";
 
 type MethodCardProps = {
   method: Method;

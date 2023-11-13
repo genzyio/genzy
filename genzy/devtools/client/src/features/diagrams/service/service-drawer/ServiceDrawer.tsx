@@ -1,15 +1,15 @@
 import { useState, type FC, useEffect } from "react";
-import { type Service, type ServiceType, SERVICE_TYPE_DISPLAY_NAME } from "./models";
-import { TextField } from "../../../core/components/text-field";
+import { type Service, type ServiceType, SERVICE_TYPE_DISPLAY_NAME } from "../models";
+import { TextField } from "../../../../core/components/text-field";
 import { EditFunction } from "./EditFunction";
-import { Button } from "../../../core/components/button";
-import { Select } from "../../../core/components/select";
-import { IDENTIFIER_REGEX } from "../../../patterns";
-import { primitiveTypes } from "../class/TypesContext";
-import { useSequenceGenerator } from "../../../core/hooks/useStringSequence";
+import { Button } from "../../../../core/components/button";
+import { Select } from "../../../../core/components/select";
+import { IDENTIFIER_REGEX } from "../../../../patterns";
+import { primitiveTypes } from "../../class/TypesContext";
+import { useSequenceGenerator } from "../../../../core/hooks/useStringSequence";
 import cloneDeep from "lodash.clonedeep";
-import { useValidationContext } from "../common/contexts/validation-context";
-import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
+import { useValidationContext } from "../../common/contexts/validation-context";
+import { useDirtyCheckContext } from "../../common/contexts/dirty-check-context";
 
 type ServiceDrawerProps = {
   serviceId: string;
