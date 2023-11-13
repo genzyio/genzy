@@ -9,11 +9,13 @@ import {
 
 type ValidationContextValues = {
   isValid: boolean;
+  getValidityFor: (id: string) => boolean;
   setValidityFor: (id: string, isValid: boolean) => any;
 };
 
 const initialValidationContextValues: ValidationContextValues = {
   isValid: true,
+  getValidityFor: () => false,
   setValidityFor: () => {},
 };
 
@@ -38,10 +40,23 @@ export const ValidationContextProvider: FC<PropsWithChildren> = ({ children }) =
     [validObjects, setIsValid]
   );
 
+  const getValidityFor = useCallback(
+    (id: string) => {
+      const isValid = validObjects[id];
+      if (isValid !== undefined) {
+        return isValid;
+      }
+
+      return true;
+    },
+    [validObjects]
+  );
+
   return (
     <ValidationContext.Provider
       value={{
         isValid,
+        getValidityFor,
         setValidityFor,
       }}
     >

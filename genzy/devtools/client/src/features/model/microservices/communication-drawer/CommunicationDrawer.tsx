@@ -1,8 +1,8 @@
 import { type FC, useState } from "react";
-import type { Service, Communication } from "./models";
-import { Checkbox } from "../../../components/checkbox";
-import { Button } from "../../../components/button";
-import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
+import type { Service, Communication } from "../models";
+import { Checkbox } from "../../../../components/checkbox";
+import { Button } from "../../../../components/button";
+import { useDirtyCheckContext } from "../../common/contexts/dirty-check-context";
 
 type CommunicationDrawerProps = {
   communication: Communication;

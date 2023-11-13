@@ -15,9 +15,9 @@ import {
 } from "reactflow";
 import { Communication, type Microservice } from "./models";
 import { Drawer } from "../../../components/drawer";
-import { MicroserviceDrawer } from "./MicroserviceDrawer";
+import { MicroserviceDrawer } from "./microservice-drawer/MicroserviceDrawer";
 import { useSequenceGenerator } from "../../../hooks/useStringSequence";
-import { CommunicationDrawer } from "./CommunicationDrawer";
+import { CommunicationDrawer } from "./communication-drawer/CommunicationDrawer";
 import { useProjectDefinitionContext } from "../../projects/contexts/project-definition.context";
 import { projectDefinitionActions } from "../../projects/contexts/project-definition.dispatcher";
 import { findArrayDiff } from "../../../utils/diff";

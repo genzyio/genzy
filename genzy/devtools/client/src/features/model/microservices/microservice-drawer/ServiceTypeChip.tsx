@@ -1,5 +1,5 @@
 import { type FC } from "react";
-import { SERVICE_TYPE_DISPLAY_NAME } from "../service/models";
+import { SERVICE_TYPE_DISPLAY_NAME } from "../../service/models";
 
 const colors = {
   CONTROLLER: "bg-red-500 border-red-500",

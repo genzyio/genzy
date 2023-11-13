@@ -1,6 +1,6 @@
 import { type FC } from "react";
-import { type Service } from "./models";
-import { OperationalButton } from "../common/components/OperationalButton";
+import { type Service } from "../models";
+import { OperationalButton } from "../../common/components/OperationalButton";
 import { ServiceTypeChip } from "./ServiceTypeChip";
 
 type ServiceCardProps = {
@@ -9,7 +9,7 @@ type ServiceCardProps = {
   onDelete: () => any;
 };
 
-export const ServiceCardCard: FC<ServiceCardProps> = ({ service, onEdit, onDelete }) => {
+export const ServiceCard: FC<ServiceCardProps> = ({ service, onEdit, onDelete }) => {
   return (
     <div className="flex items-center w-full">
       <div className="mr-2">
