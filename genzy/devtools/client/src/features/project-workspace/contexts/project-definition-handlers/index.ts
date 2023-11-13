@@ -11,6 +11,7 @@ import {
   addPlugableServiceHandler,
   updateServiceHandler,
   updateServicesHandler,
+  deleteServiceHandler,
   deleteServicesHandler,
 } from "./service-handlers";
 import { addClassHandler, updateClassHandler, deleteClassHandler } from "./class-handlers";
@@ -25,7 +26,7 @@ import {
   installPluginHandler,
   uninstallPluginHandler,
   updatePluginHandler,
-} from "./plugins-handlers";
+} from "./plugin-handlers";
 import {
   microserviceMovedHandler,
   serviceMovedHandler,
@@ -43,6 +44,7 @@ export default {
   addPlugableServiceHandler,
   updateServiceHandler,
   updateServicesHandler,
+  deleteServiceHandler,
   deleteServicesHandler,
   addClassHandler,
   updateClassHandler,

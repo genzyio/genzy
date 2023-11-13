@@ -24,6 +24,7 @@ export const projectDefinitionActions = {
   addPlugableService: Symbol("addPlugableService"),
   updateService: Symbol("updateService"),
   updateServices: Symbol("updateServices"),
+  deleteService: Symbol("deleteServiceHandler"),
   deleteServices: Symbol("deleteServices"),
   serviceMoved: Symbol("serviceMoved"),
 
@@ -62,6 +63,7 @@ function createDispatcher(projectDefinition: ProjectDefinition): DispatcherType 
     [projectDefinitionActions.addPlugableService]: handlers.addPlugableServiceHandler,
     [projectDefinitionActions.updateService]: handlers.updateServiceHandler,
     [projectDefinitionActions.updateServices]: handlers.updateServicesHandler,
+    [projectDefinitionActions.deleteService]: handlers.deleteServiceHandler,
     [projectDefinitionActions.deleteServices]: handlers.deleteServicesHandler,
     [projectDefinitionActions.serviceMoved]: handlers.serviceMovedHandler,
 

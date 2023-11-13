@@ -25,7 +25,6 @@ const removeDependencyHandler: HandlerType<{
   microserviceId: string;
   dependencyId: string;
 }> = (projectDefinition: ProjectDefinition, { microserviceId, dependencyId }) => {
-  // Remove remote proxies
   const serviceDiagram = projectDefinition.services[microserviceId];
   serviceDiagram.edges = serviceDiagram.edges.filter((edge) => edge.id !== dependencyId);
 };

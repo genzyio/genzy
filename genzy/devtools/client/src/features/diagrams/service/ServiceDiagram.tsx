@@ -158,11 +158,9 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   const handleServiceDelete = () => {
     const removedServiceId = selected.id;
 
-    dispatcher(projectDefinitionActions.updateMicroservice, {
-      microserviceId: microserviceId,
-      newServices: [],
-      existingServices: [],
-      removedServices: [{ id: removedServiceId }],
+    dispatcher(projectDefinitionActions.deleteService, {
+      microserviceId,
+      serviceId: removedServiceId,
     });
 
     setNodes((nodes) => nodes.filter((node) => node.id !== removedServiceId));
