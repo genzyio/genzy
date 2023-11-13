@@ -1,6 +1,6 @@
 import { type FC, useState, useEffect } from "react";
 import { type NPMPackageInfo } from "../api/search.contracts";
-import { TextField } from "../../../components/text-field";
+import { TextField } from "../../../core/components/text-field";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useSearch } from "../hooks/useSearch";
 import { KeywordsList } from "./keywords";

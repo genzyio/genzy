@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useProjectContext } from "../../projects/contexts/project.context";
-import { useMicroserviceContext } from "../../model/microservices/MicroserviceContext";
+import { useProjectContext } from "../../project-workspace/contexts/project.context";
+import { useMicroserviceContext } from "../../diagrams/common/contexts/microservice.context";
 
 type PluginsNavigation = {
   openSpecificPlugin: (pluginName: string) => void;

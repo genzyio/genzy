@@ -1,6 +1,6 @@
-import { type Plugin } from "../../model/microservices/models";
-import { useMicroserviceContext } from "../../model/microservices/MicroserviceContext";
-import { useProjectDefinitionContext } from "../../projects/contexts/project-definition.context";
+import { type Plugin } from "../../diagrams/microservices/models";
+import { useMicroserviceContext } from "../../diagrams/common/contexts/microservice.context";
+import { useProjectDefinitionContext } from "../../project-workspace/contexts/project-definition.context";
 import { useMemo } from "react";
 
 export function useIsPluginInstalled(name: string) {

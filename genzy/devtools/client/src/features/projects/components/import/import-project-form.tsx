@@ -1,11 +1,11 @@
 import { type FC, useState, SyntheticEvent } from "react";
-import { TextField } from "../../../../components/text-field";
-import { useAction } from "../../../../hooks/useAction";
+import { TextField } from "../../../../core/components/text-field";
+import { useAction } from "../../../../core/hooks/useAction";
 import { type ImportProject } from "../../api/project.contracts";
 import { importProject } from "../../api/project.actions";
-import { useNotifications } from "../../../../hooks/useNotifications";
-import { extractErrorMessage } from "../../../../utils/errors";
-import { Button } from "../../../../components/button";
+import { useNotifications } from "../../../../core/hooks/useNotifications";
+import { extractErrorMessage } from "../../../../core/utils/errors";
+import { Button } from "../../../../core/components/button";
 
 type ImportProjectFormProps = {
   onSaved: (projectName: string) => any;

@@ -1,10 +1,10 @@
 import { type FC, useEffect, useState } from "react";
-import { Tabs, TabsInstance } from "../../../components/tabs";
-import { Tab } from "../../../components/tab";
+import { Tabs, TabsInstance } from "../../../core/components/tabs";
+import { Tab } from "../../../core/components/tab";
 import { SearchPlugins } from "./search-plugins";
 import { InstalledPlugins } from "./installed-plugins";
 import { SpecificPlugin } from "./specific-plugin";
-import { Button } from "../../../components/button";
+import { Button } from "../../../core/components/button";
 import { useParams } from "react-router-dom";
 import { usePluginsNavigation } from "../hooks/usePluginsNavigation";
 

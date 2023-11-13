@@ -1,8 +1,8 @@
 import { type FC, useState } from "react";
-import { type Plugin } from "../../model/microservices/models";
+import { type Plugin } from "../../diagrams/microservices/models";
 import { KeywordsList } from "./keywords";
-import { useMicroserviceContext } from "../../model/microservices/MicroserviceContext";
-import { useProjectDefinitionContext } from "../../projects/contexts/project-definition.context";
+import { useMicroserviceContext } from "../../diagrams/common/contexts/microservice.context";
+import { useProjectDefinitionContext } from "../../project-workspace/contexts/project-definition.context";
 import { useSpecificPluginVersion } from "../hooks/useSpecificPluginVersion";
 import { LoadingRow } from "./loading-row";
 import { usePluginsNavigation } from "../hooks/usePluginsNavigation";

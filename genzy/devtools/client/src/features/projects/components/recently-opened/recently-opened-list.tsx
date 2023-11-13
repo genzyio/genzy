@@ -4,18 +4,18 @@ import {
   RecentlyOpenedListItem,
   type RecentlyOpenedListItemOption,
 } from "./recently-opened-list-item";
-import { useAction } from "../../../../hooks/useAction";
+import { useAction } from "../../../../core/hooks/useAction";
 import { deleteRecentlyOpened } from "../../api/recently-opened.actions";
 import { type RecentlyOpenedProject } from "../../models/recently-opened.models";
-import { Checkbox } from "../../../../components/checkbox";
-import { useNotifications } from "../../../../hooks/useNotifications";
-import { extractErrorMessage } from "../../../../utils/errors";
+import { Checkbox } from "../../../../core/components/checkbox";
+import { useNotifications } from "../../../../core/hooks/useNotifications";
+import { extractErrorMessage } from "../../../../core/utils/errors";
 import { deleteProject } from "../../api/project.actions";
 import { useQueryClient } from "react-query";
-import { ConfirmationModal } from "../../../../components/confirmation-modal";
+import { ConfirmationModal } from "../../../../core/components/confirmation-modal";
 import { useProjectNavigation } from "../../hooks/useProjectNavigation";
 import { BookmarkSlashIcon, ClipboardDocumentIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { Accordion } from "../../../../components/accordion";
+import { Accordion } from "../../../../core/components/accordion";
 
 export const RecentlyOpenedList: FC = () => {
   const { recentlyOpenedProjects } = useRecentlyOpenedProjects();
