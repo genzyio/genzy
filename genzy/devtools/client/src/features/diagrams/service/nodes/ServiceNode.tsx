@@ -1,8 +1,9 @@
-import { type FC } from "react";
+import { type FC, useMemo } from "react";
 import { type NodeProps } from "reactflow";
-import { SERVICE_TYPE_DISPLAY_NAME, type Service } from "../models";
+import { type Service, type ServiceFunction, SERVICE_TYPE_DISPLAY_NAME } from "../models";
+import { ConnectableNodeWrapper } from "../../common/components/nodes/ConnectableNodeWrapper";
+import { NodeBase } from "../../common/components/nodes/NodeBase";
 import { MethodChip } from "../MethodChip";
-import { ConnectableNodeWrapper } from "../../common/components/ConnectableNodeWrapper";
 
 const colors = {
   LOCAL: "border-green-500",
@@ -14,38 +15,60 @@ const colors = {
 type ServiceNodeProps = NodeProps<Service>;
 
 export const ServiceNode: FC<ServiceNodeProps> = ({ data: service }) => {
-  const showRoute = service.type !== "LOCAL";
+  const [typeName, color, showRoute] = getSpecificServiceData(service.type);
+  const url = formatServiceUrl(service.host, service.basePath);
 
-  const url = `${service.host || ""}${
-    service.host?.endsWith("/") && service.basePath?.startsWith("/")
-      ? service.basePath.substring(1)
-      : service.basePath
-  }`;
+  const ListComponent = useMemo(() => {
+    return showRoute ? Endpoint : Function;
+  }, [showRoute]);
 
   return (
-    <div
-      className={`p-4 rounded-lg border-2 bg-brand-node-dark ${
-        colors[service.type]
-      } flex flex-col gap-y-2`}
-    >
-      <ConnectableNodeWrapper>
-        <div className="text-center w-full mb-2">
-          <p className="text-xs text-gray-400">{SERVICE_TYPE_DISPLAY_NAME[service.type]}</p>
-
-          <h2 className="text-xl">{service.name}</h2>
-          {!!url && url !== "/" && <h6 className="text-center text-xs text-gray-500">{url}</h6>}
+    <ConnectableNodeWrapper>
+      <NodeBase
+        borderColor={color}
+        header={typeName}
+        title={service.name}
+        description={!!url && url !== "/" ? url : undefined}
+      >
+        <div className="space-y-2">
+          {service.functions.map((fun) => {
+            return (
+              <div key={fun.id} className="p-1 rounded-md border border-gray-400">
+                <ListComponent {...fun} />
+              </div>
+            );
+          })}
         </div>
-        {service.functions.map((fun) => (
-          <div key={fun.id} className="flex w-full p-1 rounded-md border border-gray-400">
-            {showRoute && (
-              <span className="w-14 mr-2">
-                <MethodChip method={fun.method} small />
-              </span>
-            )}
-            {showRoute ? <span>{fun.route || "/"}</span> : <span>{fun.name}</span>}
-          </div>
-        ))}
-      </ConnectableNodeWrapper>
+      </NodeBase>
+    </ConnectableNodeWrapper>
+  );
+};
+
+const Endpoint: FC<ServiceFunction> = ({ route, method }) => {
+  return (
+    <div className="flex space-x-2">
+      <MethodChip className="w-14" method={method} small />
+      <span>{route || "/"}</span>
     </div>
   );
 };
+
+const Function: FC<ServiceFunction> = ({ name }) => {
+  return <span>{name}</span>;
+};
+
+function getSpecificServiceData(type: Service["type"]) {
+  const typeName = SERVICE_TYPE_DISPLAY_NAME[type];
+  const color = colors[type];
+  const showRoute = type !== "LOCAL";
+
+  return [typeName, color, showRoute];
+}
+
+function formatServiceUrl(host: string, basePath: string) {
+  const formattedHost = host || "";
+  const formattedBasePath =
+    host?.endsWith("/") && basePath?.startsWith("/") ? basePath.substring(1) : basePath;
+
+  return formattedHost + formattedBasePath;
+}

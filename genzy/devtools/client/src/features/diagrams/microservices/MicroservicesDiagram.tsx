@@ -23,7 +23,7 @@ import { projectDefinitionActions } from "../../project-workspace/contexts/proje
 import { findArrayDiff } from "../../../core/utils/diff";
 import { ConfirmationModal } from "../../../core/components/confirmation-modal";
 import { RemovableEdge } from "../common/components/edges/removable/RemovableEdge";
-import { RemovableNode } from "../common/components/RemovableNode";
+import { RemovableNode } from "../common/components/nodes/RemovableNode";
 import { MicroserviceNode } from "./nodes/MicroserviceNode";
 import { createPortal } from "react-dom";
 import { Button } from "../../../core/components/button";

@@ -1,6 +1,7 @@
 import { type FC } from "react";
 import { type NodeProps } from "reactflow";
 import { type Class } from "../models";
+import { NodeBase } from "../../common/components/nodes/NodeBase";
 import { AttributePreview } from "../class-drawer/attributes/AttributePreview";
 import { MethodPreview } from "../class-drawer/methods/MethodPreview";
 
@@ -10,19 +11,20 @@ export const ClassNode: FC<ClassNodeProps> = ({ data }) => {
   const { name, attributes, methods } = data;
 
   return (
-    <div className="p-4 rounded-lg bg-brand-node-dark border-2 border-violet-500/80 flex flex-col gap-y-2">
-      <h2 className="w-full text-center text-xl my-2">{name}</h2>
-      {attributes.map((attribute) => (
-        <div key={attribute.id} className="flex w-full p-1 rounded-md border border-gray-400">
-          <AttributePreview attribute={attribute} />
-        </div>
-      ))}
-      {methods.length > 0 ? <hr></hr> : <></>}
-      {methods.map((method) => (
-        <div key={method.id} className="flex w-full p-1 rounded-md border border-gray-400">
-          <MethodPreview method={method} />
-        </div>
-      ))}
-    </div>
+    <NodeBase borderColor="border-violet-500/80" title={name}>
+      <div className="space-y-2">
+        {attributes.map((attribute) => (
+          <div key={attribute.id} className="p-1 rounded-md border border-gray-400">
+            <AttributePreview attribute={attribute} />
+          </div>
+        ))}
+        {methods.length > 0 ? <hr /> : <></>}
+        {methods.map((method) => (
+          <div key={method.id} className="p-1 rounded-md border border-gray-400">
+            <MethodPreview method={method} />
+          </div>
+        ))}
+      </div>
+    </NodeBase>
   );
 };

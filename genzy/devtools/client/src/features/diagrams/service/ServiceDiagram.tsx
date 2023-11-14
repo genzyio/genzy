@@ -21,7 +21,7 @@ import { projectDefinitionActions } from "../../project-workspace/contexts/proje
 import { ConfirmationModal } from "../../../core/components/confirmation-modal";
 import { RemovableEdge } from "../common/components/edges/removable/RemovableEdge";
 import { ServiceNode } from "./nodes/ServiceNode";
-import { RemovableNode } from "../common/components/RemovableNode";
+import { RemovableNode } from "../common/components/nodes/RemovableNode";
 import { createPortal } from "react-dom";
 import { Button } from "../../../core/components/button";
 import { ValidationContextProvider } from "../common/contexts/validation-context";

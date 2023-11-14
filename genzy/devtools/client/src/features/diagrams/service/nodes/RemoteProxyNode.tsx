@@ -1,36 +1,40 @@
 import { type FC } from "react";
 import { type NodeProps } from "reactflow";
-import { SERVICE_TYPE_DISPLAY_NAME, type Service } from "../models";
-import { MethodChip } from "../MethodChip";
-import { ConnectableNodeWrapper } from "../../common/components/ConnectableNodeWrapper";
+import { type Service, SERVICE_TYPE_DISPLAY_NAME } from "../models";
 import { useProjectDefinitionContext } from "../../../project-workspace/contexts/project-definition.context";
+import { ConnectableNodeWrapper } from "../../common/components/nodes/ConnectableNodeWrapper";
+import { NodeBase } from "../../common/components/nodes/NodeBase";
+import { MethodChip } from "../MethodChip";
+
+const useProxyTargetService = (microserviceId: string, serviceId: string) => {
+  const { projectDefinition } = useProjectDefinitionContext();
+  const serviceDiagram = projectDefinition.services[microserviceId];
+  const targetService = serviceDiagram.nodes.find((node) => node.id === serviceId).data;
+
+  return targetService;
+};
 
 type RemoteProxyNodeProps = NodeProps<Service>;
 
 export const RemoteProxyNode: FC<RemoteProxyNodeProps> = ({ id: serviceId, data: service }) => {
-  const { projectDefinition } = useProjectDefinitionContext();
-  const serviceDiagram = projectDefinition.services[service.microserviceId];
-  const realService = serviceDiagram.nodes.find((node) => node.id === serviceId).data;
+  const targetService = useProxyTargetService(service.microserviceId, serviceId);
 
   return (
-    <div
-      className={`p-4 rounded-lg border-2 bg-brand-node-dark border-blue-300 flex flex-col gap-y-2`}
-    >
-      <ConnectableNodeWrapper>
-        <div className="text-center w-full mb-2">
-          <p className="text-xs text-gray-400">{SERVICE_TYPE_DISPLAY_NAME[service.type]}</p>
-          <h2 className="text-xl">{realService.name}</h2>
+    <ConnectableNodeWrapper>
+      <NodeBase
+        borderColor="border-blue-300"
+        header={SERVICE_TYPE_DISPLAY_NAME[service.type]}
+        title={targetService.name}
+      >
+        <div className="space-y-2">
+          {targetService.functions.map((fun) => (
+            <div key={fun.id} className="flex space-x-2 p-1 rounded-md border border-gray-400">
+              <MethodChip className="w-14" method={fun.method} small />
+              <span>{fun.route}</span>
+            </div>
+          ))}
         </div>
-        {realService.functions.map((fun) => (
-          <div key={fun.id} className="flex w-full p-1 rounded-md border border-gray-400">
-            <span className="w-14 mr-2">
-              <MethodChip method={fun.method} small />
-            </span>
-
-            <span className="">{fun.route}</span>
-          </div>
-        ))}
-      </ConnectableNodeWrapper>
-    </div>
+      </NodeBase>
+    </ConnectableNodeWrapper>
   );
 };

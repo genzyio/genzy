@@ -17,7 +17,7 @@ import { projectDefinitionActions } from "../../project-workspace/contexts/proje
 import { useTypesContext } from "./TypesContext";
 import { ConfirmationModal } from "../../../core/components/confirmation-modal";
 import { ClassNode } from "./nodes/ClassNode";
-import { RemovableNode } from "../common/components/RemovableNode";
+import { RemovableNode } from "../common/components/nodes/RemovableNode";
 import { Button } from "../../../core/components/button";
 import { createPortal } from "react-dom";
 import { ValidationContextProvider } from "../common/contexts/validation-context";

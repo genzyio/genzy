@@ -1,7 +1,7 @@
 import { type FC, MouseEvent, type ElementType } from "react";
 import { type NodeProps } from "reactflow";
-import { useWatchModeContext } from "../../../project-workspace/contexts/watch-mode.context";
-import { RemovableButton } from "./edges/removable/RemovableButton";
+import { useWatchModeContext } from "../../../../project-workspace/contexts/watch-mode.context";
+import { RemovableButton } from "../edges/removable/RemovableButton";
 
 type RemovableNode = NodeProps<any> & {
   element: ElementType;
@@ -15,6 +15,7 @@ export const RemovableNode: FC<RemovableNode> = ({
   type,
   ...restOfProps
 }) => {
+  // TODO: Da li je moguce da se da neki disabled property umesto ovoga?
   const { isMicroserviceActive } = useWatchModeContext();
   const microserviceActive = type === "microserviceNode" && isMicroserviceActive(id);
 

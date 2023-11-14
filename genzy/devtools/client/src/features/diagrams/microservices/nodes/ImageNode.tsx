@@ -1,6 +1,6 @@
 import { type FC } from "react";
 import { type NodeProps } from "reactflow";
-import { ConnectableNodeWrapper } from "../../common/components/ConnectableNodeWrapper";
+import { ConnectableNodeWrapper } from "../../common/components/nodes/ConnectableNodeWrapper";
 import { getImageProxyUrl } from "../../../../core/utils/proxy-image";
 
 type ImageNodeProps = NodeProps<{
