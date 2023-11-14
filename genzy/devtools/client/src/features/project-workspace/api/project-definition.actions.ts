@@ -1,5 +1,5 @@
 import axios from "axios";
-import { type SaveProjectDefinition } from "../api/project.contracts";
+import { type SaveProjectDefinition } from "./project-definition.contracts";
 
 function getProjectDefinition(projectName: string) {
   return axios.get(`/projects/${projectName}/definition`);

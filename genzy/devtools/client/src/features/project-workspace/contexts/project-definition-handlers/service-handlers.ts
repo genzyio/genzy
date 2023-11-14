@@ -134,7 +134,7 @@ const deleteServiceHandler: HandlerType<{
   microserviceId: string;
   serviceId: string;
 }> = (projectDefinition: ProjectDefinition, { microserviceId, serviceId }) => {
-  return (dispatcher: DispatcherType) => {
+  return async (dispatcher: DispatcherType) => {
     // Remove from current service diagram
     const serviceDiagram = projectDefinition.services[microserviceId];
     serviceDiagram.nodes = serviceDiagram.nodes.filter((service) => service.id !== serviceId);
@@ -150,24 +150,24 @@ const deleteServiceHandler: HandlerType<{
     );
 
     // Remove deleted service from communication and dependent microservices
-    const dependentCommunication = microserviceDiagram.edges.filter(
+    const dependentCommunications = microserviceDiagram.edges.filter(
       (edge) => edge.target === microserviceId
     );
-    dependentCommunication.forEach((edge) => {
+    for (const edge of dependentCommunications) {
       if (!edge.data.services.includes(serviceId)) {
-        return;
+        continue;
       }
 
-      dispatcher(projectDefinitionActions.removeServicesFromCommunication, {
+      await dispatcher(projectDefinitionActions.removeServicesFromCommunication, {
         communication: edge.data,
         serviceIds: [serviceId],
       });
 
-      dispatcher(projectDefinitionActions.deleteService, {
+      await dispatcher(projectDefinitionActions.deleteService, {
         microserviceId: edge.source,
         serviceId,
       });
-    });
+    }
   };
 };
 
@@ -175,10 +175,10 @@ const deleteServicesHandler: HandlerType<{
   microserviceId: string;
   serviceIds: string[];
 }> = (projectDefinition: ProjectDefinition, { microserviceId, serviceIds }) => {
-  return (dispatcher: DispatcherType) => {
-    serviceIds?.map((serviceId) =>
-      dispatcher(projectDefinitionActions.deleteService, { microserviceId, serviceId })
-    );
+  return async (dispatcher: DispatcherType) => {
+    for (const serviceId of serviceIds) {
+      await dispatcher(projectDefinitionActions.deleteService, { microserviceId, serviceId });
+    }
   };
 };
 

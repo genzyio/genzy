@@ -38,22 +38,22 @@ const updateMicroserviceHandler: HandlerType<{
   projectDefinition: ProjectDefinition,
   { microserviceId, microservice = undefined, newServices, existingServices, removedServices }
 ) => {
-  return (dispatcher: DispatcherType) => {
+  return async (dispatcher: DispatcherType) => {
     // Add new Services
-    dispatcher(projectDefinitionActions.addServices, {
+    await dispatcher(projectDefinitionActions.addServices, {
       microserviceId,
       services: newServices,
     });
 
     // Update existing Services
-    dispatcher(projectDefinitionActions.updateServices, {
+    await dispatcher(projectDefinitionActions.updateServices, {
       microserviceId,
       services: existingServices,
     });
 
     // Delete Service on current and remote proxies on other diagrams
     const removedServiceIds = removedServices.map((service) => service.id);
-    dispatcher(projectDefinitionActions.deleteServices, {
+    await dispatcher(projectDefinitionActions.deleteServices, {
       microserviceId,
       serviceIds: removedServiceIds,
     });
@@ -78,17 +78,28 @@ const deleteMicroserviceHandler: HandlerType<{ microserviceId: string }> = (
   projectDefinition: ProjectDefinition,
   { microserviceId }
 ) => {
-  return (dispatcher: DispatcherType) => {
+  return async (dispatcher: DispatcherType) => {
     const microserviceDiagram = projectDefinition.microservices;
+    const microserviceData = microserviceDiagram.nodes.find(
+      (node) => node.id === microserviceId
+    )?.data;
+    // Remove all plugins
+    for (const plugin of microserviceData?.plugins ?? []) {
+      await dispatcher(projectDefinitionActions.uninstallPlugin, {
+        microserviceId,
+        plugin,
+      });
+    }
 
     // Remove all communication to this microservice
-    microserviceDiagram.edges
-      .filter((edge) => edge.target === microserviceId)
-      .forEach((edge) =>
-        dispatcher(projectDefinitionActions.removeCommunication, {
-          communicationId: edge.id,
-        })
-      );
+    const communications = microserviceDiagram.edges.filter(
+      (edge) => edge.target === microserviceId
+    );
+    for (const edge of communications) {
+      await dispatcher(projectDefinitionActions.removeCommunication, {
+        communicationId: edge.id,
+      });
+    }
 
     // Remove services and classes
     delete projectDefinition.services[microserviceId];

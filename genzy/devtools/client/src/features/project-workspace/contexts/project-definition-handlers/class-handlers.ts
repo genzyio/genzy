@@ -81,19 +81,21 @@ const removeClassRefferencesFromClasses = (classDiagram: ClassDiagram, classId: 
 };
 
 const removeClassRefferencesFromServices = (serviceDiagram: ServiceDiagram, classId: string) => {
-  serviceDiagram.nodes.forEach((node) => {
-    const functions = node.data.functions;
-    functions.forEach((_function) => {
-      if (_function.returnType === classId) {
-        _function.returnType = "any";
-      }
-      _function.params.forEach((param) => {
-        if (param.type === classId) {
-          param.type = "any";
+  serviceDiagram.nodes
+    .filter((node) => !["REMOTE_PROXY", "PLUGABLE_SERVICE"].includes(node.data.type))
+    .forEach((node) => {
+      const functions = node.data.functions;
+      functions.forEach((_function) => {
+        if (_function.returnType === classId) {
+          _function.returnType = "any";
         }
+        _function.params.forEach((param) => {
+          if (param.type === classId) {
+            param.type = "any";
+          }
+        });
       });
     });
-  });
 };
 
 export { addClassHandler, updateClassHandler, deleteClassHandler };

@@ -37,7 +37,7 @@ export const projectDefinitionActions = {
   classMoved: Symbol("classMoved"),
 } as const;
 
-type DispatcherType = (type: symbol, payload: any) => any;
+type DispatcherType = (type: symbol, payload: any) => Promise<any>;
 
 function createDispatcher(projectDefinition: ProjectDefinition): DispatcherType {
   const handlersMap: Record<symbol, HandlerType> = {
@@ -76,7 +76,12 @@ function createDispatcher(projectDefinition: ProjectDefinition): DispatcherType 
     [projectDefinitionActions.classMoved]: handlers.classMovedHandler,
   };
 
-  return (type: symbol, payload: any) => handlersMap[type](projectDefinition, payload);
+  return (type: symbol, payload: any) => {
+    const handler = handlersMap[type];
+    const result = handler(projectDefinition, payload);
+
+    return Promise.resolve(result);
+  };
 }
 
 export { createDispatcher };

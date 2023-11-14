@@ -85,8 +85,8 @@ export const ClassDiagram: FC<DiagramProps> = ({
 
   // Handle Class add
 
-  const handleClassAdd = () => {
-    const classNode = dispatcher(projectDefinitionActions.addClass, {
+  const handleClassAdd = async () => {
+    const classNode = await dispatcher(projectDefinitionActions.addClass, {
       microserviceId,
       name: nextName(),
     });
@@ -96,16 +96,17 @@ export const ClassDiagram: FC<DiagramProps> = ({
 
   // Handle Class update
 
-  const handleClassUpdate = (classObject: Class) => {
-    dispatcher(projectDefinitionActions.updateClass, {
+  const handleClassUpdate = async (classObject: Class) => {
+    const updatedClassId = selectedClass.id;
+    await dispatcher(projectDefinitionActions.updateClass, {
       microserviceId,
-      classId: selectedClass.id,
+      classId: updatedClassId,
       class: classObject,
     });
 
     setNodes((nodes) =>
       nodes.map((node) => {
-        if (node.id === selectedClass.id) {
+        if (node.id === updatedClassId) {
           return { ...node, data: classObject };
         }
         return node;
@@ -118,9 +119,12 @@ export const ClassDiagram: FC<DiagramProps> = ({
 
   // Handle Class delete
 
-  const handleClassDelete = () => {
+  const handleClassDelete = async () => {
     const deletedClassId = selectedClass.id;
-    dispatcher(projectDefinitionActions.deleteClass, { microserviceId, classId: deletedClassId });
+    await dispatcher(projectDefinitionActions.deleteClass, {
+      microserviceId,
+      classId: deletedClassId,
+    });
 
     setNodes((nodes) => nodes.filter((node) => node.id !== deletedClassId));
 
@@ -180,9 +184,9 @@ export const ClassDiagram: FC<DiagramProps> = ({
           nodeTypes={localNodeTypes}
           edgeTypes={localEdgeTypes}
           onNodeDragStart={(_, node) => setSelectedClass(node)}
-          onNodeDragStop={(_, node) => {
+          onNodeDragStop={async (_, node) => {
             if (isNodeMoved(selectedClass, node)) {
-              dispatcher(projectDefinitionActions.classMoved, {
+              await dispatcher(projectDefinitionActions.classMoved, {
                 microserviceId,
                 classId: selectedClass?.id,
                 position: node.position,

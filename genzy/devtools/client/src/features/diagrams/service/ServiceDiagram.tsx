@@ -99,8 +99,8 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   };
 
   const onConnect = useCallback(
-    (params: Connection) => {
-      const newEdge = dispatcher(projectDefinitionActions.addDependency, {
+    async (params: Connection) => {
+      const newEdge = await dispatcher(projectDefinitionActions.addDependency, {
         microserviceId,
         params,
       });
@@ -118,8 +118,8 @@ export const ServiceDiagram: FC<DiagramProps> = ({
 
   // Handle Service add
 
-  const handleServiceAdd = () => {
-    const serviceNode = dispatcher(projectDefinitionActions.addService, {
+  const handleServiceAdd = async () => {
+    const serviceNode = await dispatcher(projectDefinitionActions.addService, {
       microserviceId,
       service: {
         id: `${+new Date()}`,
@@ -132,8 +132,8 @@ export const ServiceDiagram: FC<DiagramProps> = ({
 
   // Handle Service update
 
-  const handleServiceUpdate = (service: Service) => {
-    dispatcher(projectDefinitionActions.updateService, {
+  const handleServiceUpdate = async (service: Service) => {
+    await dispatcher(projectDefinitionActions.updateService, {
       microserviceId,
       service: {
         id: selected.id,
@@ -155,10 +155,10 @@ export const ServiceDiagram: FC<DiagramProps> = ({
 
   // Handle Service delete
 
-  const handleServiceDelete = () => {
+  const handleServiceDelete = async () => {
     const removedServiceId = selected.id;
 
-    dispatcher(projectDefinitionActions.deleteService, {
+    await dispatcher(projectDefinitionActions.deleteService, {
       microserviceId,
       serviceId: removedServiceId,
     });
@@ -207,8 +207,8 @@ export const ServiceDiagram: FC<DiagramProps> = ({
 
   const RemovableEdgeWrapper = useCallback(
     (props: EdgeProps) => {
-      const onRemove = (_, id: string) => {
-        dispatcher(projectDefinitionActions.removeDependency, {
+      const onRemove = async (_, id: string) => {
+        await dispatcher(projectDefinitionActions.removeDependency, {
           microserviceId,
           dependencyId: id,
         });
@@ -260,9 +260,9 @@ export const ServiceDiagram: FC<DiagramProps> = ({
           nodeTypes={localNodeTypes}
           edgeTypes={localEdgeTypes}
           onNodeDragStart={(_, node) => setSelected(node)}
-          onNodeDragStop={(_, node) => {
+          onNodeDragStop={async (_, node) => {
             if (isNodeMoved(selected, node)) {
-              dispatcher(projectDefinitionActions.serviceMoved, {
+              await dispatcher(projectDefinitionActions.serviceMoved, {
                 microserviceId,
                 serviceId: selected?.id,
                 position: node.position,

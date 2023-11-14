@@ -4,7 +4,6 @@ import { type Plugin } from "../../../diagrams/microservices/models";
 import { type Service } from "../../../diagrams/service/models";
 import { type DispatcherType, projectDefinitionActions } from "../project-definition.dispatcher";
 import { type Node } from "reactflow";
-import { Events, eventEmitter } from "../../../plugins/events/plugin.events";
 import axios from "axios";
 
 function formKey(key: string, values: Record<string, string>) {
@@ -167,9 +166,8 @@ function getMetadata(plugin: Plugin, packageJson: any) {
 const installPluginHandler: HandlerType<{
   microserviceId: string;
   plugin: Plugin;
-  dontFire: boolean;
-}> = (projectDefinition: ProjectDefinition, { microserviceId, plugin, dontFire }) => {
-  return (dispatcher: DispatcherType) => {
+}> = (projectDefinition: ProjectDefinition, { microserviceId, plugin }) => {
+  return async (dispatcher: DispatcherType) => {
     const microserviceNode = findMicroserviceNode(projectDefinition, microserviceId);
     const isInstalled = microserviceNode.data.plugins.some(
       (installedPlugin) => installedPlugin.name === plugin.name
@@ -180,116 +178,112 @@ const installPluginHandler: HandlerType<{
     const nodeMiddleX = microserviceNode.position.x + microserviceNode.width / 2;
     const nodeMiddleY = microserviceNode.position.y + microserviceNode.height / 2;
 
-    getPackageJson(plugin)
-      .then((packageJson: any) => {
-        const metadata = getMetadata(plugin, packageJson);
+    const packageJson = await getPackageJson(plugin);
+    const metadata = getMetadata(plugin, packageJson);
 
-        metadata.microservices
-          .filter((pluginMicroservice) =>
-            projectDefinition.microservices.nodes.every(
-              (node) => node.id !== formKey(pluginMicroservice.id, keyValues)
-            )
-          )
-          .forEach((pluginMicroservice, i, pluginMicroservicesToInstall) => {
-            const degreesBetweenMS = 360 / pluginMicroservicesToInstall.length;
-            const degrees = -90 + i * degreesBetweenMS;
-            const radians = (degrees * Math.PI) / 180;
-            const sin = Math.sin(radians);
-            const cos = Math.cos(radians);
+    metadata.microservices
+      .filter((pluginMicroservice) =>
+        projectDefinition.microservices.nodes.every(
+          (node) => node.id !== formKey(pluginMicroservice.id, keyValues)
+        )
+      )
+      .forEach((pluginMicroservice, i, pluginMicroservicesToInstall) => {
+        const degreesBetweenMS = 360 / pluginMicroservicesToInstall.length;
+        const degrees = -90 + i * degreesBetweenMS;
+        const radians = (degrees * Math.PI) / 180;
+        const sin = Math.sin(radians);
+        const cos = Math.cos(radians);
 
-            projectDefinition.microservices.nodes.push({
-              id: formKey(pluginMicroservice.id, keyValues),
-              position: {
-                x: nodeMiddleX + 400 * cos - pluginMicroservice.width / 2,
-                y: nodeMiddleY + 400 * sin,
-              },
-              width: pluginMicroservice.width,
-              height: pluginMicroservice.height,
-              data: {
-                name: pluginMicroservice.name,
-                showName: pluginMicroservice.showName,
-                url: pluginMicroservice.url,
-                width: pluginMicroservice.width,
-                height: pluginMicroservice.height,
-                services: [],
-              },
-              type: pluginMicroservice.type,
-            } as any);
-          });
+        projectDefinition.microservices.nodes.push({
+          id: formKey(pluginMicroservice.id, keyValues),
+          position: {
+            x: nodeMiddleX + 400 * cos - pluginMicroservice.width / 2,
+            y: nodeMiddleY + 400 * sin,
+          },
+          width: pluginMicroservice.width,
+          height: pluginMicroservice.height,
+          data: {
+            name: pluginMicroservice.name,
+            showName: pluginMicroservice.showName,
+            url: pluginMicroservice.url,
+            width: pluginMicroservice.width,
+            height: pluginMicroservice.height,
+            services: [],
+          },
+          type: pluginMicroservice.type,
+        } as any);
+      });
 
-        metadata.microservices
-          .flatMap((pluginMicroservice) => pluginMicroservice.services)
-          .forEach((plugableService) => {
-            dispatcher(projectDefinitionActions.addPlugableService, {
-              serviceId: formKey(plugableService.id, keyValues),
-              microserviceId,
-              plugin: plugin.name,
-              service: { name: plugableService.name, functions: plugableService.functions },
-            });
-          });
+    const pluginMicroserviceServices = metadata.microservices.flatMap(
+      (pluginMicroservice) => pluginMicroservice.services
+    );
+    for (const plugableService of pluginMicroserviceServices) {
+      await dispatcher(projectDefinitionActions.addPlugableService, {
+        serviceId: formKey(plugableService.id, keyValues),
+        microserviceId,
+        plugin: plugin.name,
+        service: { name: plugableService.name, functions: plugableService.functions },
+      });
+    }
+    const pluginMicroserviceDependencies = metadata.microservices.flatMap(
+      (pluginMicroservice) => pluginMicroservice.dependencies
+    );
+    for (const dependency of pluginMicroserviceDependencies) {
+      const sourceServiceNode = findServiceNode(
+        projectDefinition,
+        microserviceId,
+        formKey(dependency.source, keyValues)
+      );
+      const targetServiceNode = findServiceNode(
+        projectDefinition,
+        microserviceId,
+        formKey(dependency.target, keyValues)
+      );
+      const [sourceHandle, targetHandle] = findSourceAndTargetHandles(
+        sourceServiceNode,
+        targetServiceNode
+      );
 
-        metadata.microservices
-          .flatMap((pluginMicroservice) => pluginMicroservice.dependencies)
-          .forEach((dependency) => {
-            const sourceServiceNode = findServiceNode(
-              projectDefinition,
-              microserviceId,
-              formKey(dependency.source, keyValues)
-            );
-            const targetServiceNode = findServiceNode(
-              projectDefinition,
-              microserviceId,
-              formKey(dependency.target, keyValues)
-            );
-            const [sourceHandle, targetHandle] = findSourceAndTargetHandles(
-              sourceServiceNode,
-              targetServiceNode
-            );
+      await dispatcher(projectDefinitionActions.addDependency, {
+        microserviceId,
+        params: {
+          removable: false,
+          source: sourceServiceNode.id,
+          target: targetServiceNode.id,
+          sourceHandle,
+          targetHandle,
+        },
+      });
+    }
 
-            dispatcher(projectDefinitionActions.addDependency, {
-              microserviceId,
-              params: {
-                removable: false,
-                source: sourceServiceNode.id,
-                target: targetServiceNode.id,
-                sourceHandle,
-                targetHandle,
-              },
-            });
-          });
+    for (const communication of metadata.communications) {
+      const sourceMicroserviceNode = findMicroserviceNode(
+        projectDefinition,
+        formKey(communication.source, keyValues)
+      );
+      const targetMicroserviceNode = findMicroserviceNode(
+        projectDefinition,
+        formKey(communication.target, keyValues)
+      );
+      const [sourceHandle, targetHandle] = findSourceAndTargetHandles(
+        sourceMicroserviceNode,
+        targetMicroserviceNode
+      );
 
-        metadata.communications.forEach((communication) => {
-          const sourceMicroserviceNode = findMicroserviceNode(
-            projectDefinition,
-            formKey(communication.source, keyValues)
-          );
-          const targetMicroserviceNode = findMicroserviceNode(
-            projectDefinition,
-            formKey(communication.target, keyValues)
-          );
-          const [sourceHandle, targetHandle] = findSourceAndTargetHandles(
-            sourceMicroserviceNode,
-            targetMicroserviceNode
-          );
+      const newEdge = await dispatcher(projectDefinitionActions.addCommunication, {
+        params: {
+          removable: false,
+          source: sourceMicroserviceNode.id,
+          target: targetMicroserviceNode.id,
+          sourceHandle,
+          targetHandle,
+        },
+      });
 
-          const newEdge = dispatcher(projectDefinitionActions.addCommunication, {
-            params: {
-              removable: false,
-              source: sourceMicroserviceNode.id,
-              target: targetMicroserviceNode.id,
-              sourceHandle,
-              targetHandle,
-            },
-          });
+      newEdge.id = newEdge.source + "_" + newEdge.target;
+    }
 
-          newEdge.id = newEdge.source + "_" + newEdge.target;
-        });
-
-        microserviceNode.data.plugins.push(plugin);
-
-        !dontFire && eventEmitter.dispatch(Events.PLUGIN_INSTALLED, {});
-      })
-      .catch((error) => console.log(error));
+    microserviceNode.data.plugins.push(plugin);
   };
 };
 
@@ -299,7 +293,7 @@ const updatePluginHandler: HandlerType<{
   microserviceId: string;
   plugin: Plugin;
 }> = (projectDefinition: ProjectDefinition, { microserviceId, plugin }) => {
-  return (dispatcher: DispatcherType) => {
+  return async (dispatcher: DispatcherType) => {
     const microserviceData = projectDefinition.microservices.nodes.find(
       (node) => node.id === microserviceId
     ).data;
@@ -307,20 +301,17 @@ const updatePluginHandler: HandlerType<{
       (installedPlugin) => installedPlugin.name === plugin.name
     );
     if (installedPlugin) {
-      dispatcher(projectDefinitionActions.uninstallPlugin, {
+      await dispatcher(projectDefinitionActions.uninstallPlugin, {
         microserviceId,
         plugin: installedPlugin,
-        dontFire: true,
       });
     }
 
-    setTimeout(() => {
-      dispatcher(projectDefinitionActions.installPlugin, {
-        microserviceId,
-        plugin,
-        dontFire: true,
-      });
-    }, 250);
+    await dispatcher(projectDefinitionActions.installPlugin, {
+      microserviceId,
+      plugin,
+      dontFire: true,
+    });
   };
 };
 
@@ -329,64 +320,57 @@ const updatePluginHandler: HandlerType<{
 const uninstallPluginHandler: HandlerType<{
   microserviceId: string;
   plugin: Plugin;
-  dontFire: boolean;
-}> = (projectDefinition: ProjectDefinition, { microserviceId, plugin, dontFire }) => {
-  return (dispatcher: DispatcherType) => {
+}> = (projectDefinition: ProjectDefinition, { microserviceId, plugin }) => {
+  return async (dispatcher: DispatcherType) => {
     const microserviceData = projectDefinition.microservices.nodes.find(
       (node) => node.id === microserviceId
     ).data;
 
     const keyValues = { installingOnMicroserviceId: microserviceId };
 
-    getPackageJson(plugin)
-      .then((packageJson: any) => {
-        const metadata = getMetadata(plugin, packageJson);
+    const packageJson = await getPackageJson(plugin);
+    const metadata = getMetadata(plugin, packageJson);
 
-        const plugableServiceIdsToDelete = metadata.microservices
-          .flatMap((pluginMicroservice) => pluginMicroservice.services)
-          .map((plugableService) => formKey(plugableService.id, keyValues));
+    const plugableServiceIdsToDelete = metadata.microservices
+      .flatMap((pluginMicroservice) => pluginMicroservice.services)
+      .map((plugableService) => formKey(plugableService.id, keyValues));
 
-        dispatcher(projectDefinitionActions.deleteServices, {
-          microserviceId,
-          serviceIds: plugableServiceIdsToDelete,
-        });
+    await dispatcher(projectDefinitionActions.deleteServices, {
+      microserviceId,
+      serviceIds: plugableServiceIdsToDelete,
+    });
 
-        metadata.communications.forEach(({ source, target }) => {
-          const communication = projectDefinition.microservices.edges.find(
-            (edge) =>
-              edge.source === formKey(source, keyValues) &&
-              edge.target === formKey(target, keyValues)
-          );
+    for (const { source, target } of metadata.communications) {
+      const communication = projectDefinition.microservices.edges.find(
+        (edge) =>
+          edge.source === formKey(source, keyValues) && edge.target === formKey(target, keyValues)
+      );
 
-          dispatcher(projectDefinitionActions.removeCommunication, {
-            microserviceId,
-            communicationId: communication.id,
-          });
-        });
+      await dispatcher(projectDefinitionActions.removeCommunication, {
+        microserviceId,
+        communicationId: communication.id,
+      });
+    }
 
-        metadata.microservices
-          .map((pluginMicroservice) => {
-            pluginMicroservice.id = formKey(pluginMicroservice.id, keyValues);
-            return pluginMicroservice;
-          })
-          .filter((pluginMicroservice) =>
-            projectDefinition.microservices.edges.every(
-              (communication) => communication.target !== pluginMicroservice.id
-            )
-          )
-          .forEach((pluginMicroservice) => {
-            dispatcher(projectDefinitionActions.deleteMicroservice, {
-              microserviceId: pluginMicroservice.id,
-            });
-          });
-
-        microserviceData.plugins = microserviceData.plugins.filter(
-          (installedPlugin) => installedPlugin.name !== plugin.name
-        );
-
-        !dontFire && eventEmitter.dispatch(Events.PLUGIN_UNINSTALLED, {});
+    const microservicesIdsToDelete = metadata.microservices
+      .map((pluginMicroservice) => {
+        pluginMicroservice.id = formKey(pluginMicroservice.id, keyValues);
+        return pluginMicroservice;
       })
-      .catch((error) => console.log(error));
+      .filter((pluginMicroservice) =>
+        projectDefinition.microservices.edges.every(
+          (communication) => communication.target !== pluginMicroservice.id
+        )
+      );
+    for (const pluginMicroservice of microservicesIdsToDelete) {
+      await dispatcher(projectDefinitionActions.deleteMicroservice, {
+        microserviceId: pluginMicroservice.id,
+      });
+    }
+
+    microserviceData.plugins = microserviceData.plugins.filter(
+      (installedPlugin) => installedPlugin.name !== plugin.name
+    );
   };
 };
 

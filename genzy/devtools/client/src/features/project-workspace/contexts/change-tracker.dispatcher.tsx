@@ -7,8 +7,8 @@ function createChangeTrackingDispatcherWrapper(
   dispacher: DispatcherType,
   setStateForMS: (id: string, state: State) => any
 ) {
-  return (type: symbol, payload: any) => {
-    const result = dispacher(type, payload);
+  return async (type: symbol, payload: any) => {
+    const result = await dispacher(type, payload);
 
     switch (type) {
       case projectDefinitionActions.addMicroservice:

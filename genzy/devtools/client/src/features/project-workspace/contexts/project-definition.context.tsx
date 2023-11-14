@@ -40,7 +40,7 @@ const initialProjectDefinitionContextValues: ProjectDefinitionContextValues = {
     services: {},
     classes: {},
   },
-  dispatcher: () => {},
+  dispatcher: async () => {},
   setExecuteOnUndoRedo: () => () => {},
 };
 
@@ -71,10 +71,10 @@ export const ProjectDefinitionContextProvider: FC<PropsWithChildren> = ({ childr
   );
 
   const multiLevelDispatcher = useCallback(
-    (type: symbol, payload: any) => {
-      let result = changeTrackingDispatcher(type, payload);
+    async (type: symbol, payload: any) => {
+      let result = await changeTrackingDispatcher(type, payload);
       while (typeof result === "function") {
-        result = result(multiLevelDispatcher);
+        result = await result(multiLevelDispatcher);
       }
       return result;
     },
@@ -82,8 +82,8 @@ export const ProjectDefinitionContextProvider: FC<PropsWithChildren> = ({ childr
   );
 
   const autoSaveDispatcher = useCallback(
-    (type: symbol, payload: any) => {
-      const result = multiLevelDispatcher(type, payload);
+    async (type: symbol, payload: any) => {
+      const result = await multiLevelDispatcher(type, payload);
       shouldSaveNextUndoRedoState(true);
       setCurrentState(true);
       setTimeout(() => {

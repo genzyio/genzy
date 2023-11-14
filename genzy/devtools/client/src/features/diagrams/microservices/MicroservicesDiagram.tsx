@@ -122,8 +122,8 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   };
 
   const onConnect = useCallback(
-    (params: Connection) => {
-      const newEdge = dispatcher(projectDefinitionActions.addCommunication, { params });
+    async (params: Connection) => {
+      const newEdge = await dispatcher(projectDefinitionActions.addCommunication, { params });
 
       setEdges((edges) => addEdge(newEdge, edges));
     },
@@ -131,8 +131,8 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   );
 
   // Handle Microservice Add
-  const handleMicroserviceAdd = () => {
-    const microserviceNode = dispatcher(projectDefinitionActions.addMicroservice, {
+  const handleMicroserviceAdd = async () => {
+    const microserviceNode = await dispatcher(projectDefinitionActions.addMicroservice, {
       name: nextName(),
     });
 
@@ -140,14 +140,14 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   };
 
   // Handle Microservice Update
-  const handleMicroserviceUpdate = (microservice: Microservice) => {
+  const handleMicroserviceUpdate = async (microservice: Microservice) => {
     const {
       new: newServices,
       existing: existingServices,
       removed: removedServices,
     } = findArrayDiff(selectedMicroservice.data.services, microservice.services, (s) => s.id);
 
-    dispatcher(projectDefinitionActions.updateMicroservice, {
+    await dispatcher(projectDefinitionActions.updateMicroservice, {
       microserviceId: selectedMicroservice.id,
       microservice,
       newServices,
@@ -170,19 +170,16 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   };
 
   // Handle Microservice Delete
-  const handleMicroserviceDelete = () => {
+  const handleMicroserviceDelete = async () => {
     const removedMicroserviceId = selectedMicroservice.id;
 
-    dispatcher(projectDefinitionActions.deleteMicroservice, {
+    await dispatcher(projectDefinitionActions.deleteMicroservice, {
       microserviceId: removedMicroserviceId,
     });
 
-    setNodes((ns) => ns.filter((n) => n.id !== removedMicroserviceId));
-    setEdges((edgs) =>
-      edgs.filter(
-        (edge) => removedMicroserviceId !== edge.target && removedMicroserviceId !== edge.source
-      )
-    );
+    const { nodes, edges } = projectDefinition.microservices;
+    setNodes([...nodes]);
+    setEdges([...edges]);
 
     onMicroserviceDeleted(selectedMicroservice.id);
 
@@ -217,13 +214,13 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   );
 
   // Handle Communication Update
-  const handleCommunicationUpdate = (communication: Communication) => {
+  const handleCommunicationUpdate = async (communication: Communication) => {
     const { new: newServiceIds, removed: removedServiceIds } = findArrayDiff(
       selectedCommunication.data.services,
       communication.services
     );
 
-    dispatcher(projectDefinitionActions.updateCommunication, {
+    await dispatcher(projectDefinitionActions.updateCommunication, {
       communicationId: selectedCommunication.id,
       communication,
       newServiceIds,
@@ -244,8 +241,8 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   };
 
   // Handle Communication Delete
-  const handleCommunicationDelete = () => {
-    dispatcher(projectDefinitionActions.removeCommunication, {
+  const handleCommunicationDelete = async () => {
+    await dispatcher(projectDefinitionActions.removeCommunication, {
       communicationId: selectedCommunication.id,
     });
 
@@ -318,9 +315,9 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
           nodeTypes={localNodeTypes}
           edgeTypes={localEdgeTypes}
           onNodeDragStart={(_, node) => setSelectedMicroservice(node)}
-          onNodeDragStop={(_, node) => {
+          onNodeDragStop={async (_, node) => {
             if (isNodeMoved(selectedMicroservice, node)) {
-              dispatcher(projectDefinitionActions.microserviceMoved, {
+              await dispatcher(projectDefinitionActions.microserviceMoved, {
                 microserviceId: selectedMicroservice?.id,
                 type: selectedMicroservice?.type,
                 position: node.position,

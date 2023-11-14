@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { type ProjectDefinition } from "../models/project-definition.models";
-import { type SaveProjectDefinition } from "../../projects/api/project.contracts";
+import { type SaveProjectDefinition } from "../api/project-definition.contracts";
 import { useProjectContext } from "./project.context";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useAction } from "../../../core/hooks/useAction";

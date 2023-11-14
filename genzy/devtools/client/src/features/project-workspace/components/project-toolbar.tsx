@@ -4,7 +4,7 @@ import { useNotifications } from "../../../core/hooks/useNotifications";
 import { useProjectContext } from "../contexts/project.context";
 import { useProjectDefinitionContext } from "../contexts/project-definition.context";
 import { useAction } from "../../../core/hooks/useAction";
-import { type SaveProjectDefinition } from "../../projects/api/project.contracts";
+import { type SaveProjectDefinition } from "../api/project-definition.contracts";
 import { saveProjectDefinition } from "../api/project-definition.actions";
 import { saveProjectScreenshot } from "../../projects/api/project-screenshots.actions";
 import { extractErrorMessage } from "../../../core/utils/errors";

@@ -13,7 +13,6 @@ import { projectDefinitionActions } from "../../project-workspace/contexts/proje
 import { useMicroserviceContext } from "../../diagrams/common/contexts/microservice.context";
 import { useNotifications } from "../../../core/hooks/useNotifications";
 import { Loader } from "./loader";
-import { Events, eventEmitter } from "../events/plugin.events";
 import { useOutletContext } from "react-router-dom";
 
 type DependenciesProps = {
@@ -109,35 +108,21 @@ export const SpecificPlugin: FC<{ pluginName: string }> = ({ pluginName }) => {
     [plugin, versionValue]
   );
 
-  useEffect(() => {
-    eventEmitter.subscribe(Events.PLUGIN_INSTALLED, () => {
-      notificator.success(`You have installed plugin ${pluginName}.`);
-      close();
-    });
-
-    eventEmitter.subscribe(Events.PLUGIN_UNINSTALLED, () => {
-      notificator.success(`You have uninstalled plugin ${pluginName}.`);
-      close();
-    });
-
-    return () => {
-      eventEmitter.unsubscribe(Events.PLUGIN_INSTALLED);
-      eventEmitter.unsubscribe(Events.PLUGIN_UNINSTALLED);
-    };
-  }, []);
-
-  const installPlugin = () => {
-    dispatcher(projectDefinitionActions.installPlugin, {
+  const installPlugin = async () => {
+    await dispatcher(projectDefinitionActions.installPlugin, {
       microserviceId,
       plugin: {
         name: pluginName,
         version: versionValue,
       },
     });
+
+    notificator.success(`You have installed plugin ${pluginName}.`);
+    close();
   };
 
-  const updatePlugin = () => {
-    dispatcher(projectDefinitionActions.updatePlugin, {
+  const updatePlugin = async () => {
+    await dispatcher(projectDefinitionActions.updatePlugin, {
       microserviceId,
       plugin: {
         name: pluginName,
@@ -146,19 +131,20 @@ export const SpecificPlugin: FC<{ pluginName: string }> = ({ pluginName }) => {
     });
 
     notificator.success(`You have updated plugin ${pluginName}.`);
-    setTimeout(() => {
-      close();
-    }, 1200);
+    close();
   };
 
-  const uninstallPlugin = () => {
-    dispatcher(projectDefinitionActions.uninstallPlugin, {
+  const uninstallPlugin = async () => {
+    await dispatcher(projectDefinitionActions.uninstallPlugin, {
       microserviceId,
       plugin: {
         name: pluginName,
         version: versionValue,
       },
     });
+
+    notificator.success(`You have uninstalled plugin ${pluginName}.`);
+    close();
   };
 
   if (isFetching) {
