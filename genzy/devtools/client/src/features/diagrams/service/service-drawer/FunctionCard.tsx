@@ -19,9 +19,6 @@ export const FunctionCard: FC<FunctionCardProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const { microserviceId } = useMicroserviceContext();
-  const { getTypeLabel } = useTypesContext(microserviceId);
-
   const [show, toggleShow] = useToggle();
 
   const showRoute = serviceType !== "LOCAL";
@@ -50,26 +47,36 @@ export const FunctionCard: FC<FunctionCardProps> = ({
           )}
         </div>
       </div>
-      {show && (
-        <>
-          <div>{showRoute && "Name: " + fun.name}</div>
-          {fun.params.length > 0 && "Parameters:"}
-          <ul className="ml-2">
-            {fun.params.map((param) => (
-              <li key={param.id} className="flex items-center w-full">
-                <span>{param.name}</span>
-                {param.isOptional ? "?" : ""}: {getTypeLabel(param.type)}
-                {param.isCollection && "[]"}{" "}
-                {showRoute && (
-                  <span className="text-xs italic text-gray-500">({param.source})</span>
-                )}
-              </li>
-            ))}
-          </ul>
-          Returns: {getTypeLabel(fun.returnType) || "?"}
-          {fun.returnsCollection && "[]"}
-        </>
-      )}
+      {show && <FunctionDescription function={fun} serviceType={serviceType} />}
     </div>
+  );
+};
+
+const FunctionDescription: FC<Pick<FunctionCardProps, "function" | "serviceType">> = ({
+  function: fun,
+  serviceType,
+}) => {
+  const { microserviceId } = useMicroserviceContext();
+  const { getTypeLabel } = useTypesContext(microserviceId);
+
+  const showRoute = serviceType !== "LOCAL";
+
+  return (
+    <>
+      <div>{showRoute && "Name: " + fun.name}</div>
+      {fun.params.length > 0 && "Parameters:"}
+      <ul className="ml-2">
+        {fun.params.map((param) => (
+          <li key={param.id} className="flex items-center w-full">
+            <span>{param.name}</span>
+            {param.isOptional ? "?" : ""}: {getTypeLabel(param.type)}
+            {param.isCollection && "[]"}{" "}
+            {showRoute && <span className="text-xs italic text-gray-500">({param.source})</span>}
+          </li>
+        ))}
+      </ul>
+      Returns: {getTypeLabel(fun.returnType) || "?"}
+      {fun.returnsCollection && "[]"}
+    </>
   );
 };

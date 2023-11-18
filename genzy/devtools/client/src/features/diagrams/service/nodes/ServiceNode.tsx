@@ -16,7 +16,7 @@ type ServiceNodeProps = NodeProps<Service>;
 
 export const ServiceNode: FC<ServiceNodeProps> = ({ data: service }) => {
   const [typeName, color, showRoute] = getSpecificServiceData(service.type);
-  const url = formatServiceUrl(service.host, service.basePath);
+  const url = formatServiceUrl(service.type, service.host, service.basePath);
 
   const ListComponent = useMemo(() => {
     return showRoute ? Endpoint : Function;
@@ -65,8 +65,10 @@ function getSpecificServiceData(type: Service["type"]) {
   return [typeName, color, showRoute];
 }
 
-function formatServiceUrl(host: string, basePath: string) {
-  const formattedHost = host || "";
+function formatServiceUrl(type: string, host: string, basePath: string) {
+  if (type === "LOCAL") return "";
+
+  const formattedHost = (type === "API_INTEGRATION" ? host : undefined) || "";
   const formattedBasePath =
     host?.endsWith("/") && basePath?.startsWith("/") ? basePath.substring(1) : basePath;
 

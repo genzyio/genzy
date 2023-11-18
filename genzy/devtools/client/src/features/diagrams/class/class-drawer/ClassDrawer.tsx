@@ -84,14 +84,17 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
   return (
     <>
       <div className="mx-4">
-        <div className="flex mb-5 w-full">
-          <TextField
-            value={className}
-            onChange={handleClassNameUpdate}
-            error={
-              (!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")
-            }
-          />
+        <div className="flex w-full mb-5">
+          <div className="flex-1">
+            <TextField
+              label="Name"
+              value={className}
+              onChange={handleClassNameUpdate}
+              error={
+                (!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")
+              }
+            />
+          </div>
         </div>
 
         {!!attributes?.length && <p>Attributes</p>}

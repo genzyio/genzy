@@ -1,15 +1,13 @@
 import { useState, type FC, useEffect } from "react";
-import { type Service, type ServiceType, SERVICE_TYPE_DISPLAY_NAME } from "../models";
-import { TextField } from "../../../../core/components/text-field";
+import { type Service } from "../models";
 import { EditFunction } from "./EditFunction";
 import { Button } from "../../../../core/components/button";
-import { Select } from "../../../../core/components/select";
-import { IDENTIFIER_REGEX } from "../../../../patterns";
 import { primitiveTypes } from "../../class/TypesContext";
 import { useSequenceGenerator } from "../../../../core/hooks/useStringSequence";
 import cloneDeep from "lodash.clonedeep";
 import { useValidationContext } from "../../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../../common/contexts/dirty-check-context";
+import { ServiceForm } from "./ServiceForm";
 
 type ServiceDrawerProps = {
   serviceId: string;
@@ -18,13 +16,6 @@ type ServiceDrawerProps = {
   nameExists: (name: string) => boolean;
 };
 
-const serviceTypeOptions = Object.entries(SERVICE_TYPE_DISPLAY_NAME)
-  .filter(([value, _]) => !["REMOTE_PROXY", "PLUGABLE_SERVICE"].includes(value))
-  .map(([value, label]) => ({
-    value,
-    label,
-  }));
-
 export const ServiceDrawer: FC<ServiceDrawerProps> = ({
   serviceId,
   service,
@@ -32,7 +23,7 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({
   nameExists,
 }) => {
   const { isDirty, setCurrentState } = useDirtyCheckContext();
-  const { isValid, setValidityFor } = useValidationContext();
+  const { isValid } = useValidationContext();
 
   const [serviceData, setServiceData] = useState(cloneDeep(service));
 
@@ -88,66 +79,25 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({
     updateState({ ...serviceData });
   };
 
-  const handleDelete = (index: number) => {
+  const handleDeleteFunction = (index: number) => {
     serviceData.functions.splice(index, 1);
     updateState({ ...serviceData });
   };
 
-  const isIdentifier = IDENTIFIER_REGEX.test(serviceData.name);
-  const hasUniqueName = !nameExists(serviceData.name);
-
-  const isValidService = isIdentifier && hasUniqueName;
-  setValidityFor(serviceId, isValidService);
-
   return (
     <div className="mx-4">
-      <div className="flex mb-1 w-full space-x-2">
-        <span className="w-2/3">
-          <TextField
-            value={serviceData.name}
-            onChange={(v) => updateState({ ...serviceData, name: v })}
-            error={
-              (!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")
-            }
-          />
-        </span>
-        <span className="w-1/3">
-          <Select
-            value={serviceData.type}
-            onChange={(v) => updateState({ ...serviceData, type: v as ServiceType })}
-            options={serviceTypeOptions}
-          />
-        </span>
-      </div>
-      <div className="flex w-full mb-5 space-x-2">
-        <span className="w-1/2" hidden={serviceData.type !== "API_INTEGRATION"}>
-          <TextField
-            value={serviceData.host}
-            onChange={(v) =>
-              updateState({
-                ...serviceData,
-                host: v,
-              })
-            }
-            label="Host"
-          />
-        </span>
-        <span
-          className={serviceData.type !== "API_INTEGRATION" ? "flex-1" : "w-1/2"}
-          hidden={serviceData.type !== "API_INTEGRATION" && serviceData.type !== "CONTROLLER"}
-        >
-          <TextField
-            value={serviceData.basePath}
-            onChange={(v) =>
-              updateState({
-                ...serviceData,
-                basePath: v,
-              })
-            }
-            label="Base Path"
-          />
-        </span>
-      </div>
+      <ServiceForm
+        serviceId={serviceId}
+        service={serviceData}
+        onServicePartialUpdate={(servicePart) => {
+          updateState({
+            ...serviceData,
+            ...servicePart,
+          });
+        }}
+        nameExists={nameExists}
+      />
+
       {!!serviceData.functions?.length && (
         <p>{serviceData.type === "LOCAL" ? "Functions" : "Routes"}</p>
       )}
@@ -155,8 +105,8 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({
         <EditFunction
           function={fun}
           serviceType={serviceData.type}
+          handleDelete={() => handleDeleteFunction(index)}
           handleAddParam={() => handleAddParam(index)}
-          handleDelete={() => handleDelete(index)}
           handleDeleteParam={handleDeleteParam(index)}
           updateState={() => updateState({ ...serviceData })}
           key={fun.id}

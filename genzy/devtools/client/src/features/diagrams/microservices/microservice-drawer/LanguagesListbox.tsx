@@ -34,7 +34,7 @@ const LanguageOptionTemplate: FC<ListboxTemplateProps<LanguageData>> = ({
 
   return (
     <>
-      <div className="flex space-x-2 items-center">
+      <div className="flex space-x-2 items-center py-1.5 pl-3">
         <img src={logo} className="flex-shrink-0" height={16} width={16} alt="" />
         <span className={classNames(selected ? "font-medium" : "font-normal", "block truncate")}>
           {name}

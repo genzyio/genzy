@@ -47,22 +47,21 @@ const CustomListbox: FC<ListboxProps> = ({
             <div className="relative mt-1">
               <Listbox.Button
                 className={classNames(
-                  "relative h-9 min-w-[9em] w-full cursor-default pl-3 pr-10 py-1.5 rounded-md border-0 bg-brand-node-dark shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 select-arrow-down",
-                  disabled ? "opacity-70" : ""
+                  "relative h-9 w-full cursor-default pr-7 rounded-md border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 select-arrow-down",
+                  disabled ? "opacity-70" : "",
+                  getBackgroundColor(false, selectedItem)
                 )}
               >
-                <span className="flex items-center">
-                  {selectedItem ? (
-                    <Template
-                      active={false}
-                      selected={false}
-                      disabled={disabled}
-                      data={selectedItem}
-                    />
-                  ) : (
-                    <></>
-                  )}
-                </span>
+                {selectedItem ? (
+                  <Template
+                    active={false}
+                    selected={false}
+                    disabled={disabled}
+                    data={selectedItem}
+                  />
+                ) : (
+                  <div></div>
+                )}
               </Listbox.Button>
 
               <Transition
@@ -72,14 +71,19 @@ const CustomListbox: FC<ListboxProps> = ({
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
               >
-                <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md border-[1px] border-gray-500 bg-brand-node-dark py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                <Listbox.Options
+                  className={
+                    "absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md border-[1px] border-gray-500 bg-brand-node-dark text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+                  }
+                >
                   {options.map(({ value, data }) => (
                     <Listbox.Option
                       key={value}
                       className={({ active }) =>
                         classNames(
-                          active ? "bg-gray-500 text-white" : "text-gray-200",
-                          "relative cursor-default select-none py-2 pl-2 pr-7"
+                          active ? "text-white" : "text-gray-200",
+                          "relative cursor-default select-none pr-7",
+                          getBackgroundColor(active, data)
                         )
                       }
                       value={value}
@@ -110,5 +114,13 @@ const CustomListbox: FC<ListboxProps> = ({
     </div>
   );
 };
+
+function getBackgroundColor(active: boolean, item: any) {
+  const { bgColor, bgColorActive } = item?.styles ?? {};
+  const backgroundColor = active ? bgColorActive || bgColor : bgColor;
+  const defaultBackgroundColor = active ? "bg-gray-500" : "bg-brand-node-dark";
+
+  return backgroundColor || defaultBackgroundColor;
+}
 
 export { CustomListbox as Listbox };

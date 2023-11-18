@@ -9,7 +9,6 @@ import {
 } from "../models";
 import { TextField } from "../../../../core/components/text-field";
 import { FunctionCard } from "./FunctionCard";
-import { Button } from "../../../../core/components/button";
 import { Select } from "../../../../core/components/select";
 import { IDENTIFIER_REGEX, ROUTE_REGEX } from "../../../../patterns";
 import { useMicroserviceContext } from "../../common/contexts/microservice.context";
@@ -20,6 +19,7 @@ import cloneDeep from "lodash.clonedeep";
 import { useValidationContext } from "../../common/contexts/validation-context";
 import { Checkbox } from "../../../../core/components/checkbox";
 import { XMark } from "../../../../core/components/icons/x-mark";
+import { MethodListitem } from "./MethodsListbox";
 
 type EditFunctionProps = {
   function: ServiceFunction;
@@ -113,7 +113,15 @@ export const EditFunction: FC<EditFunctionProps> = ({
       <ClosableWrapper hidden={!isValidFunction} onClick={onClose}>
         {editRoute && (
           <div className="flex w-full mb-2 space-x-2">
-            <Select
+            <MethodListitem
+              className="w-[6em]"
+              value={fun.method}
+              onChange={(v) => {
+                fun.method = v as HTTPMethod;
+                updateState();
+              }}
+            />
+            {/* <Select
               value={fun.method}
               onChange={(v) => {
                 fun.method = v as HTTPMethod;
@@ -121,7 +129,7 @@ export const EditFunction: FC<EditFunctionProps> = ({
               }}
               options={Object.keys(HTTP_METHOD)}
               label="Method"
-            />
+            /> */}
             <div className="flex-1">
               <TextField
                 value={fun.route}
