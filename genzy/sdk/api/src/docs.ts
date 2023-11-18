@@ -7,7 +7,7 @@ import type {
   Param,
   RouteMetaInfo,
   ServiceMetaInfo,
-} from "../../../shared/types";
+} from "../../shared/types";
 
 export const generateDocsFrom = (meta: MetaInfo, info: GenzyInfo) => {
   const doc = {

@@ -1,6 +1,6 @@
 {
   "name": "@genzy.io/devtools-api",
-  "version": "0.0.1-alpha-4",
+  "version": "0.0.1-alpha-5",
   "description": "Genzy Devtools API.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

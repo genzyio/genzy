@@ -6,7 +6,7 @@ import {
   formParamsOf,
   getHttpMethod,
   getMethodsOfClassInstance,
-} from "../../../shared/functions";
+} from "../../shared/functions";
 import {
   ComplexTypeReference,
   MetaTypesRegistry,
@@ -14,7 +14,7 @@ import {
   Param,
   RouteMetaInfo,
   ServiceMetaInfo,
-} from "../../../shared/types";
+} from "../../shared/types";
 
 export function RegisterRoutesFor(
   instance,
@@ -35,19 +35,21 @@ export function RegisterRoutesFor(
 
   const types: MetaTypesRegistry = meta.types;
 
-  const routes: RouteMetaInfo[] = getMethodsOfClassInstance(instance).map(
-    (method: string) => {
+  const routes: RouteMetaInfo[] = getMethodsOfClassInstance(instance)
+    .map((method: string) => {
+      const action = meta?.actions?.[method];
+      if (!action) return;
+
       const methodPath =
-        meta?.actions?.[method]?.path != null
+        action.path != null
           ? meta?.actions?.[method].path
           : `/${camelToKebabCase(method)}`;
       const httpMethod =
-        meta?.actions?.[method]?.httpMethod != null
+        action.httpMethod != null
           ? meta?.actions?.[method].httpMethod.toLowerCase()
           : getHttpMethod(method);
       const params = formParamsOf(method, meta?.actions?.[method]);
-      const result: ComplexTypeReference | undefined =
-        meta?.actions?.[method]?.result;
+      const result: ComplexTypeReference | undefined = action.result;
 
       const handlers = [
         getServiceHandler(instance, method, errorRegistry, params),
@@ -93,8 +95,8 @@ export function RegisterRoutesFor(
         })),
         ...(result ? { result } : {}),
       };
-    }
-  );
+    })
+    .filter((r) => !!r) as RouteMetaInfo[];
   return {
     service: {
       name: serviceClassName,

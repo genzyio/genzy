@@ -1,4 +1,5 @@
-import axios from "axios";
+
+import * as axios from 'axios';
 import { ServiceRegistry } from "./service-registry";
 import {
   getHttpMethod,
@@ -87,7 +88,7 @@ const remoteCallHandler = {
               fullPath = fullPath.replace(`:${param.name}`, args[i]);
           });
 
-          axios({
+          axios.default({
             method: httpMethod,
             data,
             headers,

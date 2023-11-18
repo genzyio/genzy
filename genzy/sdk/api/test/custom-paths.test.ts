@@ -63,6 +63,7 @@ class TestService {
 
 @Controller("/annotated")
 class AnnotatedService {
+  @Get("/get")
   async get() {}
 
   @Get("/testing")

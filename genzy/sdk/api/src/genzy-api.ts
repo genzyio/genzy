@@ -1,9 +1,9 @@
-import * as express from "express";
+import express from "express";
 import { NextFunction, Request, Response } from "express";
-import * as cors from "cors";
-import * as swaggerUi from "swagger-ui-express";
+import cors from "cors";
+import swaggerUi from "swagger-ui-express";
 import { Application } from "express";
-import { GenzyContainer } from "../../client";
+import { GenzyContainer } from "../../client/src/index";
 import { RegisterRoutesFor } from "./routes-handler";
 import {
   CustomInterceptors,
@@ -12,10 +12,10 @@ import {
   type MetaInfo,
   type GenzyInfo,
   type ServiceMetaInfo,
-} from "../../../shared/types";
+} from "../../shared/types";
 import { ErrorRegistry } from "./error-handler";
 import { generateDocsFrom } from "./docs";
-import { combineGenzyConfigs } from "../../../shared/functions";
+import { combineGenzyConfigs } from "../../shared/functions";
 
 type GenzyPluginParams = {
   genzyApi: GenzyApi;

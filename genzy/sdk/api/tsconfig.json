@@ -3,7 +3,9 @@
     "sourceMap": true,
     "target": "es6",
     "outDir": "build",
-    "module": "commonjs",
+    "module": "ES2022",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
     "experimentalDecorators": true
   },
   "include": ["src/**/*.ts"]

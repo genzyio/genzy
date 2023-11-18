@@ -1,12 +1,19 @@
-const path = require("path");
-const { ESBuildMinifyPlugin } = require("esbuild-loader");
-const CopyPlugin = require("copy-webpack-plugin");
+import path from "path";
+import CopyPlugin from "copy-webpack-plugin";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const { NODE_ENV = "production" } = process.env;
-module.exports = {
+export default {
   entry: "./src/index.ts",
   mode: NODE_ENV,
-  target: ["node", "es2015"],
+  target: ["node", "es2022"],
+  node: {
+    __dirname: true,
+    __filename: true,
+  },
   module: {
     rules: [
       {
@@ -16,17 +23,15 @@ module.exports = {
       },
     ],
   },
-  optimization: {
-    minimizer: [
-      new ESBuildMinifyPlugin({
-        keepNames: true,
-      }),
-    ],
+  experiments: {
+    outputModule: true,
   },
   output: {
     path: path.resolve(__dirname, "build"),
     filename: "index.js",
-    libraryTarget: "umd",
+    library: {
+      type: "module",
+    },
   },
   resolve: {
     extensions: [".ts", ".js"],

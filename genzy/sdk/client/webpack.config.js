@@ -1,35 +1,38 @@
-const path = require('path');
-const { ESBuildMinifyPlugin } = require('esbuild-loader');
+import path from "path";
+import { fileURLToPath } from "url";
 
-const {
-  NODE_ENV = 'production',
-} = process.env;
-module.exports = {
-  entry: './src/index.ts',
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const { NODE_ENV = "production" } = process.env;
+export default {
+  entry: "./src/index.ts",
   mode: NODE_ENV,
-  target: ['node', 'es2015'],
+  target: ["node", "es2022"],
+  node: {
+    __dirname: true,
+    __filename: true,
+  },
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        use: "ts-loader",
         exclude: /node_modules/,
       },
     ],
   },
-  optimization: {
-    minimizer: [
-      new ESBuildMinifyPlugin({
-        keepNames: true,
-      }),
-    ],
+  experiments: {
+    outputModule: true,
   },
   output: {
-    path: path.resolve(__dirname, 'build'),
-    filename: 'index.js',
-    libraryTarget: 'umd'
+    path: path.resolve(__dirname, "build"),
+    filename: "index.js",
+    library: {
+      type: "module",
+    },
   },
   resolve: {
-    extensions: ['.ts', '.js'],
-  }
-}
+    extensions: [".ts", ".js"],
+  },
+};

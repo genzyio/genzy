@@ -37,6 +37,15 @@ class TestService {
   $genzy = {
     path: "/tests",
     actions: {
+      getAll: {
+        path: "/get-all",
+      },
+      addSomething: {
+        path: "/add-something",
+      },
+      updateSomething: {
+        path: "/update-something",
+      },
       deleteSomething: {
         path: "/delete-something/:id",
       },

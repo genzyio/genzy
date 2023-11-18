@@ -1,5 +1,5 @@
 export { Application, Request, Response, NextFunction } from "express";
-export { GenzyContainer } from "../../client";
+export { GenzyContainer } from "../../client/src/index";
 export {
   Controller,
   Get,
@@ -22,6 +22,6 @@ export {
   arrayOf,
   Returns,
   ReturnsArrayOf,
-} from "../../../shared/decorators";
-export { GenericType } from "../../../shared/constants";
+} from "../../shared/decorators";
+export { GenericType } from "../../shared/constants";
 export { GenzyApi, GenzyPlugin } from "./genzy-api";

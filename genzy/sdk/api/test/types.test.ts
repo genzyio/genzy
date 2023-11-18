@@ -1,4 +1,4 @@
-import { GenzyContainer } from "../src";
+import { GenzyContainer } from "../src/index";
 import { BASIC_TYPES, GenericType } from "../../shared/constants";
 import {
   Controller,

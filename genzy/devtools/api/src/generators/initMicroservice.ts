@@ -53,7 +53,7 @@ function writePackageJson(basePath: string, metadata: InitialGenzyMetadata, lang
         license: "ISC",
         dependencies: {
           ...initialDependencies,
-          "@genzy.io/api": "0.0.1-alpha",
+          "@genzy.io/api": "0.0.1-alpha-8",
           dotenv: "16.3.1",
         },
         devDependencies: {

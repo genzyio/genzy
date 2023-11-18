@@ -2,7 +2,7 @@ import { GenzyContainer } from "../src";
 import { GenzyApi } from "../src/genzy-api";
 import { agent } from "supertest";
 import { RegisterRoutesFor } from "../src/routes-handler";
-import * as express from "express";
+import express from "express";
 import {
   boolean,
   int,

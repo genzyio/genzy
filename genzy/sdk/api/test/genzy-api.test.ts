@@ -1,7 +1,7 @@
-import * as express from "express";
-import * as cors from "cors";
+import express from "express";
+import cors from "cors";
 import { NextFunction, Request, Response } from "express";
-import { GenzyContainer } from "../src";
+import { Controller, Delete, GenzyContainer, Get, Post, Put } from "../src";
 import { GenzyApi } from "../src/genzy-api";
 import { agent } from "supertest";
 
@@ -23,22 +23,29 @@ class InternalServerError extends Error {
   }
 }
 
+@Controller("/test-service")
 class TestService {
+  @Get("/get-all")
   async getAll() {
     return getAllResult;
   }
+  @Post("/add-something")
   async addSomething(test) {
     return test;
   }
+  @Put("/update-something")
   async updateSomething(test) {
     return test;
   }
+  @Delete("/delete-something")
   async deleteSomething(test, test2) {
     return [test, test2];
   }
+  @Get("/get-bad-logic-error")
   async getBadLogicError() {
     throw new BadLogicError(BAD_LOGIC_ERROR_MESSAGE);
   }
+  @Get("/get-internal-server-error")
   async getInternalServerError() {
     throw new InternalServerError(INTERNAL_SERVER_ERROR_MESSAGE);
   }
@@ -59,6 +66,7 @@ class TestServiceInterceptor {
   }
 }
 
+@Controller("/additional-service")
 class AdditionalService {
   private readonly testService: TestService;
 
@@ -70,6 +78,7 @@ class AdditionalService {
     this.testService = testService;
   }
 
+  @Get("/get-all")
   async getAll() {
     return this.testService.getAll();
   }
