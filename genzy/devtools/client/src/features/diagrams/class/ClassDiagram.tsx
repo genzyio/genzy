@@ -1,13 +1,5 @@
-import { type FC, useEffect, useState, useCallback, useMemo } from "react";
-import {
-  Background,
-  type Node,
-  type Viewport,
-  useNodesState,
-  useOnViewportChange,
-  NodeProps,
-  SmoothStepEdge,
-} from "reactflow";
+import { type FC, useEffect, useState, useMemo } from "react";
+import { type Node, useNodesState, NodeProps, SmoothStepEdge } from "reactflow";
 import { Class } from "./models";
 import { useSequenceGenerator } from "../../../core/hooks/useStringSequence";
 import { Drawer } from "../../../core/components/drawer";
@@ -24,21 +16,42 @@ import { ValidationContextProvider } from "../common/contexts/validation-context
 import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 import nodeTypes from "../common/constants/nodeTypes";
 import edgeTypes from "../common/constants/edgeTypes";
-import { CustomControls } from "../common/components/CustomControls";
 import { isNodeMoved } from "../common/utils/move.utils";
 import { ThemeProvider } from "styled-components";
-import { MiniMapStyled, ReactFlowStyled, darkTheme } from "../../../core/components/diagram";
+import { darkTheme } from "../../../core/components/diagram";
+import { DiagramBase } from "../common/components/diagram/DiagramBase";
+import { useMicroserviceContext } from "../common/contexts/microservice.context";
+import { ClassEvents, classEventEmitter } from "./class-diagram.events";
+
+// Nodes
+const RemovableClassNodeWrapper: FC<NodeProps<Class>> = (props) => {
+  const { projectDefinition } = useProjectDefinitionContext();
+  const { microserviceId } = useMicroserviceContext();
+
+  const onRemove = (_, id: string) => {
+    const node = projectDefinition.classes[microserviceId].nodes.find((node) => node.id === id);
+    classEventEmitter.dispatch(ClassEvents.ON_NODE_REMOVE, node);
+  };
+
+  return <RemovableNode onRemove={onRemove} element={ClassNode} {...props} />;
+};
+
+const localNodeTypes = {
+  ...nodeTypes,
+  classNode: RemovableClassNodeWrapper,
+};
+
+// Edges
+const localEdgeTypes = {
+  ...edgeTypes,
+  defaultEdge: SmoothStepEdge,
+  removableEdge: SmoothStepEdge,
+};
 
 type DiagramProps = {
   microserviceId: string;
   nodes?: any[];
   viewport: any;
-};
-
-const localEdgeTypes = {
-  ...edgeTypes,
-  defaultEdge: SmoothStepEdge,
-  removableEdge: SmoothStepEdge,
 };
 
 export const ClassDiagram: FC<DiagramProps> = ({
@@ -76,12 +89,6 @@ export const ClassDiagram: FC<DiagramProps> = ({
 
     return () => setExecuteOnUndoRedo(() => () => {});
   }, [setNodes]);
-
-  useOnViewportChange({
-    onEnd: useCallback((viewport: Viewport) => {
-      projectDefinition.classes[microserviceId].viewport = { ...viewport };
-    }, []),
-  });
 
   // Handle Class add
 
@@ -137,26 +144,14 @@ export const ClassDiagram: FC<DiagramProps> = ({
     setSelectedClass(undefined);
   };
 
-  const RemovableClassNodeWrapper = useCallback(
-    (props: NodeProps<Class>) => {
-      const onRemove = (_, id: string) => {
-        const node = projectDefinition.classes[microserviceId].nodes.find((node) => node.id === id);
-        setSelectedClass(node);
-        setModalOpen(true);
-      };
+  useEffect(() => {
+    classEventEmitter.subscribe(ClassEvents.ON_NODE_REMOVE, (node) => {
+      setSelectedClass(node);
+      setModalOpen(true);
+    });
 
-      return <RemovableNode onRemove={onRemove} element={ClassNode} {...props} />;
-    },
-    [microserviceId, setSelectedClass, setModalOpen]
-  );
-
-  const localNodeTypes = useMemo(
-    () => ({
-      ...nodeTypes,
-      classNode: RemovableClassNodeWrapper,
-    }),
-    [RemovableClassNodeWrapper]
-  );
+    return () => classEventEmitter.unsubscribe(ClassEvents.ON_NODE_REMOVE);
+  }, [setSelectedClass, setModalOpen]);
 
   const elem = document.getElementById("toolbar-actions");
 
@@ -177,23 +172,23 @@ export const ClassDiagram: FC<DiagramProps> = ({
     <ThemeProvider theme={darkTheme}>
       {portal}
       <div className="h-full w-full">
-        <ReactFlowStyled
-          className="validationflow"
+        <DiagramBase
           nodes={nodes}
           onNodesChange={onNodesChange}
           nodeTypes={localNodeTypes}
           edgeTypes={localEdgeTypes}
-          onNodeDragStart={(_, node) => setSelectedClass(node)}
-          onNodeDragStop={async (_, node) => {
-            if (isNodeMoved(selectedClass, node)) {
+          onViewportChanged={(viewport) =>
+            (projectDefinition.classes[microserviceId].viewport = { ...viewport })
+          }
+          onNodeMoved={async (nodeBeforeMove, nodeAfterMove) => {
+            if (isNodeMoved(nodeBeforeMove, nodeAfterMove)) {
               await dispatcher(projectDefinitionActions.classMoved, {
                 microserviceId,
-                classId: selectedClass?.id,
-                position: node.position,
-                positionAbsolute: node.positionAbsolute,
+                classId: nodeBeforeMove?.id,
+                position: nodeAfterMove.position,
+                positionAbsolute: nodeAfterMove.positionAbsolute,
               });
             }
-            setSelectedClass(undefined);
           }}
           onNodeDoubleClick={(_, node) => {
             setSelectedClass(node);
@@ -201,13 +196,8 @@ export const ClassDiagram: FC<DiagramProps> = ({
             setDrawerOpen(true);
           }}
           defaultViewport={initialViewport}
-          deleteKeyCode={""}
-          proOptions={{ account: "paid-sponsor", hideAttribution: true }}
-        >
-          <MiniMapStyled zoomable pannable />
-          <CustomControls />
-          <Background size={0} />
-        </ReactFlowStyled>
+          supportsConnection={false}
+        />
       </div>
       <ConfirmationModal
         title={`Delete ${selectedClass?.data.name}`}

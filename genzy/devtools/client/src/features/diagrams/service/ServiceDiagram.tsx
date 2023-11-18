@@ -4,13 +4,9 @@ import {
   useEdgesState,
   addEdge,
   Connection,
-  Background,
   type Node,
   type NodeProps,
   type EdgeProps,
-  type Viewport,
-  useOnViewportChange,
-  ConnectionMode,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { type Service } from "./models";
@@ -28,12 +24,62 @@ import { ValidationContextProvider } from "../common/contexts/validation-context
 import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 import nodeTypes from "../common/constants/nodeTypes";
 import edgeTypes from "../common/constants/edgeTypes";
-import { CustomControls } from "../common/components/CustomControls";
 import { isNodeMoved } from "../common/utils/move.utils";
-import { SmoothStepConnectionLine } from "../common/components/edges/smooth-step/SmoothStepConnectionLine";
 import { FloatingEdge } from "../common/components/edges/floating/FloatingEdge";
-import { MiniMapStyled, ReactFlowStyled, darkTheme } from "../../../core/components/diagram";
+import { darkTheme } from "../../../core/components/diagram";
 import { ThemeProvider } from "styled-components";
+import { DiagramBase } from "../common/components/diagram/DiagramBase";
+import { useMicroserviceContext } from "../common/contexts/microservice.context";
+import { ServiceEvents, serviceEventEmitter } from "./service-diagram.events";
+
+// Nodes
+const RemovableServiceNodeWrapper: FC<NodeProps<Service>> = (props) => {
+  const { projectDefinition } = useProjectDefinitionContext();
+  const { microserviceId } = useMicroserviceContext();
+
+  const onRemove = (_, id: string) => {
+    const node = projectDefinition.services[microserviceId].nodes.find((node) => node.id === id);
+    serviceEventEmitter.dispatch(ServiceEvents.ON_NODE_REMOVE, node);
+  };
+
+  return <RemovableNode onRemove={onRemove} element={ServiceNode} {...props} />;
+};
+
+const localNodeTypes = {
+  ...nodeTypes,
+  serviceNode: RemovableServiceNodeWrapper,
+};
+
+// Edges
+
+const DefaultEdgeWrapper: FC<EdgeProps> = (props) => {
+  const { projectDefinition } = useProjectDefinitionContext();
+  const { microserviceId } = useMicroserviceContext();
+  const { nodes, edges } = projectDefinition.services[microserviceId];
+
+  return <FloatingEdge nodes={nodes} edges={edges} {...props} label={undefined} />;
+};
+
+const RemovableEdgeWrapper: FC<EdgeProps> = (props) => {
+  const { projectDefinition } = useProjectDefinitionContext();
+  const { microserviceId } = useMicroserviceContext();
+  const { nodes, edges } = projectDefinition.services[microserviceId];
+
+  const onRemove = (_, id: string) => {
+    serviceEventEmitter.dispatch(ServiceEvents.ON_EDGE_REMOVE, {
+      dependencyId: id,
+      microserviceId,
+    });
+  };
+
+  return <RemovableEdge nodes={nodes} edges={edges} onRemove={onRemove} {...props} />;
+};
+
+const localEdgeTypes = {
+  ...edgeTypes,
+  defaultEdge: DefaultEdgeWrapper,
+  removableEdge: RemovableEdgeWrapper,
+};
 
 type DiagramProps = {
   microserviceId: string;
@@ -76,12 +122,6 @@ export const ServiceDiagram: FC<DiagramProps> = ({
 
     return () => setExecuteOnUndoRedo(() => () => {});
   }, [setNodes, setEdges]);
-
-  useOnViewportChange({
-    onEnd: useCallback((viewport: Viewport) => {
-      projectDefinition.services[microserviceId].viewport = { ...viewport };
-    }, []),
-  });
 
   const isValidConnection = (connection: Connection) => {
     const selfConnecting = connection.source === connection.target;
@@ -177,58 +217,21 @@ export const ServiceDiagram: FC<DiagramProps> = ({
     setSelected(undefined);
   };
 
-  const RemovableServiceNodeWrapper = useCallback(
-    (props: NodeProps<Service>) => {
-      const onRemove = (_, id: string) => {
-        const node = projectDefinition.services[microserviceId].nodes.find(
-          (node) => node.id === id
-        );
-        setSelected(node);
-        setIsModalOpen(true);
-      };
+  useEffect(() => {
+    serviceEventEmitter.subscribe(ServiceEvents.ON_NODE_REMOVE, (node) => {
+      setSelected(node);
+      setIsModalOpen(true);
+    });
+    return () => serviceEventEmitter.unsubscribe(ServiceEvents.ON_NODE_REMOVE);
+  }, [setSelected, setIsModalOpen]);
 
-      return <RemovableNode onRemove={onRemove} element={ServiceNode} {...props} />;
-    },
-    [microserviceId, setSelected, setIsModalOpen]
-  );
-
-  const localNodeTypes = useMemo(
-    () => ({
-      ...nodeTypes,
-      serviceNode: RemovableServiceNodeWrapper,
-    }),
-    [RemovableServiceNodeWrapper]
-  );
-
-  const DefaultEdgeWrapper = useCallback((props: EdgeProps) => {
-    const { nodes, edges } = projectDefinition.services[microserviceId];
-    return <FloatingEdge nodes={nodes} edges={edges} {...props} label={undefined} />;
-  }, []);
-
-  const RemovableEdgeWrapper = useCallback(
-    (props: EdgeProps) => {
-      const onRemove = async (_, id: string) => {
-        await dispatcher(projectDefinitionActions.removeDependency, {
-          microserviceId,
-          dependencyId: id,
-        });
-        setEdges((edges) => edges.filter((edge) => edge.id !== id));
-      };
-
-      const { nodes, edges } = projectDefinition.services[microserviceId];
-      return <RemovableEdge nodes={nodes} edges={edges} onRemove={onRemove} {...props} />;
-    },
-    [microserviceId, dispatcher, setEdges]
-  );
-
-  const localEdgeTypes = useMemo(
-    () => ({
-      ...edgeTypes,
-      defaultEdge: DefaultEdgeWrapper,
-      removableEdge: RemovableEdgeWrapper,
-    }),
-    [DefaultEdgeWrapper, RemovableEdgeWrapper]
-  );
+  useEffect(() => {
+    serviceEventEmitter.subscribe(ServiceEvents.ON_EDGE_REMOVE, (removedEdge) => {
+      dispatcher(projectDefinitionActions.removeDependency, removedEdge);
+      setEdges((edges) => edges.filter((edge) => edge.id !== removedEdge.dependencyId));
+    });
+    return () => serviceEventEmitter.unsubscribe(ServiceEvents.ON_EDGE_REMOVE);
+  }, [microserviceId, dispatcher, setEdges]);
 
   const elem = document.getElementById("toolbar-actions");
 
@@ -249,8 +252,7 @@ export const ServiceDiagram: FC<DiagramProps> = ({
     <ThemeProvider theme={darkTheme}>
       {portal}
       <div className="h-full w-full">
-        <ReactFlowStyled
-          className="validationflow"
+        <DiagramBase
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
@@ -259,17 +261,18 @@ export const ServiceDiagram: FC<DiagramProps> = ({
           onConnect={onConnect}
           nodeTypes={localNodeTypes}
           edgeTypes={localEdgeTypes}
-          onNodeDragStart={(_, node) => setSelected(node)}
-          onNodeDragStop={async (_, node) => {
-            if (isNodeMoved(selected, node)) {
+          onViewportChanged={(viewport) =>
+            (projectDefinition.services[microserviceId].viewport = { ...viewport })
+          }
+          onNodeMoved={async (nodeBeforeMove, nodeAfterMove) => {
+            if (isNodeMoved(nodeBeforeMove, nodeAfterMove)) {
               await dispatcher(projectDefinitionActions.serviceMoved, {
                 microserviceId,
-                serviceId: selected?.id,
-                position: node.position,
-                positionAbsolute: node.positionAbsolute,
+                serviceId: nodeBeforeMove?.id,
+                position: nodeAfterMove.position,
+                positionAbsolute: nodeAfterMove.positionAbsolute,
               });
             }
-            setSelected(undefined);
           }}
           onNodeDoubleClick={(_e, node) => {
             if (["REMOTE_PROXY", "PLUGABLE_SERVICE"].includes(node.data.type)) return;
@@ -277,16 +280,8 @@ export const ServiceDiagram: FC<DiagramProps> = ({
             setInitialState(node.data);
             setDrawerOpen(true);
           }}
-          connectionMode={ConnectionMode.Loose}
           defaultViewport={initialViewport}
-          deleteKeyCode={""}
-          proOptions={{ account: "paid-sponsor", hideAttribution: true }}
-          connectionLineComponent={SmoothStepConnectionLine}
-        >
-          <MiniMapStyled zoomable pannable />
-          <CustomControls />
-          <Background size={0} />
-        </ReactFlowStyled>
+        />
       </div>
 
       <ConfirmationModal

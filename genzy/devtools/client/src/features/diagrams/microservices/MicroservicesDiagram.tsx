@@ -1,15 +1,11 @@
 import { type FC, useCallback, useEffect, useMemo, useState } from "react";
 import {
-  Background,
   Connection,
   addEdge,
   useEdgesState,
   useNodesState,
   type Node,
   type Edge,
-  type Viewport,
-  ConnectionMode,
-  useOnViewportChange,
   type EdgeProps,
   type NodeProps,
 } from "reactflow";
@@ -30,15 +26,57 @@ import { Button } from "../../../core/components/button";
 import { ValidationContextProvider } from "../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 import { Outlet } from "react-router-dom";
-import { useProjectContext } from "../../project-workspace/contexts/project.context";
 import nodeTypes from "../common/constants/nodeTypes";
 import edgeTypes from "../common/constants/edgeTypes";
 import { isNodeMoved } from "../common/utils/move.utils";
-import { SmoothStepConnectionLine } from "../common/components/edges/smooth-step/SmoothStepConnectionLine";
 import { FloatingEdge } from "../common/components/edges/floating/FloatingEdge";
 import { ThemeProvider } from "styled-components";
-import { MiniMapStyled, ReactFlowStyled, darkTheme } from "../../../core/components/diagram";
-import { CustomControls } from "../common/components/CustomControls";
+import { darkTheme } from "../../../core/components/diagram";
+import { DiagramBase } from "../common/components/diagram/DiagramBase";
+import { MicroserviceEvents, microserviceEventEmitter } from "./microservice-diagram.events";
+
+// Nodes
+const RemovableMicroserviceNodeWrapper: FC<NodeProps<Microservice>> = (props) => {
+  const { projectDefinition } = useProjectDefinitionContext();
+
+  const onRemove = (_, id: string) => {
+    const node = projectDefinition.microservices.nodes.find((node) => node.id === id);
+    microserviceEventEmitter.dispatch(MicroserviceEvents.ON_NODE_REMOVE, node);
+  };
+
+  return <RemovableNode onRemove={onRemove} element={MicroserviceNode} {...props} />;
+};
+
+const localNodeTypes = {
+  ...nodeTypes,
+  microserviceNode: RemovableMicroserviceNodeWrapper,
+};
+
+// Edges
+const DefaultEdgeWrapper: FC<EdgeProps> = (props) => {
+  const { projectDefinition } = useProjectDefinitionContext();
+  const { nodes, edges } = projectDefinition.microservices;
+
+  return <FloatingEdge nodes={nodes} edges={edges} {...props} label={undefined} />;
+};
+
+const RemovableEdgeWrapper: FC<EdgeProps> = (props) => {
+  const { projectDefinition } = useProjectDefinitionContext();
+  const { nodes, edges } = projectDefinition.microservices;
+
+  const onRemove = (_, id: string) => {
+    const edge = edges.find((edge) => edge.id === id);
+    microserviceEventEmitter.dispatch(MicroserviceEvents.ON_EDGE_REMOVE, edge);
+  };
+
+  return <RemovableEdge nodes={nodes} edges={edges} onRemove={onRemove} {...props} />;
+};
+
+const localEdgeTypes = {
+  ...edgeTypes,
+  defaultEdge: DefaultEdgeWrapper,
+  removableEdge: RemovableEdgeWrapper,
+};
 
 type DiagramProps = {
   nodes?: any[];
@@ -53,7 +91,6 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   viewport: initialViewport,
   onMicroserviceDeleted,
 }) => {
-  const { project } = useProjectContext();
   const { projectDefinition, dispatcher, setExecuteOnUndoRedo } = useProjectDefinitionContext();
   const { isDirty, promptDirtyModal, setInitialState } = useDirtyCheckContext();
 
@@ -95,12 +132,6 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
 
     return () => setExecuteOnUndoRedo(() => () => {});
   }, [setNodes, setEdges]);
-
-  useOnViewportChange({
-    onEnd: useCallback((viewport: Viewport) => {
-      projectDefinition.microservices.viewport = { ...viewport };
-    }, []),
-  });
 
   const isValidConnection = (connection: Connection) => {
     const selfConnecting = connection.source === connection.target;
@@ -192,26 +223,14 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
     setSelectedMicroservice(undefined);
   };
 
-  const RemovableMicroserviceNodeWrapper = useCallback(
-    (props: NodeProps<Microservice>) => {
-      const onRemove = (_, id: string) => {
-        const node = projectDefinition.microservices.nodes.find((node) => node.id === id);
-        setSelectedMicroservice(node);
-        setIsDeleteMicroserviceModalOpen(true);
-      };
+  useEffect(() => {
+    microserviceEventEmitter.subscribe(MicroserviceEvents.ON_NODE_REMOVE, (node: Node) => {
+      setSelectedMicroservice(node);
+      setIsDeleteMicroserviceModalOpen(true);
+    });
 
-      return <RemovableNode onRemove={onRemove} element={MicroserviceNode} {...props} />;
-    },
-    [setSelectedMicroservice, setIsDeleteMicroserviceModalOpen]
-  );
-
-  const localNodeTypes = useMemo(
-    () => ({
-      ...nodeTypes,
-      microserviceNode: RemovableMicroserviceNodeWrapper,
-    }),
-    [RemovableMicroserviceNodeWrapper]
-  );
+    return () => microserviceEventEmitter.unsubscribe(MicroserviceEvents.ON_NODE_REMOVE);
+  }, [setSelectedMicroservice, setIsDeleteMicroserviceModalOpen]);
 
   // Handle Communication Update
   const handleCommunicationUpdate = async (communication: Communication) => {
@@ -257,33 +276,14 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
     setSelectedCommunication(undefined);
   };
 
-  const DefaultEdgeWrapper = useCallback((props: EdgeProps) => {
-    const { nodes, edges } = projectDefinition.microservices;
-    return <FloatingEdge nodes={nodes} edges={edges} {...props} label={undefined} />;
-  }, []);
+  useEffect(() => {
+    microserviceEventEmitter.subscribe(MicroserviceEvents.ON_EDGE_REMOVE, (edge: Edge) => {
+      setSelectedCommunication(edge);
+      setIsDeleteCommunicationModalOpen(true);
+    });
 
-  const RemovableEdgeWrapper = useCallback(
-    (props: EdgeProps) => {
-      const { nodes, edges } = projectDefinition.microservices;
-      const onRemove = (_, id: string) => {
-        const edge = edges.find((edge) => edge.id === id);
-        setSelectedCommunication(edge);
-        setIsDeleteCommunicationModalOpen(true);
-      };
-
-      return <RemovableEdge nodes={nodes} edges={edges} onRemove={onRemove} {...props} />;
-    },
-    [setSelectedCommunication, setIsDeleteCommunicationModalOpen]
-  );
-
-  const localEdgeTypes = useMemo(
-    () => ({
-      ...edgeTypes,
-      defaultEdge: DefaultEdgeWrapper,
-      removableEdge: RemovableEdgeWrapper,
-    }),
-    [DefaultEdgeWrapper, RemovableEdgeWrapper]
-  );
+    return () => microserviceEventEmitter.unsubscribe(MicroserviceEvents.ON_EDGE_REMOVE);
+  }, [setSelectedCommunication, setIsDeleteCommunicationModalOpen]);
 
   const elem = document.getElementById("toolbar-actions");
   const portal = useMemo(() => {
@@ -304,8 +304,7 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
       {portal}
 
       <div className="h-full w-full">
-        <ReactFlowStyled
-          className="validationflow"
+        <DiagramBase
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
@@ -314,17 +313,18 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
           onConnect={onConnect}
           nodeTypes={localNodeTypes}
           edgeTypes={localEdgeTypes}
-          onNodeDragStart={(_, node) => setSelectedMicroservice(node)}
-          onNodeDragStop={async (_, node) => {
-            if (isNodeMoved(selectedMicroservice, node)) {
+          onViewportChanged={(viewport) =>
+            (projectDefinition.microservices.viewport = { ...viewport })
+          }
+          onNodeMoved={async (beforeMoveNode, afterMoveNode) => {
+            if (isNodeMoved(beforeMoveNode, afterMoveNode)) {
               await dispatcher(projectDefinitionActions.microserviceMoved, {
-                microserviceId: selectedMicroservice?.id,
-                type: selectedMicroservice?.type,
-                position: node.position,
-                positionAbsolute: node.positionAbsolute,
+                microserviceId: beforeMoveNode?.id,
+                type: beforeMoveNode?.type,
+                position: afterMoveNode.position,
+                positionAbsolute: afterMoveNode.positionAbsolute,
               });
             }
-            setSelectedMicroservice(undefined);
           }}
           onNodeDoubleClick={(_, node) => {
             if (node.type !== "microserviceNode") return;
@@ -340,16 +340,8 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
             setInitialState(edge.data);
             setDrawerOpen(true);
           }}
-          connectionMode={ConnectionMode.Loose}
           defaultViewport={initialViewport}
-          deleteKeyCode={""}
-          proOptions={{ account: "paid-sponsor", hideAttribution: true }}
-          connectionLineComponent={SmoothStepConnectionLine}
-        >
-          <MiniMapStyled zoomable pannable />
-          <CustomControls />
-          <Background size={0} />
-        </ReactFlowStyled>
+        />
       </div>
 
       <ConfirmationModal
