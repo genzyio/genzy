@@ -1,5 +1,5 @@
-import { useState, type FC } from "react";
-import { Attribute, Class, DataType, Method, Parameter } from "../models";
+import { type FC } from "react";
+import { type Class, type Attribute, type Method } from "../models";
 import { useSequenceGenerator } from "../../../../core/hooks/useStringSequence";
 import { TextField } from "../../../../core/components/text-field";
 import { IDENTIFIER_REGEX } from "../../../../patterns";
@@ -8,6 +8,7 @@ import { EditAttribute } from "./attributes/EditAttribute";
 import { EditMethod } from "./methods/EditMethod";
 import { useValidationContext } from "../../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../../common/contexts/dirty-check-context";
+import { useClassState } from "./class-state";
 
 type ClassDrawerProps = {
   classId: string;
@@ -25,16 +26,13 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
   const { isDirty, setCurrentState } = useDirtyCheckContext();
   const { isValid, setValidityFor } = useValidationContext();
 
-  const [className, setClassName] = useState(initialClass.name);
-  const [attributes, setAttributes] = useState([...initialClass.attributes]);
-  const [methods, setMethods] = useState([...initialClass.methods]);
+  const { class: _class, actions } = useClassState(initialClass);
+  const className = _class.name;
+  const attributes = _class.attributes;
+  const methods = _class.methods;
 
   const handleClassNameUpdate = (newClassName: string) => {
-    setClassName(newClassName);
-    setCurrentState((state: any) => ({
-      ...state,
-      name: newClassName,
-    }));
+    actions.updateClassData({ name: newClassName });
   };
 
   const nextAttributeName = useSequenceGenerator(
@@ -42,87 +40,30 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
     (attribute) => attribute.name,
     "attribute"
   );
-
   const nextMethodName = useSequenceGenerator(methods, (method) => method.name, "method");
 
   const handleAddAttribute = () => {
-    const newAttribute = {
-      id: `${+new Date()}`,
-      name: nextAttributeName(),
-      type: "int" as DataType,
-      isCollection: false,
-      isOptional: false,
-    };
-    const newAttributes = [...attributes, newAttribute];
-    setAttributes(newAttributes);
-    setCurrentState((state: any) => ({
-      ...state,
-      attributes: newAttributes,
-    }));
+    actions.addAttribute({ attributeName: nextAttributeName() });
   };
 
-  const handleUpdateAttribute = (id: string, attribute: Attribute) => {
-    const newAttributes = attributes.map((attr) => {
-      if (attr.id === id)
-        return {
-          ...attribute,
-        };
-      return attr;
-    });
-    setAttributes(newAttributes);
-    setCurrentState((state: any) => ({
-      ...state,
-      attributes: newAttributes,
-    }));
+  const handleUpdateAttribute = (updatedAttribute: Attribute) => {
+    actions.updateAttribute(updatedAttribute);
   };
 
   const handleDeleteAttribute = (id: string) => {
-    const updatedAttributes = attributes.filter((a) => a.id !== id);
-    setAttributes(updatedAttributes);
-    setCurrentState((state: any) => ({
-      ...state,
-      attributes: updatedAttributes,
-    }));
+    actions.deleteAttribute({ id });
   };
 
   const handleAddMethod = () => {
-    const newMethod = {
-      id: `${+new Date()}`,
-      name: nextMethodName(),
-      parameters: [] as Parameter[],
-      returnValue: "any",
-    } as Method;
-
-    const newMethods = [...methods, newMethod];
-    setMethods(newMethods);
-    setCurrentState((state: any) => ({
-      ...state,
-      methods: newMethods,
-    }));
+    actions.addMethod({ methodName: nextMethodName() });
   };
 
-  const handleUpdateMethod = (id: string, method: Method) => {
-    const newMethods = methods.map((m) => {
-      if (m.id === id)
-        return {
-          ...method,
-        };
-      return m;
-    });
-    setMethods(newMethods);
-    setCurrentState((state: any) => ({
-      ...state,
-      methods: newMethods,
-    }));
+  const handleUpdateMethod = (updatedMethod: Method) => {
+    actions.updateMethod(updatedMethod);
   };
 
   const handleDeleteMethod = (id: string) => {
-    const updatedMethods = methods.filter((m) => m.id !== id);
-    setMethods(updatedMethods);
-    setCurrentState((state: any) => ({
-      ...state,
-      methods: updatedMethods,
-    }));
+    actions.deleteMethod({ id });
   };
 
   const handleSave = () => {
@@ -158,8 +99,8 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
           <EditAttribute
             key={attribute.id}
             attribute={attribute}
-            onChange={(attribute) => {
-              handleUpdateAttribute(attribute.id, attribute);
+            onChange={(updatedAttribute) => {
+              handleUpdateAttribute({ id: attribute.id, ...updatedAttribute });
             }}
             onDelete={(id) => {
               handleDeleteAttribute(id);
@@ -176,8 +117,8 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
           <EditMethod
             key={method.id}
             method={method}
-            onChange={(method) => {
-              handleUpdateMethod(method.id, method);
+            onChange={(updatedMethod) => {
+              handleUpdateMethod({ id: method.id, ...updatedMethod });
             }}
             onDelete={(id) => {
               handleDeleteMethod(id);

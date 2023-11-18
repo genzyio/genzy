@@ -1,4 +1,4 @@
-import { type FC, useState } from "react";
+import { type FC } from "react";
 import { type Microservice, type Service } from "../models";
 import { Button } from "../../../../core/components/button";
 import { EditService } from "./EditService";
@@ -6,6 +6,7 @@ import { useSequenceGenerator } from "../../../../core/hooks/useStringSequence";
 import { useValidationContext } from "../../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../../common/contexts/dirty-check-context";
 import { MicroserviceForm } from "./MicroserviceForm";
+import { useMicroserviceState } from "./microservice-state";
 
 type MicroserviceDrawerProps = {
   microserviceId: string;
@@ -20,57 +21,35 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
   onMicroserviceUpdate,
   nameExists,
 }) => {
-  const { isDirty, setCurrentState } = useDirtyCheckContext();
+  const { isDirty } = useDirtyCheckContext();
   const { isValid } = useValidationContext();
 
-  const [microservice, setMicroservice] = useState({ ...initialMicroservice });
-  const [services, setServices] = useState([...initialMicroservice.services]);
-  const nextName = useSequenceGenerator(services, (service) => service.name, "Service");
+  const { microservice, actions } = useMicroserviceState(initialMicroservice);
+  const nextName = useSequenceGenerator(
+    microservice.services,
+    (service) => service.name,
+    "Service"
+  );
 
   const handleMicroservicePartialUpdate = (updatedMicroservice: Partial<Microservice>) => {
-    setMicroservice((microservice) => ({
-      ...microservice,
-      ...updatedMicroservice,
-    }));
-
-    setCurrentState((state: any) => ({ ...state, ...updatedMicroservice }));
+    actions.updateMicroserviceData(updatedMicroservice);
   };
 
   const handleAddService = () => {
-    const newService: Service = {
-      id: `${+new Date()}`,
-      name: nextName(),
-      type: "CONTROLLER",
-    };
-    const newServices = [...services, newService];
-    setServices(newServices);
-    setCurrentState((state: any) => ({ ...state, services: newServices }));
+    actions.addService({ serviceName: nextName() });
   };
 
   const handleUpdateService = (updatedService: Service) => {
-    const newServices = services.map((service) => {
-      if (service.id === updatedService.id)
-        return {
-          ...service,
-          name: updatedService.name,
-          type: updatedService.type,
-        };
-      return service;
-    });
-    setServices(newServices);
-    setCurrentState((state: any) => ({ ...state, services: newServices }));
+    actions.updateService(updatedService);
   };
 
   const handleDeleteService = (id: string) => {
-    const newServices = services.filter((s) => s.id !== id);
-    setServices(newServices);
-    setCurrentState((state: any) => ({ ...state, services: newServices }));
+    actions.deleteService({ id });
   };
 
   const handleSave = () => {
     onMicroserviceUpdate({
       ...microservice,
-      services,
       plugins: initialMicroservice.plugins,
     });
   };
@@ -84,17 +63,19 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
         nameExists={nameExists}
       />
 
-      {!!services?.length && <p>Services</p>}
-      {services.map((service, index) => (
+      {!!microservice.services?.length && <p>Services</p>}
+      {microservice.services.map((service, index) => (
         <EditService
           key={service.id}
           service={service}
-          onChange={(changedService) => {
-            handleUpdateService({ id: service.id, ...changedService });
+          onChange={(updatedService) => {
+            handleUpdateService({ id: service.id, ...updatedService });
           }}
           onDelete={() => handleDeleteService(service.id)}
           nameExists={(newServiceName) =>
-            services.some((service, i) => i !== index && service.name === newServiceName)
+            microservice.services.some(
+              (service, i) => i !== index && service.name === newServiceName
+            )
           }
         />
       ))}

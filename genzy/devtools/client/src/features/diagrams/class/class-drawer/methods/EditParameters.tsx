@@ -1,4 +1,4 @@
-import { useCallback, type FC } from "react";
+import { type FC, useCallback } from "react";
 import { TextField } from "../../../../../core/components/text-field";
 import { Select } from "../../../../../core/components/select";
 import { Parameter } from "../../models";
@@ -31,13 +31,14 @@ export const EditParameters: FC<EditParametersProps> = ({
   );
 
   return (
-    <div>
+    <div className="mt-2">
+      {parameters.length > 0 && <label className="text-sm font-medium leading-6">Parameters</label>}
       {parameters.map((param, index) => (
-        <div key={index} className="flex flex-col mb-2 mt-4 p-3 shadow-md">
+        <div key={index} className="flex flex-col p-2">
           <div className="flex space-x-2">
             <div className="flex-1">
               <TextField
-                label={`${capitalizeFirstLetter(stringifyNumber(index + 1))} param name`}
+                label={`${capitalizeFirstLetter(stringifyNumber(index + 1))} parameter name`}
                 value={param.name}
                 onChange={(name) => onParameterChange(index, { ...param, name })}
                 error={
@@ -48,31 +49,34 @@ export const EditParameters: FC<EditParametersProps> = ({
             </div>
             <div className="min-w-[30%]">
               <Select
-                label={`${capitalizeFirstLetter(stringifyNumber(index + 1))} param type`}
+                label={`Type`}
                 value={param.type}
                 onChange={(type) => onParameterChange(index, { ...param, type })}
                 options={types}
               />
             </div>
           </div>
-          <div className="mt-4 flex space-x-3 items-center">
-            <label className="font-medium leading-6">Parameter options:</label>
-            <Checkbox
-              label="Array"
-              checked={param.isCollection}
-              onChange={(collection) =>
-                onParameterChange(index, { ...param, isCollection: collection })
-              }
-            />
-            <Checkbox
-              label="Optional"
-              checked={param.isOptional}
-              onChange={(optional) => onParameterChange(index, { ...param, isOptional: optional })}
-            />
-          </div>
 
-          <div className="flex items-center mt-2">
-            <div className="ml-auto">
+          <div className="mt-1 flex justify-between">
+            <div className="flex space-x-3 items-center">
+              <label className="text-sm font-medium leading-6">Parameter options:</label>
+              <Checkbox
+                label="Array"
+                checked={param.isCollection}
+                onChange={(collection) =>
+                  onParameterChange(index, { ...param, isCollection: collection })
+                }
+              />
+              <Checkbox
+                label="Optional"
+                checked={param.isOptional}
+                onChange={(optional) =>
+                  onParameterChange(index, { ...param, isOptional: optional })
+                }
+              />
+            </div>
+
+            <div className="">
               <button
                 onClick={() => onDeleteParameter(index)}
                 className="text-red-500 hover:text-red-600"

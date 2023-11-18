@@ -122,8 +122,8 @@ export const EditMethod: FC<EditMethodProps> = ({ method, onChange, onDelete, na
             />
           </div>
         </div>
-        <div className="mt-4 flex space-x-3 items-center">
-          <label className="font-medium leading-6">Return options:</label>
+        <div className="mt-1 flex space-x-3 items-center">
+          <label className="text-sm font-medium leading-6">Return options:</label>
           <Checkbox
             label="Array"
             checked={method.returnsCollection}
@@ -140,7 +140,7 @@ export const EditMethod: FC<EditMethodProps> = ({ method, onChange, onDelete, na
         />
 
         <div className="flex justify-between mt-5">
-          <button onClick={handleAddParameter} className="mt-2 hover:text-gray-400">
+          <button onClick={handleAddParameter} className="hover:text-gray-400">
             Add Parameter
           </button>
 

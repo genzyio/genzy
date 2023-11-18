@@ -174,7 +174,9 @@ export const EditFunction: FC<EditFunctionProps> = ({
           </span>
         </div>
 
-        <label className="block text-sm font-medium leading-6">Parameters</label>
+        {fun.params.length > 0 && (
+          <label className="block text-sm font-medium leading-6">Parameters</label>
+        )}
         <div className="ml-2">
           {fun.params.map((param, paramIndex) => (
             <div key={param.id} className="flex w-full justify-top space-x-1">
