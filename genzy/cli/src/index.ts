@@ -11,7 +11,7 @@ import {
   generateTSClient,
   generateCSharpClient,
 } from "@genzy.io/generator";
-import { startGenzy } from "@genzy.io/devtools-api";
+import { createProject, startGenzy } from "@genzy.io/devtools-api";
 import { hideBin } from "yargs/helpers";
 
 yargs(hideBin(process.argv))
@@ -122,8 +122,8 @@ yargs(hideBin(process.argv))
         });
     },
     async (options) => {
-      // const absolutePath = getAbsolutePath(options.path);
-      // startGenzy(options.p, absolutePath);
+      const absolutePath = getAbsolutePath(options.path);
+      startGenzy(options.p, absolutePath);
     }
   )
   .command(
@@ -141,8 +141,8 @@ yargs(hideBin(process.argv))
         });
     },
     async (options) => {
-      // const absolutePath = getAbsolutePath(options.path);
-      // createProject({ name: options.name, path:  absolutePath });
+      const absolutePath = getAbsolutePath(options.path);
+      createProject({ name: options.name, path: absolutePath });
     }
   )
   .demandCommand(1)
