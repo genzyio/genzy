@@ -12,8 +12,6 @@ import { PluginTabsPage, SpecificPluginPage } from "./features/plugins/component
 
 import "react-toastify/dist/ReactToastify.css";
 
-import "react-toastify/dist/ReactToastify.css";
-
 const toastrOptions: ToastContainerProps = {
   position: "bottom-right",
   autoClose: 5000,

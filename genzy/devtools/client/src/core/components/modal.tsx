@@ -7,9 +7,17 @@ export type ModalProps = {
   isLarge?: boolean;
   onClose: () => void;
   children: ReactNode;
+  className?: string;
 };
 
-export const Modal: FC<ModalProps> = ({ title, isOpen, isLarge = false, onClose, children }) => {
+export const Modal: FC<ModalProps> = ({
+  title,
+  isOpen,
+  isLarge = false,
+  onClose,
+  className = "",
+  children,
+}) => {
   const cancelButtonRef = useRef(null);
 
   return (
@@ -41,7 +49,7 @@ export const Modal: FC<ModalProps> = ({ title, isOpen, isLarge = false, onClose,
               <Dialog.Panel
                 className={`relative transform overflow-hidden rounded-lg bg-brand-node-dark text-left shadow-xl transition-all sm:my-8 sm:w-full ${
                   isLarge ? `sm:max-w-3xl` : `sm:max-w-xl`
-                }`}
+                } ${className}`}
               >
                 <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">

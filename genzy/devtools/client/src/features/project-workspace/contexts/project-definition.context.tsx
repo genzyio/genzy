@@ -21,8 +21,8 @@ import { useDirtyCheckContext } from "../../diagrams/common/contexts/dirty-check
 import { createChangeTrackingDispatcherWrapper } from "./change-tracker.dispatcher";
 import { Button } from "../../../core/components/button";
 import useUndoable from "use-undoable";
-import { useProjectNavigation } from "../hooks/useProjectNavigation";
-import { EmptyDiagram } from "../../model/EmptyDiagram";
+import { EmptyDiagram } from "../../diagrams/EmptyDiagram";
+import { useProjectNavigation } from "../../projects/hooks/useProjectNavigation";
 
 type ProjectDefinitionContextValues = {
   projectDefinition: ProjectDefinition;

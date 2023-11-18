@@ -66,10 +66,7 @@ export const Tabs: FC<TabsProps> = ({
   }, [nextActiveTab]);
 
   const navigation = (
-    <div
-      key={`navigation_${tabs?.length}`}
-      className={`${navigationContainerClassName} bg-[#262929]`}
-    >
+    <div key={`navigation_${tabs?.length}`} className={`${navigationContainerClassName}`}>
       <ul className="flex flex-wrap gap-x-1 -mb-px text-sm font-medium text-center text-gray-300">
         {tabs?.map((tab: { props: TabProps }, i: number) => {
           return (

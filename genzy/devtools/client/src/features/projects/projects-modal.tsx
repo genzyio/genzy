@@ -18,7 +18,13 @@ export function ProjectsModal() {
       <div className="h-full w-full">
         <EmptyDiagram />
 
-        <Modal title="Projects" isLarge={true} isOpen={true} onClose={() => {}}>
+        <Modal
+          title="Projects"
+          className="h-[500px] overflow-y-auto"
+          isLarge={true}
+          isOpen={true}
+          onClose={() => {}}
+        >
           <Tabs>
             <Tab className="mt-4" title="All">
               <RecentlyOpenedList />
