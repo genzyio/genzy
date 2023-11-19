@@ -73,7 +73,7 @@ const CustomListbox: FC<ListboxProps> = ({
               >
                 <Listbox.Options
                   className={
-                    "absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md border-[1px] border-gray-500 bg-brand-node-dark text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+                    "absolute z-10 mt-1 max-h-56 py-1 w-full overflow-auto rounded-md border-[1px] border-gray-500 bg-brand-node-dark text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
                   }
                 >
                   {options.map(({ value, data }) => (

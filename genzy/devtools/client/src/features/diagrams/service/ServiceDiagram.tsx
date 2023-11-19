@@ -14,7 +14,6 @@ import { Drawer } from "../../../core/components/drawer";
 import { ServiceDrawer } from "./service-drawer/ServiceDrawer";
 import { useProjectDefinitionContext } from "../../project-workspace/contexts/project-definition.context";
 import { projectDefinitionActions } from "../../project-workspace/contexts/project-definition.dispatcher";
-import { ConfirmationModal } from "../../../core/components/confirmation-modal";
 import { RemovableEdge } from "../common/components/edges/removable/RemovableEdge";
 import { ServiceNode } from "./nodes/ServiceNode";
 import { RemovableNode } from "../common/components/nodes/RemovableNode";
@@ -31,6 +30,7 @@ import { ThemeProvider } from "styled-components";
 import { DiagramBase } from "../common/components/diagram/DiagramBase";
 import { useMicroserviceContext } from "../common/contexts/microservice.context";
 import { ServiceEvents, serviceEventEmitter } from "./service-diagram.events";
+import { RemoveServiceModal, type RemoveServiceModalInstance } from "./RemoveServiceModal";
 
 // Nodes
 const RemovableServiceNodeWrapper: FC<NodeProps<Service>> = (props) => {
@@ -97,13 +97,11 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   const { projectDefinition, dispatcher, setExecuteOnUndoRedo } = useProjectDefinitionContext();
   const { isDirty, promptDirtyModal, setInitialState } = useDirtyCheckContext();
 
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [nodes, setNodes, onNodesChange] = useNodesState<Service>([...initialNodes] || []);
   const [edges, setEdges, onEdgesChange] = useEdgesState<{}>([...initialEdges] || []);
 
   const [selected, setSelected] = useState<Node<Service, string>>();
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     projectDefinition.services[microserviceId] = {
@@ -194,36 +192,27 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   };
 
   // Handle Service delete
+  const [removeServiceModalInstance, setRemoveServiceModalInstance] =
+    useState<RemoveServiceModalInstance>();
 
-  const handleServiceDelete = async () => {
-    const removedServiceId = selected.id;
-
+  const handleServiceDelete = async (service: Node<Service>) => {
     await dispatcher(projectDefinitionActions.deleteService, {
       microserviceId,
-      serviceId: removedServiceId,
+      serviceId: service.id,
     });
 
-    setNodes((nodes) => nodes.filter((node) => node.id !== removedServiceId));
+    setNodes((nodes) => nodes.filter((node) => node.id !== service.id));
     setEdges((edges) =>
-      edges.filter((edge) => removedServiceId !== edge.target && removedServiceId !== edge.source)
+      edges.filter((edge) => service.id !== edge.target && service.id !== edge.source)
     );
-
-    setIsModalOpen(false);
-    setSelected(undefined);
-  };
-
-  const onCancelServiceDelete = () => {
-    setIsModalOpen(false);
-    setSelected(undefined);
   };
 
   useEffect(() => {
     serviceEventEmitter.subscribe(ServiceEvents.ON_NODE_REMOVE, (node) => {
-      setSelected(node);
-      setIsModalOpen(true);
+      removeServiceModalInstance.openFor(node);
     });
     return () => serviceEventEmitter.unsubscribe(ServiceEvents.ON_NODE_REMOVE);
-  }, [setSelected, setIsModalOpen]);
+  }, [removeServiceModalInstance]);
 
   useEffect(() => {
     serviceEventEmitter.subscribe(ServiceEvents.ON_EDGE_REMOVE, (removedEdge) => {
@@ -284,17 +273,10 @@ export const ServiceDiagram: FC<DiagramProps> = ({
         />
       </div>
 
-      <ConfirmationModal
-        title={`Delete ${selected?.data?.name}`}
-        isOpen={isModalOpen}
-        onYes={handleServiceDelete}
-        onClose={onCancelServiceDelete}
-      >
-        <span>
-          Are you sure that you want to delete {selected?.data?.name}. By deleting{" "}
-          {selected?.data?.name}, all references will be removed.
-        </span>
-      </ConfirmationModal>
+      <RemoveServiceModal
+        onInit={setRemoveServiceModalInstance}
+        handleRemove={handleServiceDelete}
+      />
 
       <Drawer
         open={isDrawerOpen}

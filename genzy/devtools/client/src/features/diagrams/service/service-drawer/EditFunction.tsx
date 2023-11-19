@@ -4,7 +4,6 @@ import {
   type ServiceFunction,
   type ParamSource,
   type ServiceType,
-  HTTP_METHOD,
   PARAM_SOURCE,
 } from "../models";
 import { TextField } from "../../../../core/components/text-field";
@@ -121,15 +120,6 @@ export const EditFunction: FC<EditFunctionProps> = ({
                 updateState();
               }}
             />
-            {/* <Select
-              value={fun.method}
-              onChange={(v) => {
-                fun.method = v as HTTPMethod;
-                updateState();
-              }}
-              options={Object.keys(HTTP_METHOD)}
-              label="Method"
-            /> */}
             <div className="flex-1">
               <TextField
                 value={fun.route}

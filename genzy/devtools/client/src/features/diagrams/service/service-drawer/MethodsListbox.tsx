@@ -7,34 +7,34 @@ import {
 import { HTTP_METHOD } from "../models";
 
 const colors = {
-  GET: { default: "bg-blue-400", active: "bg-blue-300" },
-  POST: { default: "bg-green-400", active: "bg-green-300" },
-  PUT: { default: "bg-orange-400", active: "bg-orange-300" },
-  DELETE: { default: "bg-red-400", active: "bg-red-500" },
+  GET: "bg-blue-400",
+  POST: "bg-green-400",
+  PUT: "bg-orange-400",
+  DELETE: "bg-red-400",
 } as const;
 
 type MethodData = {
   id: string;
   method: string;
-  styles: {
-    bgColor: string;
-    bgColorActive: string;
-  };
+  color: string;
 };
 
 const methods: MethodData[] = Object.keys(HTTP_METHOD).map((httpMethod) => ({
   id: httpMethod,
   method: httpMethod,
-  styles: {
-    bgColor: colors[httpMethod].default,
-    bgColorActive: colors[httpMethod].active,
-  },
+  color: colors[httpMethod],
 }));
 
 const MethodOptionTemplate: FC<ListboxTemplateProps<MethodData>> = ({ selected = false, data }) => {
-  const { method } = data;
+  const { color, method } = data;
 
-  return <div className={`rounded-md p-1 pl-3 text-start text-gray-100`}>{method}</div>;
+  return (
+    <div className="pl-1.5 py-0.5 w-[4.5em]">
+      <span className={`${color} rounded-md p-1 text-white font-bold text-xs text-center block`}>
+        {method}
+      </span>
+    </div>
+  );
 };
 
 type MethodsListboxProps = {

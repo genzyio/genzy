@@ -7,7 +7,6 @@ import { ClassDrawer } from "./class-drawer/ClassDrawer";
 import { useProjectDefinitionContext } from "../../project-workspace/contexts/project-definition.context";
 import { projectDefinitionActions } from "../../project-workspace/contexts/project-definition.dispatcher";
 import { useTypesContext } from "./TypesContext";
-import { ConfirmationModal } from "../../../core/components/confirmation-modal";
 import { ClassNode } from "./nodes/ClassNode";
 import { RemovableNode } from "../common/components/nodes/RemovableNode";
 import { Button } from "../../../core/components/button";
@@ -22,6 +21,7 @@ import { darkTheme } from "../../../core/components/diagram";
 import { DiagramBase } from "../common/components/diagram/DiagramBase";
 import { useMicroserviceContext } from "../common/contexts/microservice.context";
 import { ClassEvents, classEventEmitter } from "./class-diagram.events";
+import { RemoveClassModal, RemoveClassModalInstance } from "./RemoveClassModal";
 
 // Nodes
 const RemovableClassNodeWrapper: FC<NodeProps<Class>> = (props) => {
@@ -67,9 +67,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
   const nextName = useSequenceGenerator(nodes, (node) => node.data.name, "Class");
 
   const [selectedClass, setSelectedClass] = useState<Node<Class, string>>();
-
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     if (selectedClass) return;
@@ -126,32 +124,25 @@ export const ClassDiagram: FC<DiagramProps> = ({
 
   // Handle Class delete
 
-  const handleClassDelete = async () => {
-    const deletedClassId = selectedClass.id;
+  const [removeClassModalInstance, setRemoveClassModalInstance] =
+    useState<RemoveClassModalInstance>();
+
+  const handleClassDelete = async (_class: Node<Class>) => {
     await dispatcher(projectDefinitionActions.deleteClass, {
       microserviceId,
-      classId: deletedClassId,
+      classId: _class.id,
     });
 
-    setNodes((nodes) => nodes.filter((node) => node.id !== deletedClassId));
-
-    setModalOpen(false);
-    setSelectedClass(undefined);
-  };
-
-  const onCancelClassDelete = () => {
-    setModalOpen(false);
-    setSelectedClass(undefined);
+    setNodes((nodes) => nodes.filter((node) => node.id !== _class.id));
   };
 
   useEffect(() => {
     classEventEmitter.subscribe(ClassEvents.ON_NODE_REMOVE, (node) => {
-      setSelectedClass(node);
-      setModalOpen(true);
+      removeClassModalInstance.openFor(node);
     });
 
     return () => classEventEmitter.unsubscribe(ClassEvents.ON_NODE_REMOVE);
-  }, [setSelectedClass, setModalOpen]);
+  }, [removeClassModalInstance]);
 
   const elem = document.getElementById("toolbar-actions");
 
@@ -199,17 +190,8 @@ export const ClassDiagram: FC<DiagramProps> = ({
           supportsConnection={false}
         />
       </div>
-      <ConfirmationModal
-        title={`Delete ${selectedClass?.data.name}`}
-        isOpen={isModalOpen}
-        onYes={handleClassDelete}
-        onClose={onCancelClassDelete}
-      >
-        <span>
-          Are you sure that you want to delete {selectedClass?.data.name}? By removing{" "}
-          {selectedClass?.data.name}, all refferences to it will be updated to type any.
-        </span>
-      </ConfirmationModal>
+
+      <RemoveClassModal onInit={setRemoveClassModalInstance} handleRemove={handleClassDelete} />
 
       <Drawer
         open={isDrawerOpen}

@@ -17,7 +17,6 @@ import { CommunicationDrawer } from "./communication-drawer/CommunicationDrawer"
 import { useProjectDefinitionContext } from "../../project-workspace/contexts/project-definition.context";
 import { projectDefinitionActions } from "../../project-workspace/contexts/project-definition.dispatcher";
 import { findArrayDiff } from "../../../core/utils/diff";
-import { ConfirmationModal } from "../../../core/components/confirmation-modal";
 import { RemovableEdge } from "../common/components/edges/removable/RemovableEdge";
 import { RemovableNode } from "../common/components/nodes/RemovableNode";
 import { MicroserviceNode } from "./nodes/MicroserviceNode";
@@ -34,6 +33,14 @@ import { ThemeProvider } from "styled-components";
 import { darkTheme } from "../../../core/components/diagram";
 import { DiagramBase } from "../common/components/diagram/DiagramBase";
 import { MicroserviceEvents, microserviceEventEmitter } from "./microservice-diagram.events";
+import {
+  RemoveCommunicationModal,
+  type RemoveCommunicationModalInstance,
+} from "./RemoveCommunicationModal";
+import {
+  RemoveMicroserviceModal,
+  type RemoveMicroserviceModalInstance,
+} from "./RemoveMicroserviceModal";
 
 // Nodes
 const RemovableMicroserviceNodeWrapper: FC<NodeProps<Microservice>> = (props) => {
@@ -100,12 +107,8 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
 
   const [selectedMicroservice, setSelectedMicroservice] = useState<Node<Microservice, string>>();
   const [selectedCommunication, setSelectedCommunication] = useState<Edge<Communication>>();
-  const targetedMicroservice = nodes.find((node) => node.id === selectedCommunication?.target)?.data
-    ?.name;
 
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const [isDeleteCommunicationModalOpen, setIsDeleteCommunicationModalOpen] = useState(false);
-  const [isDeleteMicroserviceModalOpen, setIsDeleteMicroserviceModalOpen] = useState(false);
 
   const possibleServicesForCommunication = useMemo(() => {
     if (!selectedCommunication) return [];
@@ -201,36 +204,28 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   };
 
   // Handle Microservice Delete
-  const handleMicroserviceDelete = async () => {
-    const removedMicroserviceId = selectedMicroservice.id;
+  const [removeMicroserviceInstance, setRemoveMicroserviceInstance] =
+    useState<RemoveMicroserviceModalInstance>(undefined);
 
+  const handleMicroserviceDelete = async (microservice: Node<Microservice>) => {
     await dispatcher(projectDefinitionActions.deleteMicroservice, {
-      microserviceId: removedMicroserviceId,
+      microserviceId: microservice.id,
     });
 
     const { nodes, edges } = projectDefinition.microservices;
     setNodes([...nodes]);
     setEdges([...edges]);
 
-    onMicroserviceDeleted(selectedMicroservice.id);
-
-    setIsDeleteMicroserviceModalOpen(false);
-    setSelectedMicroservice(undefined);
-  };
-
-  const onCancelMicroserviceDelete = () => {
-    setIsDeleteMicroserviceModalOpen(false);
-    setSelectedMicroservice(undefined);
+    onMicroserviceDeleted(microservice.id);
   };
 
   useEffect(() => {
     microserviceEventEmitter.subscribe(MicroserviceEvents.ON_NODE_REMOVE, (node: Node) => {
-      setSelectedMicroservice(node);
-      setIsDeleteMicroserviceModalOpen(true);
+      removeMicroserviceInstance.openFor(node);
     });
 
     return () => microserviceEventEmitter.unsubscribe(MicroserviceEvents.ON_NODE_REMOVE);
-  }, [setSelectedMicroservice, setIsDeleteMicroserviceModalOpen]);
+  }, [removeMicroserviceInstance]);
 
   // Handle Communication Update
   const handleCommunicationUpdate = async (communication: Communication) => {
@@ -260,30 +255,24 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
   };
 
   // Handle Communication Delete
-  const handleCommunicationDelete = async () => {
+  const [removeCommunicationInstance, setRemoveCommunicationInstance] =
+    useState<RemoveCommunicationModalInstance>(undefined);
+
+  const handleCommunicationDelete = async (communication: Edge<Communication>) => {
     await dispatcher(projectDefinitionActions.removeCommunication, {
-      communicationId: selectedCommunication.id,
+      communicationId: communication.id,
     });
 
-    setEdges((edges) => edges.filter((edge) => edge.id !== selectedCommunication.id));
-
-    setIsDeleteCommunicationModalOpen(false);
-    setSelectedCommunication(undefined);
-  };
-
-  const onCancelCommunicationDelete = () => {
-    setIsDeleteCommunicationModalOpen(false);
-    setSelectedCommunication(undefined);
+    setEdges((edges) => edges.filter((edge) => edge.id !== communication.id));
   };
 
   useEffect(() => {
     microserviceEventEmitter.subscribe(MicroserviceEvents.ON_EDGE_REMOVE, (edge: Edge) => {
-      setSelectedCommunication(edge);
-      setIsDeleteCommunicationModalOpen(true);
+      removeCommunicationInstance.openFor(edge);
     });
 
     return () => microserviceEventEmitter.unsubscribe(MicroserviceEvents.ON_EDGE_REMOVE);
-  }, [setSelectedCommunication, setIsDeleteCommunicationModalOpen]);
+  }, [removeCommunicationInstance]);
 
   const elem = document.getElementById("toolbar-actions");
   const portal = useMemo(() => {
@@ -344,29 +333,15 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
         />
       </div>
 
-      <ConfirmationModal
-        title={`Stop communication with ${targetedMicroservice}`}
-        isOpen={isDeleteCommunicationModalOpen}
-        onYes={handleCommunicationDelete}
-        onClose={onCancelCommunicationDelete}
-      >
-        <span>
-          Are you sure that you want to stop communication with {targetedMicroservice}. By stopping
-          communication, all remote proxies to this microservice will be removed.
-        </span>
-      </ConfirmationModal>
+      <RemoveCommunicationModal
+        onInit={setRemoveCommunicationInstance}
+        handleRemove={handleCommunicationDelete}
+      />
 
-      <ConfirmationModal
-        title={`Delete ${selectedMicroservice?.data?.name}`}
-        isOpen={isDeleteMicroserviceModalOpen}
-        onYes={handleMicroserviceDelete}
-        onClose={onCancelMicroserviceDelete}
-      >
-        <span>
-          Are you sure that you want to delete {selectedMicroservice?.data?.name}. By deleting{" "}
-          {selectedMicroservice?.data?.name}, all communication will be removed.
-        </span>
-      </ConfirmationModal>
+      <RemoveMicroserviceModal
+        onInit={setRemoveMicroserviceInstance}
+        handleRemove={handleMicroserviceDelete}
+      />
 
       <Drawer
         open={isDrawerOpen}
