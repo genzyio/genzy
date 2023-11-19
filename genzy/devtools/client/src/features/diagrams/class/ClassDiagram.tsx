@@ -1,12 +1,11 @@
 import { type FC, useEffect, useState, useMemo } from "react";
-import { type Node, useNodesState, NodeProps, SmoothStepEdge } from "reactflow";
+import { type Node, type NodeProps, type Viewport, SmoothStepEdge } from "reactflow";
 import { Class } from "./models";
 import { useSequenceGenerator } from "../../../core/hooks/useStringSequence";
 import { Drawer } from "../../../core/components/drawer";
 import { ClassDrawer } from "./class-drawer/ClassDrawer";
 import { useProjectDefinitionContext } from "../../project-workspace/contexts/project-definition.context";
 import { projectDefinitionActions } from "../../project-workspace/contexts/project-definition.dispatcher";
-import { useTypesContext } from "./TypesContext";
 import { ClassNode } from "./nodes/ClassNode";
 import { RemovableNode } from "../common/components/nodes/RemovableNode";
 import { Button } from "../../../core/components/button";
@@ -22,36 +21,12 @@ import { DiagramBase } from "../common/components/diagram/DiagramBase";
 import { useMicroserviceContext } from "../common/contexts/microservice.context";
 import { ClassEvents, classEventEmitter } from "./class-diagram.events";
 import { RemoveClassModal, RemoveClassModalInstance } from "./RemoveClassModal";
-
-// Nodes
-const RemovableClassNodeWrapper: FC<NodeProps<Class>> = (props) => {
-  const { projectDefinition } = useProjectDefinitionContext();
-  const { microserviceId } = useMicroserviceContext();
-
-  const onRemove = (_, id: string) => {
-    const node = projectDefinition.classes[microserviceId].nodes.find((node) => node.id === id);
-    classEventEmitter.dispatch(ClassEvents.ON_NODE_REMOVE, node);
-  };
-
-  return <RemovableNode onRemove={onRemove} element={ClassNode} {...props} />;
-};
-
-const localNodeTypes = {
-  ...nodeTypes,
-  classNode: RemovableClassNodeWrapper,
-};
-
-// Edges
-const localEdgeTypes = {
-  ...edgeTypes,
-  defaultEdge: SmoothStepEdge,
-  removableEdge: SmoothStepEdge,
-};
+import { useClassDiagramState } from "./class-diagram-state";
 
 type DiagramProps = {
   microserviceId: string;
-  nodes?: any[];
-  viewport: any;
+  nodes?: Node<Class>[];
+  viewport: Viewport;
 };
 
 export const ClassDiagram: FC<DiagramProps> = ({
@@ -59,82 +34,20 @@ export const ClassDiagram: FC<DiagramProps> = ({
   nodes: initialNodes,
   viewport: initialViewport,
 }) => {
-  const { projectDefinition, dispatcher, setExecuteOnUndoRedo } = useProjectDefinitionContext();
+  const { projectDefinition, dispatcher } = useProjectDefinitionContext();
   const { isDirty, promptDirtyModal, setInitialState } = useDirtyCheckContext();
-  const { updateTypes } = useTypesContext(microserviceId);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState<Class>([...initialNodes] || []);
+  const [{ nodes, onNodesChange }, actions] = useClassDiagramState(
+    microserviceId,
+    initialNodes || []
+  );
   const nextName = useSequenceGenerator(nodes, (node) => node.data.name, "Class");
-
-  const [selectedClass, setSelectedClass] = useState<Node<Class, string>>();
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
-
-  useEffect(() => {
-    if (selectedClass) return;
-
-    projectDefinition.classes[microserviceId] = {
-      ...projectDefinition.classes[microserviceId],
-      nodes: [...nodes],
-    };
-    updateTypes(nodes);
-  }, [nodes]);
-
-  useEffect(() => {
-    setExecuteOnUndoRedo(() => () => {
-      const { nodes } = projectDefinition.classes[microserviceId];
-      setNodes([...nodes]);
-    });
-
-    return () => setExecuteOnUndoRedo(() => () => {});
-  }, [setNodes]);
-
-  // Handle Class add
-
-  const handleClassAdd = async () => {
-    const classNode = await dispatcher(projectDefinitionActions.addClass, {
-      microserviceId,
-      name: nextName(),
-    });
-
-    setNodes((nodes) => [...nodes, classNode]);
-  };
-
-  // Handle Class update
-
-  const handleClassUpdate = async (classObject: Class) => {
-    const updatedClassId = selectedClass.id;
-    await dispatcher(projectDefinitionActions.updateClass, {
-      microserviceId,
-      classId: updatedClassId,
-      class: classObject,
-    });
-
-    setNodes((nodes) =>
-      nodes.map((node) => {
-        if (node.id === updatedClassId) {
-          return { ...node, data: classObject };
-        }
-        return node;
-      })
-    );
-
-    setDrawerOpen(false);
-    setSelectedClass(undefined);
-  };
-
-  // Handle Class delete
 
   const [removeClassModalInstance, setRemoveClassModalInstance] =
     useState<RemoveClassModalInstance>();
 
-  const handleClassDelete = async (_class: Node<Class>) => {
-    await dispatcher(projectDefinitionActions.deleteClass, {
-      microserviceId,
-      classId: _class.id,
-    });
-
-    setNodes((nodes) => nodes.filter((node) => node.id !== _class.id));
-  };
+  const [selectedClass, setSelectedClass] = useState<Node<Class, string>>();
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     classEventEmitter.subscribe(ClassEvents.ON_NODE_REMOVE, (node) => {
@@ -144,8 +57,24 @@ export const ClassDiagram: FC<DiagramProps> = ({
     return () => classEventEmitter.unsubscribe(ClassEvents.ON_NODE_REMOVE);
   }, [removeClassModalInstance]);
 
-  const elem = document.getElementById("toolbar-actions");
+  // Class handlers
+  const handleClassAdd = async () => {
+    await actions.addClass(nextName());
+  };
 
+  const handleClassUpdate = async (_class: Class) => {
+    await actions.updateClass(selectedClass.id, _class);
+
+    setDrawerOpen(false);
+    setSelectedClass(undefined);
+  };
+
+  const handleClassDelete = async (_class: Node<Class>) => {
+    await actions.deleteClass(_class.id);
+  };
+
+  // Toolbar action
+  const elem = document.getElementById("toolbar-actions");
   const portal = useMemo(() => {
     if (elem) {
       return createPortal(
@@ -231,4 +160,29 @@ export const ClassDiagram: FC<DiagramProps> = ({
       </Drawer>
     </ThemeProvider>
   );
+};
+
+// Nodes
+const RemovableClassNodeWrapper: FC<NodeProps<Class>> = (props) => {
+  const { projectDefinition } = useProjectDefinitionContext();
+  const { microserviceId } = useMicroserviceContext();
+
+  const onRemove = (_, id: string) => {
+    const node = projectDefinition.classes[microserviceId].nodes.find((node) => node.id === id);
+    classEventEmitter.dispatch(ClassEvents.ON_NODE_REMOVE, node);
+  };
+
+  return <RemovableNode onRemove={onRemove} element={ClassNode} {...props} />;
+};
+
+const localNodeTypes = {
+  ...nodeTypes,
+  classNode: RemovableClassNodeWrapper,
+};
+
+// Edges
+const localEdgeTypes = {
+  ...edgeTypes,
+  defaultEdge: SmoothStepEdge,
+  removableEdge: SmoothStepEdge,
 };

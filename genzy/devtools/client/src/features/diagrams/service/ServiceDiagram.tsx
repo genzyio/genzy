@@ -1,12 +1,11 @@
-import { type FC, useCallback, useEffect, useState, useMemo } from "react";
+import { type FC, useEffect, useState, useMemo } from "react";
 import {
-  useNodesState,
-  useEdgesState,
-  addEdge,
   Connection,
   type Node,
+  type Edge,
   type NodeProps,
   type EdgeProps,
+  type Viewport,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { type Service } from "./models";
@@ -31,61 +30,14 @@ import { DiagramBase } from "../common/components/diagram/DiagramBase";
 import { useMicroserviceContext } from "../common/contexts/microservice.context";
 import { ServiceEvents, serviceEventEmitter } from "./service-diagram.events";
 import { RemoveServiceModal, type RemoveServiceModalInstance } from "./RemoveServiceModal";
-
-// Nodes
-const RemovableServiceNodeWrapper: FC<NodeProps<Service>> = (props) => {
-  const { projectDefinition } = useProjectDefinitionContext();
-  const { microserviceId } = useMicroserviceContext();
-
-  const onRemove = (_, id: string) => {
-    const node = projectDefinition.services[microserviceId].nodes.find((node) => node.id === id);
-    serviceEventEmitter.dispatch(ServiceEvents.ON_NODE_REMOVE, node);
-  };
-
-  return <RemovableNode onRemove={onRemove} element={ServiceNode} {...props} />;
-};
-
-const localNodeTypes = {
-  ...nodeTypes,
-  serviceNode: RemovableServiceNodeWrapper,
-};
-
-// Edges
-
-const DefaultEdgeWrapper: FC<EdgeProps> = (props) => {
-  const { projectDefinition } = useProjectDefinitionContext();
-  const { microserviceId } = useMicroserviceContext();
-  const { nodes, edges } = projectDefinition.services[microserviceId];
-
-  return <FloatingEdge nodes={nodes} edges={edges} {...props} label={undefined} />;
-};
-
-const RemovableEdgeWrapper: FC<EdgeProps> = (props) => {
-  const { projectDefinition } = useProjectDefinitionContext();
-  const { microserviceId } = useMicroserviceContext();
-  const { nodes, edges } = projectDefinition.services[microserviceId];
-
-  const onRemove = (_, id: string) => {
-    serviceEventEmitter.dispatch(ServiceEvents.ON_EDGE_REMOVE, {
-      dependencyId: id,
-      microserviceId,
-    });
-  };
-
-  return <RemovableEdge nodes={nodes} edges={edges} onRemove={onRemove} {...props} />;
-};
-
-const localEdgeTypes = {
-  ...edgeTypes,
-  defaultEdge: DefaultEdgeWrapper,
-  removableEdge: RemovableEdgeWrapper,
-};
+import { useSequenceGenerator } from "../../../core/hooks/useStringSequence";
+import { useServiceDiagramState } from "./service-diagram-state";
 
 type DiagramProps = {
   microserviceId: string;
-  nodes?: any[];
-  edges?: any[];
-  viewport: any;
+  nodes?: Node<Service>[];
+  edges?: Edge<any>[];
+  viewport: Viewport;
 };
 
 export const ServiceDiagram: FC<DiagramProps> = ({
@@ -97,29 +49,18 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   const { projectDefinition, dispatcher, setExecuteOnUndoRedo } = useProjectDefinitionContext();
   const { isDirty, promptDirtyModal, setInitialState } = useDirtyCheckContext();
 
-  const [nodes, setNodes, onNodesChange] = useNodesState<Service>([...initialNodes] || []);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<{}>([...initialEdges] || []);
+  const [{ nodes, edges, onNodesChange, onEdgesChange }, actions] = useServiceDiagramState(
+    microserviceId,
+    initialNodes || [],
+    initialEdges || []
+  );
+  const nextName = useSequenceGenerator(nodes, (node) => node.data.name, "Service");
+
+  const [removeServiceModalInstance, setRemoveServiceModalInstance] =
+    useState<RemoveServiceModalInstance>();
 
   const [selected, setSelected] = useState<Node<Service, string>>();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-
-  useEffect(() => {
-    projectDefinition.services[microserviceId] = {
-      ...projectDefinition.services[microserviceId],
-      nodes: [...nodes],
-      edges: [...edges],
-    };
-  }, [nodes, edges]);
-
-  useEffect(() => {
-    setExecuteOnUndoRedo(() => () => {
-      const { nodes, edges } = projectDefinition.services[microserviceId];
-      setNodes([...nodes]);
-      setEdges([...edges]);
-    });
-
-    return () => setExecuteOnUndoRedo(() => () => {});
-  }, [setNodes, setEdges]);
 
   const isValidConnection = (connection: Connection) => {
     const selfConnecting = connection.source === connection.target;
@@ -136,94 +77,46 @@ export const ServiceDiagram: FC<DiagramProps> = ({
     return true;
   };
 
-  const onConnect = useCallback(
-    async (params: Connection) => {
-      const newEdge = await dispatcher(projectDefinitionActions.addDependency, {
-        microserviceId,
-        params,
-      });
-
-      setEdges((edges) => addEdge(newEdge, edges));
-    },
-    [microserviceId, dispatcher, setEdges]
-  );
-
-  const nextName = () => {
-    let i = 1;
-    while (nodes.find((n) => n.data.name === `Service${i}`)) i++;
-    return `Service${i}`;
-  };
-
-  // Handle Service add
-
-  const handleServiceAdd = async () => {
-    const serviceNode = await dispatcher(projectDefinitionActions.addService, {
-      microserviceId,
-      service: {
-        id: `${+new Date()}`,
-        name: nextName(),
-        type: "CONTROLLER",
-      },
+  useEffect(() => {
+    serviceEventEmitter.subscribe(ServiceEvents.ON_NODE_REMOVE, (node) => {
+      removeServiceModalInstance.openFor(node);
     });
-    setNodes((nodes) => [...nodes, serviceNode]);
-  };
 
-  // Handle Service update
+    serviceEventEmitter.subscribe(ServiceEvents.ON_EDGE_REMOVE, async (edge) => {
+      handleDeleteDependency(edge);
+    });
+
+    return () => {
+      serviceEventEmitter.unsubscribe(ServiceEvents.ON_NODE_REMOVE);
+      serviceEventEmitter.unsubscribe(ServiceEvents.ON_EDGE_REMOVE);
+    };
+  }, [removeServiceModalInstance]);
+
+  // Service Handlers
+  const handleServiceAdd = async () => {
+    await actions.addService(nextName());
+  };
 
   const handleServiceUpdate = async (service: Service) => {
-    await dispatcher(projectDefinitionActions.updateService, {
-      microserviceId,
-      service: {
-        id: selected.id,
-        ...service,
-      },
-      functions: service.functions,
-    });
-
-    setNodes((nodes) =>
-      nodes.map((node) => {
-        if (node.id === selected.id) return { ...node, data: service };
-        return node;
-      })
-    );
+    await actions.updateService(selected.id, service);
 
     setDrawerOpen(false);
     setSelected(undefined);
   };
 
-  // Handle Service delete
-  const [removeServiceModalInstance, setRemoveServiceModalInstance] =
-    useState<RemoveServiceModalInstance>();
-
   const handleServiceDelete = async (service: Node<Service>) => {
-    await dispatcher(projectDefinitionActions.deleteService, {
-      microserviceId,
-      serviceId: service.id,
-    });
-
-    setNodes((nodes) => nodes.filter((node) => node.id !== service.id));
-    setEdges((edges) =>
-      edges.filter((edge) => service.id !== edge.target && service.id !== edge.source)
-    );
+    await actions.deleteService(service.id);
   };
 
-  useEffect(() => {
-    serviceEventEmitter.subscribe(ServiceEvents.ON_NODE_REMOVE, (node) => {
-      removeServiceModalInstance.openFor(node);
-    });
-    return () => serviceEventEmitter.unsubscribe(ServiceEvents.ON_NODE_REMOVE);
-  }, [removeServiceModalInstance]);
+  // Dependency Handlers
+  const handleAddDependency = actions.addDependency;
 
-  useEffect(() => {
-    serviceEventEmitter.subscribe(ServiceEvents.ON_EDGE_REMOVE, (removedEdge) => {
-      dispatcher(projectDefinitionActions.removeDependency, removedEdge);
-      setEdges((edges) => edges.filter((edge) => edge.id !== removedEdge.dependencyId));
-    });
-    return () => serviceEventEmitter.unsubscribe(ServiceEvents.ON_EDGE_REMOVE);
-  }, [microserviceId, dispatcher, setEdges]);
+  const handleDeleteDependency = async (dependency: Edge<any>) => {
+    await actions.deleteDependency(dependency.id);
+  };
 
+  // Toolbar action
   const elem = document.getElementById("toolbar-actions");
-
   const portal = useMemo(() => {
     if (elem) {
       return createPortal(
@@ -247,7 +140,7 @@ export const ServiceDiagram: FC<DiagramProps> = ({
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           isValidConnection={isValidConnection}
-          onConnect={onConnect}
+          onConnect={handleAddDependency}
           nodeTypes={localNodeTypes}
           edgeTypes={localEdgeTypes}
           onViewportChanged={(viewport) =>
@@ -314,4 +207,51 @@ export const ServiceDiagram: FC<DiagramProps> = ({
       </Drawer>
     </ThemeProvider>
   );
+};
+
+// Nodes
+const RemovableServiceNodeWrapper: FC<NodeProps<Service>> = (props) => {
+  const { projectDefinition } = useProjectDefinitionContext();
+  const { microserviceId } = useMicroserviceContext();
+
+  const onRemove = (_, id: string) => {
+    const node = projectDefinition.services[microserviceId].nodes.find((node) => node.id === id);
+    serviceEventEmitter.dispatch(ServiceEvents.ON_NODE_REMOVE, node);
+  };
+
+  return <RemovableNode onRemove={onRemove} element={ServiceNode} {...props} />;
+};
+
+const localNodeTypes = {
+  ...nodeTypes,
+  serviceNode: RemovableServiceNodeWrapper,
+};
+
+// Edges
+
+const DefaultEdgeWrapper: FC<EdgeProps> = (props) => {
+  const { projectDefinition } = useProjectDefinitionContext();
+  const { microserviceId } = useMicroserviceContext();
+  const { nodes, edges } = projectDefinition.services[microserviceId];
+
+  return <FloatingEdge nodes={nodes} edges={edges} {...props} label={undefined} />;
+};
+
+const RemovableEdgeWrapper: FC<EdgeProps> = (props) => {
+  const { projectDefinition } = useProjectDefinitionContext();
+  const { microserviceId } = useMicroserviceContext();
+  const { nodes, edges } = projectDefinition.services[microserviceId];
+
+  const onRemove = (_, id: string) => {
+    const edge = projectDefinition.services[microserviceId].edges.find((edge) => edge.id === id);
+    serviceEventEmitter.dispatch(ServiceEvents.ON_EDGE_REMOVE, edge);
+  };
+
+  return <RemovableEdge nodes={nodes} edges={edges} onRemove={onRemove} {...props} />;
+};
+
+const localEdgeTypes = {
+  ...edgeTypes,
+  defaultEdge: DefaultEdgeWrapper,
+  removableEdge: RemovableEdgeWrapper,
 };
