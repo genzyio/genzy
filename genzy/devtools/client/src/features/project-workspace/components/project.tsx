@@ -179,7 +179,10 @@ export const Project: FC = () => {
               <Tab
                 title="Microservices"
                 onChange={() => {
-                  setSearchParams({});
+                  setSearchParams((params) => {
+                    params.delete("activeTab");
+                    return params;
+                  });
                   setIsDocsActive(false);
                 }}
               >

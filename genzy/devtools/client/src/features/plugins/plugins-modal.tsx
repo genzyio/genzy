@@ -34,7 +34,13 @@ export function PluginsModal() {
   return (
     <>
       <MicroserviceContextProvider microserviceId={microserviceId}>
-        <Modal title="Plugins" isOpen={true} isLarge={true} onClose={onClose}>
+        <Modal
+          title="Plugins"
+          className="h-[600px] overflow-y-auto"
+          isOpen={true}
+          isLarge={true}
+          onClose={onClose}
+        >
           {pluginName ? <Outlet context={[onClose]} /> : <Outlet />}
         </Modal>
       </MicroserviceContextProvider>

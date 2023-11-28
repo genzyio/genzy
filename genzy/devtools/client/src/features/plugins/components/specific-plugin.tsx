@@ -88,14 +88,13 @@ const VersionInfo: FC<VersionInfoProps> = ({
   );
 };
 
-export const SpecificPlugin: FC<{ pluginName: string }> = ({ pluginName }) => {
+export const SpecificPlugin: FC<{ plugin: NPMPackage }> = ({ plugin }) => {
   const notificator = useNotifications();
   const { microserviceId } = useMicroserviceContext();
   const { dispatcher } = useProjectDefinitionContext();
   const [close] = useOutletContext<[() => any]>();
-  const { isInstalled, installedVersion } = useIsPluginInstalled(pluginName);
+  const { isInstalled, installedVersion } = useIsPluginInstalled(plugin.name);
 
-  const { plugin, isFetching } = usePlugin(pluginName);
   const [versionValue, setVersionValue] = useState("");
 
   const versionOptions = useMemo(
@@ -108,16 +107,22 @@ export const SpecificPlugin: FC<{ pluginName: string }> = ({ pluginName }) => {
     [plugin, versionValue]
   );
 
+  useEffect(() => {
+    if (versionValue) return;
+
+    setVersionValue(installedVersion || plugin.latestVersion);
+  }, [plugin, versionValue, installedVersion]);
+
   const installPlugin = async () => {
     await dispatcher(projectDefinitionActions.installPlugin, {
       microserviceId,
       plugin: {
-        name: pluginName,
+        name: plugin.name,
         version: versionValue,
       },
     });
 
-    notificator.success(`You have installed plugin ${pluginName}.`);
+    notificator.success(`You have installed plugin ${plugin.name}.`);
     close();
   };
 
@@ -125,12 +130,12 @@ export const SpecificPlugin: FC<{ pluginName: string }> = ({ pluginName }) => {
     await dispatcher(projectDefinitionActions.updatePlugin, {
       microserviceId,
       plugin: {
-        name: pluginName,
+        name: plugin.name,
         version: versionValue,
       },
     });
 
-    notificator.success(`You have updated plugin ${pluginName}.`);
+    notificator.success(`You have updated plugin ${plugin.name}.`);
     close();
   };
 
@@ -138,24 +143,14 @@ export const SpecificPlugin: FC<{ pluginName: string }> = ({ pluginName }) => {
     await dispatcher(projectDefinitionActions.uninstallPlugin, {
       microserviceId,
       plugin: {
-        name: pluginName,
+        name: plugin.name,
         version: versionValue,
       },
     });
 
-    notificator.success(`You have uninstalled plugin ${pluginName}.`);
+    notificator.success(`You have uninstalled plugin ${plugin.name}.`);
     close();
   };
-
-  if (isFetching) {
-    return (
-      <div className="mt-[70px]">
-        <Loader />
-      </div>
-    );
-  } else {
-    !versionValue && setVersionValue(installedVersion || plugin.latestVersion);
-  }
 
   return (
     <>

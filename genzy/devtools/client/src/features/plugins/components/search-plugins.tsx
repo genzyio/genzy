@@ -1,4 +1,4 @@
-import { type FC, useState, useEffect } from "react";
+import { type FC, useState, useEffect, useCallback } from "react";
 import { type NPMPackageInfo } from "../api/search.contracts";
 import { TextField } from "../../../core/components/text-field";
 import { useDebounce } from "@uidotdev/usehooks";
@@ -8,6 +8,7 @@ import moment from "moment";
 import { LoadingRow } from "./loading-row";
 import { useIsPluginInstalled } from "../hooks/useIsPluginInstalled";
 import { usePluginsNavigation } from "../hooks/usePluginsNavigation";
+import { useSearchParams } from "react-router-dom";
 
 const Plugin: FC<NPMPackageInfo> = ({ name, description, keywords, publisher, version, date }) => {
   const { openSpecificPlugin } = usePluginsNavigation();
@@ -48,20 +49,37 @@ const LoadingPlugin: FC = () => {
 };
 
 export const SearchPlugins: FC = () => {
-  const [search, setSearch] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [search, setSearch] = useState(searchParams.get("keyword") || "");
   const debouncedSearch = useDebounce(search, 200);
 
   const { plugins, isFetching } = useSearch(debouncedSearch);
-  const [loadingElements, setLoadingElemements] = useState<any[]>([]);
+  const [loadingElements, setLoadingElements] = useState<any[]>([]);
   useEffect(() => {
-    setLoadingElemements(Array.from({ length: Math.floor(Math.random() * 5) + 2 }));
+    setLoadingElements(Array.from({ length: Math.floor(Math.random() * 5) + 2 }));
   }, [debouncedSearch]);
+
+  const onSearchChange = useCallback(
+    (keyword: string) => {
+      setSearch(keyword);
+      setSearchParams((params) => {
+        params.set("keyword", keyword);
+        return params;
+      });
+    },
+    [setSearch, setSearchParams]
+  );
 
   return (
     <>
       <div className="mt-5">
         <div className="mb-2">
-          <TextField autoFocus={true} title="Search packages" value={search} onChange={setSearch} />
+          <TextField
+            autoFocus={true}
+            title="Search packages"
+            value={search}
+            onChange={onSearchChange}
+          />
         </div>
 
         {isFetching && !!debouncedSearch ? (
