@@ -43,4 +43,24 @@ function createServiceEdge(params: CreateServiceEdgeParams, removable: boolean =
   };
 }
 
-export { createMicroserviceEdge, createServiceEdge };
+// Class Edge
+
+type CreateClassEdgeParams = Pick<Connection, "source" | "target">;
+
+function createClassEdge(params: CreateClassEdgeParams): any {
+  return {
+    ...params,
+    id: `${+new Date()}_${params.target}`,
+    data: {},
+    type: "defaultEdge",
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      width: 30,
+      height: 30,
+    },
+    sourceHandle: "top",
+    targetHandle: "bottom",
+  };
+}
+
+export { createMicroserviceEdge, createServiceEdge, createClassEdge };

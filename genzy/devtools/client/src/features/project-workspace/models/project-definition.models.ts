@@ -1,11 +1,11 @@
-import { type Node, type Edge } from "reactflow";
+import { type Node, type Edge, type Viewport } from "reactflow";
 import { type Microservice, type Communication } from "../../diagrams/microservices/models";
 import { type Service } from "../../diagrams/service/models";
 import { type Class } from "../../diagrams/class/models";
 
-type MicroserviceDiagram = DiagramDefinition<Node<Microservice>, Edge<Communication>>;
-type ServiceDiagram = DiagramDefinition<Node<Service>, Edge<any>>;
-type ClassDiagram = Omit<DiagramDefinition<Node<Class>>, "edges">;
+type MicroserviceDiagram = DiagramDefinition<Microservice, Communication>;
+type ServiceDiagram = DiagramDefinition<Service, any>;
+type ClassDiagram = DiagramDefinition<Class, any>;
 
 type ProjectDefinition = {
   microservices: MicroserviceDiagram;
@@ -14,15 +14,15 @@ type ProjectDefinition = {
 };
 
 type DiagramDefinition<NT = any, ET = any> = {
-  nodes: NT[];
-  edges: ET[];
-  viewport: any;
+  nodes: Node<NT>[];
+  edges: Edge<ET>[];
+  viewport: Viewport;
 };
 
 export type {
   ProjectDefinition,
+  DiagramDefinition,
   MicroserviceDiagram,
   ServiceDiagram,
   ClassDiagram,
-  DiagramDefinition,
 };

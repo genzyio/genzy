@@ -46,7 +46,7 @@ export const ServiceDiagram: FC<DiagramProps> = ({
   edges: initialEdges,
   viewport: initialViewport,
 }) => {
-  const { projectDefinition, dispatcher, setExecuteOnUndoRedo } = useProjectDefinitionContext();
+  const { projectDefinition, dispatcher } = useProjectDefinitionContext();
   const { isDirty, promptDirtyModal, setInitialState } = useDirtyCheckContext();
 
   const [{ nodes, edges, onNodesChange, onEdgesChange }, actions] = useServiceDiagramState(

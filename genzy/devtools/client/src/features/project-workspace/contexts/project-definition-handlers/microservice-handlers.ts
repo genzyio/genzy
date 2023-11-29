@@ -4,7 +4,17 @@ import { type HandlerType } from "./types";
 import { type DispatcherType, projectDefinitionActions } from "../project-definition.dispatcher";
 import { createMicroserviceNode } from "../../../diagrams/common/utils/nodeFactories";
 
-export const defaultViewport = { x: 0, y: 0, zoom: 1 };
+export const defaultViewport = {
+  x: 0,
+  y: 0,
+  zoom: 1,
+};
+
+export const defaultDiagram = {
+  nodes: [],
+  edges: [],
+  viewport: defaultViewport,
+};
 
 // Add
 
@@ -16,12 +26,8 @@ const addMicroserviceHandler: HandlerType<{ name: string }> = (
   projectDefinition.microservices.nodes.push(newMicroserviceNode);
 
   const microserviceId = newMicroserviceNode.id;
-  projectDefinition.services[microserviceId] = {
-    nodes: [],
-    edges: [],
-    viewport: defaultViewport,
-  };
-  projectDefinition.classes[microserviceId] = { nodes: [], viewport: defaultViewport };
+  projectDefinition.services[microserviceId] = { ...defaultDiagram };
+  projectDefinition.classes[microserviceId] = { ...defaultDiagram };
 
   return newMicroserviceNode;
 };

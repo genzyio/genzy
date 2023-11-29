@@ -13,7 +13,7 @@ import { getSpecialPath } from "./special-path";
 type FloatingEdgeProps = EdgeProps & {
   nodes: Node[];
   edges: Edge[];
-  label?: (labelX: number, labelY: number) => JSX.Element;
+  label?: (labelX: number, labelY: number, edgeId: string) => JSX.Element;
 };
 
 export const FloatingEdge: FC<FloatingEdgeProps> = ({
@@ -70,7 +70,7 @@ export const FloatingEdge: FC<FloatingEdgeProps> = ({
       <BaseEdge id={id} path={path} markerEnd={markerEnd} style={style} />
 
       {typeof label === "function" && (
-        <EdgeLabelRenderer>{label(labelX, labelY)}</EdgeLabelRenderer>
+        <EdgeLabelRenderer>{label(labelX, labelY, id)}</EdgeLabelRenderer>
       )}
     </>
   );

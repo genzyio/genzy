@@ -1,5 +1,5 @@
-import { type FC, useEffect, useState, useMemo } from "react";
-import { type Node, type NodeProps, type Viewport, SmoothStepEdge } from "reactflow";
+import { type FC, useEffect, useState, useMemo, useCallback } from "react";
+import { type Node, type Edge, type NodeProps, type EdgeProps, type Viewport } from "reactflow";
 import { Class } from "./models";
 import { useSequenceGenerator } from "../../../core/hooks/useStringSequence";
 import { Drawer } from "../../../core/components/drawer";
@@ -22,24 +22,28 @@ import { useMicroserviceContext } from "../common/contexts/microservice.context"
 import { ClassEvents, classEventEmitter } from "./class-diagram.events";
 import { RemoveClassModal, RemoveClassModalInstance } from "./RemoveClassModal";
 import { useClassDiagramState } from "./class-diagram-state";
+import { FloatingEdge } from "../common/components/edges/floating/FloatingEdge";
 
 type DiagramProps = {
   microserviceId: string;
   nodes?: Node<Class>[];
+  edges?: Edge<any>[];
   viewport: Viewport;
 };
 
 export const ClassDiagram: FC<DiagramProps> = ({
   microserviceId,
   nodes: initialNodes,
+  edges: initialEdges,
   viewport: initialViewport,
 }) => {
   const { projectDefinition, dispatcher } = useProjectDefinitionContext();
   const { isDirty, promptDirtyModal, setInitialState } = useDirtyCheckContext();
 
-  const [{ nodes, onNodesChange }, actions] = useClassDiagramState(
+  const [{ nodes, onNodesChange, edges, onEdgesChange }, actions] = useClassDiagramState(
     microserviceId,
-    initialNodes || []
+    initialNodes || [],
+    initialEdges || []
   );
   const nextName = useSequenceGenerator(nodes, (node) => node.data.name, "Class");
 
@@ -94,7 +98,9 @@ export const ClassDiagram: FC<DiagramProps> = ({
       <div className="h-full w-full">
         <DiagramBase
           nodes={nodes}
+          edges={edges}
           onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
           nodeTypes={localNodeTypes}
           edgeTypes={localEdgeTypes}
           onViewportChanged={(viewport) =>
@@ -116,7 +122,7 @@ export const ClassDiagram: FC<DiagramProps> = ({
             setDrawerOpen(true);
           }}
           defaultViewport={initialViewport}
-          supportsConnection={false}
+          supportsConnection={true}
         />
       </div>
 
@@ -181,8 +187,43 @@ const localNodeTypes = {
 };
 
 // Edges
+
+const FloatingEdgeWrapper: FC<EdgeProps> = (props) => {
+  const { projectDefinition } = useProjectDefinitionContext();
+  const { microserviceId } = useMicroserviceContext();
+  const { nodes, edges } = projectDefinition.classes[microserviceId];
+
+  const FloatingEdgeLabel = useCallback(
+    (labelX: number, labelY: number, edgeId: string) => {
+      const reference = edges.find((edge) => edge.id === edgeId);
+      const sourceClass = nodes.find((node) => node.id === reference.source);
+      const attributes = sourceClass.data.attributes.filter(
+        (attribute) => attribute.type === reference.target
+      );
+      const hasMany = attributes.some((attributes) => attributes.isCollection);
+
+      return (
+        <div
+          style={{
+            position: "absolute",
+            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+            fontSize: 12,
+            pointerEvents: "all",
+          }}
+          className="nodrag nopan"
+        >
+          has {hasMany ? "many" : "one"}
+        </div>
+      );
+    },
+    [nodes, edges]
+  );
+
+  return <FloatingEdge {...props} nodes={nodes} edges={edges} label={FloatingEdgeLabel as any} />;
+};
+
 const localEdgeTypes = {
   ...edgeTypes,
-  defaultEdge: SmoothStepEdge,
-  removableEdge: SmoothStepEdge,
+  defaultEdge: FloatingEdgeWrapper,
+  removableEdge: FloatingEdgeWrapper,
 };

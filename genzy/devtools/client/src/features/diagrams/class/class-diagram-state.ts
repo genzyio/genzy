@@ -1,29 +1,38 @@
 import { useEffect } from "react";
-import { type Node, useNodesState } from "reactflow";
+import { type Node, type Edge, useNodesState, useEdgesState } from "reactflow";
 import { type Class } from "./models";
 import { useTypesContext } from "./TypesContext";
 import { useProjectDefinitionContext } from "../../project-workspace/contexts/project-definition.context";
 import { projectDefinitionActions } from "../../project-workspace/contexts/project-definition.dispatcher";
 
-export const useClassDiagramState = (microserviceId: string, initialNodes: Node<Class>[]) => {
+export const useClassDiagramState = (
+  microserviceId: string,
+  initialNodes: Node<Class>[],
+  initialEdges: Edge<any>[]
+) => {
   const { projectDefinition, dispatcher, setExecuteOnUndoRedo } = useProjectDefinitionContext();
   const { updateTypes } = useTypesContext(microserviceId);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Class>([...initialNodes]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<{}>([...initialEdges]);
 
   useEffect(() => {
     projectDefinition.classes[microserviceId] = {
       ...projectDefinition.classes[microserviceId],
       nodes: [...nodes],
+      edges: [...edges],
     };
+  }, [nodes, edges]);
 
+  useEffect(() => {
     updateTypes(nodes); // TODO: Check if this is needed here or somewhere else like on every add/update/remove
   }, [nodes]);
 
   useEffect(() => {
     setExecuteOnUndoRedo(() => () => {
-      const { nodes } = projectDefinition.classes[microserviceId];
+      const { nodes, edges } = projectDefinition.classes[microserviceId];
       setNodes([...nodes]);
+      setEdges([...edges]);
     });
 
     return () => setExecuteOnUndoRedo(() => () => {});
@@ -54,6 +63,7 @@ export const useClassDiagramState = (microserviceId: string, initialNodes: Node<
           return node;
         })
       );
+      setEdges([...projectDefinition.classes[microserviceId].edges]);
     },
 
     deleteClass: async (classId: string) => {
@@ -63,8 +73,11 @@ export const useClassDiagramState = (microserviceId: string, initialNodes: Node<
       });
 
       setNodes((nodes) => nodes.filter((node) => node.id !== classId));
+      setEdges((edges) =>
+        edges.filter((edge) => edge.source !== classId && edge.target !== classId)
+      );
     },
   };
 
-  return [{ nodes, onNodesChange }, actions] as const;
+  return [{ nodes, onNodesChange, edges, onEdgesChange }, actions] as const;
 };

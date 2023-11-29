@@ -1,3 +1,4 @@
+import { type DispatcherType, projectDefinitionActions } from "../project-definition.dispatcher";
 import { type Class } from "../../../diagrams/class/models";
 import { type HandlerType } from "./types";
 import {
@@ -6,6 +7,8 @@ import {
   type ServiceDiagram,
 } from "../../models/project-definition.models";
 import { createClassNode } from "../../../diagrams/common/utils/nodeFactories";
+import { primitiveTypes } from "../../../diagrams/class/TypesContext";
+import { findArrayDiff } from "../../../../core/utils/diff";
 
 // Add
 
@@ -31,11 +34,50 @@ const updateClassHandler: HandlerType<{
   classId: string;
   class: Class;
 }> = (projectDefinition: ProjectDefinition, { microserviceId, classId, class: _class }) => {
-  const classDiagram = projectDefinition.classes[microserviceId];
-  const classNode = classDiagram.nodes.find((node) => node.id === classId);
+  return async (dispatcher: DispatcherType) => {
+    const classDiagram = projectDefinition.classes[microserviceId];
+    const classNode = classDiagram.nodes.find((node) => node.id === classId);
 
-  classNode.data = _class;
+    const oldComplexTypes = extractComplexTypes(classNode.data);
+    const newComplexTypes = extractComplexTypes(_class);
+    const { new: addedReferences, removed: removedReferences } = findArrayDiff<string>(
+      oldComplexTypes,
+      newComplexTypes
+    );
+
+    for (const addedReference of addedReferences) {
+      if (classId === addedReference) {
+        continue;
+      }
+
+      await dispatcher(projectDefinitionActions.addReference, {
+        microserviceId,
+        params: {
+          source: classId,
+          target: addedReference,
+        },
+      });
+    }
+
+    for (const removedReference of removedReferences) {
+      await dispatcher(projectDefinitionActions.removeReference, {
+        microserviceId,
+        sourceClassId: classId,
+        targetClassId: removedReference,
+      });
+    }
+
+    classNode.data = _class;
+  };
 };
+
+function extractComplexTypes(_class: Class) {
+  const complexTypes = _class.attributes
+    .filter((attribute) => !primitiveTypes.includes(attribute.type))
+    .map((attribute) => attribute.type);
+
+  return complexTypes.filter((complexType, i, filtered) => filtered.indexOf(complexType) === i);
+}
 
 // Delete
 
@@ -43,20 +85,23 @@ const deleteClassHandler: HandlerType<{ microserviceId: string; classId: string 
   projectDefinition: ProjectDefinition,
   { microserviceId, classId }
 ) => {
-  const classDiagram = projectDefinition.classes[microserviceId];
-  removeClassRefferencesFromClasses(classDiagram, classId);
+  return async (dispatcher: DispatcherType) => {
+    const classDiagram = projectDefinition.classes[microserviceId];
+    changeTypeForEveryRefferenceByClass(classDiagram, classId);
 
-  const serviceDiagram = projectDefinition.services[microserviceId];
-  removeClassRefferencesFromServices(serviceDiagram, classId);
+    const serviceDiagram = projectDefinition.services[microserviceId];
+    changeTypeForEveryRefferenceByService(serviceDiagram, classId);
 
-  removeClassNode(classDiagram, classId);
+    await removeClassReferences(dispatcher, classDiagram, microserviceId, classId);
+    removeClassNode(classDiagram, classId);
+  };
 };
 
-const removeClassNode = (classDiagram: ClassDiagram, classId: string) => {
+function removeClassNode(classDiagram: ClassDiagram, classId: string) {
   classDiagram.nodes = classDiagram.nodes.filter((node) => node.id !== classId);
-};
+}
 
-const removeClassRefferencesFromClasses = (classDiagram: ClassDiagram, classId: string) => {
+function changeTypeForEveryRefferenceByClass(classDiagram: ClassDiagram, classId: string) {
   classDiagram.nodes?.forEach((node) => {
     const methods = node.data.methods;
     methods.forEach((method) => {
@@ -78,9 +123,9 @@ const removeClassRefferencesFromClasses = (classDiagram: ClassDiagram, classId: 
       }
     });
   });
-};
+}
 
-const removeClassRefferencesFromServices = (serviceDiagram: ServiceDiagram, classId: string) => {
+function changeTypeForEveryRefferenceByService(serviceDiagram: ServiceDiagram, classId: string) {
   serviceDiagram.nodes
     .filter((node) => !["REMOTE_PROXY", "PLUGABLE_SERVICE"].includes(node.data.type))
     .forEach((node) => {
@@ -96,6 +141,24 @@ const removeClassRefferencesFromServices = (serviceDiagram: ServiceDiagram, clas
         });
       });
     });
-};
+}
+
+async function removeClassReferences(
+  dispatcher: DispatcherType,
+  classDiagram: ClassDiagram,
+  microserviceId: string,
+  classId: string
+) {
+  const references = classDiagram.edges.filter(
+    (edge) => edge.source === classId || edge.target === classId
+  );
+  for (const reference of references) {
+    await dispatcher(projectDefinitionActions.removeReference, {
+      microserviceId,
+      sourceClassId: reference.source,
+      targetClassId: reference.target,
+    });
+  }
+}
 
 export { addClassHandler, updateClassHandler, deleteClassHandler };

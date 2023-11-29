@@ -1,7 +1,14 @@
 import { Handle, Position } from "reactflow";
 import { type FC, type PropsWithChildren } from "react";
 
-export const ConnectableNodeWrapper: FC<PropsWithChildren> = ({ children }) => {
+type ConnectableNodeWrapperProps = PropsWithChildren & {
+  isConnectable?: boolean;
+};
+
+export const ConnectableNodeWrapper: FC<ConnectableNodeWrapperProps> = ({
+  isConnectable = true,
+  children,
+}) => {
   return (
     <>
       <Handle
@@ -14,7 +21,7 @@ export const ConnectableNodeWrapper: FC<PropsWithChildren> = ({ children }) => {
           height: "1rem",
           top: -10,
         }}
-        isConnectable={true}
+        isConnectable={isConnectable}
       />
       {children}
       <Handle
@@ -27,7 +34,7 @@ export const ConnectableNodeWrapper: FC<PropsWithChildren> = ({ children }) => {
           height: "1rem",
           bottom: -10,
         }}
-        isConnectable={true}
+        isConnectable={isConnectable}
       />
     </>
   );

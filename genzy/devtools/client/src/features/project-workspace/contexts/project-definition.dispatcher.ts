@@ -35,6 +35,9 @@ export const projectDefinitionActions = {
   updateClass: Symbol("updateClass"),
   deleteClass: Symbol("deleteClass"),
   classMoved: Symbol("classMoved"),
+
+  addReference: Symbol("addReference"),
+  removeReference: Symbol("removeReference"),
 } as const;
 
 type DispatcherType = (type: symbol, payload: any) => Promise<any>;
@@ -74,6 +77,9 @@ function createDispatcher(projectDefinition: ProjectDefinition): DispatcherType 
     [projectDefinitionActions.updateClass]: handlers.updateClassHandler,
     [projectDefinitionActions.deleteClass]: handlers.deleteClassHandler,
     [projectDefinitionActions.classMoved]: handlers.classMovedHandler,
+
+    [projectDefinitionActions.addReference]: handlers.addReferenceHandler,
+    [projectDefinitionActions.removeReference]: handlers.removeReferenceHandler,
   };
 
   return (type: symbol, payload: any) => {

@@ -32,6 +32,7 @@ import {
   serviceMovedHandler,
   classMovedHandler,
 } from "./diagram-handlers";
+import { addReferenceHandler, removeReferenceHandler } from "./references-handlers";
 
 export default {
   addMicroserviceHandler,
@@ -61,4 +62,6 @@ export default {
   microserviceMovedHandler,
   serviceMovedHandler,
   classMovedHandler,
+  addReferenceHandler,
+  removeReferenceHandler,
 };

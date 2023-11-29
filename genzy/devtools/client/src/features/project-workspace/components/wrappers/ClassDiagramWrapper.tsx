@@ -15,6 +15,7 @@ export const ClassDiagramWrapper: FC<{ microserviceId: string }> = ({ microservi
         <ClassDiagram
           microserviceId={microserviceId}
           nodes={classDiagram.nodes}
+          edges={classDiagram.edges}
           viewport={classDiagram.viewport || defaultViewport}
         />
       </DirtyCheckContextProvider>
