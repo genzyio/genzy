@@ -9,6 +9,7 @@ import { LoadingRow } from "./loading-row";
 import { useIsPluginInstalled } from "../hooks/useIsPluginInstalled";
 import { usePluginsNavigation } from "../hooks/usePluginsNavigation";
 import { useSearchParams } from "react-router-dom";
+import { useInView } from "react-intersection-observer";
 
 const Plugin: FC<NPMPackageInfo> = ({ name, description, keywords, publisher, version, date }) => {
   const { openSpecificPlugin } = usePluginsNavigation();
@@ -53,11 +54,12 @@ export const SearchPlugins: FC = () => {
   const [search, setSearch] = useState(searchParams.get("keyword") || "");
   const debouncedSearch = useDebounce(search, 200);
 
-  const { plugins, isFetching } = useSearch(debouncedSearch);
+  const { plugins, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
+    useSearch(debouncedSearch);
+  const { ref, inView } = useInView();
+
   const [loadingElements, setLoadingElements] = useState<any[]>([]);
-  useEffect(() => {
-    setLoadingElements(Array.from({ length: Math.floor(Math.random() * 5) + 2 }));
-  }, [debouncedSearch]);
+  useEffect(() => {}, [debouncedSearch]);
 
   const onSearchChange = useCallback(
     (keyword: string) => {
@@ -66,9 +68,17 @@ export const SearchPlugins: FC = () => {
         params.set("keyword", keyword);
         return params;
       });
+      setLoadingElements(Array.from({ length: Math.floor(Math.random() * 5) + 2 }));
     },
     [setSearch, setSearchParams]
   );
+
+  useEffect(() => {
+    if (inView) {
+      setLoadingElements(Array.from({ length: Math.floor(Math.random() * 5) + 2 }));
+      fetchNextPage();
+    }
+  }, [inView]);
 
   return (
     <>
@@ -82,7 +92,15 @@ export const SearchPlugins: FC = () => {
           />
         </div>
 
-        {isFetching && !!debouncedSearch ? (
+        <>
+          {plugins?.map((plugin: NPMPackageInfo, index: number) => (
+            <div key={index} className="mb-2 border-b w-full border-gray-300 pb-2">
+              <Plugin {...plugin} />
+            </div>
+          ))}
+        </>
+
+        {isFetching && !!debouncedSearch && (
           <>
             {loadingElements?.map((_: any, index: number) => (
               <div key={index} className="mb-2 border-b w-full border-gray-300 pb-2">
@@ -90,15 +108,17 @@ export const SearchPlugins: FC = () => {
               </div>
             ))}
           </>
-        ) : (
-          <>
-            {plugins?.map((plugin: NPMPackageInfo, index: number) => (
-              <div key={index} className="mb-2 border-b w-full border-gray-300 pb-2">
-                <Plugin {...plugin} />
-              </div>
-            ))}
-          </>
         )}
+
+        <div className="mt-5 w-full flex justify-center">
+          <button
+            ref={ref}
+            onClick={() => fetchNextPage()}
+            hidden={plugins.length === 0 || !hasNextPage || isFetchingNextPage}
+          >
+            Load More
+          </button>
+        </div>
       </div>
     </>
   );
