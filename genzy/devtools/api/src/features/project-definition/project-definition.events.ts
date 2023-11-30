@@ -2,7 +2,8 @@ import { type Project } from "../projects/projects.models";
 import { initMicroserviceTsJs } from "../../generators/initMicroservice";
 import { reinitializeMicroservicePackageJson } from "../../generators/reinitializeMicroservice";
 import { generateMicroserviceCode } from "../../generators/generateMicroserviceCode";
-import { convertJSON } from "../../utils/converter";
+import { adaptFromProjectDefinitionToConverterInput } from "../../utils/converter/adapter";
+import { convertJSON } from "../../utils/converter/converter";
 import { allocatePorts, removePorts } from "../watch-project/ports.manager";
 import eventEmitter from "../../core/events/events.utils";
 import path from "path";
@@ -54,7 +55,7 @@ function handleAddedMicroservices(project: Project, projectDefinition: any, adde
 
     generateMicroserviceCode(
       project,
-      convertJSON(project, microserviceId, projectDefinition),
+      convertJSON(project, microserviceId, adaptFromProjectDefinitionToConverterInput(projectDefinition)),
       microserviceData.language || "ts",
     );
   });
@@ -84,7 +85,7 @@ function handleModifiedMicroservices(
     reinitializeMicroservicePackageJson(project, oldMicroserviceData, newMicroserviceData);
     generateMicroserviceCode(
       project,
-      convertJSON(project, microserviceId, newProjectDefinition),
+      convertJSON(project, microserviceId, adaptFromProjectDefinitionToConverterInput(newProjectDefinition)),
       newMicroserviceData.language || "ts",
     );
   });

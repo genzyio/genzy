@@ -1,4 +1,4 @@
-import { type GenzyInfo } from "../utils/converter";
+import { type GenzyInfo } from "../utils/converter/genzy.types";
 import { type Project } from "../features/projects/projects.models";
 import { type Package } from "./plugins";
 import { exec } from "child_process";
