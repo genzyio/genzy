@@ -1,16 +1,15 @@
 import { Router, type Request, type Response } from "express";
-import axios, { type AxiosResponse } from "axios";
+import axios, { type ResponseType } from "axios";
 
 const imageStreamingRouters = Router();
 
 imageStreamingRouters.get("/images", async (req: Request, res: Response) => {
-  const url = req.query.url?.toString() || "";
+  const imageUrl = req.query.url?.toString() ?? "";
+  const requestConfig = { responseType: "stream" as ResponseType };
 
   axios
-    .get(url, {
-      responseType: "stream",
-    })
-    .then(({ data }: AxiosResponse) => data.pipe(res))
+    .get(imageUrl, requestConfig)
+    .then(({ data }) => data.pipe(res))
     .catch(() => res.status(204).send());
 });
 

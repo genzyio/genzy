@@ -1,5 +1,5 @@
-import { type GenzyGeneratorInput } from "../utils/converter/genzy.types";
-import { type Project } from "../features/projects/projects.models";
+import { type GenzyGeneratorInput } from "../converter/genzy.types";
+import { type Project } from "../../projects/projects.models";
 import { generateJSServer, generateTSServer } from "@genzy.io/generator";
 import path from "path";
 

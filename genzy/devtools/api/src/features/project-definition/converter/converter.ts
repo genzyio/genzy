@@ -1,16 +1,16 @@
-import { type Project } from "../../features/projects/projects.models";
-import { getPorts } from "../../features/watch-project/ports.manager";
+import { type Project } from "../../projects/projects.models";
 import {
-  type CompactMicroservice,
-  type CompactService,
-  type CompactController,
-  type CompactRemoteProxy,
-  type CompactPlugableService,
-  type CompactFunction,
-  type CompactFunctionParameter,
-  type CompactClass,
-  type CompactClassAttribute,
-} from "./devtools.types";
+  type ProjectDefinitionData,
+  type Microservice,
+  type Service,
+  type Controller,
+  type RemoteProxy,
+  type PlugableService,
+  type Function,
+  type FunctionParameter,
+  type Class,
+  type ClassAttribute,
+} from "../project-definition.models";
 import {
   type GenzyGeneratorInput,
   type GenzyPlugin,
@@ -21,45 +21,44 @@ import {
   type GenzyFunctionParameter,
   type GenzyType,
   type GenzyTypeAttributes,
-} from "./genzy.types"; // TODO: Those types should probably be extracted from genzy lib
+} from "./genzy.types";
+import { getPorts } from "../../watch-project/ports.manager";
 
 const primitiveTypes = ["any", "int", "float", "boolean", "string"];
 
-type ProjectData = Record<string, CompactMicroservice>;
-
-export function convertJSON(
+export function convertProjectDefinition(
   project: Project,
   microserviceId: string,
-  microservicesData: ProjectData,
+  projectData: ProjectDefinitionData,
 ): GenzyGeneratorInput {
-  const filteredMicroserviceData = Object.values(microservicesData)
-    .filter((microserviceData) => microserviceData.type === "microservice")
-    .reduce((microservicesData, microserviceData) => {
-      microservicesData[microserviceData.id] = microserviceData;
-      return microservicesData;
-    }, {} as ProjectData);
+  const filteredProjectData = Object.values(projectData)
+    .filter((microservice) => microservice.type === "microservice")
+    .reduce((microservices, microservice) => {
+      microservices[microservice.id] = microservice;
+      return microservices;
+    }, {} as ProjectDefinitionData);
 
-  return _convertJSON(project, microserviceId, filteredMicroserviceData);
+  return _convertJSON(project, filteredProjectData[microserviceId], filteredProjectData);
 }
 
-function _convertJSON(project: Project, microserviceId: string, microservicesData: ProjectData): GenzyGeneratorInput {
-  const microserviceData = microservicesData[microserviceId];
-
-  const outputJson: GenzyGeneratorInput = {
-    services: createServices(project, microservicesData, microserviceData),
+function _convertJSON(
+  project: Project,
+  microservice: Microservice,
+  projectData: ProjectDefinitionData,
+): GenzyGeneratorInput {
+  return {
+    services: createServices(project, projectData, microservice),
     types: {
-      ...createTypesForRemoteServices(microservicesData, microserviceData),
-      ...createTypes(microserviceData),
+      ...createTypesForRemoteServices(projectData, microservice),
+      ...createTypes(microservice),
     },
-    genzyInfo: createInfo(microserviceData),
-    plugins: createPlugins(microserviceData),
+    genzyInfo: createInfo(microservice),
+    plugins: createPlugins(microservice),
   };
-
-  return outputJson;
 }
 
-function createInfo(microserviceData: CompactMicroservice): GenzyInfo {
-  const { name, description, version, basePath } = microserviceData;
+function createInfo(microservice: Microservice): GenzyInfo {
+  const { name, description, version, basePath } = microservice;
 
   return {
     name,
@@ -69,17 +68,17 @@ function createInfo(microserviceData: CompactMicroservice): GenzyInfo {
   };
 }
 
-function createPlugins(microserviceData: CompactMicroservice): GenzyPlugin[] {
+function createPlugins(microservice: Microservice): GenzyPlugin[] {
   return (
-    microserviceData.plugins?.map((installedPlugin) => {
-      const plugableServices = microserviceData.services
+    microservice.plugins?.map((plugin) => {
+      const plugableServices = microservice.services
         .filter((service) => service.type === "PLUGABLE_SERVICE")
-        .map((service) => service as CompactPlugableService)
-        .filter((service) => service.plugin === installedPlugin.name)
+        .map((service) => service as PlugableService)
+        .filter((service) => service.plugin === plugin.name)
         .map((service) => service.name);
 
       return {
-        name: installedPlugin.name,
+        name: plugin.name,
         services: plugableServices,
       };
     }) ?? []
@@ -88,16 +87,16 @@ function createPlugins(microserviceData: CompactMicroservice): GenzyPlugin[] {
 
 function createServices(
   project: Project,
-  microservicesData: Record<string, CompactMicroservice>,
-  microserviceData: CompactMicroservice,
+  projectData: ProjectDefinitionData,
+  microservice: Microservice,
 ): GenzyService[] {
-  const { services, classes } = microserviceData;
+  const { services, classes } = microservice;
 
   services
     .filter((service) => service.type === "REMOTE_PROXY")
-    .map((service) => service as CompactRemoteProxy)
+    .map((service) => service as RemoteProxy)
     .forEach((service) => {
-      const remoteMicroservice = microservicesData[service.microserviceId];
+      const remoteMicroservice = projectData[service.microserviceId];
       const realService = remoteMicroservice.services.find((realService) => realService.id === service.id);
       service.name = realService?.name ?? "";
     });
@@ -135,21 +134,17 @@ function createServices(
           };
         }
         default:
-          return createRemoteProxyService(project, microservicesData[service.microserviceId], service.id);
+          return createRemoteProxyService(project, projectData[service.microserviceId], service.id);
       }
     });
 }
 
-function createRemoteProxyService(
-  project: Project,
-  remoteMicroserviceData: CompactMicroservice,
-  serviceId: string,
-): GenzyService {
-  const { services, classes } = remoteMicroserviceData;
-  const remoteService = services.find((service) => service.id === serviceId) as CompactController;
+function createRemoteProxyService(project: Project, remoteMicroservice: Microservice, serviceId: string): GenzyService {
+  const { services, classes } = remoteMicroservice;
+  const remoteService = services.find((service) => service.id === serviceId) as Controller;
 
   const ports = getPorts(project);
-  const port = ports[remoteMicroserviceData.id];
+  const port = ports[remoteMicroservice.id];
 
   return {
     name: remoteService.name,
@@ -160,14 +155,14 @@ function createRemoteProxyService(
   };
 }
 
-function nameDependencies(services: CompactService[], dependencies: string[]): string[] {
+function nameDependencies(services: Service[], dependencies: string[]): string[] {
   return dependencies.map((dependency) => {
     const service = services.find((service) => service.id === dependency);
     return service?.name ?? "";
   });
 }
 
-function createActions(classes: CompactClass[], functions: CompactFunction[], serviceType: string): GenzyAction[] {
+function createActions(classes: Class[], functions: Function[], serviceType: string): GenzyAction[] {
   return functions.map((_function) => {
     const isController = serviceType !== "LocalService";
     const params = createParams(classes, _function.params, isController);
@@ -192,8 +187,8 @@ function createActions(classes: CompactClass[], functions: CompactFunction[], se
 }
 
 function createParams(
-  classes: CompactClass[],
-  parameters: CompactFunctionParameter[],
+  classes: Class[],
+  parameters: FunctionParameter[],
   isController: boolean,
 ): GenzyFunctionParameter[] | GenzyEndpointParameter[] {
   return parameters.map((parameter) => {
@@ -212,18 +207,16 @@ function createParams(
 }
 
 function createTypesForRemoteServices(
-  microservicesData: Record<string, CompactMicroservice>,
-  microserviceData: CompactMicroservice,
+  projectData: ProjectDefinitionData,
+  microservice: Microservice,
 ): Record<string, GenzyType> {
-  const remoteProxies = microserviceData.services
+  const remoteProxies = microservice.services
     .filter((service) => service.type === "REMOTE_PROXY")
-    .map((services) => services as CompactRemoteProxy);
+    .map((services) => services as RemoteProxy);
 
-  return remoteProxies.reduce((acc: Record<string, GenzyType>, remoteProxy: CompactRemoteProxy) => {
-    const remoteMicroservice = microservicesData[remoteProxy.microserviceId];
-    const remoteService = remoteMicroservice.services.find(
-      (service) => service.id === remoteProxy.id,
-    ) as CompactController;
+  return remoteProxies.reduce((acc: Record<string, GenzyType>, remoteProxy: RemoteProxy) => {
+    const remoteMicroservice = projectData[remoteProxy.microserviceId];
+    const remoteService = remoteMicroservice.services.find((service) => service.id === remoteProxy.id) as Controller;
 
     const compexTypeIds = remoteService.functions.flatMap(extractComplexTypesFromFunction);
     const complexTypes = extractTypesInDepth(remoteMicroservice.classes, compexTypeIds);
@@ -235,13 +228,13 @@ function createTypesForRemoteServices(
   }, {});
 }
 
-function extractTypesInDepth(classes: CompactClass[], types: string[]): Record<string, GenzyType> {
+function extractTypesInDepth(classes: Class[], types: string[]): Record<string, GenzyType> {
   const typesToExtract = [...types];
   const extractedTypes: Record<string, GenzyType> = {};
 
   while (typesToExtract.length > 0) {
     const typeToExtract = typesToExtract.pop();
-    const type = classes.find((_class) => _class.id === typeToExtract) as CompactClass;
+    const type = classes.find((_class) => _class.id === typeToExtract) as Class;
     if (extractedTypes[type.name]) continue;
 
     extractedTypes[type.name] = createType(classes, type);
@@ -251,29 +244,29 @@ function extractTypesInDepth(classes: CompactClass[], types: string[]): Record<s
   return extractedTypes;
 }
 
-function extractComplexTypesFromFunction(_function: CompactFunction): string[] {
+function extractComplexTypesFromFunction(_function: Function): string[] {
   const typesFromFunction = [_function.returnType, ..._function.params.map((param) => param.type)];
 
   return typesFromFunction.filter((type) => !primitiveTypes.includes(type));
 }
 
-function extractComplexTypesFromClass(_class: CompactClass): string[] {
+function extractComplexTypesFromClass(_class: Class): string[] {
   const attributeTypes = _class.attributes.map((attribute) => attribute.type);
 
   return attributeTypes.filter((type) => !primitiveTypes.includes(type));
 }
 
-function createTypes(microserviceData: CompactMicroservice): Record<string, GenzyType> {
-  const classes = microserviceData.classes;
+function createTypes(microservice: Microservice): Record<string, GenzyType> {
+  const classes = microservice.classes;
 
-  return classes.reduce((types: Record<string, GenzyType>, _class: CompactClass) => {
+  return classes.reduce((types: Record<string, GenzyType>, _class: Class) => {
     types[_class.name] = createType(classes, _class);
     return types;
   }, {});
 }
 
-function createType(classes: CompactClass[], _class: CompactClass): GenzyType {
-  return _class.attributes.reduce((attributes: GenzyType, attribute: CompactClassAttribute) => {
+function createType(classes: Class[], _class: Class): GenzyType {
+  return _class.attributes.reduce((attributes: GenzyType, attribute: ClassAttribute) => {
     const { name, type, isOptional, isCollection } = attribute;
     attributes[name] = getTypeObject(classes, type, isOptional, isCollection);
 
@@ -282,7 +275,7 @@ function createType(classes: CompactClass[], _class: CompactClass): GenzyType {
 }
 
 function getTypeObject(
-  classes: CompactClass[],
+  classes: Class[],
   type: string,
   isOptional: boolean | undefined,
   isArray: boolean | undefined,
@@ -298,7 +291,7 @@ function getTypeObject(
   };
 }
 
-function getTypeName(classes: CompactClass[], type: string): string {
+function getTypeName(classes: Class[], type: string): string {
   return classes.find((_class) => _class.id === type)?.name ?? "";
 }
 

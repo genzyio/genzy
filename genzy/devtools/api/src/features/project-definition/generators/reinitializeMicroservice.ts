@@ -1,9 +1,9 @@
-import { type GenzyInfo } from "../utils/converter/genzy.types";
-import { type Project } from "../features/projects/projects.models";
-import { type Plugin } from "./plugins";
+import { type GenzyInfo } from "../converter/genzy.types";
+import { type Project } from "../../projects/projects.models";
+import { type Plugin } from "../project-definition.models";
+import { loadObject, saveObject } from "../../../core/utils/fs";
 import { exec } from "child_process";
 import path from "path";
-import fs from "fs";
 
 type InitialGenzyMetadata = GenzyInfo & {
   plugins: Plugin[];
@@ -17,8 +17,7 @@ function reinitializeMicroservicePackageJson(
   const { name, version, description } = newMetadata;
   const microservicePath = path.join(project.path, name);
   const packageJsonPath = path.join(microservicePath, "package.json");
-  const packageJsonContent = fs.readFileSync(packageJsonPath).toString();
-  const packageJson = JSON.parse(packageJsonContent);
+  const packageJson = loadObject<any>(packageJsonPath);
 
   packageJson.name = name;
   packageJson.version = version;
@@ -29,7 +28,7 @@ function reinitializeMicroservicePackageJson(
     newMetadata.plugins || [],
   );
 
-  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  saveObject<any>(packageJson, packageJsonPath);
 
   runNPMInstall(microservicePath);
 }

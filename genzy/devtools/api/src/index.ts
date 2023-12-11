@@ -12,6 +12,7 @@ import imageStreamingRouters from "./features/image-streaming/image-streaming.ro
 import fs from "fs";
 import path from "path";
 
+import "./features/project-definition/projects.events";
 import "./features/watch-project/projects.events";
 
 import { openProject } from "./features/projects/commands/open-project";

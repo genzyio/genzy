@@ -1,17 +1,10 @@
 import { type Project } from "../projects/projects.models";
-import { type CompactMicroservice } from "../../utils/converter/devtools.types";
-import { initMicroserviceTsJs } from "../../generators/initMicroservice";
-import { reinitializeMicroservicePackageJson } from "../../generators/reinitializeMicroservice";
-import { generateMicroserviceCode } from "../../generators/generateMicroserviceCode";
-import { convertJSON } from "../../utils/converter/converter";
+import { type ProjectDefinitionData, type State, type States } from "./project-definition.models";
 import { allocatePorts, removePorts } from "../watch-project/ports.manager";
+import { initializeAndGenerateMicroservice } from "./commands/initializeAndGenerateMicroservice";
+import { reinitializeAndGenerateMicroservice } from "./commands/reinitializeAndGenerateMicroservice";
+import { removeMicroservice } from "./commands/removeMicroservice";
 import eventEmitter from "../../core/events/events.utils";
-import path from "path";
-import fs from "fs";
-
-type ProjectData = Record<string, CompactMicroservice>;
-type State = "ADDED" | "MODIFIED" | "REMOVED";
-type States = Record<string, State>;
 
 export const ProjectDefinitionSaved = Symbol.for("ProjectDefinitionSaved");
 
@@ -24,8 +17,8 @@ eventEmitter.on(
     states,
   }: {
     project: Project;
-    oldProjectData: ProjectData;
-    newProjectData: ProjectData;
+    oldProjectData: ProjectDefinitionData;
+    newProjectData: ProjectDefinitionData;
     states: States;
   }) => {
     const { added, modified, removed } = groupMicroserviceIdsBasedOnState(states);
@@ -39,72 +32,37 @@ eventEmitter.on(
   },
 );
 
-function handleAddedMicroservices(project: Project, projectData: ProjectData, added: string[]) {
+function handleAddedMicroservices(project: Project, projectData: ProjectDefinitionData, added: string[]) {
   added.forEach((microserviceId: string) => {
-    const microserviceData = projectData[microserviceId];
-    initMicroserviceTsJs(
-      project,
-      {
-        name: microserviceData.name,
-        version: microserviceData.version,
-        description: microserviceData.description,
-        basePath: microserviceData.basePath,
-        plugins: microserviceData.plugins,
-      },
-      microserviceData.language || "ts",
-    );
-
-    generateMicroserviceCode(
-      project,
-      convertJSON(project, microserviceId, projectData),
-      microserviceData.language || "ts",
-    );
+    const microservice = projectData[microserviceId];
+    initializeAndGenerateMicroservice(project, projectData, microservice);
   });
 }
 
 function handleModifiedMicroservices(
   project: Project,
-  oldProjectData: ProjectData,
-  newProjectData: ProjectData,
+  oldProjectData: ProjectDefinitionData,
+  newProjectData: ProjectDefinitionData,
   modified: string[],
 ) {
   modified.forEach((microserviceId: string) => {
-    const oldMicroserviceData = oldProjectData[microserviceId];
-    const newMicroserviceData = newProjectData[microserviceId];
-
-    if (oldMicroserviceData.name !== newMicroserviceData.name) {
-      const newPath = path.join(project.path, newMicroserviceData.name);
-      const oldPath = path.join(project.path, oldMicroserviceData.name);
-      fs.existsSync(oldPath) && fs.renameSync(oldPath, newPath);
-    }
-
-    const microservicePath = path.join(project.path, newMicroserviceData.name);
-    if (!fs.existsSync(microservicePath)) {
-      initMicroserviceTsJs(project, newMicroserviceData, newMicroserviceData.language || "ts");
-    }
-
-    reinitializeMicroservicePackageJson(project, oldMicroserviceData, newMicroserviceData);
-    generateMicroserviceCode(
-      project,
-      convertJSON(project, microserviceId, newProjectData),
-      newMicroserviceData.language || "ts",
-    );
+    const oldMicroservice = oldProjectData[microserviceId];
+    const newMicroservice = newProjectData[microserviceId];
+    reinitializeAndGenerateMicroservice(project, newProjectData, newMicroservice, oldMicroservice);
   });
 }
 
-function handleRemovedMicroservices(project: Project, oldProjectData: ProjectData, removed: string[]) {
+function handleRemovedMicroservices(project: Project, oldProjectData: ProjectDefinitionData, removed: string[]) {
   removed.forEach((microserviceId: string) => {
-    const microserviceData = oldProjectData[microserviceId];
-    const microservicePath = path.join(project.path, microserviceData.name);
-
-    fs.rmSync(microservicePath, { recursive: true, force: true });
+    const microservice = oldProjectData[microserviceId];
+    removeMicroservice(project, microservice);
   });
 }
 
 function groupMicroserviceIdsBasedOnState(states: States) {
   const getMicroserviceIdsBasedOnState = (state: State) => {
     return Object.entries(states)
-      .filter(([_, microserviceState]: [string, State]) => microserviceState === state)
+      .filter(([_, microserviceState]) => microserviceState === state)
       .map(([microserviceId]) => microserviceId);
   };
 

@@ -1,20 +1,8 @@
-import fs from "fs";
 import { config } from "../../config";
-
-function doesArtefactsFolderExist(): boolean {
-  return fs.existsSync(config.userArtefactsPath);
-}
-
-function createArtefactsFolder() {
-  fs.mkdirSync(config.userArtefactsPath);
-}
+import { ensureFolderExists } from "../utils/fs";
 
 function ensureArtefactsFolderExist() {
-  if (doesArtefactsFolderExist()) {
-    return;
-  }
-
-  createArtefactsFolder();
+  ensureFolderExists(config.userArtefactsPath);
 }
 
-export { doesArtefactsFolderExist, createArtefactsFolder, ensureArtefactsFolderExist };
+export { ensureArtefactsFolderExist };
