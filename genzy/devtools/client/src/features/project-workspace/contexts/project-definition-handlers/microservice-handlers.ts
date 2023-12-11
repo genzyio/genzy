@@ -3,6 +3,7 @@ import { type ProjectDefinition } from "../../models/project-definition.models";
 import { type HandlerType } from "./types";
 import { type DispatcherType, projectDefinitionActions } from "../project-definition.dispatcher";
 import { createMicroserviceNode } from "../../../diagrams/common/utils/nodeFactories";
+import cloneDeep from "lodash.clonedeep";
 
 export const defaultViewport = {
   x: 0,
@@ -26,8 +27,8 @@ const addMicroserviceHandler: HandlerType<{ name: string }> = (
   projectDefinition.microservices.nodes.push(newMicroserviceNode);
 
   const microserviceId = newMicroserviceNode.id;
-  projectDefinition.services[microserviceId] = { ...defaultDiagram };
-  projectDefinition.classes[microserviceId] = { ...defaultDiagram };
+  projectDefinition.services[microserviceId] = cloneDeep(defaultDiagram);
+  projectDefinition.classes[microserviceId] = cloneDeep(defaultDiagram);
 
   return newMicroserviceNode;
 };
