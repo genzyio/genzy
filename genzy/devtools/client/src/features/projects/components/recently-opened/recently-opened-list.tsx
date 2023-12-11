@@ -105,12 +105,16 @@ export const RecentlyOpenedList: FC = () => {
             (project: RecentlyOpenedProject) => !!project.openedAt,
             (project: RecentlyOpenedProject) => [
               {
+                label: <OptionLabel title="Copy path" icon={ClipboardDocumentIcon} />,
+                onClick: () => navigator.clipboard.writeText(project.path),
+              },
+              {
                 label: <OptionLabel title="Remove from list" icon={BookmarkSlashIcon} />,
                 onClick: () => deleteRecentlyOpenedAction(project.name),
               },
               {
-                label: <OptionLabel title="Copy path" icon={ClipboardDocumentIcon} />,
-                onClick: () => navigator.clipboard.writeText(project.path),
+                label: <OptionLabel title="Delete" icon={TrashIcon} />,
+                onClick: () => openDeleteModal(project),
               },
             ]
           )}
@@ -124,12 +128,12 @@ export const RecentlyOpenedList: FC = () => {
             (project: RecentlyOpenedProject) => !project.openedAt,
             (project: RecentlyOpenedProject) => [
               {
-                label: <OptionLabel title="Delete" icon={TrashIcon} />,
-                onClick: () => openDeleteModal(project),
-              },
-              {
                 label: <OptionLabel title="Copy path" icon={ClipboardDocumentIcon} />,
                 onClick: () => navigator.clipboard.writeText(project.path),
+              },
+              {
+                label: <OptionLabel title="Delete" icon={TrashIcon} />,
+                onClick: () => openDeleteModal(project),
               },
             ]
           )}
@@ -148,7 +152,7 @@ export const RecentlyOpenedList: FC = () => {
             })
           }
         >
-          <p className="text-lg font-medium text-gray-700 mb-5">
+          <p className="font-medium leading-6 mb-5">
             Are you sure you want to remove project "{selectedProject.name}" from workspace?
           </p>
           <Checkbox

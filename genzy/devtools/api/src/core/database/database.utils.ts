@@ -20,6 +20,8 @@ function createDbConnection() {
 
 function createTables(db: Database) {
   db.exec(`
+    PRAGMA foreign_keys = ON;
+    
     CREATE TABLE IF NOT EXISTS Projects
     (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,7 +35,7 @@ function createTables(db: Database) {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       projectId INTEGER NOT NULL UNIQUE,
       openedAt TIMESTAMP NOT NULL,
-      FOREIGN KEY (projectId) REFERENCES Projects(id)
+      FOREIGN KEY (projectId) REFERENCES Projects(id) ON DELETE CASCADE
     );
   `);
 }
