@@ -31,12 +31,12 @@ const updateCommunicationHandler: HandlerType<{
   { communicationId, communication, newServiceIds, removedServiceIds }
 ) => {
   return async (dispatcher: DispatcherType) => {
-    const communicationNode = projectDefinition.microservices.edges.find(
+    const communicationEdge = projectDefinition.microservices.edges.find(
       (edge) => edge.id === communicationId
     );
 
-    const sourceMicroserviceId = communicationNode.target;
-    const dependentMicroserviceId = communicationNode.source;
+    const sourceMicroserviceId = communicationEdge.target;
+    const dependentMicroserviceId = communicationEdge.source;
 
     // Add new remote proxies
     await dispatcher(projectDefinitionActions.addRemoteProxies, {
@@ -52,7 +52,7 @@ const updateCommunicationHandler: HandlerType<{
     });
 
     // Update node data
-    communicationNode.data = communication;
+    communicationEdge.data = communication;
   };
 };
 
@@ -63,12 +63,12 @@ const removeCommunicationHandler: HandlerType<{
 }> = (projectDefinition: ProjectDefinition, { communicationId }) => {
   return async (dispatcher: DispatcherType) => {
     // Remove remote proxies
-    const communicationNode = projectDefinition.microservices.edges.find(
+    const communicationEdge = projectDefinition.microservices.edges.find(
       (edge) => edge.id === communicationId
     );
 
-    const dependentMicroserviceId = communicationNode.source;
-    const removedServiceIds = communicationNode.data.services;
+    const dependentMicroserviceId = communicationEdge.source;
+    const removedServiceIds = communicationEdge.data.services || [];
     await dispatcher(projectDefinitionActions.deleteServices, {
       microserviceId: dependentMicroserviceId,
       serviceIds: removedServiceIds,

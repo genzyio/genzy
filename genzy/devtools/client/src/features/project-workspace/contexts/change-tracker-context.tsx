@@ -42,30 +42,46 @@ export const ChangeTrackerContextProvider: FC<PropsWithChildren> = ({ children }
     (id: string, state: string) => {
       if (!id) return;
 
-      const currentState = states[id];
       switch (state) {
-        case "REMOVED":
-          if (currentState === "ADDED") {
-            setStates((currentStates) => {
+        case "REMOVED": {
+          setStates((currentStates) => {
+            const currentState = currentStates[id];
+            if (currentState === "ADDED") {
               delete currentStates[id];
               return { ...currentStates };
-            });
-          } else {
-            setStates((currentStates) => ({
+            } else {
+              return {
+                ...currentStates,
+                [id]: "REMOVED",
+              };
+            }
+          });
+          break;
+        }
+
+        case "MODIFIED": {
+          setStates((currentStates) => {
+            const currentState = currentStates[id];
+            if (["ADDED", "REMOVED"].includes(currentState)) {
+              return { ...currentStates };
+            } else {
+              return {
+                ...currentStates,
+                [id]: "MODIFIED",
+              };
+            }
+          });
+          break;
+        }
+
+        case "ADDED": {
+          setStates((currentStates) => {
+            return {
               ...currentStates,
-              [id]: "REMOVED",
-            }));
-          }
-          break;
-        case "MODIFIED":
-          if (currentState && currentState !== "MODIFIED") return;
-          setStates((currentStates) => ({
-            ...currentStates,
-            [id]: "MODIFIED",
-          }));
-          break;
-        case "ADDED":
-          setStates((currentStates) => ({ ...currentStates, [id]: "ADDED" }));
+              [id]: "ADDED",
+            };
+          });
+        }
       }
     },
     [states, setStates]

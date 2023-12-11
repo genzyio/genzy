@@ -15,7 +15,13 @@ function createChangeTrackingDispatcherWrapper(
         setStateForMS(result.id, "ADDED");
         break;
       case projectDefinitionActions.deleteMicroservice:
-        setStateForMS(payload.microserviceId, "REMOVED");
+        const node = projectDefinition.microservices.nodes.find(
+          (node) => node.id === payload.microserviceId
+        );
+        const isMicroservice = node.type === "microserviceNode";
+        if (isMicroservice) {
+          setStateForMS(payload.microserviceId, "REMOVED");
+        }
         break;
       case projectDefinitionActions.addRemoteProxy:
       case projectDefinitionActions.addRemoteProxies:
