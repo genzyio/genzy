@@ -1,12 +1,12 @@
 import { type GenzyInfo } from "../utils/converter/genzy.types";
 import { type Project } from "../features/projects/projects.models";
-import { type Package } from "./plugins";
+import { type Plugin } from "./plugins";
 import { exec } from "child_process";
 import path from "path";
 import fs from "fs";
 
 type InitialGenzyMetadata = GenzyInfo & {
-  packages: Package[];
+  plugins: Plugin[];
 };
 
 function initMicroserviceTsJs(project: Project, metadata: InitialGenzyMetadata, lang: "ts" | "js" = "ts") {
@@ -22,11 +22,11 @@ function initMicroserviceTsJs(project: Project, metadata: InitialGenzyMetadata, 
 }
 
 function writePackageJson(basePath: string, metadata: InitialGenzyMetadata, lang: "ts" | "js") {
-  const { name, version, description, packages } = metadata;
+  const { name, version, description, plugins } = metadata;
 
-  const initialDependencies = packages.reduce((packages: Record<string, string>, { name, version }: Package) => {
-    packages[name] = version;
-    return packages;
+  const initialDependencies = plugins.reduce((plugins: Record<string, string>, { name, version }: Plugin) => {
+    plugins[name] = version;
+    return plugins;
   }, {});
 
   const packageJsonPath = path.join(basePath, "package.json");

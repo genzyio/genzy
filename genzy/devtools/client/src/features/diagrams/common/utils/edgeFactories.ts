@@ -32,7 +32,7 @@ function createServiceEdge(params: CreateServiceEdgeParams, removable: boolean =
     ...params,
     id: `${+new Date()}`,
     data: {
-      services: [],
+      services: [], // TODO: Da li mi treba ovo?
     },
     type: removable ? "removableEdge" : "defaultEdge",
     markerEnd: {

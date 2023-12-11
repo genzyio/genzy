@@ -27,7 +27,7 @@ watchProjectRouters.post("/projects/:name/watch/start", async (req: Request, res
 
   const projectJsonPath = path.join(existingProject.path, "project.json");
   const projectDefinition = loadProjectDefinition(projectJsonPath);
-  await startProject(existingProject, projectDefinition);
+  await startProject(existingProject, projectDefinition.data);
 
   return res.status(200).send(getActiveMicroserviceIds(existingProject));
 });
@@ -46,10 +46,8 @@ watchProjectRouters.post("/projects/:name/watch/stop", async (req: Request, res:
 
 function loadProjectDefinition(projectJsonPath: string) {
   const projectJsonContent = fs.readFileSync(projectJsonPath).toString();
-  const projectDefinition = JSON.parse(projectJsonContent);
-  return {
-    microservices: projectDefinition.microservices,
-  };
+
+  return JSON.parse(projectJsonContent);
 }
 
 function getActiveMicroserviceIds(project: Project) {

@@ -2,13 +2,15 @@ export type CompactMicroservice = {
   id: string;
   name: string;
   version: string;
-  language: string;
+  language: "ts" | "js";
   description: string;
   basePath: string;
 
   services: CompactService[];
   classes: CompactClass[];
   plugins: CompactPlugin[];
+
+  type: "microservice" | "plugin";
 };
 
 // Compact Services

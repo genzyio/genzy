@@ -1,12 +1,12 @@
 import { type GenzyInfo } from "../utils/converter/genzy.types";
 import { type Project } from "../features/projects/projects.models";
-import { type Package } from "./plugins";
+import { type Plugin } from "./plugins";
 import { exec } from "child_process";
 import path from "path";
 import fs from "fs";
 
 type InitialGenzyMetadata = GenzyInfo & {
-  packages: Package[];
+  plugins: Plugin[];
 };
 
 function reinitializeMicroservicePackageJson(
@@ -23,10 +23,10 @@ function reinitializeMicroservicePackageJson(
   packageJson.name = name;
   packageJson.version = version;
   packageJson.description = description;
-  packageJson.dependencies = computeNewPackagesObject(
+  packageJson.dependencies = computeNewPluginsObject(
     packageJson.dependencies,
-    oldMetadata.packages || [],
-    newMetadata.packages || [],
+    oldMetadata.plugins || [],
+    newMetadata.plugins || [],
   );
 
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
@@ -34,29 +34,27 @@ function reinitializeMicroservicePackageJson(
   runNPMInstall(microservicePath);
 }
 
-function computeNewPackagesObject(
-  currentPackagesObject: Record<string, string>,
-  oldPackages: Package[],
-  newPackages: Package[],
+function computeNewPluginsObject(
+  currentPluginsObject: Record<string, string>,
+  oldPlugins: Plugin[],
+  newPlugins: Plugin[],
 ) {
-  const { added, modified, removed } = findPackagesDiff(oldPackages, newPackages);
+  const { added, modified, removed } = findPluginsDiff(oldPlugins, newPlugins);
 
-  added.forEach((newPackage) => (currentPackagesObject[newPackage.name] = newPackage.version));
-  modified.forEach((updatedPackage) => (currentPackagesObject[updatedPackage.name] = updatedPackage.version));
-  removed.forEach((removedPackage) => delete currentPackagesObject[removedPackage.name]);
+  added.forEach((newPlugin) => (currentPluginsObject[newPlugin.name] = newPlugin.version));
+  modified.forEach((updatedPlugin) => (currentPluginsObject[updatedPlugin.name] = updatedPlugin.version));
+  removed.forEach((removedPlugin) => delete currentPluginsObject[removedPlugin.name]);
 
-  return currentPackagesObject;
+  return currentPluginsObject;
 }
 
-function findPackagesDiff(oldPackages: Package[], newPackages: Package[]) {
+function findPluginsDiff(oldPlugins: Plugin[], newPlugins: Plugin[]) {
   return {
-    added: newPackages.filter((newPackage) => oldPackages.every((oldPackage) => oldPackage.name !== newPackage.name)),
-    modified: newPackages.filter((newPackage) =>
-      oldPackages.some(
-        (oldPackage) => newPackage.name === oldPackage.name && newPackage.version !== oldPackage.version,
-      ),
+    added: newPlugins.filter((newPlugin) => oldPlugins.every((oldPlugin) => oldPlugin.name !== newPlugin.name)),
+    modified: newPlugins.filter((newPlugin) =>
+      oldPlugins.some((oldPlugin) => newPlugin.name === oldPlugin.name && newPlugin.version !== oldPlugin.version),
     ),
-    removed: oldPackages.filter((oldPackage) => newPackages.every((newPackage) => oldPackage.name !== newPackage.name)),
+    removed: oldPlugins.filter((oldPlugin) => newPlugins.every((newPlugin) => oldPlugin.name !== newPlugin.name)),
   };
 }
 

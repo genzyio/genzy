@@ -21,17 +21,28 @@ import {
   type GenzyFunctionParameter,
   type GenzyType,
   type GenzyTypeAttributes,
-} from "./genzy.types";
-import fs from "fs";
-import path from "path";
+} from "./genzy.types"; // TODO: Those types should probably be extracted from genzy lib
 
 const primitiveTypes = ["any", "int", "float", "boolean", "string"];
+
+type ProjectData = Record<string, CompactMicroservice>;
 
 export function convertJSON(
   project: Project,
   microserviceId: string,
-  microservicesData: Record<string, CompactMicroservice>,
+  microservicesData: ProjectData,
 ): GenzyGeneratorInput {
+  const filteredMicroserviceData = Object.values(microservicesData)
+    .filter((microserviceData) => microserviceData.type === "microservice")
+    .reduce((microservicesData, microserviceData) => {
+      microservicesData[microserviceData.id] = microserviceData;
+      return microservicesData;
+    }, {} as ProjectData);
+
+  return _convertJSON(project, microserviceId, filteredMicroserviceData);
+}
+
+function _convertJSON(project: Project, microserviceId: string, microservicesData: ProjectData): GenzyGeneratorInput {
   const microserviceData = microservicesData[microserviceId];
 
   const outputJson: GenzyGeneratorInput = {
@@ -44,7 +55,6 @@ export function convertJSON(
     plugins: createPlugins(microserviceData),
   };
 
-  fs.writeFileSync(path.join(project.path, "test-progress.json"), JSON.stringify(outputJson, null, 2));
   return outputJson;
 }
 

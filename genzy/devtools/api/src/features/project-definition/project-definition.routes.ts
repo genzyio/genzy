@@ -32,8 +32,8 @@ projectDefinitionRouters.put("/projects/:name/definition", async (req: Request, 
   const { projectDefinition: newProjectDefinition, states } = req.body;
   eventEmitter.emit(ProjectDefinitionSaved, {
     project: existingProject,
-    oldProjectDefinition,
-    newProjectDefinition,
+    oldProjectData: oldProjectDefinition.data,
+    newProjectData: newProjectDefinition.data,
     states,
   });
   fs.writeFileSync(projectJsonPath, JSON.stringify(newProjectDefinition, null, 4));
@@ -43,10 +43,8 @@ projectDefinitionRouters.put("/projects/:name/definition", async (req: Request, 
 
 function loadProjectDefinition(projectJsonPath: string) {
   const projectJsonContent = fs.readFileSync(projectJsonPath).toString();
-  const projectDefinition = JSON.parse(projectJsonContent);
-  return {
-    microservices: projectDefinition.microservices,
-  };
+
+  return JSON.parse(projectJsonContent);
 }
 
 export default projectDefinitionRouters;

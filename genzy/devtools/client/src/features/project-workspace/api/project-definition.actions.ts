@@ -1,13 +1,22 @@
-import axios from "axios";
 import { type SaveProjectDefinition } from "./project-definition.contracts";
+import { adaptToDiagram } from "./adapters/toDiagram";
+import { adaptFromDiagram } from "./adapters/fromDiagram";
+import axios from "axios";
 
-function getProjectDefinition(projectName: string) {
-  return axios.get(`/projects/${projectName}/definition`);
+async function getProjectDefinition(projectName: string) {
+  const response = await axios.get(`/projects/${projectName}/definition`);
+  response.data = adaptToDiagram(response.data);
+
+  return response;
 }
 
 function saveProjectDefinition(projectName: string) {
-  return ({ projectDefinition, states }: SaveProjectDefinition) =>
-    axios.put(`/projects/${projectName}/definition`, { projectDefinition, states });
+  return ({ projectDefinition, states }: SaveProjectDefinition) => {
+    return axios.put(`/projects/${projectName}/definition`, {
+      projectDefinition: adaptFromDiagram(projectDefinition),
+      states,
+    });
+  };
 }
 
 export { getProjectDefinition, saveProjectDefinition };

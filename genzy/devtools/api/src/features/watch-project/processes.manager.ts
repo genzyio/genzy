@@ -1,4 +1,5 @@
 import { type Project } from "../projects/projects.models";
+import { type CompactMicroservice } from "../../utils/converter/devtools.types";
 import { getPorts } from "./ports.manager";
 import { exec } from "child_process";
 import path from "path";
@@ -41,7 +42,7 @@ function startMicroservice(projectPath: string, microserviceName: string, port: 
   return child_process.pid as number;
 }
 
-async function startProject(project: Project, projectDefinition: any) {
+async function startProject(project: Project, projectData: Record<string, CompactMicroservice>) {
   const ports = getPorts(project);
 
   if (!pidsPerProject[project.name]) {
@@ -55,8 +56,7 @@ async function startProject(project: Project, projectDefinition: any) {
       pidsPerProject[project.name][microserviceId] = existingPid;
     } else {
       const projectPath = project.path;
-      const microserviceName = projectDefinition.microservices.nodes.find((node: any) => node.id === microserviceId)
-        .data.name;
+      const microserviceName = projectData[microserviceId].name;
       const newPid = startMicroservice(projectPath, microserviceName, port);
       pidsPerProject[project.name][microserviceId] = newPid;
     }
