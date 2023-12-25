@@ -27,7 +27,10 @@ const OperationalButton: FC<OperationalButtonProps> = ({
         `text-${color} text-center text-xs ` +
         `border border-${borderColor || color} ${roundedClass} w-14 px-2 py-1.5`
       }
-      onClick={onClick}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick(e);
+      }}
     >
       {children}
     </button>

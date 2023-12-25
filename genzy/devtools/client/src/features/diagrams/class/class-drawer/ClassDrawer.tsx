@@ -9,6 +9,11 @@ import { EditMethod } from "./methods/EditMethod";
 import { useValidationContext } from "../../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../../common/contexts/dirty-check-context";
 import { useClassState } from "./class-state";
+import { VerticallyFlippable } from "../../../../core/components/wrappers/flippable";
+import { createFunctionalComponent } from "../../../../core/utils/components";
+
+const FunctionalEditAttribute = createFunctionalComponent(EditAttribute);
+const FunctionalEditMethod = createFunctionalComponent(EditMethod);
 
 type ClassDrawerProps = {
   classId: string;
@@ -23,7 +28,7 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
   onClassUpdate,
   nameExists,
 }) => {
-  const { isDirty, setCurrentState } = useDirtyCheckContext();
+  const { isDirty } = useDirtyCheckContext();
   const { isValid, setValidityFor } = useValidationContext();
 
   const { class: _class, actions } = useClassState(initialClass);
@@ -98,39 +103,44 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
         </div>
 
         {!!attributes?.length && <p>Attributes</p>}
-        {attributes.map((attribute, index) => (
-          <EditAttribute
-            key={attribute.id}
-            attribute={attribute}
-            onChange={(updatedAttribute) => {
-              handleUpdateAttribute({ id: attribute.id, ...updatedAttribute });
-            }}
-            onDelete={(id) => {
-              handleDeleteAttribute(id);
-            }}
-            nameExists={(newAttrName) =>
-              attributes.some((attribute, i) => i !== index && attribute.name === newAttrName)
-            }
-          />
-        ))}
-        {methods.length > 0 && <hr className="my-3" />}
+        <VerticallyFlippable>
+          {attributes.map((attribute, index) => (
+            <FunctionalEditAttribute
+              key={attribute.id}
+              attribute={attribute}
+              onChange={(updatedAttribute) => {
+                handleUpdateAttribute({ id: attribute.id, ...updatedAttribute });
+              }}
+              onDelete={(id) => {
+                handleDeleteAttribute(id);
+              }}
+              nameExists={(newAttrName) =>
+                attributes.some((attribute, i) => i !== index && attribute.name === newAttrName)
+              }
+            />
+          ))}
+        </VerticallyFlippable>
+
+        {attributes.length > 0 && methods.length > 0 && <hr className="my-3" />}
         {!!methods?.length && <p>Methods</p>}
 
-        {methods.map((method, index) => (
-          <EditMethod
-            key={method.id}
-            method={method}
-            onChange={(updatedMethod) => {
-              handleUpdateMethod({ id: method.id, ...updatedMethod });
-            }}
-            onDelete={(id) => {
-              handleDeleteMethod(id);
-            }}
-            nameExists={(newAttrName) =>
-              methods.some((method, i) => i !== index && method.name === newAttrName)
-            }
-          />
-        ))}
+        <VerticallyFlippable>
+          {methods.map((method, index) => (
+            <FunctionalEditMethod
+              key={method.id}
+              method={method}
+              onChange={(updatedMethod) => {
+                handleUpdateMethod({ id: method.id, ...updatedMethod });
+              }}
+              onDelete={(id) => {
+                handleDeleteMethod(id);
+              }}
+              nameExists={(newAttrName) =>
+                methods.some((method, i) => i !== index && method.name === newAttrName)
+              }
+            />
+          ))}
+        </VerticallyFlippable>
         <div className="flex text-sm mt-3 space-x-3">
           <div className="flex-1 space-x-1">
             <Button type="button" className="text-sm mt-3" onClick={handleAddAttribute}>

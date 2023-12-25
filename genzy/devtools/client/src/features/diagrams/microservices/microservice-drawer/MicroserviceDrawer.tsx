@@ -7,6 +7,10 @@ import { useValidationContext } from "../../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../../common/contexts/dirty-check-context";
 import { MicroserviceForm } from "./MicroserviceForm";
 import { useMicroserviceState } from "./microservice-state";
+import { VerticallyFlippable } from "../../../../core/components/wrappers/flippable";
+import { createFunctionalComponent } from "../../../../core/utils/components";
+
+const FunctionalEditService = createFunctionalComponent(EditService);
 
 type MicroserviceDrawerProps = {
   microserviceId: string;
@@ -64,21 +68,24 @@ export const MicroserviceDrawer: FC<MicroserviceDrawerProps> = ({
       />
 
       {!!microservice.services?.length && <p>Services</p>}
-      {microservice.services.map((service, index) => (
-        <EditService
-          key={service.id}
-          service={service}
-          onChange={(updatedService) => {
-            handleUpdateService({ id: service.id, ...updatedService });
-          }}
-          onDelete={() => handleDeleteService(service.id)}
-          nameExists={(newServiceName) =>
-            microservice.services.some(
-              (service, i) => i !== index && service.name === newServiceName
-            )
-          }
-        />
-      ))}
+
+      <VerticallyFlippable>
+        {microservice.services.map((service, index) => (
+          <FunctionalEditService
+            key={service.id}
+            service={service}
+            onChange={(updatedService) => {
+              handleUpdateService({ id: service.id, ...updatedService });
+            }}
+            onDelete={() => handleDeleteService(service.id)}
+            nameExists={(newServiceName) =>
+              microservice.services.some(
+                (service, i) => i !== index && service.name === newServiceName
+              )
+            }
+          />
+        ))}
+      </VerticallyFlippable>
       <div className="flex justify-between">
         <Button type="button" onClick={handleAddService} className="text-sm mt-3">
           New service

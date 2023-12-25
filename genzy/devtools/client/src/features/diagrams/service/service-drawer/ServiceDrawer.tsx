@@ -8,6 +8,10 @@ import cloneDeep from "lodash.clonedeep";
 import { useValidationContext } from "../../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../../common/contexts/dirty-check-context";
 import { ServiceForm } from "./ServiceForm";
+import { VerticallyFlippable } from "../../../../core/components/wrappers/flippable";
+import { createFunctionalComponent } from "../../../../core/utils/components";
+
+const FunctionalEditFunction = createFunctionalComponent(EditFunction);
 
 type ServiceDrawerProps = {
   serviceId: string;
@@ -101,26 +105,27 @@ export const ServiceDrawer: FC<ServiceDrawerProps> = ({
       {!!serviceData.functions?.length && (
         <p>{serviceData.type === "LOCAL" ? "Functions" : "Routes"}</p>
       )}
-      {serviceData.functions.map((fun, index) => (
-        <EditFunction
-          function={fun}
-          serviceType={serviceData.type}
-          handleDelete={() => handleDeleteFunction(index)}
-          handleAddParam={() => handleAddParam(index)}
-          handleDeleteParam={handleDeleteParam(index)}
-          updateState={() => updateState({ ...serviceData })}
-          key={fun.id}
-          nameExists={(name) =>
-            serviceData.functions.some((f) => f.id !== fun.id && f.name === name)
-          }
-          routeExists={(route, method) =>
-            serviceData.functions.some(
-              (f) => f.id !== fun.id && f.route === route && f.method === method
-            )
-          }
-        />
-      ))}
-
+      <VerticallyFlippable>
+        {serviceData.functions.map((fun, index) => (
+          <FunctionalEditFunction
+            function={fun}
+            serviceType={serviceData.type}
+            handleDelete={() => handleDeleteFunction(index)}
+            handleAddParam={() => handleAddParam(index)}
+            handleDeleteParam={handleDeleteParam(index)}
+            updateState={() => updateState({ ...serviceData })}
+            key={fun.id}
+            nameExists={(name) =>
+              serviceData.functions.some((f) => f.id !== fun.id && f.name === name)
+            }
+            routeExists={(route, method) =>
+              serviceData.functions.some(
+                (f) => f.id !== fun.id && f.route === route && f.method === method
+              )
+            }
+          />
+        ))}
+      </VerticallyFlippable>
       <div className="flex justify-between">
         <Button type="button" onClick={handleAddFunction} className="text-sm mt-3">
           New {serviceData.type === "LOCAL" ? "function" : "route"}

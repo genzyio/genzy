@@ -15,7 +15,7 @@ import { useQueryClient } from "react-query";
 import { ConfirmationModal } from "../../../../core/components/confirmation-modal";
 import { useProjectNavigation } from "../../hooks/useProjectNavigation";
 import { BookmarkSlashIcon, ClipboardDocumentIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { Accordion } from "../../../../core/components/accordion";
+import { Accordion } from "../../../../core/components/wrappers/accordion";
 
 export const RecentlyOpenedList: FC = () => {
   const { recentlyOpenedProjects } = useRecentlyOpenedProjects();
