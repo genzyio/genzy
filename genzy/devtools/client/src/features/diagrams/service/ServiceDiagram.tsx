@@ -9,28 +9,28 @@ import {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { type Service } from "./models";
-import { Drawer } from "../../../core/components/drawer";
+import { Drawer } from "@core/components/drawer";
 import { ServiceDrawer } from "./service-drawer/ServiceDrawer";
-import { useProjectDefinitionContext } from "../../project-workspace/contexts/project-definition.context";
-import { projectDefinitionActions } from "../../project-workspace/contexts/project-definition.dispatcher";
+import { useProjectDefinitionContext } from "@features/project-workspace/contexts/project-definition.context";
+import { projectDefinitionActions } from "@features/project-workspace/contexts/project-definition.dispatcher";
 import { RemovableEdge } from "../common/components/edges/removable/RemovableEdge";
 import { ServiceNode } from "./nodes/ServiceNode";
 import { RemovableNode } from "../common/components/nodes/RemovableNode";
 import { createPortal } from "react-dom";
-import { Button } from "../../../core/components/button";
+import { Button } from "@core/components/button";
 import { ValidationContextProvider } from "../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 import nodeTypes from "../common/constants/nodeTypes";
 import edgeTypes from "../common/constants/edgeTypes";
 import { isNodeMoved } from "../common/utils/move.utils";
 import { FloatingEdge } from "../common/components/edges/floating/FloatingEdge";
-import { darkTheme } from "../../../core/components/diagram";
+import { darkTheme } from "@core/components/diagram";
 import { ThemeProvider } from "styled-components";
 import { DiagramBase } from "../common/components/diagram/DiagramBase";
 import { useMicroserviceContext } from "../common/contexts/microservice.context";
 import { ServiceEvents, serviceEventEmitter } from "./service-diagram.events";
 import { RemoveServiceModal, type RemoveServiceModalInstance } from "./RemoveServiceModal";
-import { useSequenceGenerator } from "../../../core/hooks/useStringSequence";
+import { useSequenceGenerator } from "@core/hooks/useStringSequence";
 import { useServiceDiagramState } from "./service-diagram-state";
 
 type DiagramProps = {

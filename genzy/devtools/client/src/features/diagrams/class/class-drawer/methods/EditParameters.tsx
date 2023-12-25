@@ -1,10 +1,10 @@
 import { type FC, useCallback } from "react";
-import { TextField } from "../../../../../core/components/text-field";
-import { Select } from "../../../../../core/components/select";
+import { TextField } from "@core/components/text-field";
+import { Select } from "@core/components/select";
 import { Parameter } from "../../models";
-import { Checkbox } from "../../../../../core/components/checkbox";
+import { Checkbox } from "@core/components/checkbox";
 import { IDENTIFIER_REGEX } from "../../../../../patterns";
-import { capitalizeFirstLetter, stringifyNumber } from "../../../../../core/utils/string";
+import { capitalizeFirstLetter, stringifyNumber } from "@core/utils/string";
 
 type EditParametersProps = {
   parameters: Parameter[];

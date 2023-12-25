@@ -1,14 +1,14 @@
 import { type FC } from "react";
 import { type Microservice, type Service } from "../models";
-import { Button } from "../../../../core/components/button";
+import { Button } from "@core/components/button";
 import { EditService } from "./EditService";
-import { useSequenceGenerator } from "../../../../core/hooks/useStringSequence";
+import { useSequenceGenerator } from "@core/hooks/useStringSequence";
 import { useValidationContext } from "../../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../../common/contexts/dirty-check-context";
 import { MicroserviceForm } from "./MicroserviceForm";
 import { useMicroserviceState } from "./microservice-state";
-import { VerticallyFlippable } from "../../../../core/components/wrappers/flippable";
-import { createFunctionalComponent } from "../../../../core/utils/components";
+import { VerticallyFlippable } from "@core/components/wrappers/flippable";
+import { createFunctionalComponent } from "@core/utils/components";
 
 const FunctionalEditService = createFunctionalComponent(EditService, "EditService");
 

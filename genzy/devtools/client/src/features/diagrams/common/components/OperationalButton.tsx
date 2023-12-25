@@ -1,5 +1,5 @@
 import { useMemo, type FC } from "react";
-import { type ButtonProps } from "../../../../core/components/button";
+import { type ButtonProps } from "@core/components/button";
 
 type OperationalButtonProps = Pick<ButtonProps, "onClick" | "children"> & {
   color?: string;

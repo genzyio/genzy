@@ -1,21 +1,21 @@
 import { type FC, useState, useCallback, useEffect } from "react";
 import { useProjectContext } from "../contexts/project.context";
 import { useProjectDefinitionContext } from "../contexts/project-definition.context";
-import { EmptyDiagram } from "../../diagrams/EmptyDiagram";
-import { Tabs, type TabsInstance } from "../../../core/components/tabs";
-import { Tab, type TabProps } from "../../../core/components/tab";
+import { EmptyDiagram } from "@features/diagrams/EmptyDiagram";
+import { Tabs, type TabsInstance } from "@core/components/tabs";
+import { Tab, type TabProps } from "@core/components/tab";
 import { type Node, ReactFlowProvider } from "reactflow";
-import { type Microservice } from "../../diagrams/microservices/models";
+import { type Microservice } from "@features/diagrams/microservices/models";
 import { ProjectToolbar } from "./project-toolbar";
-import { TypesContextProvider } from "../../diagrams/class/TypesContext";
-import { MicroserviceNodeContextProvider } from "../../diagrams/microservices/nodes/MicroserviceNodeContext";
+import { TypesContextProvider } from "@features/diagrams/class/TypesContext";
+import { MicroserviceNodeContextProvider } from "@features/diagrams/microservices/nodes/MicroserviceNodeContext";
 import { MicroserviceDiagramWrapper } from "./wrappers/MicroserviceDiagramWrapper";
 import { ClassDiagramWrapper } from "./wrappers/ClassDiagramWrapper";
 import { ServiceDiagramWrapper } from "./wrappers/ServiceDiagramWrapper";
 import { SwaggerWrapper } from "./wrappers/SwaggerWrapper";
 import { useSearchParams } from "react-router-dom";
 
-import "../../diagrams/common/styles/validation_styles.css";
+import "@features/diagrams/common/styles/validation_styles.css";
 
 const useTabPreferences = (projectName: string) => {
   const localStorageKey = `${projectName}/tabs`;

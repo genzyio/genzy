@@ -1,16 +1,16 @@
 import { type FC, useState, useMemo, useEffect } from "react";
 import type { Dependency, NPMPackage, Version } from "../api/specific-plugin.contracts";
-import { Select } from "../../../core/components/select";
-import { Button } from "../../../core/components/button";
+import { Select } from "@core/components/select";
+import { Button } from "@core/components/button";
 import { KeywordsList } from "./keywords";
 import { NewTabLink } from "./new-tab-link";
 import { Section } from "./section";
 import moment from "moment";
 import { useIsPluginInstalled } from "../hooks/useIsPluginInstalled";
-import { useProjectDefinitionContext } from "../../project-workspace/contexts/project-definition.context";
-import { projectDefinitionActions } from "../../project-workspace/contexts/project-definition.dispatcher";
-import { useMicroserviceContext } from "../../diagrams/common/contexts/microservice.context";
-import { useNotifications } from "../../../core/hooks/useNotifications";
+import { useProjectDefinitionContext } from "@features/project-workspace/contexts/project-definition.context";
+import { projectDefinitionActions } from "@features/project-workspace/contexts/project-definition.dispatcher";
+import { useMicroserviceContext } from "@features/diagrams/common/contexts/microservice.context";
+import { useNotifications } from "@core/hooks/useNotifications";
 import { useOutletContext } from "react-router-dom";
 
 type DependenciesProps = {

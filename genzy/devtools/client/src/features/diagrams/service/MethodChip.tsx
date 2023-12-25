@@ -1,6 +1,6 @@
 import { type FC } from "react";
 import { type HTTPMethod } from "./models";
-import { classNames } from "../../../core/utils/classNames";
+import { classNames } from "@core/utils/classNames";
 
 const colors = {
   GET: "bg-blue-400",

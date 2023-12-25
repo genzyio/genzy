@@ -1,9 +1,9 @@
 import { type FC } from "react";
 import { useProjectDefinitionContext } from "../../contexts/project-definition.context";
-import { MicroservicesDiagram } from "../../../diagrams/microservices/MicroservicesDiagram";
+import { MicroservicesDiagram } from "@features/diagrams/microservices/MicroservicesDiagram";
 import { defaultViewport } from "../../contexts/project-definition-handlers/microservice-handlers";
-import { DirtyCheckContextProvider } from "../../../diagrams/common/contexts/dirty-check-context";
-import { MicroserviceContextProvider } from "../../../diagrams/common/contexts/microservice.context";
+import { DirtyCheckContextProvider } from "@features/diagrams/common/contexts/dirty-check-context";
+import { MicroserviceContextProvider } from "@features/diagrams/common/contexts/microservice.context";
 
 type MicroserviceDiagramWrapperProps = {
   onMicroserviceDeleted: (microserviceId: string) => any;

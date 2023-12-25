@@ -30,5 +30,40 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "off",
     "react/no-unescaped-entities": "off",
     "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    "no-restricted-imports": [
+      "error",
+      {
+        patterns: [
+          {
+            group: ["**/core/**"],
+            message: "Shouldn't reference core by relative path. Use alias '@core' instead.",
+          },
+          {
+            group: ["**/features/**"],
+            message: "Shouldn't reference core by relative path. Use alias '@features' instead.",
+          },
+          {
+            group: ["../**/diagrams/**"],
+            message:
+              "Shouldn't reference core by relative path. Use alias '@features/diagrams' instead.",
+          },
+          {
+            group: ["../**/plugins/**"],
+            message:
+              "Shouldn't reference core by relative path. Use alias '@features/plugins' instead.",
+          },
+          {
+            group: ["../**/project-workspace/**"],
+            message:
+              "Shouldn't reference core by relative path. Use alias '@features/project-workspace' instead.",
+          },
+          {
+            group: ["../**/projects/**"],
+            message:
+              "Shouldn't reference core by relative path. Use alias '@features/projects' instead.",
+          },
+        ],
+      },
+    ],
   },
 };

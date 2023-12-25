@@ -1,6 +1,6 @@
-import { useProjectNavigation } from "./features/projects/hooks/useProjectNavigation";
-import { useDefaultProject } from "./features/projects/hooks/useDefaultProject";
-import { EmptyDiagram } from "./features/diagrams/EmptyDiagram";
+import { useProjectNavigation } from "@features/projects/hooks/useProjectNavigation";
+import { useDefaultProject } from "@features/projects/hooks/useDefaultProject";
+import { EmptyDiagram } from "@features/diagrams/EmptyDiagram";
 
 export function ProjectsBase() {
   const { openProject, closeProject } = useProjectNavigation();

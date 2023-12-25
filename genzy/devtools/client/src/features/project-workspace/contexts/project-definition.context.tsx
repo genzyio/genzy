@@ -17,12 +17,12 @@ import { useProjectDefinition } from "../hooks/useProjectDefinition";
 import { useProjectContext } from "./project.context";
 import { useAutoSaveContext } from "./auto-save.context";
 import { useChangeTrackerContext } from "./change-tracker-context";
-import { useDirtyCheckContext } from "../../diagrams/common/contexts/dirty-check-context";
+import { useDirtyCheckContext } from "@features/diagrams/common/contexts/dirty-check-context";
 import { createChangeTrackingDispatcherWrapper } from "./change-tracker.dispatcher";
-import { Button } from "../../../core/components/button";
+import { Button } from "@core/components/button";
 import useUndoable from "use-undoable";
-import { EmptyDiagram } from "../../diagrams/EmptyDiagram";
-import { useProjectNavigation } from "../../projects/hooks/useProjectNavigation";
+import { EmptyDiagram } from "@features/diagrams/EmptyDiagram";
+import { useProjectNavigation } from "@features/projects/hooks/useProjectNavigation";
 
 type ProjectDefinitionContextValues = {
   projectDefinition: ProjectDefinition;

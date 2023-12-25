@@ -2,13 +2,13 @@ import { type FC } from "react";
 import { type NodeProps } from "reactflow";
 import { type Microservice } from "../models";
 import { useMicroserviceNodeContext } from "./MicroserviceNodeContext";
-import { useWatchModeContext } from "../../../project-workspace/contexts/watch-mode.context";
-import { useProjectContext } from "../../../project-workspace/contexts/project.context";
-import { getImageProxyUrl } from "../../../../core/utils/proxy-image";
+import { useWatchModeContext } from "@features/project-workspace/contexts/watch-mode.context";
+import { useProjectContext } from "@features/project-workspace/contexts/project.context";
+import { getImageProxyUrl } from "@core/utils/proxy-image";
 import { LanguageIcons } from "../constants";
 import { ConnectableNodeWrapper } from "../../common/components/nodes/ConnectableNodeWrapper";
 import { NodeBase } from "../../common/components/nodes/NodeBase";
-import { Button } from "../../../../core/components/button";
+import { Button } from "@core/components/button";
 import { Link } from "react-router-dom";
 
 type MicroserviceNodeProps = NodeProps<Microservice>;

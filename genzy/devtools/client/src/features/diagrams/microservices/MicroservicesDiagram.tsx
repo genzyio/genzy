@@ -8,17 +8,17 @@ import {
   type Viewport,
 } from "reactflow";
 import { Communication, type Microservice } from "./models";
-import { Drawer } from "../../../core/components/drawer";
+import { Drawer } from "@core/components/drawer";
 import { MicroserviceDrawer } from "./microservice-drawer/MicroserviceDrawer";
-import { useSequenceGenerator } from "../../../core/hooks/useStringSequence";
+import { useSequenceGenerator } from "@core/hooks/useStringSequence";
 import { CommunicationDrawer } from "./communication-drawer/CommunicationDrawer";
-import { useProjectDefinitionContext } from "../../project-workspace/contexts/project-definition.context";
-import { projectDefinitionActions } from "../../project-workspace/contexts/project-definition.dispatcher";
+import { useProjectDefinitionContext } from "@features/project-workspace/contexts/project-definition.context";
+import { projectDefinitionActions } from "@features/project-workspace/contexts/project-definition.dispatcher";
 import { RemovableEdge } from "../common/components/edges/removable/RemovableEdge";
 import { RemovableNode } from "../common/components/nodes/RemovableNode";
 import { MicroserviceNode } from "./nodes/MicroserviceNode";
 import { createPortal } from "react-dom";
-import { Button } from "../../../core/components/button";
+import { Button } from "@core/components/button";
 import { ValidationContextProvider } from "../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../common/contexts/dirty-check-context";
 import { Outlet } from "react-router-dom";
@@ -27,7 +27,7 @@ import edgeTypes from "../common/constants/edgeTypes";
 import { isNodeMoved } from "../common/utils/move.utils";
 import { FloatingEdge } from "../common/components/edges/floating/FloatingEdge";
 import { ThemeProvider } from "styled-components";
-import { darkTheme } from "../../../core/components/diagram";
+import { darkTheme } from "@core/components/diagram";
 import { DiagramBase } from "../common/components/diagram/DiagramBase";
 import { MicroserviceEvents, microserviceEventEmitter } from "./microservices-diagram.events";
 import {

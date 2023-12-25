@@ -1,7 +1,7 @@
 import { type FC } from "react";
 import { useProjectContext } from "../../contexts/project.context";
 import { useMicroservicePort } from "../../hooks/useMicroservicePort";
-import { Loader } from "../../../plugins/components/loader";
+import { Loader } from "@features/plugins/components/loader";
 
 type SwaggerWrapperProps = {
   microserviceId: string;

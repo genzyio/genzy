@@ -1,8 +1,8 @@
 import { type ProjectDefinition } from "../../models/project-definition.models";
 import { type HandlerType } from "./types";
-import { type Communication } from "../../../diagrams/microservices/models";
+import { type Communication } from "@features/diagrams/microservices/models";
 import { type DispatcherType, projectDefinitionActions } from "../project-definition.dispatcher";
-import { createMicroserviceEdge } from "../../../diagrams/common/utils/edgeFactories";
+import { createMicroserviceEdge } from "@features/diagrams/common/utils/edgeFactories";
 
 // Add
 

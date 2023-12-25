@@ -1,16 +1,16 @@
 import { type DispatcherType, projectDefinitionActions } from "../project-definition.dispatcher";
 import { type ProjectDefinition } from "../../models/project-definition.models";
 import { type HandlerType } from "./types";
-import { type Service } from "../../../diagrams/microservices/models";
+import { type Service } from "@features/diagrams/microservices/models";
 import {
   type ServiceFunction,
   type Service as ExtendedService,
-} from "../../../diagrams/service/models";
+} from "@features/diagrams/service/models";
 import {
   createServiceNode,
   createRemoteProxyNode,
   createPlugableServiceNode,
-} from "../../../diagrams/common/utils/nodeFactories";
+} from "@features/diagrams/common/utils/nodeFactories";
 
 // Add
 

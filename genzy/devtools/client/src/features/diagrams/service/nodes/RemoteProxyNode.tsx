@@ -1,7 +1,7 @@
 import { type FC } from "react";
 import { type NodeProps } from "reactflow";
 import { type Service, SERVICE_TYPE_DISPLAY_NAME } from "../models";
-import { useProjectDefinitionContext } from "../../../project-workspace/contexts/project-definition.context";
+import { useProjectDefinitionContext } from "@features/project-workspace/contexts/project-definition.context";
 import { ConnectableNodeWrapper } from "../../common/components/nodes/ConnectableNodeWrapper";
 import { NodeBase } from "../../common/components/nodes/NodeBase";
 import { MethodChip } from "../MethodChip";

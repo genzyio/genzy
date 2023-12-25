@@ -1,9 +1,5 @@
 import { type FC } from "react";
-import {
-  Listbox,
-  type ListboxProps,
-  type ListboxTemplateProps,
-} from "../../../../core/components/listbox";
+import { Listbox, type ListboxProps, type ListboxTemplateProps } from "@core/components/listbox";
 import { HTTP_METHOD } from "../models";
 
 const colors = {

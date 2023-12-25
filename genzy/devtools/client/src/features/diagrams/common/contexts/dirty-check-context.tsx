@@ -7,8 +7,8 @@ import {
   useCallback,
   useMemo,
 } from "react";
-import { ConfirmationModal } from "../../../../core/components/confirmation-modal";
-import { useUnsavedChangesWarning } from "../../../../core/hooks/useUnsavedChangesWarning";
+import { ConfirmationModal } from "@core/components/confirmation-modal";
+import { useUnsavedChangesWarning } from "@core/hooks/useUnsavedChangesWarning";
 
 type DirtyCheckContextValues = {
   isDirty: boolean;

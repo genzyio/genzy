@@ -1,6 +1,6 @@
 import { type ProjectDefinition } from "../../models/project-definition.models";
 import { type HandlerType } from "./types";
-import { createServiceEdge } from "../../../diagrams/common/utils/edgeFactories";
+import { createServiceEdge } from "@features/diagrams/common/utils/edgeFactories";
 
 // Add
 

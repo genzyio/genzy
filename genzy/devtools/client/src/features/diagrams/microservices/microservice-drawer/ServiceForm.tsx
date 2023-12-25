@@ -1,7 +1,7 @@
 import { type FC } from "react";
 import { type Service } from "../models";
-import { TextField } from "../../../../core/components/text-field";
-import { Select } from "../../../../core/components/select";
+import { TextField } from "@core/components/text-field";
+import { Select } from "@core/components/select";
 import { useValidationContext } from "../../common/contexts/validation-context";
 import { IDENTIFIER_REGEX } from "../../../../patterns";
 import { SERVICE_TYPE_DISPLAY_NAME } from "../../service/models";

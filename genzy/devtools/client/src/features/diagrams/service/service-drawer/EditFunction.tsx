@@ -6,9 +6,9 @@ import {
   type ServiceType,
   PARAM_SOURCE,
 } from "../models";
-import { TextField } from "../../../../core/components/text-field";
+import { TextField } from "@core/components/text-field";
 import { FunctionCard } from "./FunctionCard";
-import { Select } from "../../../../core/components/select";
+import { Select } from "@core/components/select";
 import { IDENTIFIER_REGEX, ROUTE_REGEX } from "../../../../patterns";
 import { useMicroserviceContext } from "../../common/contexts/microservice.context";
 import { useTypesContext } from "../../class/TypesContext";
@@ -16,8 +16,8 @@ import { RoundCard } from "../../common/components/RoundCard";
 import { ClosableWrapper } from "../../common/components/ClosableWrapper";
 import cloneDeep from "lodash.clonedeep";
 import { useValidationContext } from "../../common/contexts/validation-context";
-import { Checkbox } from "../../../../core/components/checkbox";
-import { XMark } from "../../../../core/components/icons/x-mark";
+import { Checkbox } from "@core/components/checkbox";
+import { XMark } from "@core/components/icons/x-mark";
 import { MethodListitem } from "./MethodsListbox";
 
 type EditFunctionProps = {

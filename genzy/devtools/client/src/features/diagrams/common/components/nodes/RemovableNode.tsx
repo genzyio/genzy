@@ -1,6 +1,6 @@
 import { type FC, MouseEvent, type ElementType } from "react";
 import { type NodeProps } from "reactflow";
-import { useWatchModeContext } from "../../../../project-workspace/contexts/watch-mode.context";
+import { useWatchModeContext } from "@features/project-workspace/contexts/watch-mode.context";
 import { RemovableButton } from "../edges/removable/RemovableButton";
 
 type RemovableNode = NodeProps<any> & {

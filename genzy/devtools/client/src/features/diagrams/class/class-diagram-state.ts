@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { type Node, type Edge, useNodesState, useEdgesState } from "reactflow";
 import { type Class } from "./models";
 import { useTypesContext } from "./TypesContext";
-import { useProjectDefinitionContext } from "../../project-workspace/contexts/project-definition.context";
-import { projectDefinitionActions } from "../../project-workspace/contexts/project-definition.dispatcher";
+import { useProjectDefinitionContext } from "@features/project-workspace/contexts/project-definition.context";
+import { projectDefinitionActions } from "@features/project-workspace/contexts/project-definition.dispatcher";
 
 export const useClassDiagramState = (
   microserviceId: string,

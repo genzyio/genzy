@@ -4,6 +4,10 @@
     "jsxImportSource": "react",
     "jsx": "react-jsx",
     "lib": ["es6", "es2019", "dom"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "paths": {
+      "@core/*": ["./src/core/*"],
+      "@features/*": ["./src/features/*"]
+    }
   }
 }

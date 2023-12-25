@@ -1,9 +1,9 @@
 import { type FC, useState } from "react";
 import { type Microservice, type Language } from "../models";
-import { TextField } from "../../../../core/components/text-field";
+import { TextField } from "@core/components/text-field";
 import { LanguagesListitem } from "./LanguagesListbox";
-import { useWatchModeContext } from "../../../project-workspace/contexts/watch-mode.context";
-import { useChangeTrackerContext } from "../../../project-workspace/contexts/change-tracker-context";
+import { useWatchModeContext } from "@features/project-workspace/contexts/watch-mode.context";
+import { useChangeTrackerContext } from "@features/project-workspace/contexts/change-tracker-context";
 import { useValidationContext } from "../../common/contexts/validation-context";
 import { IDENTIFIER_REGEX } from "../../../../patterns";
 

@@ -1,8 +1,8 @@
-import { type Microservice, type Service } from "../../../diagrams/microservices/models";
+import { type Microservice, type Service } from "@features/diagrams/microservices/models";
 import { type ProjectDefinition } from "../../models/project-definition.models";
 import { type HandlerType } from "./types";
 import { type DispatcherType, projectDefinitionActions } from "../project-definition.dispatcher";
-import { createMicroserviceNode } from "../../../diagrams/common/utils/nodeFactories";
+import { createMicroserviceNode } from "@features/diagrams/common/utils/nodeFactories";
 import cloneDeep from "lodash.clonedeep";
 
 export const defaultViewport = {

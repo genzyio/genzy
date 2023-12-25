@@ -5,7 +5,7 @@ import {
   type DropDownMenuProps,
   DropDownMenu,
   DropdownItemHandler,
-} from "../../../../core/components/dropdown";
+} from "@core/components/dropdown";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import moment = require("moment");
 

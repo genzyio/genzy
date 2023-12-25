@@ -1,9 +1,9 @@
 import { useCallback, useEffect } from "react";
 import { Outlet, useNavigate, useOutletContext, useParams } from "react-router-dom";
-import { useProjectContext } from "../project-workspace/contexts/project.context";
-import { useProjectDefinitionContext } from "../project-workspace/contexts/project-definition.context";
-import { MicroserviceContextProvider } from "../diagrams/common/contexts/microservice.context";
-import { Modal } from "../../core/components/modal";
+import { useProjectContext } from "@features/project-workspace/contexts/project.context";
+import { useProjectDefinitionContext } from "@features/project-workspace/contexts/project-definition.context";
+import { MicroserviceContextProvider } from "@features/diagrams/common/contexts/microservice.context";
+import { Modal } from "@core/components/modal";
 
 export function PluginsModal() {
   const { project } = useProjectContext();

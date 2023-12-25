@@ -8,7 +8,7 @@ import {
   useEffect,
 } from "react";
 import { useProjectContext } from "./project.context";
-import { useAction } from "../../../core/hooks/useAction";
+import { useAction } from "@core/hooks/useAction";
 import { startProject, stopProject } from "../api/watch-project.actions";
 import { useActiveMicroservices } from "../hooks/useActiveMicroservices";
 

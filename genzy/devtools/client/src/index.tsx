@@ -5,10 +5,10 @@ import { API_URL } from "./url";
 import axios from "axios";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 import { ProjectsBase } from "./projects-base";
-import { ProjectsModal } from "./features/projects/projects-modal";
-import { ProjectWorkspace } from "./features/project-workspace/project-workspace";
-import { PluginsModal } from "./features/plugins/plugins-modal";
-import { PluginTabsPage, SpecificPluginPage } from "./features/plugins/components/plugins-pages";
+import { ProjectsModal } from "@features/projects/projects-modal";
+import { ProjectWorkspace } from "@features/project-workspace/project-workspace";
+import { PluginsModal } from "@features/plugins/plugins-modal";
+import { PluginTabsPage, SpecificPluginPage } from "@features/plugins/components/plugins-pages";
 
 import "react-toastify/dist/ReactToastify.css";
 

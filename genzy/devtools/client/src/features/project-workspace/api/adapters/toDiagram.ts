@@ -1,9 +1,9 @@
 import { type AdaptedProjectDefinition } from "./fromDiagram";
 import { type Node, type Edge, MarkerType } from "reactflow";
 import { type ProjectDefinition } from "../../models/project-definition.models";
-import { type Microservice, type Communication } from "../../../diagrams/microservices/models";
-import { type Service } from "../../../diagrams/service/models";
-import { type Class } from "../../../diagrams/class/models";
+import { type Microservice, type Communication } from "@features/diagrams/microservices/models";
+import { type Service } from "@features/diagrams/service/models";
+import { type Class } from "@features/diagrams/class/models";
 import { extractComplexTypes } from "../../utils/class-references";
 
 export function adaptToDiagram(projectDefinition: AdaptedProjectDefinition): ProjectDefinition {

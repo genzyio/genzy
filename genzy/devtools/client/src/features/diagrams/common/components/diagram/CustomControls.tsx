@@ -1,8 +1,8 @@
 import { type FC } from "react";
 import { ControlButton } from "reactflow";
-import { useProjectContext } from "../../../../project-workspace/contexts/project.context";
+import { useProjectContext } from "@features/project-workspace/contexts/project.context";
 import { toPng } from "html-to-image";
-import { ControlsStyled } from "../../../../../core/components/diagram";
+import { ControlsStyled } from "@core/components/diagram";
 
 function toImage(projectName: string) {
   toPng(document.querySelector(".react-flow") as HTMLElement, {

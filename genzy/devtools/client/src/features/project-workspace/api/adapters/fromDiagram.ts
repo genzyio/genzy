@@ -1,8 +1,8 @@
 import { type Node, type Edge, type Viewport } from "reactflow";
 import { type ProjectDefinition } from "../../models/project-definition.models";
-import { type Microservice as MicroserviceWithoutId } from "../../../diagrams/microservices/models";
-import { type Service as ServiceWithoutId } from "../../../diagrams/service/models";
-import { type Class as ClassWithoutId } from "../../../diagrams/class/models";
+import { type Microservice as MicroserviceWithoutId } from "@features/diagrams/microservices/models";
+import { type Service as ServiceWithoutId } from "@features/diagrams/service/models";
+import { type Class as ClassWithoutId } from "@features/diagrams/class/models";
 
 export type AdaptedProjectDefinition = {
   data: ProjectDefinitionData;

@@ -1,7 +1,7 @@
 import { type FC, useEffect, useState } from "react";
 import { type Node } from "reactflow";
 import { type Microservice } from "./models";
-import { ConfirmationModal } from "../../../core/components/confirmation-modal";
+import { ConfirmationModal } from "@core/components/confirmation-modal";
 
 export type RemoveMicroserviceModalInstance = {
   openFor: (node: Node<Microservice>) => any;

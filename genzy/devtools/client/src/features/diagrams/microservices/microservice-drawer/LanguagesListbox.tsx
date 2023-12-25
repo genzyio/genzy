@@ -1,10 +1,6 @@
 import { type FC } from "react";
-import {
-  type ListboxProps,
-  type ListboxTemplateProps,
-  Listbox,
-} from "../../../../core/components/listbox";
-import { classNames } from "../../../../core/utils/classNames";
+import { type ListboxProps, type ListboxTemplateProps, Listbox } from "@core/components/listbox";
+import { classNames } from "@core/utils/classNames";
 import { LanguageIcons } from "../constants";
 
 type LanguageData = {

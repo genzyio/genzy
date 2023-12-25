@@ -1,8 +1,8 @@
 import { type FC, useEffect, useState } from "react";
 import { type Edge } from "reactflow";
 import { type Communication } from "./models";
-import { useProjectDefinitionContext } from "../../project-workspace/contexts/project-definition.context";
-import { ConfirmationModal } from "../../../core/components/confirmation-modal";
+import { useProjectDefinitionContext } from "@features/project-workspace/contexts/project-definition.context";
+import { ConfirmationModal } from "@core/components/confirmation-modal";
 
 export type RemoveCommunicationModalInstance = {
   openFor: (edge: Edge<Communication>) => any;

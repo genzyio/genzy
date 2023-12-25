@@ -1,15 +1,15 @@
 import { useState, type FC, useEffect } from "react";
 import { type Service } from "../models";
 import { EditFunction } from "./EditFunction";
-import { Button } from "../../../../core/components/button";
+import { Button } from "@core/components/button";
 import { primitiveTypes } from "../../class/TypesContext";
-import { useSequenceGenerator } from "../../../../core/hooks/useStringSequence";
+import { useSequenceGenerator } from "@core/hooks/useStringSequence";
 import cloneDeep from "lodash.clonedeep";
 import { useValidationContext } from "../../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../../common/contexts/dirty-check-context";
 import { ServiceForm } from "./ServiceForm";
-import { VerticallyFlippable } from "../../../../core/components/wrappers/flippable";
-import { createFunctionalComponent } from "../../../../core/utils/components";
+import { VerticallyFlippable } from "@core/components/wrappers/flippable";
+import { createFunctionalComponent } from "@core/utils/components";
 
 const FunctionalEditFunction = createFunctionalComponent(EditFunction, "EditFunction");
 

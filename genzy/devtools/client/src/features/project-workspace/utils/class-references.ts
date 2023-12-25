@@ -1,5 +1,5 @@
-import { type Class } from "../../diagrams/class/models";
-import { primitiveTypes } from "../../diagrams/class/TypesContext";
+import { type Class } from "@features/diagrams/class/models";
+import { primitiveTypes } from "@features/diagrams/class/TypesContext";
 
 function extractComplexTypes(_class: Class) {
   const complexTypes = _class.attributes

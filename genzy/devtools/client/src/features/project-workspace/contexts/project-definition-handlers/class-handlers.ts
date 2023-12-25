@@ -1,13 +1,13 @@
 import { type DispatcherType, projectDefinitionActions } from "../project-definition.dispatcher";
-import { type Class } from "../../../diagrams/class/models";
+import { type Class } from "@features/diagrams/class/models";
 import { type HandlerType } from "./types";
 import {
   type ProjectDefinition,
   type ClassDiagram,
   type ServiceDiagram,
 } from "../../models/project-definition.models";
-import { createClassNode } from "../../../diagrams/common/utils/nodeFactories";
-import { findArrayDiff } from "../../../../core/utils/diff";
+import { createClassNode } from "@features/diagrams/common/utils/nodeFactories";
+import { findArrayDiff } from "@core/utils/diff";
 import { extractComplexTypes } from "../../utils/class-references";
 
 // Add

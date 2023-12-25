@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { type Node, type Edge, useNodesState, useEdgesState, Connection, addEdge } from "reactflow";
 import { type Microservice, type Communication } from "./models";
-import { useProjectDefinitionContext } from "../../project-workspace/contexts/project-definition.context";
-import { projectDefinitionActions } from "../../project-workspace/contexts/project-definition.dispatcher";
-import { findArrayDiff } from "../../../core/utils/diff";
+import { useProjectDefinitionContext } from "@features/project-workspace/contexts/project-definition.context";
+import { projectDefinitionActions } from "@features/project-workspace/contexts/project-definition.dispatcher";
+import { findArrayDiff } from "@core/utils/diff";
 
 export const useMicroservicesDiagramState = (
   initialNodes: Node<Microservice>[],

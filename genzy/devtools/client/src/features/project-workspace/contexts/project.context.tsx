@@ -1,8 +1,8 @@
 import { type FC, type PropsWithChildren, createContext, useContext, useState } from "react";
-import { type Project } from "../../projects/models/project.models";
-import { useProject } from "../../projects/hooks/useProjects";
-import { useProjectNavigation } from "../../projects/hooks/useProjectNavigation";
-import { EmptyDiagram } from "../../diagrams/EmptyDiagram";
+import { type Project } from "@features/projects/models/project.models";
+import { useProject } from "@features/projects/hooks/useProjects";
+import { useProjectNavigation } from "@features/projects/hooks/useProjectNavigation";
+import { EmptyDiagram } from "@features/diagrams/EmptyDiagram";
 
 type ProjectContextValues = {
   project: Project;

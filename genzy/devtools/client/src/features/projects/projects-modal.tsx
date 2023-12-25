@@ -1,10 +1,10 @@
-import { Modal } from "../../core/components/modal";
-import { Tabs } from "../../core/components/tabs";
-import { Tab } from "../../core/components/tab";
+import { Modal } from "@core/components/modal";
+import { Tabs } from "@core/components/tabs";
+import { Tab } from "@core/components/tab";
 import { RecentlyOpenedList } from "./components/recently-opened/recently-opened-list";
 import { CreateProjectForm } from "./components/create/create-project-form";
 import { ImportProjectForm } from "./components/import/import-project-form";
-import { EmptyDiagram } from "../diagrams/EmptyDiagram";
+import { EmptyDiagram } from "@features/diagrams/EmptyDiagram";
 import { useProjectNavigation } from "./hooks/useProjectNavigation";
 import { useRefresh } from "./hooks/useRefresh";
 

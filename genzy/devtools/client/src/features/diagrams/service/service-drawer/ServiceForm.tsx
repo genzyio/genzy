@@ -1,9 +1,9 @@
 import { type FC, useState } from "react";
 import { type Service, type ServiceType } from "../models";
-import { TextField } from "../../../../core/components/text-field";
+import { TextField } from "@core/components/text-field";
 import { useValidationContext } from "../../common/contexts/validation-context";
 import { IDENTIFIER_REGEX } from "../../../../patterns";
-import { Select } from "../../../../core/components/select";
+import { Select } from "@core/components/select";
 import { SERVICE_TYPE_DISPLAY_NAME } from "../models";
 
 const serviceTypeOptions = Object.entries(SERVICE_TYPE_DISPLAY_NAME)

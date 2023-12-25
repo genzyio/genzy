@@ -1,16 +1,16 @@
 import { type FC } from "react";
 import { type Class, type Attribute, type Method } from "../models";
-import { useSequenceGenerator } from "../../../../core/hooks/useStringSequence";
-import { TextField } from "../../../../core/components/text-field";
+import { useSequenceGenerator } from "@core/hooks/useStringSequence";
+import { TextField } from "@core/components/text-field";
 import { IDENTIFIER_REGEX } from "../../../../patterns";
-import { Button } from "../../../../core/components/button";
+import { Button } from "@core/components/button";
 import { EditAttribute } from "./attributes/EditAttribute";
 import { EditMethod } from "./methods/EditMethod";
 import { useValidationContext } from "../../common/contexts/validation-context";
 import { useDirtyCheckContext } from "../../common/contexts/dirty-check-context";
 import { useClassState } from "./class-state";
-import { VerticallyFlippable } from "../../../../core/components/wrappers/flippable";
-import { createFunctionalComponent } from "../../../../core/utils/components";
+import { VerticallyFlippable } from "@core/components/wrappers/flippable";
+import { createFunctionalComponent } from "@core/utils/components";
 
 const FunctionalEditAttribute = createFunctionalComponent(EditAttribute, "EditAttribute");
 const FunctionalEditMethod = createFunctionalComponent(EditMethod, "EditMethod");

@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { type Node, type Edge, useNodesState, useEdgesState, Connection, addEdge } from "reactflow";
 import { type Service } from "./models";
-import { useProjectDefinitionContext } from "../../project-workspace/contexts/project-definition.context";
-import { projectDefinitionActions } from "../../project-workspace/contexts/project-definition.dispatcher";
+import { useProjectDefinitionContext } from "@features/project-workspace/contexts/project-definition.context";
+import { projectDefinitionActions } from "@features/project-workspace/contexts/project-definition.dispatcher";
 
 export const useServiceDiagramState = (
   microserviceId: string,

@@ -1,7 +1,7 @@
 import { type ProjectDefinition } from "../../models/project-definition.models";
 import { type HandlerType } from "./types";
-import { type Plugin } from "../../../diagrams/microservices/models";
-import { type Service } from "../../../diagrams/service/models";
+import { type Plugin } from "@features/diagrams/microservices/models";
+import { type Service } from "@features/diagrams/service/models";
 import { type DispatcherType, projectDefinitionActions } from "../project-definition.dispatcher";
 import { type Node } from "reactflow";
 import axios from "axios";
