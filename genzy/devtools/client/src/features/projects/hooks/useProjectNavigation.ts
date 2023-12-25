@@ -12,7 +12,7 @@ const useProjectNavigation = (): ProjectNavigation => {
   const navigate = useNavigate();
   const modifyRecentlyOpenedAction = useAction<string>(modifyRecentlyOpened, {
     onSuccess: () => {},
-    onError: (error) => {},
+    onError: () => {},
   });
 
   const openProject = useCallback(

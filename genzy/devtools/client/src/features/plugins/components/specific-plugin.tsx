@@ -1,6 +1,5 @@
 import { type FC, useState, useMemo, useEffect } from "react";
 import type { Dependency, NPMPackage, Version } from "../api/specific-plugin.contracts";
-import { usePlugin } from "../hooks/usePlugin";
 import { Select } from "../../../core/components/select";
 import { Button } from "../../../core/components/button";
 import { KeywordsList } from "./keywords";
@@ -12,7 +11,6 @@ import { useProjectDefinitionContext } from "../../project-workspace/contexts/pr
 import { projectDefinitionActions } from "../../project-workspace/contexts/project-definition.dispatcher";
 import { useMicroserviceContext } from "../../diagrams/common/contexts/microservice.context";
 import { useNotifications } from "../../../core/hooks/useNotifications";
-import { Loader } from "./loader";
 import { useOutletContext } from "react-router-dom";
 
 type DependenciesProps = {

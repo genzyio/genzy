@@ -4,6 +4,10 @@
   "version": "1.0.0",
   "source": "src/index.html",
   "scripts": {
+    "prebuild": "run-s clean lint",
+    "clean": "rimraf ./dist",
+    "lint": "run-s lint:code",
+    "lint:code": "eslint --ext ts,tsx src",
     "start": "parcel",
     "build": "parcel build src/index.html --public-url ./ --no-scope-hoist --no-optimize --no-cache --no-source-maps --detailed-report"
   },
@@ -38,10 +42,17 @@
     "@types/lodash.clonedeep": "^4.5.7",
     "@types/react": "^18.2.7",
     "@types/react-dom": "^18.2.4",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
     "buffer": "^6.0.3",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "npm-run-all": "^4.1.5",
     "parcel": "^2.8.3",
     "parcel-reporter-static-files-copy": "^1.5.0",
     "process": "^0.11.10",
+    "rimraf": "^5.0.5",
     "typescript": "^5.2.2"
   }
 }

@@ -31,7 +31,11 @@ export const RecentlyOpenedListItem: FC<RecentlyOpenedListItemProps> = ({
     <li key={recentlyOpenedProject.path}>
       <div className="flex justify-between gap-x-6 py-3 hover:bg-gray-800 rounded-lg p-1">
         <div className="flex min-w-0 gap-x-4">
-          <a href={getProjectScreenshotUrl(recentlyOpenedProject.name)} target="_blank">
+          <a
+            href={getProjectScreenshotUrl(recentlyOpenedProject.name)}
+            target="_blank"
+            rel="noreferrer"
+          >
             <img
               className="h-18 w-18 flex-none rounded-full bg-gray-50 border border-black-100"
               src={getProjectScreenshotUrl(recentlyOpenedProject.name)}
@@ -45,7 +49,7 @@ export const RecentlyOpenedListItem: FC<RecentlyOpenedListItemProps> = ({
             >
               {recentlyOpenedProject.name}
             </p>
-            {!!recentlyOpenedProject.openedAt ? (
+            {recentlyOpenedProject.openedAt ? (
               <p className="mt-1 truncate text-xs leading-5 text-gray-500">
                 Opened: {moment(recentlyOpenedProject.openedAt).fromNow()}
               </p>

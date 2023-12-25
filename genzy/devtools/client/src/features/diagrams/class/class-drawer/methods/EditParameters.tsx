@@ -8,7 +8,7 @@ import { capitalizeFirstLetter, stringifyNumber } from "../../../../../core/util
 
 type EditParametersProps = {
   parameters: Parameter[];
-  onParameterChange: (index: number, {}) => any;
+  onParameterChange: (index: number, param: any) => any;
   onDeleteParameter: (index: number) => any;
   types: any;
 };

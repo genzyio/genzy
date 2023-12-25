@@ -14,7 +14,7 @@ export const useClassDiagramState = (
   const { updateTypes } = useTypesContext(microserviceId);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Class>([...initialNodes]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<{}>([...initialEdges]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<unknown>([...initialEdges]);
 
   useEffect(() => {
     projectDefinition.classes[microserviceId] = {

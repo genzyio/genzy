@@ -132,15 +132,12 @@ const useUndoableProjectDefinition = (
 
   const [shouldApplyUndoRedoOnProject, setShouldApplyUndoRedoOnProject] = useState(false);
   const [shouldSaveNextUndoRedoState, setShouldSaveNextUndoRedoState] = useState(false);
-  const [
-    undoState,
-    setUndoState,
-    { past, future, undo, canUndo, redo, canRedo, resetInitialState },
-  ] = useUndoable(undefined, {
-    ignoreIdenticalMutations: false,
-    cloneState: true,
-    behavior: "mergePastReversed",
-  });
+  const [undoState, setUndoState, { future, undo, canUndo, redo, canRedo, resetInitialState }] =
+    useUndoable(undefined, {
+      ignoreIdenticalMutations: false,
+      cloneState: true,
+      behavior: "mergePastReversed",
+    });
 
   const getNextUndoState = () =>
     JSON.stringify({

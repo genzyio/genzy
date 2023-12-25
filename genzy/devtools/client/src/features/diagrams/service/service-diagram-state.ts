@@ -12,7 +12,7 @@ export const useServiceDiagramState = (
   const { projectDefinition, dispatcher, setExecuteOnUndoRedo } = useProjectDefinitionContext();
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Service>([...initialNodes]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<{}>([...initialEdges]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<unknown>([...initialEdges]);
 
   useEffect(() => {
     projectDefinition.services[microserviceId] = {

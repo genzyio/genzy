@@ -12,8 +12,8 @@ import { useClassState } from "./class-state";
 import { VerticallyFlippable } from "../../../../core/components/wrappers/flippable";
 import { createFunctionalComponent } from "../../../../core/utils/components";
 
-const FunctionalEditAttribute = createFunctionalComponent(EditAttribute);
-const FunctionalEditMethod = createFunctionalComponent(EditMethod);
+const FunctionalEditAttribute = createFunctionalComponent(EditAttribute, "EditAttribute");
+const FunctionalEditMethod = createFunctionalComponent(EditMethod, "EditMethod");
 
 type ClassDrawerProps = {
   classId: string;

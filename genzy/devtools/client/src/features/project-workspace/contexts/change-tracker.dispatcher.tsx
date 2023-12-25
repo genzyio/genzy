@@ -14,7 +14,7 @@ function createChangeTrackingDispatcherWrapper(
       case projectDefinitionActions.addMicroservice:
         setStateForMS(result.id, "ADDED");
         break;
-      case projectDefinitionActions.deleteMicroservice:
+      case projectDefinitionActions.deleteMicroservice: {
         const node = projectDefinition.microservices.nodes.find(
           (node) => node.id === payload.microserviceId
         );
@@ -23,6 +23,7 @@ function createChangeTrackingDispatcherWrapper(
           setStateForMS(payload.microserviceId, "REMOVED");
         }
         break;
+      }
       case projectDefinitionActions.addRemoteProxy:
       case projectDefinitionActions.addRemoteProxies:
         setStateForMS(payload.dependentMicroserviceId, "MODIFIED");
@@ -32,13 +33,18 @@ function createChangeTrackingDispatcherWrapper(
       case projectDefinitionActions.updateCommunication:
       case projectDefinitionActions.removeServicesFromCommunication:
         break;
-      case projectDefinitionActions.microserviceMoved:
-        if (payload?.type !== "microserviceNode") break;
       case projectDefinitionActions.updateService: {
         projectDefinition.microservices.edges
           .filter((edge) => edge.target === payload.microserviceId)
           .filter((edge) => edge.data.services?.includes(payload.service?.id))
           .forEach((edge) => setStateForMS(edge.source, "MODIFIED"));
+        break;
+      }
+      case projectDefinitionActions.microserviceMoved: {
+        if (payload?.type === "microserviceNode") {
+          setStateForMS(payload.microserviceId, "MODIFIED");
+        }
+        break;
       }
       default:
         setStateForMS(payload.microserviceId, "MODIFIED");

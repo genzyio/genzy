@@ -25,7 +25,7 @@ const methods: MethodData[] = Object.keys(HTTP_METHOD).map((httpMethod) => ({
   color: colors[httpMethod],
 }));
 
-const MethodOptionTemplate: FC<ListboxTemplateProps<MethodData>> = ({ selected = false, data }) => {
+const MethodOptionTemplate: FC<ListboxTemplateProps<MethodData>> = ({ data }) => {
   const { color, method } = data;
 
   return (

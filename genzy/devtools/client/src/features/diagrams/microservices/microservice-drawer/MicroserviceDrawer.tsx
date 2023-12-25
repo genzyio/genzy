@@ -10,7 +10,7 @@ import { useMicroserviceState } from "./microservice-state";
 import { VerticallyFlippable } from "../../../../core/components/wrappers/flippable";
 import { createFunctionalComponent } from "../../../../core/utils/components";
 
-const FunctionalEditService = createFunctionalComponent(EditService);
+const FunctionalEditService = createFunctionalComponent(EditService, "EditService");
 
 type MicroserviceDrawerProps = {
   microserviceId: string;

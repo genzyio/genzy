@@ -131,10 +131,10 @@ const findSourceAndTargetHandles = (firstNode: Node<any>, secondNode: Node<any>)
 };
 
 function getPackageJson(plugin: Plugin) {
-  return new Promise(async (resolve, reject) => {
-    await axios
+  return new Promise((resolve, reject) => {
+    axios
       .get(`https://www.npmjs.com/package/${plugin.name}/v/${plugin.version}/index`)
-      .then(async (response) => {
+      .then((response) => {
         const files = response.data?.files;
         const pluginJsonHex = files["/package.json"]?.hex;
         if (!pluginJsonHex) {
@@ -142,7 +142,7 @@ function getPackageJson(plugin: Plugin) {
           return;
         }
 
-        await axios
+        axios
           .get(`https://www.npmjs.com/package/${plugin.name}/file/${pluginJsonHex}`)
           .then((response) => resolve(response.data))
           .catch((error) => reject(error));

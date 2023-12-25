@@ -9,15 +9,7 @@ export type TabProps = PropsWithChildren & {
   onClose?: (params: { id: string; index: number }) => void;
 };
 
-export const Tab: FC<TabProps> = ({
-  id = undefined,
-  title,
-  className = undefined,
-  icon = undefined,
-  onChange = undefined,
-  onClose = undefined,
-  children,
-}) => {
+export const Tab: FC<TabProps> = ({ className = undefined, children }) => {
   if (!className) return children;
 
   return <div className={className}>{children}</div>;

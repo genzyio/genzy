@@ -93,7 +93,7 @@ export const AutoSaveContextProvider: FC<PropsWithChildren> = ({ children }) => 
         resetStates();
         setLastAutoSave(moment());
       },
-      onError: (error) => {},
+      onError: () => {},
     }
   );
 

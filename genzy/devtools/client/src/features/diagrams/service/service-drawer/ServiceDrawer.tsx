@@ -11,7 +11,7 @@ import { ServiceForm } from "./ServiceForm";
 import { VerticallyFlippable } from "../../../../core/components/wrappers/flippable";
 import { createFunctionalComponent } from "../../../../core/utils/components";
 
-const FunctionalEditFunction = createFunctionalComponent(EditFunction);
+const FunctionalEditFunction = createFunctionalComponent(EditFunction, "EditFunction");
 
 type ServiceDrawerProps = {
   serviceId: string;

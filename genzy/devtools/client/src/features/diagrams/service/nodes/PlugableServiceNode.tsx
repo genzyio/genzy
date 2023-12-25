@@ -6,10 +6,7 @@ import { NodeBase } from "../../common/components/nodes/NodeBase";
 
 type PlugableServiceNodeProps = NodeProps<Service>;
 
-export const PlugableServiceNode: FC<PlugableServiceNodeProps> = ({
-  id: serviceId,
-  data: service,
-}) => {
+export const PlugableServiceNode: FC<PlugableServiceNodeProps> = ({ data: service }) => {
   return (
     <ConnectableNodeWrapper>
       <NodeBase

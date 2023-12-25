@@ -11,7 +11,7 @@ type ImageNodeProps = NodeProps<{
   height?: number;
 }>;
 
-export const ImageNode: FC<ImageNodeProps> = ({ id: nodeId, data: imageData }) => {
+export const ImageNode: FC<ImageNodeProps> = ({ data: imageData }) => {
   return (
     <div className="image-node">
       <ConnectableNodeWrapper>
