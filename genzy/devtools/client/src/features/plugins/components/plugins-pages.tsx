@@ -8,7 +8,7 @@ import { Button } from "@core/components/button";
 import { useParams } from "react-router-dom";
 import { usePluginsNavigation } from "../hooks/usePluginsNavigation";
 import { usePlugin } from "../hooks/usePlugin";
-import { Loader } from "./loader";
+import { Loader } from "@core/components/loader";
 
 export const SpecificPluginPage: FC = () => {
   const { closeSpecificPlugin } = usePluginsNavigation();

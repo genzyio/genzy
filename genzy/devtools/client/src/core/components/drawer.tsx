@@ -1,5 +1,5 @@
 import { type FC, type PropsWithChildren, useState } from "react";
-import { XMark } from "./icons/x-mark";
+import { XMark } from "../icons/x-mark";
 
 export const Drawer: FC<
   {

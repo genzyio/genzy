@@ -4,7 +4,7 @@ import { KeywordsList } from "./keywords";
 import { useMicroserviceContext } from "@features/diagrams/common/contexts/microservice.context";
 import { useProjectDefinitionContext } from "@features/project-workspace/contexts/project-definition.context";
 import { useSpecificPluginVersion } from "../hooks/useSpecificPluginVersion";
-import { LoadingRow } from "./loading-row";
+import { LoadingRow } from "@core/components/loading-row";
 import { usePluginsNavigation } from "../hooks/usePluginsNavigation";
 
 type PluginProps = {

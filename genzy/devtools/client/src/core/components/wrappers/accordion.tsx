@@ -1,5 +1,5 @@
 import { type FC, type PropsWithChildren } from "react";
-import { ArrowDown, ArrowUp } from "../icons/arrows";
+import { ArrowDown, ArrowUp } from "../../icons/arrows";
 import { Disclosure, Transition } from "@headlessui/react";
 
 type AccordionProps = PropsWithChildren & {

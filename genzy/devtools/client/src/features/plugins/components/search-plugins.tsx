@@ -5,7 +5,7 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { useSearch } from "../hooks/useSearch";
 import { KeywordsList } from "./keywords";
 import moment from "moment";
-import { LoadingRow } from "./loading-row";
+import { LoadingRow } from "@core/components/loading-row";
 import { useIsPluginInstalled } from "../hooks/useIsPluginInstalled";
 import { usePluginsNavigation } from "../hooks/usePluginsNavigation";
 import { useSearchParams } from "react-router-dom";

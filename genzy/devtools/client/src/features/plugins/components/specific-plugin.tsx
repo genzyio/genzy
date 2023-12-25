@@ -3,7 +3,7 @@ import type { Dependency, NPMPackage, Version } from "../api/specific-plugin.con
 import { Select } from "@core/components/select";
 import { Button } from "@core/components/button";
 import { KeywordsList } from "./keywords";
-import { NewTabLink } from "./new-tab-link";
+import { NewTabLink } from "@core/components/new-tab-link";
 import { Section } from "./section";
 import moment from "moment";
 import { useIsPluginInstalled } from "../hooks/useIsPluginInstalled";

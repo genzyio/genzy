@@ -17,7 +17,7 @@ import { ClosableWrapper } from "../../common/components/ClosableWrapper";
 import cloneDeep from "lodash.clonedeep";
 import { useValidationContext } from "../../common/contexts/validation-context";
 import { Checkbox } from "@core/components/checkbox";
-import { XMark } from "@core/components/icons/x-mark";
+import { XMark } from "@core/icons/x-mark";
 import { MethodListitem } from "./MethodsListbox";
 
 type EditFunctionProps = {

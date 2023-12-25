@@ -1,5 +1,5 @@
 import { type FC, type PropsWithChildren } from "react";
-import { ArrowUp } from "@core/components/icons/arrows";
+import { ArrowUp } from "@core/icons/arrows";
 
 type ClosableWrapperProps = PropsWithChildren & {
   className?: string;
