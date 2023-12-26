@@ -1,6 +1,6 @@
 import { type FC, type PropsWithChildren, Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { classNames } from "../utils/class-names";
+import { classNames } from "../../utils/class-names";
 
 export type DropDownMenuProps = PropsWithChildren & {
   icon: React.ElementType;
@@ -47,51 +47,5 @@ export const DropDownMenu: FC<DropDownMenuProps> = ({
         </Menu.Items>
       </Transition>
     </Menu>
-  );
-};
-
-type DropdownItemLinkProps = PropsWithChildren & {
-  href: string;
-};
-
-export const DropdownItemLink: FC<DropdownItemLinkProps> = ({ href, children }) => {
-  return (
-    <Menu.Item>
-      {({ active }) => (
-        <a
-          href={href}
-          className={classNames(
-            "font-medium text-gray-300",
-            active ? "bg-gray-500" : "",
-            "block px-4 py-2 text-sm"
-          )}
-        >
-          {children}
-        </a>
-      )}
-    </Menu.Item>
-  );
-};
-
-type DropdownItemHandlerProps = PropsWithChildren & {
-  onClick: () => any;
-};
-
-export const DropdownItemHandler: FC<DropdownItemHandlerProps> = ({ onClick, children }) => {
-  return (
-    <Menu.Item>
-      {({ active }) => (
-        <p
-          onClick={onClick}
-          className={classNames(
-            "font-medium text-gray-300 cursor-pointer",
-            active ? "bg-gray-500" : "",
-            "block px-4 py-2 text-sm"
-          )}
-        >
-          {children}
-        </p>
-      )}
-    </Menu.Item>
   );
 };

@@ -1,9 +1,8 @@
 import { type FC, useState } from "react";
 import { type Service, type ServiceType } from "../models";
-import { TextField } from "@core/components/text-field";
+import { Form } from "@core/components/form";
 import { useValidationContext } from "../../common/contexts/validation.context";
 import { IDENTIFIER_REGEX } from "../../../../patterns";
-import { Select } from "@core/components/select";
 import { SERVICE_TYPE_DISPLAY_NAME } from "../models";
 
 const serviceTypeOptions = Object.entries(SERVICE_TYPE_DISPLAY_NAME)
@@ -62,7 +61,7 @@ export const ServiceForm: FC<ServiceFormProps> = ({
     <>
       <div className="flex mb-1 w-full space-x-2">
         <span className="w-2/3">
-          <TextField
+          <Form.TextField
             label="Name"
             value={service.name}
             onChange={handleNameUpdate}
@@ -72,7 +71,7 @@ export const ServiceForm: FC<ServiceFormProps> = ({
           />
         </span>
         <span className="w-1/3">
-          <Select
+          <Form.SelectOption
             label="Type"
             value={service.type}
             onChange={(type) => handleTypeChange(type as ServiceType)}
@@ -82,10 +81,14 @@ export const ServiceForm: FC<ServiceFormProps> = ({
       </div>
       <div className="flex w-full mb-5 space-x-2">
         <span className="w-1/2" hidden={!showHost}>
-          <TextField value={service.host} onChange={handleHostChange} label="Host" />
+          <Form.TextField value={service.host} onChange={handleHostChange} label="Host" />
         </span>
         <span className={showHost ? "w-1/2" : "flex-1"} hidden={!showBasePath}>
-          <TextField value={service.basePath} onChange={handleBasePathUpdate} label="Base Path" />
+          <Form.TextField
+            value={service.basePath}
+            onChange={handleBasePathUpdate}
+            label="Base Path"
+          />
         </span>
       </div>
     </>

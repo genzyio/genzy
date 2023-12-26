@@ -2,8 +2,7 @@ import { type FC, useState, useCallback, useEffect } from "react";
 import { useProjectContext } from "../contexts/project.context";
 import { useProjectDefinitionContext } from "../contexts/project-definition.context";
 import { EmptyDiagram } from "@features/diagrams/empty-diagram";
-import { Tabs, type TabsInstance } from "@core/components/tabs";
-import { Tab, type TabProps } from "@core/components/tab";
+import { Tabs, type TabsInstance, type TabProps } from "@core/components/tabs";
 import { type Node, ReactFlowProvider } from "reactflow";
 import { type Microservice } from "@features/diagrams/microservices/models";
 import { ProjectToolbar } from "./project-toolbar";
@@ -171,12 +170,12 @@ export const Project: FC = () => {
           <TypesContextProvider>
             {!isDocsActive && <ProjectToolbar />}
 
-            <Tabs
+            <Tabs.Containter
               onInit={setTabsInstance}
               invert={true}
               navigationContainerClassName="border-b border-gray-100"
             >
-              <Tab
+              <Tabs.Tab
                 title="Microservices"
                 onChange={() => {
                   setSearchParams((params) => {
@@ -187,11 +186,11 @@ export const Project: FC = () => {
                 }}
               >
                 <MicroserviceDiagramWrapper onMicroserviceDeleted={removeTabsForMicroservice} />
-              </Tab>
+              </Tabs.Tab>
 
               {tabs.map((t) => {
                 return (
-                  <Tab
+                  <Tabs.Tab
                     id={t.id}
                     key={t.title}
                     title={t.title}
@@ -202,10 +201,10 @@ export const Project: FC = () => {
                     onClose={({ id }) => setTabs((tabs) => tabs.filter((tab) => tab.id !== id))}
                   >
                     {t.children}
-                  </Tab>
+                  </Tabs.Tab>
                 );
               })}
-            </Tabs>
+            </Tabs.Containter>
           </TypesContextProvider>
         </MicroserviceNodeContextProvider>
       </ReactFlowProvider>

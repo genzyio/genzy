@@ -1,6 +1,6 @@
 import { type FC, useState } from "react";
 import type { Service, Communication } from "../models";
-import { Checkbox } from "@core/components/checkbox";
+import { Form } from "@core/components/form";
 import { Button } from "@core/components/button";
 import { useDirtyCheckContext } from "../../common/contexts/dirty-check.context";
 
@@ -36,7 +36,7 @@ export const CommunicationDrawer: FC<CommunicationDrawerProps> = ({
       <div className="mx-4">
         {possibleServices?.map((service: Service) => {
           return (
-            <Checkbox
+            <Form.Checkbox
               key={service.id}
               label={service.name}
               checked={selectedServices.includes(service.id)}

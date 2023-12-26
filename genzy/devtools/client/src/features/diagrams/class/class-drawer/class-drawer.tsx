@@ -1,7 +1,7 @@
 import { type FC } from "react";
 import { type Class, type Attribute, type Method } from "../models";
 import { useSequenceGenerator } from "@core/hooks/useStringSequence";
-import { TextField } from "@core/components/text-field";
+import { Form } from "@core/components/form";
 import { IDENTIFIER_REGEX } from "../../../../patterns";
 import { Button } from "@core/components/button";
 import { EditAttribute } from "./attributes/edit-attribute";
@@ -91,7 +91,7 @@ export const ClassDrawer: FC<ClassDrawerProps> = ({
       <div className="mx-4">
         <div className="flex w-full mb-5">
           <div className="flex-1">
-            <TextField
+            <Form.TextField
               label="Name"
               value={className}
               onChange={handleClassNameUpdate}

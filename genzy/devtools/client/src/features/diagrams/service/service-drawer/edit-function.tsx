@@ -6,9 +6,8 @@ import {
   type ServiceType,
   PARAM_SOURCE,
 } from "../models";
-import { TextField } from "@core/components/text-field";
+import { Form } from "@core/components/form";
 import { FunctionCard } from "./function-card";
-import { Select } from "@core/components/select";
 import { IDENTIFIER_REGEX, ROUTE_REGEX } from "../../../../patterns";
 import { useMicroserviceContext } from "../../common/contexts/microservice.context";
 import { useTypesContext } from "../../class/types.context";
@@ -16,7 +15,6 @@ import { RoundCard } from "../../common/components/round-card";
 import { ClosableWrapper } from "../../common/components/closable-wrapper";
 import cloneDeep from "lodash.clonedeep";
 import { useValidationContext } from "../../common/contexts/validation.context";
-import { Checkbox } from "@core/components/checkbox";
 import { XMark } from "@core/icons/x-mark";
 import { MethodListitem } from "./methods-listbox";
 
@@ -121,7 +119,7 @@ export const EditFunction: FC<EditFunctionProps> = ({
               }}
             />
             <div className="flex-1">
-              <TextField
+              <Form.TextField
                 value={fun.route}
                 onChange={(v) => {
                   fun.route = v;
@@ -138,7 +136,7 @@ export const EditFunction: FC<EditFunctionProps> = ({
         )}
         <div key={fun.id} className="flex w-full mb-2 items-top space-x-2">
           <div className="flex-1">
-            <TextField
+            <Form.TextField
               value={fun.name}
               onChange={(v) => {
                 fun.name = v;
@@ -151,7 +149,7 @@ export const EditFunction: FC<EditFunctionProps> = ({
               }
             />
           </div>
-          <Select
+          <Form.SelectOption
             value={fun.returnType}
             onChange={(v) => {
               fun.returnType = v;
@@ -161,7 +159,7 @@ export const EditFunction: FC<EditFunctionProps> = ({
             label="Returns"
           />
           <span className="mt-[2em]">
-            <Checkbox
+            <Form.Checkbox
               label="Array"
               checked={fun.returnsCollection}
               onChange={() => {
@@ -179,7 +177,7 @@ export const EditFunction: FC<EditFunctionProps> = ({
           {fun.params.map((param, paramIndex) => (
             <div key={param.id} className="flex w-full justify-top space-x-1">
               <div className="w-1/3 flex-1">
-                <TextField
+                <Form.TextField
                   value={param.name}
                   onChange={(v) => {
                     param.name = v;
@@ -200,7 +198,7 @@ export const EditFunction: FC<EditFunctionProps> = ({
                 />
               </div>
               {editRoute && (
-                <Select
+                <Form.SelectOption
                   className="text-xs"
                   value={param.source}
                   onChange={(v) => {
@@ -210,7 +208,7 @@ export const EditFunction: FC<EditFunctionProps> = ({
                   options={Object.keys(PARAM_SOURCE)}
                 />
               )}
-              <Select
+              <Form.SelectOption
                 value={param.type}
                 onChange={(v) => {
                   param.type = v;
@@ -221,7 +219,7 @@ export const EditFunction: FC<EditFunctionProps> = ({
 
               <span className="mt-[0.5em]">
                 <div className="flex space-x-1 items-center">
-                  <Checkbox
+                  <Form.Checkbox
                     label="Array"
                     checked={param.isCollection}
                     onChange={() => {
@@ -229,7 +227,7 @@ export const EditFunction: FC<EditFunctionProps> = ({
                       updateState();
                     }}
                   />
-                  <Checkbox
+                  <Form.Checkbox
                     label="Optional"
                     checked={param.isOptional}
                     onChange={() => {

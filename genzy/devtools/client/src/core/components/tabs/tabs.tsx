@@ -1,7 +1,7 @@
 import { type TabProps } from "./tab";
 import { type FC, type PropsWithChildren, useMemo, useState, useEffect } from "react";
-import { XMark } from "../icons/x-mark";
-import { flatten } from "../utils/object";
+import { XMark } from "../../icons/x-mark";
+import { flatten } from "../../utils/object";
 
 export type TabsInstance = {
   activeTab: number;

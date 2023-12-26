@@ -1,5 +1,5 @@
 import { type FC } from "react";
-import { Listbox, type ListboxProps, type ListboxTemplateProps } from "@core/components/listbox";
+import { Form, type ListboxProps, type ListboxTemplateProps } from "@core/components/form";
 import { HTTP_METHOD } from "../models";
 
 const colors = {
@@ -47,7 +47,7 @@ export const MethodListitem: FC<MethodsListboxProps> = ({
 }) => {
   return (
     <div className={className}>
-      <Listbox
+      <Form.Listbox
         label={label}
         disabled={disabled}
         value={value}

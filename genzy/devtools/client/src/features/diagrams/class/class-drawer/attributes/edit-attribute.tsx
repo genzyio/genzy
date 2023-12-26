@@ -2,9 +2,7 @@ import { type FC, useState } from "react";
 import { type Attribute, type DataType } from "../../models";
 import { AttributeCard } from "./attribute-card";
 import { IDENTIFIER_REGEX } from "../../../../../patterns";
-import { TextField } from "@core/components/text-field";
-import { Select } from "@core/components/select";
-import { Checkbox } from "@core/components/checkbox";
+import { Form } from "@core/components/form";
 import { useMicroserviceContext } from "../../../common/contexts/microservice.context";
 import { useTypesContext } from "../../types.context";
 import { RoundCard } from "../../../common/components/round-card";
@@ -68,7 +66,7 @@ export const EditAttribute: FC<EditAttributeProps> = ({
       >
         <div className="flex space-x-2">
           <div className="flex-1">
-            <TextField
+            <Form.TextField
               label="Attribute Name"
               value={attribute.name}
               onChange={changeAttributeName}
@@ -78,7 +76,7 @@ export const EditAttribute: FC<EditAttributeProps> = ({
             />
           </div>
           <div className="min-w-[30%]">
-            <Select
+            <Form.SelectOption
               label="Attribute Type"
               value={attribute.type}
               onChange={changeAttributeType}
@@ -88,8 +86,16 @@ export const EditAttribute: FC<EditAttributeProps> = ({
         </div>
         <div className="mt-4 flex space-x-3 items-center">
           <label className="font-medium leading-6">Attribute options:</label>
-          <Checkbox label="Array" checked={attribute.isCollection} onChange={changeIsCollection} />
-          <Checkbox label="Optional" checked={attribute.isOptional} onChange={changeIsOptional} />
+          <Form.Checkbox
+            label="Array"
+            checked={attribute.isCollection}
+            onChange={changeIsCollection}
+          />
+          <Form.Checkbox
+            label="Optional"
+            checked={attribute.isOptional}
+            onChange={changeIsOptional}
+          />
         </div>
 
         <div className="flex justify-end">

@@ -1,5 +1,5 @@
 import { type FC } from "react";
-import { type ListboxProps, type ListboxTemplateProps, Listbox } from "@core/components/listbox";
+import { type ListboxProps, type ListboxTemplateProps, Form } from "@core/components/form";
 import { classNames } from "@core/utils/class-names";
 import { LanguageIcons } from "../constants";
 
@@ -54,7 +54,7 @@ export const LanguagesListitem: FC<LanguagesListboxProps> = ({
 }) => {
   return (
     <div className={className}>
-      <Listbox
+      <Form.Listbox
         label={label}
         disabled={disabled}
         value={value}

@@ -1,13 +1,9 @@
 import { type FC } from "react";
 import { type RecentlyOpenedProject } from "../../models/recently-opened.models";
 import { getProjectScreenshotUrl } from "../../api/project-screenshots.actions";
-import {
-  type DropDownMenuProps,
-  DropDownMenu,
-  DropdownItemHandler,
-} from "@core/components/dropdown";
+import { type DropDownMenuProps, DropDown } from "@core/components/dropdown";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
-import moment = require("moment");
+import moment from "moment";
 
 export type RecentlyOpenedListItemOption = {
   label: string | React.ReactElement;
@@ -63,13 +59,13 @@ export const RecentlyOpenedListItem: FC<RecentlyOpenedListItemProps> = ({
         {options && options.length ? (
           <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end justify-center mr-2">
             <div>
-              <DropDownMenu icon={EllipsisVerticalIcon} direction={optionDirection}>
+              <DropDown.Menu icon={EllipsisVerticalIcon} direction={optionDirection}>
                 {options.map((option, i) => (
-                  <DropdownItemHandler key={i} onClick={option.onClick}>
+                  <DropDown.HandlerItem key={i} onClick={option.onClick}>
                     {option.label}
-                  </DropdownItemHandler>
+                  </DropDown.HandlerItem>
                 ))}
-              </DropDownMenu>
+              </DropDown.Menu>
             </div>
           </div>
         ) : (

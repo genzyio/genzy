@@ -2,9 +2,7 @@ import { type FC, useState, useCallback } from "react";
 import { type DataType, type Method, type Parameter } from "../../models";
 import { MethodCard } from "./method-card";
 import { IDENTIFIER_REGEX } from "../../../../../patterns";
-import { TextField } from "@core/components/text-field";
-import { Select } from "@core/components/select";
-import { Checkbox } from "@core/components/checkbox";
+import { Form } from "@core/components/form";
 import { EditParameters } from "./edit-parameters";
 import { useTypesContext } from "../../types.context";
 import { useMicroserviceContext } from "../../../common/contexts/microservice.context";
@@ -104,7 +102,7 @@ export const EditMethod: FC<EditMethodProps> = ({ method, onChange, onDelete, na
       >
         <div className="flex space-x-2">
           <div className="flex-1">
-            <TextField
+            <Form.TextField
               value={method.name}
               onChange={changeMethodName}
               label="Method Name"
@@ -114,7 +112,7 @@ export const EditMethod: FC<EditMethodProps> = ({ method, onChange, onDelete, na
             />
           </div>
           <div className="min-w-[30%]">
-            <Select
+            <Form.SelectOption
               value={method.returnValue}
               onChange={changeReturnValue}
               options={types}
@@ -124,12 +122,12 @@ export const EditMethod: FC<EditMethodProps> = ({ method, onChange, onDelete, na
         </div>
         <div className="mt-1 flex space-x-3 items-center">
           <label className="text-sm font-medium leading-6">Return options:</label>
-          <Checkbox
+          <Form.Checkbox
             label="Array"
             checked={method.returnsCollection}
             onChange={changeReturnsCollection}
           />
-          <Checkbox label="Optional" checked={method.isOptional} onChange={changeIsOptional} />
+          <Form.Checkbox label="Optional" checked={method.isOptional} onChange={changeIsOptional} />
         </div>
 
         <EditParameters

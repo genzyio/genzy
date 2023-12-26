@@ -1,6 +1,6 @@
 import { type FC, useState, useEffect, useCallback } from "react";
 import { type NPMPackageInfo } from "../api/search.contracts";
-import { TextField } from "@core/components/text-field";
+import { Form } from "@core/components/form";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useSearch } from "../hooks/useSearch";
 import { KeywordsList } from "./keywords";
@@ -84,7 +84,7 @@ export const SearchPlugins: FC = () => {
     <>
       <div className="mt-5">
         <div className="mb-2">
-          <TextField
+          <Form.TextField
             autoFocus={true}
             title="Search packages"
             value={search}

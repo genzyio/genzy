@@ -1,6 +1,5 @@
 import { Modal } from "@core/components/modal";
 import { Tabs } from "@core/components/tabs";
-import { Tab } from "@core/components/tab";
 import { RecentlyOpenedList } from "./components/recently-opened/recently-opened-list";
 import { CreateProjectForm } from "./components/create/create-project-form";
 import { ImportProjectForm } from "./components/import/import-project-form";
@@ -25,17 +24,17 @@ export function ProjectsModal() {
           isOpen={true}
           onClose={() => {}}
         >
-          <Tabs>
-            <Tab className="mt-4" title="All">
+          <Tabs.Containter>
+            <Tabs.Tab className="mt-4" title="All">
               <RecentlyOpenedList />
-            </Tab>
-            <Tab className="mt-4" title="Create">
+            </Tabs.Tab>
+            <Tabs.Tab className="mt-4" title="Create">
               <CreateProjectForm key={createKey} onSaved={openProject} onCancel={createRefresh} />
-            </Tab>
-            <Tab className="mt-4" title="Import">
+            </Tabs.Tab>
+            <Tabs.Tab className="mt-4" title="Import">
               <ImportProjectForm key={importKey} onSaved={openProject} onCancel={importRefresh} />
-            </Tab>
-          </Tabs>
+            </Tabs.Tab>
+          </Tabs.Containter>
         </Modal>
       </div>
     </>

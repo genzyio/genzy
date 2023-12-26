@@ -7,7 +7,7 @@ import {
 import { useAction } from "@core/hooks/useAction";
 import { deleteRecentlyOpened } from "../../api/recently-opened.actions";
 import { type RecentlyOpenedProject } from "../../models/recently-opened.models";
-import { Checkbox } from "@core/components/checkbox";
+import { Form } from "@core/components/form";
 import { useNotifications } from "@core/hooks/useNotifications";
 import { extractErrorMessage } from "@core/utils/errors";
 import { deleteProject } from "../../api/project.actions";
@@ -155,7 +155,7 @@ export const RecentlyOpenedList: FC = () => {
           <p className="font-medium leading-6 mb-5">
             Are you sure you want to remove project "{selectedProject.name}" from workspace?
           </p>
-          <Checkbox
+          <Form.Checkbox
             label="Remove project contents from file system."
             checked={isFromFileChecked}
             onChange={(isChecked) => setFromFileChecked(isChecked)}

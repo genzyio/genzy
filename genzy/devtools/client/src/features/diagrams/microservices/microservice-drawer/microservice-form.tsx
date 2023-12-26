@@ -1,6 +1,6 @@
 import { type FC, useState } from "react";
 import { type Microservice, type Language } from "../models";
-import { TextField } from "@core/components/text-field";
+import { Form } from "@core/components/form";
 import { LanguagesListitem } from "./languages-listbox";
 import { useWatchModeContext } from "@features/project-workspace/contexts/watch-mode.context";
 import { useChangeTrackerContext } from "@features/project-workspace/contexts/change-tracker.context";
@@ -68,7 +68,7 @@ export const MicroserviceForm: FC<MicroserviceFormProps> = ({
       <div className="flex mb-1 w-full">
         <div className="flex space-x-2 w-full">
           <div className="flex-1">
-            <TextField
+            <Form.TextField
               label="Name"
               disabled={microserviceActive}
               value={name}
@@ -79,7 +79,7 @@ export const MicroserviceForm: FC<MicroserviceFormProps> = ({
             />
           </div>
 
-          <TextField value={version} onChange={handleVersionUpdate} label="Version" />
+          <Form.TextField value={version} onChange={handleVersionUpdate} label="Version" />
 
           <LanguagesListitem
             className="w-[10em]"
@@ -90,10 +90,14 @@ export const MicroserviceForm: FC<MicroserviceFormProps> = ({
         </div>
       </div>
       <div className="mb-1 w-full">
-        <TextField value={description} onChange={handleDescriptionUpdate} label="Description" />
+        <Form.TextField
+          value={description}
+          onChange={handleDescriptionUpdate}
+          label="Description"
+        />
       </div>
       <div className="mb-5 w-full">
-        <TextField value={basePath} onChange={handleBasePathUpdate} label="Base Path" />
+        <Form.TextField value={basePath} onChange={handleBasePathUpdate} label="Base Path" />
       </div>
     </>
   );

@@ -1,7 +1,6 @@
 import { type FC } from "react";
 import { type Service } from "../models";
-import { TextField } from "@core/components/text-field";
-import { Select } from "@core/components/select";
+import { Form } from "@core/components/form";
 import { useValidationContext } from "../../common/contexts/validation.context";
 import { IDENTIFIER_REGEX } from "../../../../patterns";
 import { SERVICE_TYPE_DISPLAY_NAME } from "../../service/models";
@@ -34,13 +33,13 @@ export const ServiceForm: FC<ServiceFormProps> = ({ service, onChange, nameExist
   return (
     <>
       <div className="space-y-2">
-        <TextField
+        <Form.TextField
           label="Service Name"
           value={serviceName}
           onChange={changeServiceName}
           error={(!isIdentifier && "Must be an identifier") || (!hasUniqueName && "Already exists")}
         />
-        <Select
+        <Form.SelectOption
           label="Service Type"
           value={serviceType}
           onChange={changeServiceType}

@@ -1,6 +1,6 @@
 import { type FC, useState, useMemo, useEffect } from "react";
 import type { Dependency, NPMPackage, Version } from "../api/specific-plugin.contracts";
-import { Select } from "@core/components/select";
+import { Form } from "@core/components/form";
 import { Button } from "@core/components/button";
 import { KeywordsList } from "./keywords";
 import { NewTabLink } from "@core/components/new-tab-link";
@@ -159,7 +159,11 @@ export const SpecificPlugin: FC<{ plugin: NPMPackage }> = ({ plugin }) => {
 
         <div className="flex space-x-1 w-[35%] items-center">
           <div className="flex-1 mr-1">
-            <Select options={versionOptions} value={versionValue} onChange={setVersionValue} />
+            <Form.SelectOption
+              options={versionOptions}
+              value={versionValue}
+              onChange={setVersionValue}
+            />
           </div>
           <div className="flex space-x-1">
             {!isInstalled && <Button onClick={installPlugin}>Install</Button>}

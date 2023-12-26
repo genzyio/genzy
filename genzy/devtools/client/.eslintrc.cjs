@@ -39,6 +39,21 @@ module.exports = {
             message: "Shouldn't reference core by relative path. Use alias '@core' instead.",
           },
           {
+            group: ["@core/components/dropdown/**"],
+            message:
+              "Shouldn't reference dropdown components by relative path. Use default import instead.",
+          },
+          {
+            group: ["@core/components/tabs/**"],
+            message:
+              "Shouldn't reference tabs components by relative path. Use default import instead.",
+          },
+          {
+            group: ["@core/components/form/**"],
+            message:
+              "Shouldn't reference form components by relative path. Use default import instead.",
+          },
+          {
             group: ["**/features/**"],
             message: "Shouldn't reference core by relative path. Use alias '@features' instead.",
           },

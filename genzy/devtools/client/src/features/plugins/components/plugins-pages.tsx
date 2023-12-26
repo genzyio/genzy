@@ -1,6 +1,5 @@
 import { type FC, useEffect, useState } from "react";
-import { Tabs, TabsInstance } from "@core/components/tabs";
-import { Tab } from "@core/components/tab";
+import { Tabs, type TabsInstance } from "@core/components/tabs";
 import { SearchPlugins } from "./search-plugins";
 import { InstalledPlugins } from "./installed-plugins";
 import { SpecificPlugin } from "./specific-plugin";
@@ -57,14 +56,14 @@ export const PluginTabsPage: FC<PluginTabsProps> = ({ initialTab }) => {
   }, [tabsInstance]);
 
   return (
-    <Tabs onInit={setTabsInstance}>
-      <Tab title="Search" onChange={openSearchPlugins}>
+    <Tabs.Containter onInit={setTabsInstance}>
+      <Tabs.Tab title="Search" onChange={openSearchPlugins}>
         <SearchPlugins />
-      </Tab>
+      </Tabs.Tab>
 
-      <Tab title="Installed" onChange={openInstalledPlugins}>
+      <Tabs.Tab title="Installed" onChange={openInstalledPlugins}>
         <InstalledPlugins />
-      </Tab>
-    </Tabs>
+      </Tabs.Tab>
+    </Tabs.Containter>
   );
 };

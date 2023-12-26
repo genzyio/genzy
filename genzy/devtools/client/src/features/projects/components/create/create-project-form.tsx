@@ -1,5 +1,5 @@
 import { type FC, useState, SyntheticEvent } from "react";
-import { TextField } from "@core/components/text-field";
+import { Form } from "@core/components/form";
 import { useAction } from "@core/hooks/useAction";
 import { type CreateProject } from "../../api/project.contracts";
 import { createProject } from "../../api/project.actions";
@@ -40,8 +40,8 @@ export const CreateProjectForm: FC<CreateProjectFormProps> = ({ onSaved, onCance
     <form onSubmit={onSubmit}>
       <div className="border-b border-gray-300 pb-12">
         <div className="mt-10 grid gap-y-4">
-          <TextField label="Name" value={name} onChange={setName} />
-          <TextField
+          <Form.TextField label="Name" value={name} onChange={setName} />
+          <Form.TextField
             label="Path"
             value={path}
             onChange={setPath}
