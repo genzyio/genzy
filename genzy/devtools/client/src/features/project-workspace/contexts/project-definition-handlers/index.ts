@@ -2,7 +2,7 @@ import {
   addMicroserviceHandler,
   updateMicroserviceHandler,
   deleteMicroserviceHandler,
-} from "./microservice-handlers";
+} from "./microservice.handlers";
 import {
   addServiceHandler,
   addServicesHandler,
@@ -13,26 +13,26 @@ import {
   updateServicesHandler,
   deleteServiceHandler,
   deleteServicesHandler,
-} from "./service-handlers";
-import { addClassHandler, updateClassHandler, deleteClassHandler } from "./class-handlers";
+} from "./service.handlers";
+import { addClassHandler, updateClassHandler, deleteClassHandler } from "./class.handlers";
 import {
   addCommunicationHandler,
   removeCommunicationHandler,
   removeServicesFromCommunicationHandler,
   updateCommunicationHandler,
-} from "./communication-handlers";
-import { addDependencyHandler, removeDependencyHandler } from "./dependency-handlers";
+} from "./communication.handlers";
+import { addDependencyHandler, removeDependencyHandler } from "./dependency.handlers";
 import {
   installPluginHandler,
   uninstallPluginHandler,
   updatePluginHandler,
-} from "./plugin-handlers";
+} from "./plugin.handlers";
 import {
   microserviceMovedHandler,
   serviceMovedHandler,
   classMovedHandler,
-} from "./diagram-handlers";
-import { addReferenceHandler, removeReferenceHandler } from "./references-handlers";
+} from "./diagram.handlers";
+import { addReferenceHandler, removeReferenceHandler } from "./references.handlers";
 
 export default {
   addMicroserviceHandler,

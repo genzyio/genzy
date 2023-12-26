@@ -1,6 +1,6 @@
 import { type FC, type PropsWithChildren, Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { classNames } from "../utils/classNames";
+import { classNames } from "../utils/class-names";
 
 export type DropDownMenuProps = PropsWithChildren & {
   icon: React.ElementType;

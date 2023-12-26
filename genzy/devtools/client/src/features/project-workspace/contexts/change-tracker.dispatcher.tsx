@@ -1,5 +1,5 @@
 import { type ProjectDefinition } from "../models/project-definition.models";
-import { type State } from "./change-tracker-context";
+import { type State } from "./change-tracker.context";
 import { type DispatcherType, projectDefinitionActions } from "./project-definition.dispatcher";
 
 function createChangeTrackingDispatcherWrapper(

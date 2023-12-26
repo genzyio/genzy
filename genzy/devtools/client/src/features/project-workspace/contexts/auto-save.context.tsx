@@ -15,8 +15,8 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { useAction } from "@core/hooks/useAction";
 import { saveProjectDefinition } from "../api/project-definition.actions";
 import { saveProjectScreenshot } from "@features/projects/api/project-screenshots.actions";
-import { useDirtyCheckContext } from "@features/diagrams/common/contexts/dirty-check-context";
-import { useChangeTrackerContext } from "./change-tracker-context";
+import { useDirtyCheckContext } from "@features/diagrams/common/contexts/dirty-check.context";
+import { useChangeTrackerContext } from "./change-tracker.context";
 import { isValidProject } from "../utils/validations";
 
 type AutoSaveContextValues = {

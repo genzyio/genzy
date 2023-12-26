@@ -1,6 +1,6 @@
 import { type SaveProjectDefinition } from "./project-definition.contracts";
-import { adaptToDiagram } from "./adapters/toDiagram";
-import { adaptFromDiagram } from "./adapters/fromDiagram";
+import { adaptToDiagram } from "./adapters/to-diagram";
+import { adaptFromDiagram } from "./adapters/from-diagram";
 import axios from "axios";
 
 async function getProjectDefinition(projectName: string) {

@@ -1,6 +1,6 @@
 import { useReducer, useEffect } from "react";
 import { type Class, type Attribute, type DataType, type Method, type Parameter } from "../models";
-import { useDirtyCheckContext } from "../../common/contexts/dirty-check-context";
+import { useDirtyCheckContext } from "../../common/contexts/dirty-check.context";
 
 type UpdateClassPart = {
   type: "UPDATE_CLASS_DATA";

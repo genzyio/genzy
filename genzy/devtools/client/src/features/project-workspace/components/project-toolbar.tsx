@@ -10,8 +10,8 @@ import { saveProjectScreenshot } from "@features/projects/api/project-screenshot
 import { extractErrorMessage } from "@core/utils/errors";
 import { useProjectNavigation } from "@features/projects/hooks/useProjectNavigation";
 import { useAutoSaveContext } from "../contexts/auto-save.context";
-import { useDirtyCheckContext } from "@features/diagrams/common/contexts/dirty-check-context";
-import { useChangeTrackerContext } from "../contexts/change-tracker-context";
+import { useDirtyCheckContext } from "@features/diagrams/common/contexts/dirty-check.context";
+import { useChangeTrackerContext } from "../contexts/change-tracker.context";
 import { useWatchModeContext } from "../contexts/watch-mode.context";
 import { isValidProject } from "../utils/validations";
 

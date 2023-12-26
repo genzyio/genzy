@@ -16,12 +16,12 @@ import { type DispatcherType, createDispatcher } from "./project-definition.disp
 import { useProjectDefinition } from "../hooks/useProjectDefinition";
 import { useProjectContext } from "./project.context";
 import { useAutoSaveContext } from "./auto-save.context";
-import { useChangeTrackerContext } from "./change-tracker-context";
-import { useDirtyCheckContext } from "@features/diagrams/common/contexts/dirty-check-context";
+import { useChangeTrackerContext } from "./change-tracker.context";
+import { useDirtyCheckContext } from "@features/diagrams/common/contexts/dirty-check.context";
 import { createChangeTrackingDispatcherWrapper } from "./change-tracker.dispatcher";
 import { Button } from "@core/components/button";
 import useUndoable from "use-undoable";
-import { EmptyDiagram } from "@features/diagrams/EmptyDiagram";
+import { EmptyDiagram } from "@features/diagrams/empty-diagram";
 import { useProjectNavigation } from "@features/projects/hooks/useProjectNavigation";
 
 type ProjectDefinitionContextValues = {

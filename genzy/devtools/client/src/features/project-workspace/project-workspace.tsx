@@ -2,8 +2,8 @@ import { ProjectContextProvider } from "./contexts/project.context";
 import { ProjectDefinitionContextProvider } from "./contexts/project-definition.context";
 import { Project } from "./components/project";
 import { AutoSaveContextProvider } from "./contexts/auto-save.context";
-import { DirtyCheckContextProvider } from "@features/diagrams/common/contexts/dirty-check-context";
-import { ChangeTrackerContextProvider } from "./contexts/change-tracker-context";
+import { DirtyCheckContextProvider } from "@features/diagrams/common/contexts/dirty-check.context";
+import { ChangeTrackerContextProvider } from "./contexts/change-tracker.context";
 import { WatchModeContextProvider } from "./contexts/watch-mode.context";
 import { useParams } from "react-router-dom";
 

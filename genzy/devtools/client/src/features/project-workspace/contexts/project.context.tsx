@@ -2,7 +2,7 @@ import { type FC, type PropsWithChildren, createContext, useContext, useState } 
 import { type Project } from "@features/projects/models/project.models";
 import { useProject } from "@features/projects/hooks/useProjects";
 import { useProjectNavigation } from "@features/projects/hooks/useProjectNavigation";
-import { EmptyDiagram } from "@features/diagrams/EmptyDiagram";
+import { EmptyDiagram } from "@features/diagrams/empty-diagram";
 
 type ProjectContextValues = {
   project: Project;

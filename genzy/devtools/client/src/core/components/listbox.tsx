@@ -1,7 +1,7 @@
 import { type FC, type ComponentProps, Fragment, useMemo } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
-import { classNames } from "../utils/classNames";
+import { classNames } from "../utils/class-names";
 
 export type ListboxTemplateProps<T> = {
   selected?: boolean;
