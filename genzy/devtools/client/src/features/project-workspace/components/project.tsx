@@ -7,12 +7,13 @@ import { type Node, ReactFlowProvider } from "reactflow";
 import { type Microservice } from "@features/diagrams/microservices/models";
 import { ProjectToolbar } from "./project-toolbar";
 import { TypesContextProvider } from "@features/diagrams/class/types.context";
-import { MicroserviceNodeContextProvider } from "@features/diagrams/microservices/nodes/microservice-node.context";
 import { MicroserviceDiagramWrapper } from "./wrappers/microservices-diagram-wrapper";
 import { ClassDiagramWrapper } from "./wrappers/class-diagram-wrapper";
 import { ServiceDiagramWrapper } from "./wrappers/service-diagram-wrapper";
 import { SwaggerWrapper } from "./wrappers/swagger-wrapper";
 import { useSearchParams } from "react-router-dom";
+import { MicroserviceEvents } from "@features/diagrams/microservices/microservices-diagram.events";
+import { useEvent } from "@core/hooks/useEvent";
 
 import "@features/diagrams/common/styles/validation_styles.css";
 
@@ -141,10 +142,6 @@ export const Project: FC = () => {
     tabPreferences.store(tabs);
   }, [tabs]);
 
-  if (!isOpened) {
-    return <EmptyDiagram />;
-  }
-
   useEffect(() => {
     if (!tabsInstance) return;
     const activeTab = searchParams.get("activeTab");
@@ -159,54 +156,56 @@ export const Project: FC = () => {
     }
   }, [tabsInstance, searchParams]);
 
+  useEvent(MicroserviceEvents.ON_SERVICES_CLICK, addModelDiagram, [addModelDiagram]);
+  useEvent(MicroserviceEvents.ON_MODELS_CLICK, addServiceDiagram, [addServiceDiagram]);
+  useEvent(MicroserviceEvents.ON_DOCS_CLICK, addDocs, [addDocs]);
+
+  if (!isOpened) {
+    return <EmptyDiagram />;
+  }
+
   return (
     <>
       <ReactFlowProvider>
-        <MicroserviceNodeContextProvider
-          onModelsClick={addModelDiagram}
-          onServicesClick={addServiceDiagram}
-          onDocsClick={addDocs}
-        >
-          <TypesContextProvider>
-            {!isDocsActive && <ProjectToolbar />}
+        <TypesContextProvider>
+          {!isDocsActive && <ProjectToolbar />}
 
-            <Tabs.Containter
-              onInit={setTabsInstance}
-              invert={true}
-              navigationContainerClassName="border-b border-gray-100"
+          <Tabs.Containter
+            onInit={setTabsInstance}
+            invert={true}
+            navigationContainerClassName="border-b border-gray-100"
+          >
+            <Tabs.Tab
+              title="Microservices"
+              onChange={() => {
+                setSearchParams((params) => {
+                  params.delete("activeTab");
+                  return params;
+                });
+                setIsDocsActive(false);
+              }}
             >
-              <Tabs.Tab
-                title="Microservices"
-                onChange={() => {
-                  setSearchParams((params) => {
-                    params.delete("activeTab");
-                    return params;
-                  });
-                  setIsDocsActive(false);
-                }}
-              >
-                <MicroserviceDiagramWrapper onMicroserviceDeleted={removeTabsForMicroservice} />
-              </Tabs.Tab>
+              <MicroserviceDiagramWrapper onMicroserviceDeleted={removeTabsForMicroservice} />
+            </Tabs.Tab>
 
-              {tabs.map((t) => {
-                return (
-                  <Tabs.Tab
-                    id={t.id}
-                    key={t.title}
-                    title={t.title}
-                    onChange={({ id }) => {
-                      setSearchParams({ activeTab: id });
-                      setIsDocsActive(t.id.endsWith("/docs"));
-                    }}
-                    onClose={({ id }) => setTabs((tabs) => tabs.filter((tab) => tab.id !== id))}
-                  >
-                    {t.children}
-                  </Tabs.Tab>
-                );
-              })}
-            </Tabs.Containter>
-          </TypesContextProvider>
-        </MicroserviceNodeContextProvider>
+            {tabs.map((tab) => {
+              return (
+                <Tabs.Tab
+                  id={tab.id}
+                  key={tab.title}
+                  title={tab.title}
+                  onChange={({ id }) => {
+                    setSearchParams({ activeTab: id });
+                    setIsDocsActive(tab.id.endsWith("/docs"));
+                  }}
+                  onClose={({ id }) => setTabs((tabs) => tabs.filter((tab) => tab.id !== id))}
+                >
+                  {tab.children}
+                </Tabs.Tab>
+              );
+            })}
+          </Tabs.Containter>
+        </TypesContextProvider>
       </ReactFlowProvider>
     </>
   );

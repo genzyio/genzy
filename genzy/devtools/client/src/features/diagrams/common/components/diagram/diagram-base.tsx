@@ -6,7 +6,10 @@ import ReactFlow, {
   type Node,
   type Viewport,
 } from "reactflow";
-import { MiniMapStyled, ReactFlowStyled } from "@core/components/diagram";
+import {
+  MiniMapStyled,
+  ReactFlowStyled,
+} from "@features/diagrams/common/components/diagram/diagram-styled";
 import { CustomControls } from "./custom-controls";
 import { SmoothStepConnectionLine } from "../edges/smooth-step/smooth-step-connection-line";
 import { classNames } from "@core/utils/class-names";

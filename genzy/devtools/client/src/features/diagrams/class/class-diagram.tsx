@@ -1,4 +1,4 @@
-import { type FC, useEffect, useState, useMemo, useCallback } from "react";
+import { type FC, useState, useMemo, useCallback } from "react";
 import { type Node, type Edge, type NodeProps, type EdgeProps, type Viewport } from "reactflow";
 import { Class } from "./models";
 import { useSequenceGenerator } from "@core/hooks/useStringSequence";
@@ -16,13 +16,15 @@ import nodeTypes from "../common/constants/node-types";
 import edgeTypes from "../common/constants/edge-types";
 import { isNodeMoved } from "../common/utils/move";
 import { ThemeProvider } from "styled-components";
-import { darkTheme } from "@core/components/diagram";
+import { darkTheme } from "@features/diagrams/common/components/diagram/diagram-styled";
 import { DiagramBase } from "../common/components/diagram/diagram-base";
 import { useMicroserviceContext } from "../common/contexts/microservice.context";
-import { ClassEvents, classEventEmitter } from "./class-diagram.events";
+import { ClassEvents } from "./class-diagram.events";
 import { RemoveClassModal, RemoveClassModalInstance } from "./remove-class-modal";
 import { useClassDiagramState } from "./class-diagram-state";
 import { FloatingEdge } from "../common/components/edges/floating/floating-edge";
+import { useEvent } from "@core/hooks/useEvent";
+import { eventEmitter } from "@core/utils/event-emitter";
 
 type DiagramProps = {
   microserviceId: string;
@@ -53,13 +55,13 @@ export const ClassDiagram: FC<DiagramProps> = ({
   const [selectedClass, setSelectedClass] = useState<Node<Class, string>>();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
 
-  useEffect(() => {
-    classEventEmitter.subscribe(ClassEvents.ON_NODE_REMOVE, (node) => {
+  useEvent(
+    ClassEvents.ON_NODE_REMOVE,
+    (node) => {
       removeClassModalInstance.openFor(node);
-    });
-
-    return () => classEventEmitter.unsubscribe(ClassEvents.ON_NODE_REMOVE);
-  }, [removeClassModalInstance]);
+    },
+    [removeClassModalInstance]
+  );
 
   // Class handlers
   const handleClassAdd = async () => {
@@ -175,7 +177,7 @@ const RemovableClassNodeWrapper: FC<NodeProps<Class>> = (props) => {
 
   const onRemove = (_, id: string) => {
     const node = projectDefinition.classes[microserviceId].nodes.find((node) => node.id === id);
-    classEventEmitter.dispatch(ClassEvents.ON_NODE_REMOVE, node);
+    eventEmitter.dispatch(ClassEvents.ON_NODE_REMOVE, node);
   };
 
   return <RemovableNode onRemove={onRemove} element={ClassNode} {...props} />;

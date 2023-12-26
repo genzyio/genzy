@@ -1,7 +1,6 @@
-import { type FC } from "react";
+import { useCallback, type FC } from "react";
 import { type NodeProps } from "reactflow";
 import { type Microservice } from "../models";
-import { useMicroserviceNodeContext } from "./microservice-node.context";
 import { useWatchModeContext } from "@features/project-workspace/contexts/watch-mode.context";
 import { useProjectContext } from "@features/project-workspace/contexts/project.context";
 import { getImageProxyUrl } from "@core/utils/proxy-image";
@@ -10,6 +9,8 @@ import { ConnectableNodeWrapper } from "../../common/components/nodes/connectabl
 import { NodeBase } from "../../common/components/nodes/node-base";
 import { Button } from "@core/components/button";
 import { Link } from "react-router-dom";
+import { eventEmitter } from "@core/utils/event-emitter";
+import { MicroserviceEvents } from "../microservices-diagram.events";
 
 type MicroserviceNodeProps = NodeProps<Microservice>;
 
@@ -64,20 +65,30 @@ const MicroserviceTitle: FC<{ microservice: Microservice }> = ({ microservice })
 const MicroserviceOptions: FC<{ microserviceId: string }> = ({ microserviceId }) => {
   const { project } = useProjectContext();
   const { isMicroserviceActive } = useWatchModeContext();
-  const { onServicesClick, onModelsClick, onDocsClick } = useMicroserviceNodeContext();
-
   const microserviceActive = isMicroserviceActive(microserviceId);
+
+  const onServicesClick = useCallback(() => {
+    eventEmitter.dispatch(MicroserviceEvents.ON_SERVICES_CLICK, microserviceId);
+  }, [microserviceId]);
+
+  const onModelsClick = useCallback(() => {
+    eventEmitter.dispatch(MicroserviceEvents.ON_MODELS_CLICK, microserviceId);
+  }, [microserviceId]);
+
+  const onDocsClick = useCallback(() => {
+    eventEmitter.dispatch(MicroserviceEvents.ON_DOCS_CLICK, microserviceId);
+  }, [microserviceId]);
 
   return (
     <div className="mt-3 flex gap-x-2 text-sm">
-      <Button type="button" onClick={() => onServicesClick(microserviceId)}>
+      <Button type="button" onClick={onServicesClick}>
         Services
       </Button>
-      <Button type="button" onClick={() => onModelsClick(microserviceId)}>
+      <Button type="button" onClick={onModelsClick}>
         Models
       </Button>
       {microserviceActive && (
-        <Button type="button" onClick={() => onDocsClick(microserviceId)}>
+        <Button type="button" onClick={onDocsClick}>
           Docs
         </Button>
       )}

@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { Index } from "./index/index";
+import { Index } from "@index/index";
 import { API_URL } from "./url";
 import axios from "axios";
 

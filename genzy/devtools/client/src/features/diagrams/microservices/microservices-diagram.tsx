@@ -1,4 +1,4 @@
-import { type FC, useEffect, useMemo, useState } from "react";
+import { type FC, useMemo, useState } from "react";
 import {
   Connection,
   type Node,
@@ -27,9 +27,9 @@ import edgeTypes from "../common/constants/edge-types";
 import { isNodeMoved } from "../common/utils/move";
 import { FloatingEdge } from "../common/components/edges/floating/floating-edge";
 import { ThemeProvider } from "styled-components";
-import { darkTheme } from "@core/components/diagram";
+import { darkTheme } from "@features/diagrams/common/components/diagram/diagram-styled";
 import { DiagramBase } from "../common/components/diagram/diagram-base";
-import { MicroserviceEvents, microserviceEventEmitter } from "./microservices-diagram.events";
+import { MicroserviceEvents } from "./microservices-diagram.events";
 import {
   RemoveCommunicationModal,
   type RemoveCommunicationModalInstance,
@@ -39,6 +39,8 @@ import {
   type RemoveMicroserviceModalInstance,
 } from "./remove-microservice-modal";
 import { useMicroservicesDiagramState } from "./microservices-diagram-state";
+import { useEvent } from "@core/hooks/useEvent";
+import { eventEmitter } from "@core/utils/event-emitter";
 
 type DiagramProps = {
   nodes?: Node<Microservice>[];
@@ -98,19 +100,21 @@ export const MicroservicesDiagram: FC<DiagramProps> = ({
     return true;
   };
 
-  useEffect(() => {
-    microserviceEventEmitter.subscribe(MicroserviceEvents.ON_NODE_REMOVE, (node: Node) => {
+  useEvent(
+    MicroserviceEvents.ON_NODE_REMOVE,
+    (node: Node) => {
       removeMicroserviceInstance.openFor(node);
-    });
-    microserviceEventEmitter.subscribe(MicroserviceEvents.ON_EDGE_REMOVE, (edge: Edge) => {
-      removeCommunicationInstance.openFor(edge);
-    });
+    },
+    [removeMicroserviceInstance]
+  );
 
-    return () => {
-      microserviceEventEmitter.unsubscribe(MicroserviceEvents.ON_NODE_REMOVE);
-      microserviceEventEmitter.unsubscribe(MicroserviceEvents.ON_EDGE_REMOVE);
-    };
-  }, [removeMicroserviceInstance, removeCommunicationInstance]);
+  useEvent(
+    MicroserviceEvents.ON_EDGE_REMOVE,
+    (edge: Edge) => {
+      removeCommunicationInstance.openFor(edge);
+    },
+    [removeCommunicationInstance]
+  );
 
   // Microservice Handlers
   const handleMicroserviceAdd = async () => {
@@ -282,7 +286,7 @@ const RemovableMicroserviceNodeWrapper: FC<NodeProps<Microservice>> = (props) =>
 
   const onRemove = (_, id: string) => {
     const node = projectDefinition.microservices.nodes.find((node) => node.id === id);
-    microserviceEventEmitter.dispatch(MicroserviceEvents.ON_NODE_REMOVE, node);
+    eventEmitter.dispatch(MicroserviceEvents.ON_NODE_REMOVE, node);
   };
 
   return <RemovableNode onRemove={onRemove} element={MicroserviceNode} {...props} />;
@@ -307,7 +311,7 @@ const RemovableEdgeWrapper: FC<EdgeProps> = (props) => {
 
   const onRemove = (_, id: string) => {
     const edge = edges.find((edge) => edge.id === id);
-    microserviceEventEmitter.dispatch(MicroserviceEvents.ON_EDGE_REMOVE, edge);
+    eventEmitter.dispatch(MicroserviceEvents.ON_EDGE_REMOVE, edge);
   };
 
   return <RemovableEdge nodes={nodes} edges={edges} onRemove={onRemove} {...props} />;

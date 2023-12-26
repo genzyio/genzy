@@ -35,6 +35,10 @@ module.exports = {
       {
         patterns: [
           {
+            group: ["**/index/**"],
+            message: "Shouldn't reference index by relative path. Use alias '@index' instead.",
+          },
+          {
             group: ["**/core/**"],
             message: "Shouldn't reference core by relative path. Use alias '@core' instead.",
           },

@@ -1,4 +1,4 @@
-import { type FC, useEffect, useState, useMemo } from "react";
+import { type FC, useState, useMemo } from "react";
 import {
   Connection,
   type Node,
@@ -24,14 +24,16 @@ import nodeTypes from "../common/constants/node-types";
 import edgeTypes from "../common/constants/edge-types";
 import { isNodeMoved } from "../common/utils/move";
 import { FloatingEdge } from "../common/components/edges/floating/floating-edge";
-import { darkTheme } from "@core/components/diagram";
+import { darkTheme } from "@features/diagrams/common/components/diagram/diagram-styled";
 import { ThemeProvider } from "styled-components";
 import { DiagramBase } from "../common/components/diagram/diagram-base";
 import { useMicroserviceContext } from "../common/contexts/microservice.context";
-import { ServiceEvents, serviceEventEmitter } from "./service-diagram.events";
+import { ServiceEvents } from "./service-diagram.events";
 import { RemoveServiceModal, type RemoveServiceModalInstance } from "./remove-service-modal";
 import { useSequenceGenerator } from "@core/hooks/useStringSequence";
 import { useServiceDiagramState } from "./service-diagram-state";
+import { useEvent } from "@core/hooks/useEvent";
+import { eventEmitter } from "@core/utils/event-emitter";
 
 type DiagramProps = {
   microserviceId: string;
@@ -77,20 +79,17 @@ export const ServiceDiagram: FC<DiagramProps> = ({
     return true;
   };
 
-  useEffect(() => {
-    serviceEventEmitter.subscribe(ServiceEvents.ON_NODE_REMOVE, (node) => {
+  useEvent(
+    ServiceEvents.ON_NODE_REMOVE,
+    (node) => {
       removeServiceModalInstance.openFor(node);
-    });
+    },
+    [removeServiceModalInstance]
+  );
 
-    serviceEventEmitter.subscribe(ServiceEvents.ON_EDGE_REMOVE, async (edge) => {
-      handleDeleteDependency(edge);
-    });
-
-    return () => {
-      serviceEventEmitter.unsubscribe(ServiceEvents.ON_NODE_REMOVE);
-      serviceEventEmitter.unsubscribe(ServiceEvents.ON_EDGE_REMOVE);
-    };
-  }, [removeServiceModalInstance]);
+  useEvent(ServiceEvents.ON_EDGE_REMOVE, (edge) => {
+    handleDeleteDependency(edge);
+  });
 
   // Service Handlers
   const handleServiceAdd = async () => {
@@ -216,7 +215,7 @@ const RemovableServiceNodeWrapper: FC<NodeProps<Service>> = (props) => {
 
   const onRemove = (_, id: string) => {
     const node = projectDefinition.services[microserviceId].nodes.find((node) => node.id === id);
-    serviceEventEmitter.dispatch(ServiceEvents.ON_NODE_REMOVE, node);
+    eventEmitter.dispatch(ServiceEvents.ON_NODE_REMOVE, node);
   };
 
   return <RemovableNode onRemove={onRemove} element={ServiceNode} {...props} />;
@@ -244,7 +243,7 @@ const RemovableEdgeWrapper: FC<EdgeProps> = (props) => {
 
   const onRemove = (_, id: string) => {
     const edge = projectDefinition.services[microserviceId].edges.find((edge) => edge.id === id);
-    serviceEventEmitter.dispatch(ServiceEvents.ON_EDGE_REMOVE, edge);
+    eventEmitter.dispatch(ServiceEvents.ON_EDGE_REMOVE, edge);
   };
 
   return <RemovableEdge nodes={nodes} edges={edges} onRemove={onRemove} {...props} />;

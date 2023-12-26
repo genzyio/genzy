@@ -2,7 +2,7 @@ import { type FC } from "react";
 import { ControlButton } from "reactflow";
 import { useProjectContext } from "@features/project-workspace/contexts/project.context";
 import { toPng } from "html-to-image";
-import { ControlsStyled } from "@core/components/diagram";
+import { ControlsStyled } from "@features/diagrams/common/components/diagram/diagram-styled";
 
 function toImage(projectName: string) {
   toPng(document.querySelector(".react-flow") as HTMLElement, {
