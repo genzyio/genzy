@@ -21,7 +21,10 @@ function createArtefacts(project: Project) {
   const initialWorkspaceScreenshotPath = path.join("res", "images", "initial-workspace.png");
   if (!fs.existsSync(initialWorkspaceScreenshotPath)) return;
 
-  const screenshotArtefactPath = path.join(config.userArtefactsPath, "screenshots", `${project.name}.png`);
+  const screenshotsFolderPath = path.join(config.userArtefactsPath, "screenshots");
+  ensureFolderExists(screenshotsFolderPath);
+
+  const screenshotArtefactPath = path.join(screenshotsFolderPath, `${project.name}.png`);
   fs.copyFileSync(initialWorkspaceScreenshotPath, screenshotArtefactPath);
 }
 
