@@ -156,8 +156,8 @@ export const Project: FC = () => {
     }
   }, [tabsInstance, searchParams]);
 
-  useEvent(MicroserviceEvents.ON_SERVICES_CLICK, addModelDiagram, [addModelDiagram]);
-  useEvent(MicroserviceEvents.ON_MODELS_CLICK, addServiceDiagram, [addServiceDiagram]);
+  useEvent(MicroserviceEvents.ON_SERVICES_CLICK, addServiceDiagram, [addServiceDiagram]);
+  useEvent(MicroserviceEvents.ON_MODELS_CLICK, addModelDiagram, [addModelDiagram]);
   useEvent(MicroserviceEvents.ON_DOCS_CLICK, addDocs, [addDocs]);
 
   if (!isOpened) {
