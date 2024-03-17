@@ -8,7 +8,7 @@ const { NODE_ENV = "production" } = process.env;
 export default {
   entry: "./src/index.ts",
   mode: NODE_ENV,
-  target: ["node", "es2022"],
+  target: "web",
   node: {
     __dirname: true,
     __filename: true,

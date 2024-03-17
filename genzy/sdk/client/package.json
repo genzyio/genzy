@@ -1,6 +1,6 @@
 {
   "name": "@genzy.io/client",
-  "version": "0.0.1-alpha-2",
+  "version": "0.0.1-alpha-5",
   "description": "Genzy - focused on the domain.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -32,7 +32,6 @@
     "webpack-cli": "^4.9.1"
   },
   "dependencies": {
-    "axios": "^0.24.0",
-    "blueimp-tmpl": "^3.20.0"
+    "axios": "^0.24.0"
   }
 }
